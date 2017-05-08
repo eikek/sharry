@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Sharry</title>
+        <link rel="stylesheet" href="static/semantic-ui/semantic.min.css">
+        <link rel="stylesheet" href="static/sharry-webapp/sharry.css">
+        <script type="application/javascript" src="static/jquery/jquery.min.js"></script>
+        <script type="application/javascript" src="static/semantic-ui/semantic.min.js"></script>
+        <script type="application/javascript" src="static/sharry-webapp/resumable.js"></script>
+        <script type="application/javascript" src="static/sharry-webapp/elm-main.js"></script>
+    </head>
+
+    <body>
+
+        <script type="text/javascript">
+         var storedAccount = localStorage.getItem('account');
+         var account = storedAccount ? JSON.parse(storedAccount) : null;
+         var elmApp = Elm.Main.fullscreen({
+             "account": account,
+             "remoteConfig":
+                 {{config}}
+         });
+        </script>
+        <script type="text/javascript" src="static/sharry-webapp/sharry.js"></script>
+    </body>
+</html>

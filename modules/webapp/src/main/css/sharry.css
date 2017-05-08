@@ -1,0 +1,45 @@
+body {
+    background-color: #ffffff;
+}
+.ui.menu .item img.logo {
+    margin-right: 1.5em;
+}
+.main.container {
+    margin-top: 4em;
+}
+.wireframe {
+    margin-top: 2em;
+}
+.ui.footer.segment {
+    margin: 5em 0em 0em;
+    padding: 5em 0em;
+}
+
+/* login page */
+.login-page-column {
+    max-width: 450px;
+}
+body > .grid {
+    height: 100%;
+}
+.login-page-image {
+    margin-top: -100px;
+}
+
+/* share page */
+.sharry-dropzone {
+    height: 10em;
+    display: flex;
+    align-items: center;
+}
+.sharry-dropzone > p.sharry-dropzone-text {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.sharry-footer {
+    position: fixed;
+    bottom: 0px;
+    opacity: 0.5;
+    font-size: 0.7em;
+}

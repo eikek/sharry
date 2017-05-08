@@ -1,0 +1,6 @@
+dev.conf
+target/
+
+# ensime
+.ensime_cache/
+.ensime

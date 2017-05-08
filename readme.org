@@ -1,0 +1,201 @@
+#+title: sharry
+
+* COMMENT setup
+
+#+begin_src emacs-lisp :exports none
+  (defvar-local this-buffer-name (buffer-file-name))
+  (add-hook
+   'after-save-hook
+   (lambda ()
+     (when (string-equal this-buffer-name (buffer-file-name))
+       (shell-command "pandoc --from org --to markdown -o README.md readme.org"))))
+#+end_src
+
+#+RESULTS:
+| (lambda nil (when (string-equal this-buffer-name (buffer-file-name)) (shell-command pandoc --from org --to markdown -o README.md readme.org))) | helm-swoop--clear-cache | sml/generate-buffer-identification |
+
+* sharry
+
+Sharry allows to share files with others in a simple way. It is a
+self-hosted web application. The basic concept is: upload files and
+get a url back that can then be shared.
+
+** How it works
+*** Authenticated users -> others
+
+Authenticated users can share files with others by uploading their
+files on a web site together with an optional password and a time
+period. The time period defines how long the file is available for
+download. The next screen displays the new information: the download
+link, the password and the date until the link is valid. It is
+possible to send this information via email to other people.
+
+The download page is hard to guess, but open to everyone.
+
+*** Others -> Authenticated users
+
+It's also possible to allow anonymous users to send files to
+registered ones. Each registered user can maintain alias pages. An
+alias page just presents a simple upload form and is open to
+everyone. The form does not allow to specify a password or validation
+time span in contrast to the upload form for authenticated users. The
+files uploaded through this page are stored on the server and the user
+belonging to the alias is notified via email.
+
+Alias pages can be created, deleted or disabled. They are meant to be
+shared with others. The links to the alias pages are random and "hard
+to guess", but otherwise publicly accessible.
+
+*** Others -> Others
+
+If authentication is enabled, it is not possible to share files
+between non-registered users. One party must be registered. But
+authentication can be completely disabled. Then any user can upload
+files. This may be useful within a closed network.
+
+** Upload and Download
+
+Sharry aims to provide a good support for large files. That means
+downloads and uploads are resumable. Large files can be downloaded via
+[[https://en.wikipedia.org/wiki/Byte_serving][byte serving]], which allows for example to watch video files directly
+in the browser. Uploads are resumable, too, by using [[https://github.com/23/resumable.js][resumable.js]] on
+the client. Uploads can be retried where only chunks not already at
+the server are transferred.
+
+Each published upload has a validity period, after which the public
+download page doesn't work anymore. A cleanup job running periodically
+can delete those files to save space.
+
+** Features
+
+- resumable and recoverable upload of multiple files; thanks to
+  [[https://github.com/23/resumable.js][resumable.js]]
+- validation period for uploads
+- resumable downloads using [[https://en.wikipedia.org/wiki/Byte_serving][byte serving]]
+- download single files or all in a zip
+- protect downloads with a password
+- automatic removal of invalid uploads
+- external authentication (via system command or http requests)
+- managing accounts, uploads and alias pages
+
+** Dependencies
+
+The server part is written in [[http://scala-lang.or][Scala]] and uses the following great
+libraries:
+
+- [[https://github.com/functional-streams-for-scala/fs2][fs2]] all the way
+- [[https://github.com/Spinoco/fs2-http][fs2-http]] for the http stack
+- [[https://github.com/tpolecat/doobie][doobie]] for db access (which uses fs2, too)
+- [[https://github.com/circe/circe][circe]] great library for json
+- [[https://github.com/pureconfig/pureconfig][pureconfig]] is reading the configuration file using [[https://github.com/typesafehub/config][config]] library
+- …
+
+See all of them in the [[project/libs.scala][libs]] file.
+
+The frontend is written in [[http://elm-lang.org/][Elm]]. Two libraries aside from ~elm-lang/*~
+are used:
+
+- [[https://github.com/evancz/elm-markdown][evancz/elm-markdown]] rendering markdown
+- [[https://github.com/NoRedInk/elm-decode-pipeline][NoRedInk/elm-decode-pipeline]] decoding json
+
+Non-elm components:
+- [[https://semantic-ui.com][semantic-ui]] for a well looking web interface
+- [[https://github.com/23/resumable.js][resumable.js]] for handling uploads at the client
+
+** Building
+
+You need Java8, [[http://scala-sbt.org][sbt]] and [[http://elm-lang.org/][Elm]] installed first. Then clone the project
+and run:
+
+#+begin_src shell :exports both
+sbt assembly
+#+end_src
+
+This creates a file in =modules/server/target/scala-2.12= named
+=sharry-*.jar.sh=. This is an executable jar file and can be used to
+run sharry:
+
+#+begin_src shell :exports both
+$ ./modules/server/target/scala-2.12/sharry-server-0.0.1-SNAPSHOT.jar.sh --console
+2017-05-08T14:53:07.345+0200 INFO [main] sharry.server.main$ [main.scala:36]
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+ Sharry 0.0.1-SNAPSHOT (build 2017-05-08 12:49:58UTC) is starting up …
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2017-05-08T14:53:08.563+0200 INFO [main] sharry.server.main$ [main.scala:42]
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+ • Running initialize tasks …
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2017-05-08T14:53:08.622+0200 INFO [main] com.zaxxer.hikari.HikariDataSource [HikariDataSource.java:93] HikariPool-1 - Started.
+2017-05-08T14:53:09.272+0200 INFO [main] sharry.server.main$ [main.scala:62]
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+ • Starting http server at 0.0.0.0:9090
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+Hit RETURN to stop the server
+#+end_src
+
+The =--console= argument allows to terminate the server from the
+terminal (otherwise it's =Ctrl-C=). By default a [[http://h2database.com][H2]] database is
+configured in the current working directory.
+
+** Try it
+
+Using sbt (see above for prerequisites), run:
+
+#+begin_src shell :exports both
+sbt run-sharry
+#+end_src
+
+This will build the project and start the server. Point your browser
+to http://localhost:9090 and login with user =admin= and password
+=admin=.
+
+
+** Configuring
+
+Sharry reads a configuration file that can be given as an argument to
+the executable. Please see the [[modules/server/src/main/resources/reference.conf][default]] configuration for all available
+options. For more detailed information on its syntax, please refer to
+the [[https://github.com/typesafehub/config/blob/master/HOCON.md][specification]] and documentation of [[https://github.com/typesafehub/config][config library]]
+
+The important settings are
+
+- ~sharry.web.bindHost~ and ~sharry.web.bindPort~ the host and port
+  for binding the http server
+- ~sharry.db.driver|user|url|password~ the JDBC settings; currently it
+  should work with postgres and h2
+- ~sharry.upload.max-file-size~ maximum file size to upload
+- ~sharry.authc.enable=true|false~ whether to enable authentication
+  (default is =true=)
+- ~sharry.authc.extern.admin.enable=true|false~ enables an admin
+  account for initial login (password is =admin=), default is =false=
+
+Every setting can also be given as a Java system property by adding it
+to the environment variable =SHARRY_JAVA_OPTS= (=-D= prefix is
+required here):
+
+#+begin_src shell :exports both
+SHARRY_JAVA_OPTS="-Dsharry.authc.enable=false" ./sharry-server-0.0.1-SNAPSHOT.jar.sh
+#+end_src
+
+This overrides same settings in the configuration file.
+
+*** Reverse Proxy
+
+When running behind a reverse proxy, it is importand to use HTTP
+1.1. For example, a minimal nginx config would look like this:
+
+#+begin_src conf :exports both
+  server {
+    listen 0.0.0.0:80;
+
+    proxy_request_buffering off;
+    proxy_buffering off;
+
+    location / {
+       proxy_pass http://127.0.0.1:9090;
+       # this is important, because fs2-http can only do 1.1
+       # and it effectively disables request_buffering
+       proxy_http_version 1.1;
+    }
+  }
+#+end_src

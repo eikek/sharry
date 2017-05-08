@@ -1,0 +1,133 @@
+# -*- restclient -*-
+
+# variables
+:base = http://127.0.0.1:9090/api/v1
+:public = http://127.0.0.1:9090
+
+# Login with username and password
+POST :base/auth/login
+Content-Type: application/json
+
+{"login":"admin", "pass":"admin"}
+#
+curl -i -H 'Content-Type: application/json' -XPOST 'http://127.0.0.1:9090/api/v1/auth/login' -d '{"login":"admin", "pass":"admin"}'
+
+# get all accounts
+GET :base/accounts?q=a
+Cookie: sharry_auth=$2a$10$TZEBhNY4UyGUb.rH6S0uR.%admin%2017-05-03T23:33:38.262Z%331328e501d4d7dc7c6f82e10408f5d8806fa7b82d1757e491d8a023377fa41a
+#
+
+# get account
+GET :base/accounts/admin
+Cookie: sharry_auth=$2a$10$TZEBhNY4UyGUb.rH6S0uR.%admin%2017-05-03T23:33:38.262Z%331328e501d4d7dc7c6f82e10408f5d8806fa7b82d1757e491d8a023377fa41a
+#
+
+
+# test chunk
+GET :base/upload-data?token=u4ihtpp5x1urb14um2v54f8&resumableChunkNumber=9&resumableChunkSize=262144&resumableCurrentChunkSize=262144&resumableTotalSize=4117764&resumableType=application%2Fpdf&resumableIdentifier=4117764-Alfine_11_Gangpdf&resumableFilename=Alfine_11_Gang.pdf&resumableRelativePath=Alfine_11_Gang.pdf&resumableTotalChunks=16
+Cookie: sharry_auth=$2a$10$K1QGtyoaTbJNNTC6jLFZHu%eike%2017-04-29T00:29:46.066Z%2437b87679ebec0156071b09083bd768bee05da6c939bfd29bf2b673394d65dc
+#
+
+# publish upload
+POST :base/upload-publish/us4ai5ox9z58ljp2rwqazwe
+#
+
+# download ranges
+GET :base/dlp/0b53fa182c4c65bb1572d06d6cfe37e7ae1d35dd438c28302e3e43ada181688c
+Range: bytes=367886000-
+#
+
+# get all uploads
+GET :base/uploads
+#
+
+# get upload
+GET :base/uploads/us4ai5ox9z58ljp2rwqazwe
+#
+
+# delete upload
+DELETE :base/uploads/ungg7ckc1h1hn3h90hqkkf
+#
+
+# test download
+HEAD :public/dlp/0cb317edbc8a0a1a1ff7682fe0cfbef6445e46f7dbfd4bdc576f0ac3c40eb89a
+Cookie: sharry_dlpassword=test
+#
+
+
+# check password
+POST :base/check-password/rJ-KdLR21CQsEtFZis46GvfdHM2LdsHJ
+Content-Type: application/json
+
+{"password":"test"}
+#
+
+# test zip download
+GET :public/dlp/5BjfL5giB3Y1hUiqXSg6gMSTcorL6_lL43-UDcp/zip
+#
+
+# update email
+POST :base/account/email
+Content-Type: application/json
+Cookie: sharry_auth=$2a$10$bXVoVn/iG4euGK6cYjTzZ.%admin%2017-05-06T10:32:22.980Z%b64b09620922365ef0eaf73e54621cf03ae99319daeecb0a680119edec16c80a
+
+{
+  "login": "admin",
+  "password": null,
+  "email": "admin@eknet.org",
+  "enabled": true,
+  "admin": true,
+  "extern": true
+}
+#
+
+# update password
+POST :base/account/password
+Content-Type: application/json
+Cookie: sharry_auth=$2a$10$bXVoVn/iG4euGK6cYjTzZ.%admin%2017-05-06T10:32:22.980Z%b64b09620922365ef0eaf73e54621cf03ae99319daeecb0a680119edec16c80a
+
+{
+  "login": "admin",
+  "password": "admin",
+  "email": "admin@eknet.org",
+  "enabled": true,
+  "admin": true,
+  "extern": true
+}
+#
+
+
+# create alias
+POST :base/aliases
+Cookie: sharry_auth=$2a$10$1B.koVH2DoiD2pL0MOx31u%admin%2017-05-07T09:10:34.245Z%afbbbd5adf92ae1a090632eefc09e67e3e2fb1d57a0ad9cec861e500ca64ef48
+#
+
+# list aliases
+GET :base/aliases
+Cookie: sharry_auth=$2a$10$3L2RQt/HF2R8PfiOBndAB.%admin%2017-05-07T22:27:53.448Z%360d3db8357def2ff6c8f7b73a1d73b8eec93f04b3a7e92da7f6da9d8b1210a9
+#
+
+# get single alias
+GET :base/aliases/kMp8xzNgH8wNYUJU
+Cookie: sharry_auth=$2a$10$1B.koVH2DoiD2pL0MOx31u%admin%2017-05-07T09:10:34.245Z%afbbbd5adf92ae1a090632eefc09e67e3e2fb1d57a0ad9cec861e500ca64ef48
+#
+
+# delete alias
+DELETE :base/aliases/RZQbT6jmQb8_TfPC3LC3F
+Cookie: sharry_auth=$2a$10$1B.koVH2DoiD2pL0MOx31u%admin%2017-05-07T09:10:34.245Z%afbbbd5adf92ae1a090632eefc09e67e3e2fb1d57a0ad9cec861e500ca64ef48
+#
+
+# update alias
+POST :base/aliases
+Content-Type: application/json
+Cookie: sharry_auth=$2a$10$3L2RQt/HF2R8PfiOBndAB.%admin%2017-05-07T22:27:53.448Z%360d3db8357def2ff6c8f7b73a1d73b8eec93f04b3a7e92da7f6da9d8b1210a9
+
+{
+    "id": "asDXbBdLTQqqGsrWsOwa54O",
+    "login": "admin",
+    "name": "from James",
+    "validity": "PT120H",
+    "created": "2017-05-07T16:10:38Z",
+    "enable": false
+  }
+#
