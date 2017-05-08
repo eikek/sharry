@@ -81,6 +81,12 @@ emptyModel: Model
 emptyModel =
     Model Nothing [] -1 [] Initial
 
+makeErrorList: Model -> List String
+makeErrorList model =
+    model.errorFiles
+        |> List.map (\(f, msg) -> f.fileName ++": "++ msg)
+
+
 {-| Clears everything but the handle to reuse a resumable instance.
 -}
 clearModel: Model -> Model

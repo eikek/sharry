@@ -32,5 +32,7 @@ port resumableProgress: ((String, Float) -> msg) -> Sub msg
 port resumableComplete: (String -> msg) -> Sub msg
 port resumableError: ((String, String, Resumable.File) -> msg) -> Sub msg
 
+port resumableMaxFileSizeError: ((String, Resumable.File) -> msg) -> Sub msg
+port resumableMaxFilesError: ((String, Resumable.File) -> msg) -> Sub msg
 
 port reloadPage: () -> Cmd msg

@@ -13,7 +13,7 @@ update msg model =
             {model | handle = Just handle} ! []
 
         FileAdded file ->
-            {model | files = file :: model.files} ! []
+            {model | files = file :: model.files, errorFiles = []} ! []
 
         FileError file msg ->
             {model | errorFiles = (file, msg) :: model.errorFiles} ! []
@@ -28,10 +28,10 @@ update msg model =
             {model | progress = percent, state = Uploading} ! []
 
         UploadComplete ->
-            {model | state = Completed} ! []
+            {model | state = Completed, errorFiles = []} ! []
 
         UploadStarted ->
-            {model | state = Uploading} ! []
+            {model | state = Uploading, errorFiles = []} ! []
 
         UploadPaused ->
             {model | state = Paused} ! []

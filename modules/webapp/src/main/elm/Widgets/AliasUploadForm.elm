@@ -31,16 +31,21 @@ clearModel model =
 
 hasError: Model -> Bool
 hasError model =
-    Data.isPresent model.errorMessage
+    Data.isPresent model.errorMessage || Data.nonEmpty model.resumableModel.errorFiles
 
 isReady: Model -> Bool
 isReady model =
-    (not <| hasError model) && (List.length model.resumableModel.files) > 0
+    (not <| Data.isPresent model.errorMessage) && (List.length model.resumableModel.files) > 0
 
-errorMessage: Model -> String
+errorMessage: Model -> List String
 errorMessage model =
-    Maybe.withDefault "" model.errorMessage
-
+    let
+        resumableErrors = Resumable.makeErrorList model.resumableModel
+    in
+        model.errorMessage
+            |> Maybe.map List.singleton
+            |> Maybe.map ((++) resumableErrors)
+            |> Maybe.withDefault resumableErrors
 
 
 type Msg
@@ -70,7 +75,7 @@ view model =
     [
      infoView model.limits
     ,div [class "ui error message"]
-        [text <| errorMessage model]
+        [errorMessage model |> Data.messagesToHtml]
     ,div [class "field"]
         [
          label [][text "Description (supports Markdown)"]

@@ -111,13 +111,25 @@ elmApp.ports.makeResumable.subscribe(function(cfg) {
     var dropClass = cfg.dropClass;
 
     var makeFile = function(file) {
+        var progress = 0;
+        if (file.hasOwnProperty("process")) {
+            progress = file.progress();
+        }
+        var completed = false;
+        if (file.hasOwnProperty("isComplete")) {
+            completed = file.isComplete();
+        }
+        var uploading = false;
+        if (file.hasOwnProperty("isUploading")) {
+            uploading = file.isUploading();
+        }
         return {
-            fileName: file.fileName,
+            fileName: file.fileName || file.name,
             size: file.size,
-            uniqueIdentifier: file.uniqueIdentifier,
-            progress: file.progress(),
-            completed: file.isComplete(),
-            uploading: file.isUploading()
+            uniqueIdentifier: file.uniqueIdentifier || "",
+            progress: progress,
+            completed: completed,
+            uploading: uploading
         };
     };
     if (!sharryResumables[id]) {
@@ -131,6 +143,20 @@ elmApp.ports.makeResumable.subscribe(function(cfg) {
         cfg.typeParameterName = "";
         cfg.method = "octet";
         cfg.query = { token: id };
+        cfg.maxFileSizeErrorCallback = function(file, count) {
+            if (file instanceof FileList && file.length > 0) {
+                elmApp.ports.resumableMaxFileSizeError.send([page, makeFile(file.item(0))]);
+            } else {
+                elmApp.ports.resumableMaxFileSizeError.send([page, makeFile(file)]);
+            }
+        };
+        cfg.maxFilesErrorCallback = function(file, count) {
+            if (file instanceof FileList && file.length > 0) {
+                elmApp.ports.resumableMaxFilesError.send([page, makeFile(file.item(0)), count]);
+            } else {
+                elmApp.ports.resumableMaxFilesError.send([page, makeFile(file), count]);
+            }
+        };
         var r = new Resumable(cfg);
         var n = registerCallbacks(r, browseClass, dropClass);
         if (n > 0) {

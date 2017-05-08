@@ -36,21 +36,29 @@ init flags location =
         (model_, cmd)
 
 
-fileAddedMsg: (Resumable.Handle, Resumable.File) -> Msg
-fileAddedMsg (h, f) =
-    ResumableMsg h (Resumable.FileAdded f)
+fileAddedMsg: (String, Resumable.File) -> Msg
+fileAddedMsg (page, f) =
+    ResumableMsg page (Resumable.FileAdded f)
 
-fileProgressMsg: (Resumable.Handle, Float) -> Msg
-fileProgressMsg (h, percent) =
-    ResumableMsg h (Resumable.Progress percent)
+fileProgressMsg: (String, Float) -> Msg
+fileProgressMsg (page, percent) =
+    ResumableMsg page (Resumable.Progress percent)
 
-fileErrorMsg: (Resumable.Handle, String,  Resumable.File) -> Msg
-fileErrorMsg (h, msg, file) =
-    ResumableMsg h (Resumable.FileError file msg)
+fileErrorMsg: (String, String,  Resumable.File) -> Msg
+fileErrorMsg (page, msg, file) =
+    ResumableMsg page (Resumable.FileError file msg)
 
-fileSuccessMsg: (Resumable.Handle, Resumable.File) -> Msg
-fileSuccessMsg (h, file) =
-    ResumableMsg h (Resumable.FileSuccess file)
+fileSuccessMsg: (String, Resumable.File) -> Msg
+fileSuccessMsg (page, file) =
+    ResumableMsg page (Resumable.FileSuccess file)
+
+fileMaxSizeError: (String, Resumable.File) -> Msg
+fileMaxSizeError (page, file) =
+    ResumableMsg page (Resumable.FileError file "The maximum size limit is exceeded!")
+
+fileMaxCountError: (String, Resumable.File) -> Msg
+fileMaxCountError (page, file) =
+    ResumableMsg page (Resumable.FileError file "The maximum file count limit is exceeded!")
 
 subscriptions: Model -> Sub Msg
 subscriptions model =
@@ -66,6 +74,8 @@ subscriptions model =
         , Ports.resumableComplete (\h -> ResumableMsg h Resumable.UploadComplete)
         , Ports.resumableStarted (\h -> ResumableMsg h Resumable.UploadStarted)
         , Ports.resumablePaused (\h -> ResumableMsg h Resumable.UploadPaused)
+        , Ports.resumableMaxFilesError fileMaxCountError
+        , Ports.resumableMaxFileSizeError fileMaxSizeError
         ]
 
 

@@ -362,3 +362,14 @@ formatDuration str =
             (toString n) ++ unit
         Nothing ->
             str
+
+messagesToHtml: List String -> Html msg
+messagesToHtml messages =
+    case messages of
+        [] -> Html.span[][]
+        m :: [] -> Html.span[][Html.text m]
+        _ ->
+            let
+                f m = Html.li [][Html.text m]
+            in
+                Html.ul [] (List.map f messages)
