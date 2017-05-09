@@ -40,6 +40,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       , uploadConfig.maxFileSize.toBytes
       , makeProjectString
       , routes.authz.aliasHeaderName
+      , cfg.webmailConfig.enable
   )
 
 

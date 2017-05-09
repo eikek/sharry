@@ -12,7 +12,7 @@ package object email {
     def of(s: SmtpSetting): GetSetting =
       _ => Task.now(s)
 
-    def fromDomain: GetSetting =
+    val fromDomain: GetSetting =
       a => SmtpSetting.fromAddress(a).flatMap {
         case Some(s) => Task.now(s)
         case None => Task.fail(new Exception(s"No smtp host found for address $a"))

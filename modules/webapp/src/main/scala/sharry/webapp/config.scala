@@ -13,6 +13,7 @@ object config {
       , maxFileSize: Long
       , projectName: String
       , aliasHeaderName: String
+      , mailEnabled: Boolean
   )
 
 }

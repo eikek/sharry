@@ -12,6 +12,7 @@ import pureconfig._
 import pureconfig.error._
 import pureconfig.ConvertHelpers._
 import spinoco.protocol.http.Uri
+import yamusca.imports._
 import sharry.store.data.sizes._
 import sharry.store.data.file._
 import sharry.server.email._
@@ -37,13 +38,13 @@ object config {
 
   case class WebmailConfig(enable: Boolean
     , defaultLanguage: String
-    , downloadTemplates: Map[String, String]
-    , aliasTemplates: Map[String, String]) {
+    , downloadTemplates: Map[String, Template]
+    , aliasTemplates: Map[String, Template]) {
 
-    def findDownloadTemplate(lang: String): Option[(String, String)] =
+    def findDownloadTemplate(lang: String): Option[(String, Template)] =
       downloadTemplates.find(_._1 == lang)
 
-    def findAliasTemplate(lang: String): Option[(String, String)] =
+    def findAliasTemplate(lang: String): Option[(String, Template)] =
       aliasTemplates.find(_._1 == lang)
   }
 
@@ -74,7 +75,7 @@ object config {
     def logConfig: LogConfig
     def smtpConfig: SmtpSetting
     def smtpSetting: GetSetting =
-      if (smtpConfig.host.isEmpty) GetSetting.fromDomain
+      if (smtpConfig.host.isEmpty) (GetSetting.fromDomain andThen (_.map(_.copy(from = smtpConfig.from))))
       else GetSetting.of(smtpConfig)
     def webmailConfig: WebmailConfig
   }
@@ -101,6 +102,13 @@ object config {
   }
 
   implicit def hint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, KebabCase))
+
+  implicit def templateConvert: ConfigReader[Template] = ConfigReader.fromString[Template](catchReadError(s =>
+    mustache.parse(s) match {
+      case Right(t) => t
+      case Left(err) => throw new IllegalArgumentException(s"Template parsing failed: $err")
+    }
+  ))
 
   implicit def durationConvert: ConfigReader[Duration] = {
     val dc = implicitly[ConfigReader[scala.concurrent.duration.Duration]]

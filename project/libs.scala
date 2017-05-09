@@ -94,4 +94,7 @@ object libs {
   // BSD
   val dnsjava = "dnsjava" % "dnsjava" % "2.1.7" intransitive()
 
+  // https://github.com/eikek/yamusca
+  // MIT
+  val yamusca = "com.github.eikek" %% "yamusca" % "0.1.0"
 }

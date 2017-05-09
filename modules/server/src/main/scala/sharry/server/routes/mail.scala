@@ -1,9 +1,9 @@
 package sharry.server.routes
 
-import fs2.{Pipe, Stream, Task}
+import fs2.{Stream, Task}
 import shapeless.{::,HNil}
-import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._
+import yamusca.imports._
 
 import sharry.server.paths
 import sharry.server.config._
@@ -15,7 +15,7 @@ object mail {
 
   def endpoint(auth: AuthConfig, smtp: GetSetting, mailCfg: WebmailConfig): Route[Task] =
     choice(checkMailAddress(auth)
-      , sendMail(auth, smtp)
+      , sendMail(auth, mailCfg, smtp)
       , getDownloadTemplate(auth, mailCfg)
       , getAliasTemplate(auth, mailCfg))
 
@@ -30,16 +30,16 @@ object mail {
     }
 
 
-  def sendMail(authCfg: AuthConfig, smtp: GetSetting): Route[Task] =
+  def sendMail(authCfg: AuthConfig, cfg: WebmailConfig, smtp: GetSetting): Route[Task] =
     Post >> paths.mailSend.matcher >> authz.user(authCfg) >> jsonBody[SimpleMail] map {
       (mail: SimpleMail) =>
-
-      client.send(smtp)(mail.parse).
+      if (!cfg.enable) Stream.emit(BadRequest(Message("Sending mails is disabled.")))
+      else client.send(smtp)(mail.parse).
         fold(SendResult.empty)({ (r, attempt) =>
           attempt.fold(r.addFailure, r.addSuccess)
         }).
         map({
-          case r@SendResult(_, Nil, _) => BadRequest(r.withMessage("No mails could be send."))
+          case r@SendResult(_, Nil, _) => Ok(r.withMessage("No mails could be send."))
           case r@SendResult(_, _, Nil) => Ok(r.withMessage("All mails have been sent."))
           case r => Ok(r.withMessage("Some mails could not be send."))
         })
@@ -52,17 +52,16 @@ object mail {
   def getAliasTemplate(authCfg: AuthConfig, cfg: WebmailConfig): Route[Task] =
     Get >> paths.mailAliasTemplate.matcher >> getTemplate(cfg.findAliasTemplate, authCfg, cfg)
 
-  private def getTemplate(f: String => Option[(String, String)], authCfg: AuthConfig, cfg: WebmailConfig): Route[Task] =
-    param[String]("url") :: param[String]("lang").? :: authz.user(authCfg) map {
-      case url :: optLang :: login :: HNil =>
+  private def getTemplate(f: String => Option[(String, Template)], authCfg: AuthConfig, cfg: WebmailConfig): Route[Task] =
+    param[String]("url") :: param[String]("lang").? :: param[Boolean]("pass").? :: authz.user(authCfg) map {
+      case url :: optLang :: pass :: login :: HNil =>
         val (lang, template) = optLang.
           flatMap(f).
           orElse(f(cfg.defaultLanguage)).
-          getOrElse(optLang.getOrElse(cfg.defaultLanguage) -> "")
+          getOrElse(optLang.getOrElse(cfg.defaultLanguage) -> Template(Literal("")))
 
-        val text = template.trim.
-          replace("%{url}", url).
-          replace("%{username}", login)
+        val data = Context("username" -> Value.of(login), "url" -> Value.of(url), "password" -> Value.of(pass getOrElse false))
+        val text = mustache.render(template)(data)
         val (subject, body) = text.span(_ != '\n')
 
         Stream.emit(Ok(Map("lang" -> lang, "text" -> body.trim, "subject" -> subject.trim)))

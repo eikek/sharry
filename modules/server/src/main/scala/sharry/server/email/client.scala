@@ -29,6 +29,7 @@ object client {
           sess <- makeSession(smtp)
           msg <- Task.delay {
             val msg = new internet.MimeMessage(sess)
+            logger.info(">>>> setting from: "+smtp.from)
             msg.setFrom(smtp.from)
             msg.setRecipient(Message.RecipientType.TO, to.mail)
             msg.setSubject(subject)
@@ -36,6 +37,12 @@ object client {
             moreHeaders.foreach { h =>
               msg.addHeader(h.name, h.value)
             }
+            lazy val sout ={
+              val out = new java.io.ByteArrayOutputStream()
+              msg.writeTo(out)
+              out
+            }
+            logger.debug(s"Createt mime message: ${new String(sout.toByteArray)}")
             msg
           }
         } yield msg
