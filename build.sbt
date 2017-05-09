@@ -127,3 +127,4 @@ lazy val root = project.in(file(".")).
   aggregate(store, server, webapp)
 
 addCommandAlias("run-sharry", ";project server;run")
+addCommandAlias("make", ";set elmMinify in (webapp, Compile) := true ;assembly")

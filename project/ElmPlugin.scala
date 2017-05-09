@@ -87,7 +87,7 @@ object ElmPlugin extends AutoPlugin {
         val newest = allFiles.sortBy(-_.lastModified).head
         val out = elmMakeOutputPath.value/"elm-main.js"
         val minified = elmMakeOutputPath.value/"elm-main.min.js"
-        if (!out.exists || (elmMinify.value && !minified.exists) || newest.lastModified >= out.lastModified) {
+        if (!out.exists || newest.lastModified >= out.lastModified) {
           streams.value.log.info(s"Compiling ${filesToCompile.size} elm files …")
           IO.delete(Seq(out, minified))
           val opts: Seq[String] = if (elmDebug.value) Seq("--debug", "--yes") else Seq("--yes")
@@ -99,12 +99,12 @@ object ElmPlugin extends AutoPlugin {
             streams.value.log.info("Running Closure compiler…")
             val clrun = new Minify("--compilation_level", elmMakeCompilationLevel.value, "--js", out.toString, "--js_output_file", minified.toString)
             clrun.compile()
+            IO.move(minified, out)
           }
         } else {
           streams.value.log.info("Elm files are up to date")
         }
-        if (elmMinify.value) Seq(out, minified)
-        else Seq(out)
+        Seq(out)
       }
     },
     elmReactor := {
