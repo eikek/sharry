@@ -25,7 +25,7 @@ object ExternAuthc {
       def verify(login: String, pass: String) = f(login, pass)
     }
 
-  def apply(cfg: Read)(implicit ACG: AsynchronousChannelGroup, S: Strategy): ExternAuthc = apply {
+  def apply(cfg: Config)(implicit ACG: AsynchronousChannelGroup, S: Strategy): ExternAuthc = apply {
     List(
       new Command(cfg.authcCommand),
       new Http(cfg.authcHttp),

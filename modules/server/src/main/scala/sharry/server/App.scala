@@ -14,7 +14,7 @@ import sharry.webapp.config._
 import sharry.server.routes.{account, login, upload, download, alias}
 
 /** Instantiate the app from a given configuration */
-final class App(val cfg: config.Read)(implicit ACG: AsynchronousChannelGroup, S: fs2.Strategy) {
+final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, S: fs2.Strategy) {
   if (cfg.logConfig.exists) {
     setupLogging(cfg.logConfig.config)
   }
@@ -51,6 +51,7 @@ final class App(val cfg: config.Read)(implicit ACG: AsynchronousChannelGroup, S:
         , upload.endpoint(cfg.authConfig, uploadStore)
         , download.endpoint(cfg.authConfig, cfg.webConfig, uploadStore)
         , alias.endpoint(cfg.authConfig, uploadStore)
+        , routes.mail.endpoint(cfg.authConfig)
     )
   }
 

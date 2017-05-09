@@ -37,7 +37,7 @@ object main {
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––""".stripMargin)
     val startupCfg = StartConfig.parse(args)
     startupCfg.setup.unsafeRun
-    val app = new App(config.Read.default)
+    val app = new App(config.Config.default)
 
     logger.info("""
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

@@ -49,7 +49,7 @@ object config {
   )
 
 
-  trait Read {
+  trait Config {
     def jdbc: Jdbc
     def authConfig: AuthConfig
     def authcCommand: AuthcCommand
@@ -60,8 +60,8 @@ object config {
     def logConfig: LogConfig
   }
 
-  object Read {
-    object default extends Read {
+  object Config {
+    object default extends Config {
       val jdbc: Jdbc = loadConfig[Jdbc]("sharry.db").get
       val authConfig: AuthConfig = loadConfig[AuthConfig]("sharry.authc").get
       val authcCommand: AuthcCommand = loadConfig[AuthcCommand]("sharry.authc.extern.command").get
