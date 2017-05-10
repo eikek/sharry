@@ -155,7 +155,9 @@ object download {
         val data = Stream.emit(info).
           through(store.zipAll(8192 * 2)).
           through(streams.toByteChunks)
-        Ok().withStreamBody(data)(encoder(MimeType.`application/zip`)) ++ modify(info)
+        Ok().withStreamBody(data)(encoder(MimeType.`application/zip`)) ++
+          withDisposition("attachment", info.upload.id+".zip") ++
+          modify(info)
       case Left(r) =>
         r
     }
