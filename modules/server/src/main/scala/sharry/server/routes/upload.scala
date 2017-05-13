@@ -61,7 +61,7 @@ object upload {
 
   private def parseValidity(meta: UploadCreate, alias: Option[Alias]): Either[String, Duration] =
     alias.
-      map(a => if (a.enable) Right(a.validity) else Left("Alias is disabled")).
+      map(a => Right(a.validity)).
       getOrElse(UploadCreate.parseValidity(meta.validity))
 
 

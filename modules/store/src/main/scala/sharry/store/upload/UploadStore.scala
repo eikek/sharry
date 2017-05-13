@@ -52,6 +52,9 @@ trait UploadStore {
 
   def getAlias(id: String): Stream[Task, Alias]
 
+  /** Get an enabled alias whose referring account is enabled, too. */
+  def getActiveAlias(id: String): Stream[Task, Alias]
+
   def deleteAlias(id: String, login: String): Stream[Task, Int]
 
   def updateAlias(alias: Alias): Stream[Task, Int]

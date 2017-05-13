@@ -207,4 +207,13 @@ trait SqlStatements extends Statements {
   def sqlUpdateAlias(a: Alias) =
     sql"""UPDATE Alias SET name = ${a.name}, validity = ${a.validity}, enable = ${a.enable}
           WHERE id = ${a.id} AND login = ${a.login}""".update
+
+  def sqlGetActiveAlias(id: String) =
+    sql"""SELECT al.id,al.login,al.name,al.validity,al.created,al.enable
+          FROM Alias AS al
+          INNER JOIN Account AS ac ON al.login = ac.login
+          WHERE al.id = $id AND al.enable AND ac.enabled""".
+      query[Alias].
+      option
+
 }

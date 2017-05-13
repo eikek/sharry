@@ -49,7 +49,7 @@ object alias {
 
   def getAlias(store: UploadStore): Route[Task] =
     Get >> paths.aliases.matcher / as[String] map { (id: String) =>
-      store.getAlias(id).
+      store.getActiveAlias(id).
         map(Ok[Task,Alias](_)).
         through(NotFound.whenEmpty)
     }

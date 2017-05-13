@@ -43,7 +43,7 @@ object authz {
 
   def alias(store: UploadStore): Matcher[Task, Alias] = {
     syntax.aliasId.
-      evalMap(id => store.getAlias(id).runLast).
+      evalMap(id => store.getActiveAlias(id).runLast).
       flatMap {
         case Some(alias) => Matcher.success(alias)
         case None => Matcher.respondWith(HttpStatusCode.Forbidden)
