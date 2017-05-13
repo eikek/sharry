@@ -14,16 +14,18 @@ import sharry.store.data.mime._
 import sharry.store.mimedetect
 import sharry.store.mimedetect.MimeInfo
 import sharry.store.data.streams
+import sharry.store.upload.UploadStore
 import sharry.server.paths
 import sharry.server.config._
 import sharry.server.jsoncodec._
-import sharry.store.upload.UploadStore
+import sharry.server.notification
+import sharry.server.notification.Notifier
 import sharry.server.routes.syntax._
 
 object upload {
-  private val logger = com.typesafe.scalalogging.Logger(getClass)
+  private implicit val logger = com.typesafe.scalalogging.Logger(getClass)
 
-  def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore) =
+  def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore, notifier: Notifier) =
     choice(testUploadChunk(auth, store)
       , createUpload(auth, store)
       , uploadChunks(auth, store)
@@ -31,14 +33,15 @@ object upload {
       , getPublishedUpload(store)
       , getUpload(auth, store)
       , getAllUploads(auth, store)
-      , deleteUpload(auth, uploadCfg, store))
+      , deleteUpload(auth, uploadCfg, store)
+      , notifyOnUpload(uploadCfg, store, notifier))
 
   def createUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Post >> paths.uploads.matcher >> authz.userId(authCfg, store) :: jsonBody[UploadCreate] map {
       case account :: meta :: HNil  =>
         parseValidity(meta, account.alias) match {
           case Right(v) =>
-            if (meta.id.isEmpty) Stream.emit(BadRequest("The upload id must not be empty!"))
+            if (meta.id.isEmpty) Stream.emit(BadRequest(Message("The upload id must not be empty!")))
             else {
               val uc = Upload(
                 id = meta.id,
@@ -49,7 +52,7 @@ object upload {
                 password = meta.password.asNonEmpty.map(_.bcrypt),
                 alias = account.aliasId
               )
-              store.createUpload(uc).map(_ => Ok(List[String]()))
+              store.createUpload(uc).map(_ => Ok(Message("Upload created")))
             }
           case Left(msg) =>
             Stream.emit(BadRequest(msg))
@@ -63,18 +66,7 @@ object upload {
 
 
   private def checkDelete(id: String, alias: Alias, time: Duration, store: UploadStore) = {
-    // a request authorized by an alias id to delete an upload is only
-    // valid if issued less than X minutes after uploading and it was
-    // initially uploaded by this alias
-    val now = Instant.now
-    store.getUpload(id, alias.login).
-      map({ info =>
-        if (info.upload.alias == Some(alias.id)) {
-          info.upload.created.plus(time).isAfter(now)
-        } else {
-          false
-        }
-      })
+    notification.checkAliasAccess(id, alias, time, store)
   }
 
   private def doDeleteUpload(store: UploadStore, id: String, login: String) =
@@ -130,6 +122,17 @@ object upload {
         store.publishUpload(id, user).flatMap {
           case Right(pid) => store.getPublishedUpload(pid).map(Ok[Task,UploadInfo](_))
           case Left(msg) => Stream.emit(BadRequest(Map("error" -> msg)))
+        }
+    }
+
+  def notifyOnUpload(cfg: UploadConfig, store: UploadStore, notifier: Notifier): Route[Task] =
+    Post >> paths.uploadNotify.matcher / uploadId :: authz.alias(store) map {
+      case id :: alias :: HNil =>
+        if (cfg.enableUploadNotification) {
+          notifier(id, alias, cfg.aliasDeleteTime.plusSeconds(30)).drain ++
+          Stream.emit(Ok(Message("Notification scheduled.")))
+        } else {
+          Stream.emit(Ok(Message("Upload notifications disabled.")))
         }
     }
 

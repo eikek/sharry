@@ -12,8 +12,10 @@ import pureconfig._
 import pureconfig.error._
 import pureconfig.ConvertHelpers._
 import spinoco.protocol.http.Uri
+import yamusca.imports._
 import sharry.store.data.sizes._
 import sharry.store.data.file._
+import sharry.server.email._
 
 object config {
 
@@ -34,6 +36,19 @@ object config {
     lazy val domain = Uri.parse(baseurl).require.host.host
   }
 
+  case class WebmailConfig(enable: Boolean
+    , defaultLanguage: String
+    , downloadTemplates: Map[String, Template]
+    , aliasTemplates: Map[String, Template]
+    , notifyTemplates: Map[String, Template]) {
+
+    def findDownloadTemplate(lang: String): Option[(String, Template)] =
+      downloadTemplates.find(_._1 == lang)
+
+    def findAliasTemplate(lang: String): Option[(String, Template)] =
+      aliasTemplates.find(_._1 == lang)
+  }
+
   case class LogConfig(config: Path) {
     def exists = config.exists && !config.isDirectory
   }
@@ -44,6 +59,7 @@ object config {
       , maxFiles: Int
       , maxFileSize: Size
       , aliasDeleteTime: Duration
+      , enableUploadNotification: Boolean
       , cleanupEnable: Boolean
       , cleanupInterval: FiniteDuration
       , cleanupInvalidAge: Duration
@@ -59,6 +75,11 @@ object config {
     def webConfig: WebConfig
     def uploadConfig: UploadConfig
     def logConfig: LogConfig
+    def smtpConfig: SmtpSetting
+    def smtpSetting: GetSetting =
+      if (smtpConfig.host.isEmpty) (GetSetting.fromDomain andThen (_.map(_.copy(from = smtpConfig.from))))
+      else GetSetting.of(smtpConfig)
+    def webmailConfig: WebmailConfig
   }
 
   object Config {
@@ -71,6 +92,8 @@ object config {
       val webConfig = loadConfig[WebConfig]("sharry.web").get
       val uploadConfig = loadConfig[UploadConfig]("sharry.upload").get
       val logConfig = loadConfig[LogConfig]("sharry.log").get
+      val smtpConfig: SmtpSetting = loadConfig[SmtpSetting]("sharry.smtp").get
+      val webmailConfig: WebmailConfig = loadConfig[WebmailConfig]("sharry.web.mail").get
     }
     implicit final class ConfigEitherOps[A](r: Either[ConfigReaderFailures, A]) {
       def get: A = r match {
@@ -81,6 +104,13 @@ object config {
   }
 
   implicit def hint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, KebabCase))
+
+  implicit def templateConvert: ConfigReader[Template] = ConfigReader.fromString[Template](catchReadError(s =>
+    mustache.parse(s) match {
+      case Right(t) => t
+      case Left(err) => throw new IllegalArgumentException(s"Template parsing failed: $err")
+    }
+  ))
 
   implicit def durationConvert: ConfigReader[Duration] = {
     val dc = implicitly[ConfigReader[scala.concurrent.duration.Duration]]

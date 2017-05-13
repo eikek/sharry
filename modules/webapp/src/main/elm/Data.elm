@@ -198,6 +198,10 @@ type alias RemoteUrls =
     ,profilePassword: String
     ,checkPassword: String
     ,aliases: String
+    ,mailDownloadTemplate: String
+    ,mailAliasTemplate: String
+    ,mailSend: String
+    ,uploadNotify: String
     }
 
 type alias RemoteConfig =
@@ -211,6 +215,7 @@ type alias RemoteConfig =
     , urls: RemoteUrls
     , projectName: String
     , aliasHeaderName: String
+    , mailEnabled: Bool
     }
 
 

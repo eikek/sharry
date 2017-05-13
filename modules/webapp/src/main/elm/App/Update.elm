@@ -127,7 +127,7 @@ update msg model =
 
         UploadData (Ok data) ->
             let
-                dlmodel = DownloadModel.makeModel data model.serverConfig.urls model.user
+                dlmodel = DownloadModel.makeModel data model.serverConfig model.user
             in
                 {model | download = dlmodel, page = DownloadPage} ! []
 
@@ -147,7 +147,7 @@ update msg model =
             model ! []
 
         LoadAliasesResult (Ok aliases) ->
-            {model | aliases = AliasListModel.makeModel model.serverConfig.urls aliases, page = AliasListPage} ! []
+            {model | aliases = AliasListModel.makeModel model.serverConfig aliases, page = AliasListPage} ! []
 
         LoadAliasesResult (Err error) ->
             let

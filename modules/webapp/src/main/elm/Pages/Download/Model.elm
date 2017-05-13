@@ -1,6 +1,6 @@
 module Pages.Download.Model exposing (..)
 
-import Data exposing (Account, UploadInfo, RemoteUrls)
+import Data exposing (Account, UploadInfo, RemoteConfig)
 import Widgets.DownloadView as DownloadView
 
 type alias Model =
@@ -10,9 +10,9 @@ type alias Model =
 emptyModel: Model
 emptyModel = Model Nothing
 
-makeModel: UploadInfo -> RemoteUrls -> Maybe Account -> Model
-makeModel um urls acc =
-    Model (Just (DownloadView.makeModel um urls acc))
+makeModel: UploadInfo -> RemoteConfig -> Maybe Account -> Model
+makeModel um cfg acc =
+    Model (Just (DownloadView.makeModel um cfg acc))
 
 
 type Msg

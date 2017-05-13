@@ -98,7 +98,8 @@ lazy val server = project.in(file("modules/server")).
     description := "The sharry application as a rest server",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `logback-classic`, `circe-core`, `circe-generic`, `circe-parser`,
-      pureconfig, `scala-bcrypt`, `fs2-http`, `doobie-hikari`
+      pureconfig, `scala-bcrypt`, `fs2-http`, `doobie-hikari`,
+      `javax-mail`, `javax-mail-api`, dnsjava, yamusca
     ),
     assemblyJarName in assembly := s"sharry-server-${version.value}.jar.sh",
     assemblyOption in assembly := (assemblyOption in assembly).value.copy(

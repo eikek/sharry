@@ -24,7 +24,12 @@ object paths {
     "downloadPublished" -> Path("dlp")/"file",
     "downloadPublishedZip" -> Path("dlp")/"zip",
     "checkPassword" -> api1/"check-password",
-    "aliases" -> api1/"aliases"
+    "aliases" -> api1/"aliases",
+    "mailCheck" -> api1/"mail"/"check",
+    "mailSend" -> api1/"mail"/"send",
+    "mailDownloadTemplate" -> api1/"mail"/"download-template",
+    "mailAliasTemplate" -> api1/"mail"/"alias-template",
+    "uploadNotify" -> api1/"upload-notify"
   )
 
   def authLogin = mounts("authLogin").matcher
@@ -42,6 +47,11 @@ object paths {
   def downloadPublishedZip = mounts("downloadPublishedZip")
   def checkPassword = mounts("checkPassword")
   def aliases = mounts("aliases")
+  def mailCheck = mounts("mailCheck")
+  def mailSend = mounts("mailSend")
+  def mailDownloadTemplate = mounts("mailDownloadTemplate")
+  def mailAliasTemplate = mounts("mailAliasTemplate")
+  def uploadNotify = mounts("uploadNotify")
 
   case class Path(segments: List[String]) {
     def matcherF[F[_],Lub[_]](implicit L: Lub1[F,F,Lub]): Matcher[Lub, String] = segments match {

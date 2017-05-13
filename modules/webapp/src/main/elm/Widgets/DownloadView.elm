@@ -7,16 +7,18 @@ import Html.Attributes as HA
 import Html.Events as HE
 import Json.Decode as Decode exposing (field, at)
 import Json.Encode as Encode
-import Data exposing (Account, UploadInfo, File, RemoteUrls, UploadId(..), htmlList)
+import Data exposing (Account, UploadInfo, File, RemoteUrls, RemoteConfig, UploadId(..), htmlList)
 import PageLocation as PL
+import Widgets.MailForm as MailForm
 
 type alias Model =
     {info: UploadInfo
-    ,urls: RemoteUrls
+    ,cfg: RemoteConfig
     ,login: Maybe String
     ,password: Maybe String
     ,validPassword: Bool
     ,errorMessage: List String
+    ,mailForm: Maybe MailForm.Model
     }
 
 type Msg
@@ -27,10 +29,13 @@ type Msg
     | DeleteDownloadResult (Result Http.Error Int)
     | PublishDownload
     | PublishDownloadResult (Result Http.Error UploadInfo)
+    | OpenMailForm
+    | MailFormCancel
+    | MailFormMsg MailForm.Msg
 
-makeModel: UploadInfo -> RemoteUrls -> Maybe Account -> Model
-makeModel info urls account =
-    Model info urls (Maybe.map (\a -> a.login) account) Nothing False []
+makeModel: UploadInfo -> RemoteConfig -> Maybe Account -> Model
+makeModel info cfg account =
+    Model info cfg (Maybe.map (\a -> a.login) account) Nothing False [] Nothing
 
 
 isOwner: Model -> Bool
@@ -83,8 +88,46 @@ update msg model =
         PublishDownloadResult (Err error) ->
             {model | errorMessage = Debug.log "Error publishing download" [(Data.errorMessage error)]} ! []
 
+        OpenMailForm ->
+            {model | mailForm = Just (MailForm.makeModel model.cfg.urls)} ! [httpGetTemplate model]
+
+        MailFormCancel ->
+            {model | mailForm = Nothing} ! []
+
+        MailFormMsg msg ->
+            case model.mailForm of
+                Just m ->
+                    let
+                        (m_, c) = MailForm.update msg m
+                    in
+                        {model | mailForm = Just m_} ! [Cmd.map MailFormMsg c]
+                Nothing ->
+                    model ! []
+
+
 view: Model -> List (Html Msg)
 view model =
+    case model.mailForm of
+        Just m ->
+            viewMailForm m
+        Nothing ->
+            viewPage model
+
+viewMailForm: MailForm.Model -> List (Html Msg)
+viewMailForm model =
+    [div [HA.class "sixteen wide column"]
+         [
+          Html.a [HA.class "ui button", HE.onClick MailFormCancel][text "Back"]
+         ,div [HA.class "ui divider"][]
+         ]
+    ,div [HA.class "sixteen wide column"]
+        [h2 [HA.class "ui header"][text "Send an email"]
+        ,(Html.map MailFormMsg (MailForm.view model))
+        ]
+    ]
+                
+viewPage: Model -> List (Html Msg)
+viewPage model =
     let
         msg = Maybe.withDefault (defaultDescription model) model.info.upload.description
     in
@@ -126,7 +169,7 @@ infoMessage model =
         Just id ->
             let
                 href = PL.downloadPageHref (Pid id)
-                url = model.urls.baseUrl ++ href
+                url = model.cfg.urls.baseUrl ++ href
             in
                 div []
                     [text "You can share this page with others by sending the following link:"
@@ -293,9 +336,9 @@ renderFile: Model -> File -> Html msg
 renderFile model file =
     let
         downloadUrl = if isOwner model then
-                          model.urls.download ++ "/" ++ file.id
+                          model.cfg.urls.download ++ "/" ++ file.id
                       else if isValid model && not (isAskPassword model) then
-                          model.urls.downloadPublished ++ "/" ++ file.id
+                          model.cfg.urls.downloadPublished ++ "/" ++ file.id
                       else
                           "#"
         mimecss = case Data.parseMime file.mimetype of
@@ -374,17 +417,21 @@ actionButtons model =
         <| Data.htmlList
             [(isOwner model && not (Data.isPublishedUpload model.info.upload),
                   Html.button [HA.class "ui button", HE.onClick PublishDownload][text "Publish"])
-            ,(isOwner model, Html.button [HA.class "negative ui button", HE.onClick DeleteDownload][text "Delete"])
-            ,(List.length model.info.files > 1, zipDownloadButton model)
+            ,(isOwner model,
+                  Html.button [HA.class "negative ui button", HE.onClick DeleteDownload][text "Delete"])
+            ,(List.length model.info.files > 1,
+                  zipDownloadButton model)
+            ,(isOwner model && isValid model && model.cfg.mailEnabled,
+                  Html.button [HA.class "ui button", HE.onClick OpenMailForm][text "Send email"])
             ]
 
 zipDownloadButton: Model -> Html msg
 zipDownloadButton model =
     let
         url = if isOwner model then
-                  model.urls.downloadZip ++ "/" ++ model.info.upload.id
+                  model.cfg.urls.downloadZip ++ "/" ++ model.info.upload.id
               else if isValid model then
-                  model.urls.downloadPublishedZip ++ "/" ++ (Maybe.withDefault "" model.info.upload.publishId)
+                  model.cfg.urls.downloadPublishedZip ++ "/" ++ (Maybe.withDefault "" model.info.upload.publishId)
               else
                   "#"
     in
@@ -409,7 +456,7 @@ sumFileSize model =
 httpCheckPassword: Model -> Cmd Msg
 httpCheckPassword model =
     let
-        url id = model.urls.checkPassword ++ "/" ++ id
+        url id = model.cfg.urls.checkPassword ++ "/" ++ id
         decoder =  Decode.list Decode.string
         encoded pass =  Encode.object [("password", Encode.string pass)]
         makeCmd pass id =
@@ -421,11 +468,28 @@ httpCheckPassword model =
 
 httpDeleteDownload: Model -> Cmd Msg
 httpDeleteDownload model =
-    Data.httpDelete (model.urls.uploads ++ "/" ++ model.info.upload.id) Http.emptyBody (Decode.field "filesRemoved" Decode.int)
+    Data.httpDelete (model.cfg.urls.uploads ++ "/" ++ model.info.upload.id) Http.emptyBody (Decode.field "filesRemoved" Decode.int)
         |> Http.send DeleteDownloadResult
                
 
 httpPublishDownload: Model -> Cmd Msg
 httpPublishDownload model =
-    Http.post (model.urls.uploadPublish ++ "/" ++ model.info.upload.id) Http.emptyBody Data.decodeUploadInfo
+    Http.post (model.cfg.urls.uploadPublish ++ "/" ++ model.info.upload.id) Http.emptyBody Data.decodeUploadInfo
         |> Http.send PublishDownloadResult
+
+httpGetTemplate: Model -> Cmd Msg
+httpGetTemplate model =
+    case model.info.upload.publishId of
+        Just id ->
+            let
+                href = PL.downloadPageHref (Pid id) 
+                url = model.cfg.urls.baseUrl ++ href
+                templateUrl = model.cfg.urls.mailDownloadTemplate 
+                              ++ "?url=" ++ (Http.encodeUri url)
+                              ++ "&pass="++ (toString model.info.upload.requiresPassword)
+                cmd = Http.get templateUrl MailForm.decodeTemplate
+                          |> Http.send MailForm.TemplateResult
+            in
+                Cmd.map MailFormMsg cmd
+        Nothing ->
+            Cmd.none
