@@ -4,7 +4,7 @@ import java.time.{Instant, ZoneId}
 import cats.data.Ior
 import fs2.{Pipe, Stream}
 import spinoco.fs2.http._
-import spinoco.fs2.http.body.{BodyEncoder, StreamBodyEncoder}
+import spinoco.fs2.http.body.BodyEncoder
 import spinoco.fs2.http.routing._
 import spinoco.protocol.http.header.value._
 import spinoco.protocol.http.header._
@@ -14,6 +14,13 @@ import sharry.store.data.sizes._
 import sharry.store.data.streams
 
 object syntax {
+
+  type Message = Map[String, String]
+  object Message {
+    def apply(msg: String): Message = Map("message" -> msg)
+    def apply(ex: Throwable): Message = apply(ex.getMessage)
+  }
+
   def emptyResponse[F[_]](status: HttpStatusCode): HttpResponse[F] =
     HttpResponse(
       HttpResponseHeader(
@@ -26,8 +33,6 @@ object syntax {
   object Ok {
     def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.Ok)
     def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
-    def apply[F[_], A](body: Stream[F, A])(implicit enc: BodyEncoder[A]): HttpResponse[F] =
-      apply().withStreamBody(body)(StreamBodyEncoder.fromBodyEncoder[F,A])
   }
 
   object PartialContent {

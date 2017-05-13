@@ -132,3 +132,22 @@ Cookie: sharry_auth=$2a$10$3L2RQt/HF2R8PfiOBndAB.%admin%2017-05-07T22:27:53.448Z
     "enable": false
   }
 #
+
+
+# check mail
+GET :base/mail/check?mail=111
+Cookie: sharry_auth=$2a$10$LcCnbrgEu4SJjcruYjdYnu%admin%2017-05-09T17:33:35.740Z%76fcfe48fe13c45f128af9a7508590c23dd65d31379801e064e76222857dd0da
+#
+
+# send mail
+POST :base/mail/send
+Content-Type: application/json
+Cookie: sharry_auth=$2a$10$ceGcFCyJzhuWbLN6X6HuS.%admin%2017-05-09T18:32:34.025Z%1eaaa7a90d1cf4a986da19b5932ce06fe168fa78ae9f17dac3af73199b1087e6
+
+{"from":"noreply@eknet.org", "to":["a@uiaeuia.uiaeuae"], "subject":"This is a test", "text":"This is just a test mail"}
+#
+
+# get mail templates
+GET :base/mail/download-template?url=http&lang=de
+Cookie: sharry_auth=$2a$10$BAb.HiZOUXPLb13zpSFFv.%admin%2017-05-09T20:51:47.747Z%7451e7c0022cd4b124bdaa3f2074b8618a1fc4f28d0cb7ae54dd60674a644a29
+#

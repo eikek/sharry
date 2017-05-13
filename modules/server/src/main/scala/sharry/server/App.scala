@@ -51,6 +51,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore)
         , download.endpoint(cfg.authConfig, cfg.webConfig, uploadStore)
         , alias.endpoint(cfg.authConfig, uploadStore)
+        , routes.mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
     )
   }
 

@@ -21,7 +21,6 @@ import sharry.server.routes.syntax._
 import sharry.server.jsoncodec.Pass
 
 object download {
-  // TODO ETag
 
   type ResponseOr[A] = Either[HttpResponse[Task], A]
   private implicit val zipPool = Strategy.fromFixedDaemonPool(10, "sharry-zip")
@@ -58,8 +57,8 @@ object download {
     }
 
   def downloadHead(authCfg: AuthConfig, store: UploadStore): Route[Task] =
-    Head >> paths.download.matcher / as[String] :: ifNoneMatch :: authz.user(authCfg) map {
-      case id :: noneMatch :: user :: HNil =>
+    Head >> paths.download.matcher / as[String] :: authz.user(authCfg) map {
+      case id :: user :: HNil =>
         store.getUploadByFileId(id, user).
           map(_._2).
           map(standardHeaders).
@@ -88,8 +87,8 @@ object download {
     }
 
   def downloadPublishedHead(store: UploadStore): Route[Task] =
-    Head >> paths.downloadPublished.matcher / as[String] :: ifNoneMatch :: sharryPass map {
-      case id :: noneMatch :: pass :: HNil =>
+    Head >> paths.downloadPublished.matcher / as[String] :: sharryPass map {
+      case id ::  pass :: HNil =>
         store.getPublishedUploadByFileId(id).
           through(checkDownloadFile(pass)).
           map(_.map(Ok() ++ standardHeaders(_))).

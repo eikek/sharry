@@ -84,4 +84,14 @@ object libs {
   // https://github.com/jquery/jquery
   // MIT
   val jquery = webjar("jquery", "3.2.0")
+
+  // https://java.net/projects/javamail/pages/Home
+  // CDDL 1.0, GPL 2.0
+  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.5.6"
+  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.5.6"
+
+  // http://dnsjava.org/
+  // BSD
+  val dnsjava = "dnsjava" % "dnsjava" % "2.1.7" intransitive()
+
 }

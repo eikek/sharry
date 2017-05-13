@@ -4,6 +4,7 @@ import java.time.{Duration, Instant}
 import cats.syntax.either._
 import io.circe.generic.semiauto._, io.circe._, io.circe.syntax._
 import sharry.server.authc.Token
+import sharry.server.email._
 import sharry.store.data._
 import sharry.store.data.mime._
 import sharry.store.data.sizes._
@@ -75,7 +76,12 @@ object jsoncodec {
     implicit val jsonDecoder: Decoder[Pass] = deriveDecoder[Pass]
   }
 
-  implicit val _aliasCreateDecoder: Decoder[String => Alias] = deriveDecoder[String => Alias]
+  implicit val _simpleMailDecoder: Decoder[routes.mail.SimpleMail] = deriveDecoder[routes.mail.SimpleMail]
+
+  implicit val _addressEncoder: Encoder[Address] = Encoder.encodeString.contramap[Address](_.mail.toString)
+  implicit val _sendResultEncoder: Encoder[routes.mail.SendResult] = deriveEncoder[routes.mail.SendResult]
+
+
   implicit val _aliasDecoder: Decoder[Alias] = deriveDecoder[Alias]
   implicit val _aliasEncoder: Encoder[Alias] = deriveEncoder[Alias]
 

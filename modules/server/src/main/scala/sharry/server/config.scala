@@ -14,6 +14,7 @@ import pureconfig.ConvertHelpers._
 import spinoco.protocol.http.Uri
 import sharry.store.data.sizes._
 import sharry.store.data.file._
+import sharry.server.email._
 
 object config {
 
@@ -32,6 +33,18 @@ object config {
 
   case class WebConfig(bindHost: String, bindPort: Int, appName: String, baseurl: String) {
     lazy val domain = Uri.parse(baseurl).require.host.host
+  }
+
+  case class WebmailConfig(enable: Boolean
+    , defaultLanguage: String
+    , downloadTemplates: Map[String, String]
+    , aliasTemplates: Map[String, String]) {
+
+    def findDownloadTemplate(lang: String): Option[(String, String)] =
+      downloadTemplates.find(_._1 == lang)
+
+    def findAliasTemplate(lang: String): Option[(String, String)] =
+      aliasTemplates.find(_._1 == lang)
   }
 
   case class LogConfig(config: Path) {
@@ -59,6 +72,11 @@ object config {
     def webConfig: WebConfig
     def uploadConfig: UploadConfig
     def logConfig: LogConfig
+    def smtpConfig: SmtpSetting
+    def smtpSetting: GetSetting =
+      if (smtpConfig.host.isEmpty) GetSetting.fromDomain
+      else GetSetting.of(smtpConfig)
+    def webmailConfig: WebmailConfig
   }
 
   object Config {
@@ -71,6 +89,8 @@ object config {
       val webConfig = loadConfig[WebConfig]("sharry.web").get
       val uploadConfig = loadConfig[UploadConfig]("sharry.upload").get
       val logConfig = loadConfig[LogConfig]("sharry.log").get
+      val smtpConfig: SmtpSetting = loadConfig[SmtpSetting]("sharry.smtp").get
+      val webmailConfig: WebmailConfig = loadConfig[WebmailConfig]("sharry.web.mail").get
     }
     implicit final class ConfigEitherOps[A](r: Either[ConfigReaderFailures, A]) {
       def get: A = r match {
