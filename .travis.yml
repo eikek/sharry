@@ -3,6 +3,9 @@ language: scala
 scala:
   - 2.12.2
 
+before_install:
+  - "npm install -g elm@0.18.0"
+
 jdk:
   - oraclejdk8
 
@@ -10,6 +13,7 @@ cache:
   directories:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
+
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "make"
