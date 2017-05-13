@@ -14,20 +14,24 @@ import sharry.server.jsoncodec._
 
 object alias {
 
-  def endpoint(auth: AuthConfig, store: UploadStore) =
-    choice(updateAlias(auth, store)
+  def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore) =
+    choice(updateAlias(auth, uploadCfg, store)
       , createAlias(auth, store)
       , getAlias(store)
       , listAliases(auth, store)
       , deleteAlias(auth, store))
 
-  def updateAlias(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def updateAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
     Post >> paths.aliases.matcher /"update" >> authz.user(authCfg) :: jsonBody[AliasUpdate] map {
       case login :: alias :: HNil =>
         val a = Alias.generate(login, alias.name).
           copy(id = alias.id).
           copy(enable = alias.enable)
         UploadCreate.parseValidity(alias.validity).
+          flatMap({ given =>
+            if (cfg.maxValidity.compareTo(given) >= 0) Right(given)
+            else Left("Validity time is too long.")
+          }).
           map(v => a.copy(validity = v)).
           map(a => store.updateAlias(a).
             map({ n => if (n == 0) NotFound[Task,String]("0") else Ok[Task,String](n.toString) })).

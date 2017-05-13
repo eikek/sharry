@@ -58,6 +58,7 @@ object config {
       , simultaneousUploads: Int
       , maxFiles: Int
       , maxFileSize: Size
+      , maxValidity: Duration
       , aliasDeleteTime: Duration
       , enableUploadNotification: Boolean
       , cleanupEnable: Boolean

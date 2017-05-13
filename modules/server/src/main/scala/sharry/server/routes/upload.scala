@@ -27,7 +27,7 @@ object upload {
 
   def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore, notifier: Notifier) =
     choice(testUploadChunk(auth, store)
-      , createUpload(auth, store)
+      , createUpload(auth, uploadCfg, store)
       , uploadChunks(auth, store)
       , publishUpload(auth, store)
       , getPublishedUpload(store)
@@ -36,10 +36,10 @@ object upload {
       , deleteUpload(auth, uploadCfg, store)
       , notifyOnUpload(uploadCfg, store, notifier))
 
-  def createUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def createUpload(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
     Post >> paths.uploads.matcher >> authz.userId(authCfg, store) :: jsonBody[UploadCreate] map {
       case account :: meta :: HNil  =>
-        parseValidity(meta, account.alias) match {
+        checkValidity(meta, account.alias, cfg.maxValidity) match {
           case Right(v) =>
             if (meta.id.isEmpty) Stream.emit(BadRequest(Message("The upload id must not be empty!")))
             else {
@@ -55,14 +55,18 @@ object upload {
               store.createUpload(uc).map(_ => Ok(Message("Upload created")))
             }
           case Left(msg) =>
-            Stream.emit(BadRequest(msg))
+            Stream.emit(BadRequest(Message(msg)))
         }
     }
 
-  private def parseValidity(meta: UploadCreate, alias: Option[Alias]): Either[String, Duration] =
+  private def checkValidity(meta: UploadCreate, alias: Option[Alias], maxValidity: Duration): Either[String, Duration] =
     alias.
       map(a => Right(a.validity)).
-      getOrElse(UploadCreate.parseValidity(meta.validity))
+      getOrElse(UploadCreate.parseValidity(meta.validity)).
+      flatMap { given =>
+        if (maxValidity.compareTo(given) >= 0) Right(given)
+        else Left("Validity time is too long.")
+      }
 
 
   private def checkDelete(id: String, alias: Alias, time: Duration, store: UploadStore) = {

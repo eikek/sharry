@@ -38,6 +38,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       , uploadConfig.simultaneousUploads
       , uploadConfig.maxFiles
       , uploadConfig.maxFileSize.toBytes
+      , uploadConfig.maxValidity.toString
       , makeProjectString
       , routes.authz.aliasHeaderName
       , cfg.webmailConfig.enable
@@ -54,7 +55,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)
         , download.endpoint(cfg.authConfig, cfg.webConfig, uploadStore)
-        , alias.endpoint(cfg.authConfig, uploadStore)
+        , alias.endpoint(cfg.authConfig, uploadConfig, uploadStore)
         , mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
     )
   }

@@ -12,6 +12,7 @@ import Data exposing (RemoteConfig, defer, bytesReadable)
 type alias Limits =
     { maxFileSize: Int
     , maxFiles: Int
+    , maxValidity: String
     }
 
 type alias Model =
@@ -39,7 +40,7 @@ emptyModel cfg =
     ,maxDownloadsStr = "30"
     ,password = ""
     ,showPassword = False
-    ,limits = Limits cfg.maxFileSize cfg.maxFiles
+    ,limits = Limits cfg.maxFileSize cfg.maxFiles cfg.maxValidity
     ,resumableModel = Resumable.emptyModel
     }
 
@@ -258,5 +259,7 @@ infoView cfg =
                    (toString cfg.maxFiles) ++
                    " files with a total of " ++
                    (bytesReadable Data.B (toFloat cfg.maxFileSize)) ++
+                   ". The maximum validity is " ++
+                   (Data.formatDuration cfg.maxValidity) ++
                    ".")
         ]

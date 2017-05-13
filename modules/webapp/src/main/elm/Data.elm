@@ -212,6 +212,7 @@ type alias RemoteConfig =
     , simultaneousUploads: Int
     , maxFiles: Int
     , maxFileSize: Int
+    , maxValidity: String
     , urls: RemoteUrls
     , projectName: String
     , aliasHeaderName: String

@@ -11,6 +11,7 @@ object config {
       , simultaneousUploads: Int
       , maxFiles: Int
       , maxFileSize: Long
+      , maxValidity: String
       , projectName: String
       , aliasHeaderName: String
       , mailEnabled: Boolean
