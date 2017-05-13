@@ -76,6 +76,7 @@ type Msg
     | CancelUpload
     | ResetForm
     | UploadDeleted (Result Http.Error Int)
+    | NotifyResult (Result Http.Error ())
 
 makeResumableMsg: Resumable.Msg -> List Msg
 makeResumableMsg rmsg =

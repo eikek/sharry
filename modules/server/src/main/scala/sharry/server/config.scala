@@ -39,7 +39,8 @@ object config {
   case class WebmailConfig(enable: Boolean
     , defaultLanguage: String
     , downloadTemplates: Map[String, Template]
-    , aliasTemplates: Map[String, Template]) {
+    , aliasTemplates: Map[String, Template]
+    , notifyTemplates: Map[String, Template]) {
 
     def findDownloadTemplate(lang: String): Option[(String, Template)] =
       downloadTemplates.find(_._1 == lang)
@@ -58,6 +59,7 @@ object config {
       , maxFiles: Int
       , maxFileSize: Size
       , aliasDeleteTime: Duration
+      , enableUploadNotification: Boolean
       , cleanupEnable: Boolean
       , cleanupInterval: FiniteDuration
       , cleanupInvalidAge: Duration

@@ -59,11 +59,11 @@ view model =
     in
     div []
         [
-         h4 [class "ui dividing header"][text "Change EMail"]
+         h4 [class "ui dividing header"][text "Change Email"]
         ,div [class "ui large right action left icon input"]
             [
              i [class "at icon"] []
-            ,input [onInput SetEmail, type_ "text", placeholder "EMail", value address] []
+            ,input [onInput SetEmail, type_ "text", placeholder "Email", value address] []
             ,button [class "ui floating primary submit button", onClick UpdateEmail] [ text "Submit" ]
             ]
         ,div [classList [("hidden", not (hasInfo model))
@@ -85,7 +85,7 @@ view model =
             [
              i [class "info icon"][]
             ,div [class "content"]
-                [text "Submitting an empty EMail field will delete it from your profile."]
+                [text "Submitting an empty email field will delete it from your profile."]
             ]
         ]
 

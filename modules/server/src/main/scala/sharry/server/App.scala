@@ -11,10 +11,10 @@ import sharry.webapp.config.RemoteConfig
 import sharry.server.authc._
 import sharry.webapp.route.webjar
 import sharry.webapp.config._
-import sharry.server.routes.{account, login, upload, download, alias}
+import sharry.server.routes.{account, login, upload, download, alias, mail}
 
 /** Instantiate the app from a given configuration */
-final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, S: fs2.Strategy) {
+final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, S: fs2.Strategy, SCH: fs2.Scheduler) {
   if (cfg.logConfig.exists) {
     setupLogging(cfg.logConfig.config)
   }
@@ -43,16 +43,19 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       , cfg.webmailConfig.enable
   )
 
+  val notifier: notification.Notifier = notification.scheduleNotify(
+    cfg.smtpSetting, cfg.webConfig, cfg.webmailConfig, uploadStore, accountStore)_
+
 
   def endpoints = {
     choice(
       webjar.endpoint(remoteConfig)
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
-        , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore)
+        , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)
         , download.endpoint(cfg.authConfig, cfg.webConfig, uploadStore)
         , alias.endpoint(cfg.authConfig, uploadStore)
-        , routes.mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
+        , mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
     )
   }
 

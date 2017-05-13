@@ -23,8 +23,9 @@ update msg model =
         UploadProgressMsg msg ->
             let
                 (um, ucmd) = UploadProgress.update msg model.uploadProgress
+                model_ = {model | uploadProgress = um}
             in
-                {model | uploadProgress = um} ! [Cmd.map UploadProgressMsg ucmd] |> defer Cmd.none
+                model_ ! [Cmd.map UploadProgressMsg ucmd, httpNotifyWhenDone model_] |> defer Cmd.none
 
         InitUpload ->
             model ! [httpInitUpload model] |> defer Cmd.none
@@ -68,6 +69,9 @@ update msg model =
             in
                 {m | errorMessage = Data.errorMessage error} ! [] |> defer Cmd.none
 
+        NotifyResult res ->
+            model ! [] |> defer Cmd.none
+
 
 modelEncoder: Model -> Encode.Value
 modelEncoder model =
@@ -109,6 +113,19 @@ httpDeleteUpload model =
                     |> Http.send UploadDeleted
         _ ->
             Cmd.none
+
+httpNotifyWhenDone: Model -> Cmd Msg
+httpNotifyWhenDone model =
+    if UploadProgress.isComplete model.uploadProgress then
+        let
+            header = Http.header model.cfg.aliasHeaderName (model.alia |> Maybe.map .id |> Maybe.withDefault "")
+            handle = Maybe.withDefault "" model.uploadForm.resumableModel.handle
+            url = model.cfg.urls.uploadNotify ++"/"++ handle
+        in
+            httpPost url header Http.emptyBody (Decode.succeed ())
+                |> Http.send NotifyResult
+    else
+        Cmd.none
 
 
 httpPost: String -> Http.Header -> Http.Body -> Decode.Decoder a -> (Http.Request a)

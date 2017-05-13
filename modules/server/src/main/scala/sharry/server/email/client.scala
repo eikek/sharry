@@ -29,7 +29,6 @@ object client {
           sess <- makeSession(smtp)
           msg <- Task.delay {
             val msg = new internet.MimeMessage(sess)
-            logger.info(">>>> setting from: "+smtp.from)
             msg.setFrom(smtp.from)
             msg.setRecipient(Message.RecipientType.TO, to.mail)
             msg.setSubject(subject)
