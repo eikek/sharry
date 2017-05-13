@@ -14,6 +14,6 @@ case class Alias(
 
 object Alias {
 
-  def generate(login: String, name: String): Alias =
-    Alias(Gen.ident(16,24).generate(), login, name, Duration.ofDays(5), Instant.now, true)
+  def generate(login: String, name: String, validity: Duration): Alias =
+    Alias(Gen.ident(16,24).generate(), login, name, validity, Instant.now, true)
 }

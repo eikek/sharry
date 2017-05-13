@@ -1,5 +1,6 @@
 package sharry.server.routes
 
+import java.time.Duration
 import shapeless.{::, HNil}
 import fs2.{Stream, Task}
 import cats.syntax.either._
@@ -16,7 +17,7 @@ object alias {
 
   def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore) =
     choice(updateAlias(auth, uploadCfg, store)
-      , createAlias(auth, store)
+      , createAlias(auth, uploadCfg, store)
       , getAlias(store)
       , listAliases(auth, store)
       , deleteAlias(auth, store))
@@ -24,7 +25,7 @@ object alias {
   def updateAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
     Post >> paths.aliases.matcher /"update" >> authz.user(authCfg) :: jsonBody[AliasUpdate] map {
       case login :: alias :: HNil =>
-        val a = Alias.generate(login, alias.name).
+        val a = Alias.generate(login, alias.name, Duration.ZERO).
           copy(id = alias.id).
           copy(enable = alias.enable)
         UploadCreate.parseValidity(alias.validity).
@@ -38,12 +39,15 @@ object alias {
           valueOr(msg => Stream.emit(BadRequest.message(msg)))
     }
 
-  def createAlias(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def createAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
     Post >> paths.aliases.matcher >> authz.user(authCfg) map { (login: String) =>
-      val alias = Alias.generate(login, "New alias")
+      val alias = Alias.generate(login, "New alias", min(Duration.ofDays(5), cfg.maxValidity))
       store.createAlias(alias).
         map(_ => Ok.body(alias))
     }
+
+  private def min(d1: Duration, d2: Duration) =
+    if (d1.compareTo(d2) < 0) d1 else d2
 
   def listAliases(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Get >> paths.aliases.matcher >> authz.user(authCfg) map { (login: String) =>
