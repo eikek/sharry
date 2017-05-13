@@ -2,7 +2,7 @@
 
 * COMMENT setup
 
-#+begin_src emacs-lisp :exports none
+#+begin_src emacs-lisp :exports none :results silent
   (defvar-local this-buffer-name (buffer-file-name))
   (add-hook
    'after-save-hook
@@ -10,9 +10,6 @@
      (when (string-equal this-buffer-name (buffer-file-name))
        (shell-command "pandoc --from org --to markdown -o README.md readme.org"))))
 #+end_src
-
-#+RESULTS:
-| (lambda nil (when (string-equal this-buffer-name (buffer-file-name)) (shell-command pandoc --from org --to markdown -o README.md readme.org))) | helm-swoop--clear-cache | sml/generate-buffer-identification |
 
 * sharry
 
@@ -78,6 +75,58 @@ can delete those files to save space.
 - external authentication (via system command or http requests)
 - managing accounts, uploads and alias pages
 
+** Try it
+
+There is a demo installation at https://sharrydemo.eknet.org. It
+doesn't require authentication, everyone acts as the same user. The
+mail feature is not enabled and uploads are restricted to 500K.
+
+Or, clone this project and use sbt (see below for prerequisites) to
+compile and run:
+
+#+begin_src shell :exports both
+sbt run-sharry
+#+end_src
+
+This will build the project and start the server. Point your browser
+to http://localhost:9090 and login with user =admin= and password
+=admin=.
+
+** Building
+
+You need Java8, [[http://scala-sbt.org][sbt]] and [[http://elm-lang.org/][Elm]] installed first. Then clone the project
+and run:
+
+#+begin_src shell :exports both
+sbt assembly
+#+end_src
+
+This creates a file in =modules/server/target/scala-2.12= named
+=sharry-*.jar.sh=. This is an executable jar file and can be used to
+run sharry:
+
+The =--console= argument allows to terminate the server from the
+terminal (otherwise it's =Ctrl-C=). By default a [[http://h2database.com][H2]] database is
+configured in the current working directory.
+
+#+begin_src shell :exports both
+$ ./modules/server/target/scala-2.12/sharry-server-0.0.1-SNAPSHOT.jar.sh --console
+2017-05-08T14:53:07.345+0200 INFO [main] sharry.server.main$ [main.scala:36]
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+ Sharry 0.0.1-SNAPSHOT (build 2017-05-08 12:49:58UTC) is starting up …
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2017-05-08T14:53:08.563+0200 INFO [main] sharry.server.main$ [main.scala:42]
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+ • Running initialize tasks …
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2017-05-08T14:53:08.622+0200 INFO [main] com.zaxxer.hikari.HikariDataSource [HikariDataSource.java:93] HikariPool-1 - Started.
+2017-05-08T14:53:09.272+0200 INFO [main] sharry.server.main$ [main.scala:62]
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+ • Starting http server at 0.0.0.0:9090
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+Hit RETURN to stop the server
+#+end_src
+
 ** Dependencies
 
 The server part is written in [[http://scala-lang.or][Scala]] and uses the following great
@@ -101,53 +150,6 @@ are used:
 Non-elm components:
 - [[https://semantic-ui.com][semantic-ui]] for a well looking web interface
 - [[https://github.com/23/resumable.js][resumable.js]] for handling uploads at the client
-
-** Building
-
-You need Java8, [[http://scala-sbt.org][sbt]] and [[http://elm-lang.org/][Elm]] installed first. Then clone the project
-and run:
-
-#+begin_src shell :exports both
-sbt assembly
-#+end_src
-
-This creates a file in =modules/server/target/scala-2.12= named
-=sharry-*.jar.sh=. This is an executable jar file and can be used to
-run sharry:
-
-#+begin_src shell :exports both
-$ ./modules/server/target/scala-2.12/sharry-server-0.0.1-SNAPSHOT.jar.sh --console
-2017-05-08T14:53:07.345+0200 INFO [main] sharry.server.main$ [main.scala:36]
-––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
- Sharry 0.0.1-SNAPSHOT (build 2017-05-08 12:49:58UTC) is starting up …
-––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-2017-05-08T14:53:08.563+0200 INFO [main] sharry.server.main$ [main.scala:42]
-––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
- • Running initialize tasks …
-––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-2017-05-08T14:53:08.622+0200 INFO [main] com.zaxxer.hikari.HikariDataSource [HikariDataSource.java:93] HikariPool-1 - Started.
-2017-05-08T14:53:09.272+0200 INFO [main] sharry.server.main$ [main.scala:62]
-––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
- • Starting http server at 0.0.0.0:9090
-––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-Hit RETURN to stop the server
-#+end_src
-
-The =--console= argument allows to terminate the server from the
-terminal (otherwise it's =Ctrl-C=). By default a [[http://h2database.com][H2]] database is
-configured in the current working directory.
-
-** Try it
-
-Using sbt (see above for prerequisites), run:
-
-#+begin_src shell :exports both
-sbt run-sharry
-#+end_src
-
-This will build the project and start the server. Point your browser
-to http://localhost:9090 and login with user =admin= and password
-=admin=.
 
 
 ** Configuring
