@@ -140,10 +140,10 @@ view model =
                        , ("visible", (Data.nonEmpty model.errors))
                        ]
                   ]
-                 [
-                  ul []
-                      (List.map (\s -> li [][text s]) model.errors)
-                 ]
+                 [Data.messagesToHtml model.errors]
+            ,div [class "ui success message"]
+                [model.success |> Maybe.withDefault "" |> text
+                ]
             ,div [class "fields"]
                 [
                  div [class "fourteen wide field"]
@@ -205,11 +205,4 @@ view model =
                      ]
                 ]
             ,button [class "ui button", type_ "submit"] [text "Submit"]
-            ,div [class "ui error message"]
-                [ul []
-                     (List.map (\m -> li[][text m]) model.errors)
-                ]
-            ,div [class "ui success message"]
-                [model.success |> Maybe.withDefault "" |> text
-                ]
         ]

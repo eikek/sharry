@@ -89,9 +89,13 @@ object jsoncodec {
   implicit val _userPassDec: Decoder[UserPass] = deriveDecoder[UserPass]
   implicit val _userPassEnc: Encoder[UserPass] = deriveEncoder[UserPass]
 
+  private def nonEmpty(o: Option[String]): Option[String] =
+    o.map(_.trim).filter(_.nonEmpty)
+
   implicit val _accountDec: Decoder[Account] = {
     val dec = Decoder.forProduct6("login", "password", "email", "enabled", "admin", "extern")(Account.tryApply)
-    dec.emap(_.toEither.leftMap(errs => errs.toList.mkString(", ")))
+    dec.emap(_.toEither.leftMap(errs => errs.toList.mkString(", "))).
+      map(a => a.copy(password = nonEmpty(a.password), email = nonEmpty(a.email)))
   }
 
   implicit val _accountEnc: Encoder[Account] = deriveEncoder[Account].

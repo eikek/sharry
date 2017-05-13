@@ -31,7 +31,8 @@ object account {
         password = a.password.map(_.bcrypt),
         email = a.email.filter(_.nonEmpty)
       )
-      store.getAccount(acc.login).
+      if (!acc.extern && acc.password.isEmpty) Stream.emit(BadRequest.message("Internal accounts must have a password"))
+      else store.getAccount(acc.login).
         map(a => BadRequest.message("The account already exists")).
         through(streams.ifEmpty {
           store.createAccount(acc).
