@@ -4,7 +4,6 @@ import java.time.{Duration, Instant}
 import fs2.{Stream, Task}
 import shapeless.{::,HNil}
 import scodec.bits.ByteVector
-import spinoco.protocol.http.HttpStatusCode
 import spinoco.fs2.http.routing._
 import com.github.t3hnar.bcrypt._
 
@@ -41,7 +40,7 @@ object upload {
       case account :: meta :: HNil  =>
         checkValidity(meta, account.alias, cfg.maxValidity) match {
           case Right(v) =>
-            if (meta.id.isEmpty) Stream.emit(BadRequest(Message("The upload id must not be empty!")))
+            if (meta.id.isEmpty) Stream.emit(BadRequest.message("The upload id must not be empty!"))
             else {
               val uc = Upload(
                 id = meta.id,
@@ -52,10 +51,10 @@ object upload {
                 password = meta.password.asNonEmpty.map(_.bcrypt),
                 alias = account.aliasId
               )
-              store.createUpload(uc).map(_ => Ok(Message("Upload created")))
+              store.createUpload(uc).map(_ => Ok.message("Upload created"))
             }
           case Left(msg) =>
-            Stream.emit(BadRequest(Message(msg)))
+            Stream.emit(BadRequest.message(msg))
         }
     }
 
@@ -75,13 +74,13 @@ object upload {
 
   private def doDeleteUpload(store: UploadStore, id: String, login: String) =
     store.deleteUpload(id, login).
-      map(n => Ok[Task,Map[String,Int]](Map("filesRemoved" -> n))).
+      map(n => Ok.body(Map("filesRemoved" -> n))).
       through(NotFound.whenEmpty)
 
   def deleteUpload(authCfg: AuthConfig, uploadCfg: UploadConfig, store: UploadStore): Route[Task] =
     Delete >> paths.uploads.matcher / uploadId :: authz.userId(authCfg, store) map {
       case id :: user :: HNil =>
-        if (id.isEmpty) Stream.emit(BadRequest("id is empty"))
+        if (id.isEmpty) Stream.emit(BadRequest.message("id is empty"))
         else user match {
           case Username(login) => doDeleteUpload(store, id, login)
           case AliasId(alias) =>
@@ -92,7 +91,7 @@ object upload {
                   doDeleteUpload(store, id, alias.login)
                 case false =>
                   logger.info(s"Not deleting upload $id as requested by alias $alias")
-                  Stream.emit(Forbidden("Not authorized for deletion."))
+                  Stream.emit(Forbidden.message("Not authorized for deletion."))
               }
         }
     }
@@ -101,21 +100,21 @@ object upload {
     Get >> paths.uploads.matcher >> authz.user(authCfg) map { user =>
       // add paging or cope with chunk responses in elm
       Stream.eval(store.listUploads(user).runLog).
-        map(Ok[Task,Vector[Upload]](_))
+        map(Ok.body(_))
     }
 
   def getUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Get >> paths.uploads.matcher / uploadId :: authz.user(authCfg) map {
       case id :: user :: HNil =>
         store.getUpload(id, user).
-          map(Ok[Task,UploadInfo](_)).
+          map(Ok.body(_)).
           through(NotFound.whenEmpty)
     }
 
   def getPublishedUpload(store: UploadStore): Route[Task] =
     Get >> paths.uploadPublish.matcher / uploadId map { id =>
       store.getPublishedUpload(id).
-        map(Ok[Task,UploadInfo](_)).
+        map(Ok.body(_)).
         through(NotFound.whenEmpty)
     }
 
@@ -124,8 +123,8 @@ object upload {
     Post >> paths.uploadPublish.matcher / uploadId :: authz.user(authCfg) map {
       case id :: user :: HNil =>
         store.publishUpload(id, user).flatMap {
-          case Right(pid) => store.getPublishedUpload(pid).map(Ok[Task,UploadInfo](_))
-          case Left(msg) => Stream.emit(BadRequest(Map("error" -> msg)))
+          case Right(pid) => store.getPublishedUpload(pid).map(Ok.body(_))
+          case Left(msg) => Stream.emit(BadRequest.body(Map("error" -> msg)))
         }
     }
 
@@ -134,9 +133,9 @@ object upload {
       case id :: alias :: HNil =>
         if (cfg.enableUploadNotification) {
           notifier(id, alias, cfg.aliasDeleteTime.plusSeconds(30)).drain ++
-          Stream.emit(Ok(Message("Notification scheduled.")))
+          Stream.emit(Ok.message("Notification scheduled."))
         } else {
-          Stream.emit(Ok(Message("Upload notifications disabled.")))
+          Stream.emit(Ok.message("Upload notifications disabled."))
         }
     }
 
@@ -145,9 +144,9 @@ object upload {
       val fileId = makeFileId(info)
       store.chunkExists(info.token, fileId, info.chunkNumber, info.currentChunkSize.bytes).map {
         case true =>
-          Ok()
+          Ok.noBody
         case false =>
-          emptyResponse(HttpStatusCode.NoContent)
+          NoContent.noBody
       }
     }
 
@@ -180,13 +179,13 @@ object upload {
             store.addChunk(chunk) ++ mimeUpdate(chunk.chunkData)
           })
 
-        init.drain ++ chunk.drain ++ Stream.emit(Ok())
+        init.drain ++ chunk.drain ++ Stream.emit(Ok.noBody)
     }
 
 
   private def uploadId: Matcher[Task, String] =
     as[String].flatMap { s =>
-      if (s.isEmpty) Matcher.respond(BadRequest("The upload token must not be empty!"))
+      if (s.isEmpty) Matcher.respond(BadRequest.message("The upload token must not be empty!"))
       else Matcher.success(s)
     }
 
@@ -199,7 +198,7 @@ object upload {
     param[Long]("resumableTotalSize") :: param[String]("resumableIdentifier") ::
     param[String]("resumableFilename") :: param[Int]("resumableTotalChunks") flatMap {
       case token :: num :: size :: currentSize :: totalSize :: ident :: file :: total :: HNil =>
-        if (token.isEmpty) Matcher.respond[Task](BadRequest("Token is empty"))
+        if (token.isEmpty) Matcher.respond[Task](BadRequest.message("Token is empty"))
         else Matcher.success(ChunkInfo(token, num, size, currentSize, totalSize, ident, file, total))
   }
 

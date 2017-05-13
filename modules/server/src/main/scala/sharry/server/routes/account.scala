@@ -32,10 +32,10 @@ object account {
         email = a.email.filter(_.nonEmpty)
       )
       store.getAccount(acc.login).
-        map(a => BadRequest[Task,String]("The account already exists")).
+        map(a => BadRequest.message("The account already exists")).
         through(streams.ifEmpty {
           store.createAccount(acc).
-            map(_ => Created[Task,Account](acc.noPass))
+            map(_ => Created.body(acc.noPass))
         })
     }
 
@@ -44,7 +44,7 @@ object account {
       (account: Account) =>
         Account.validateLogin(account.login) match {
           case Validated.Invalid(errs) =>
-            Stream.emit(BadRequest[Task,String](s"Invalid login: ${errs.toList.mkString(", ")}"))
+            Stream.emit(BadRequest.message(s"Invalid login: ${errs.toList.mkString(", ")}"))
           case _ =>
             store.getAccount(account.login).
               map(dba => account.copy(
@@ -55,7 +55,8 @@ object account {
                 email = account.email.filter(_.nonEmpty)
               )).
               flatMap(a => store.updateAccount(a).map(_ => a)).
-              map(Ok[Task,Account](_))
+              map(Ok.body(_)).
+              through(NotFound.whenEmpty)
         }
     }
 
@@ -64,8 +65,8 @@ object account {
       case login :: account :: HNil =>
         store.updateEmail(login, account.email).
           flatMap {
-            case true => store.getAccount(login).map(Ok[Task,Account](_))
-            case false => Stream.emit(NotFound())
+            case true => store.getAccount(login).map(Ok.body(_))
+            case false => Stream.emit(NotFound.noBody)
           }
     }
 
@@ -74,24 +75,24 @@ object account {
       case login :: account :: HNil =>
         store.updatePassword(login, account.password.map(_.bcrypt)).
           flatMap {
-            case true => store.getAccount(login).map(Ok[Task,Account](_))
-            case false => Stream.emit(NotFound())
+            case true => store.getAccount(login).map(Ok.body(_))
+            case false => Stream.emit(NotFound.noBody)
           }
     }
 
   def listLogins(auth: Authenticate, store: AccountStore): Route[Task] =
     Get >> paths.accounts.matcher/empty >> authz.admin(auth) / param[String]("q").? map { (q: Option[String]) =>
       Stream.eval(store.listLogins(q.getOrElse(""), None).runLog).
-        map(Ok[Task,Vector[String]](_))
+        map(Ok.body(_))
     }
 
   def getAccount(auth: Authenticate, store: AccountStore): Route[Task] =
     Get >> paths.accounts.matcher / as[String] </ authz.admin(auth) map { login =>
       Account.validateLogin(login) match {
         case Validated.Invalid(errs) =>
-          Stream.emit(BadRequest[Task,String](s"Invalid login: ${errs.toList.mkString(", ")}"))
+          Stream.emit(BadRequest.message(s"Invalid login: ${errs.toList.mkString(", ")}"))
         case _ =>
-          store.getAccount(login).map(Ok[Task,Account](_))
+          store.getAccount(login).map(Ok.body(_))
       }
     }
 }

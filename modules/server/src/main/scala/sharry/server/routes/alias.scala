@@ -34,27 +34,27 @@ object alias {
           }).
           map(v => a.copy(validity = v)).
           map(a => store.updateAlias(a).
-            map({ n => if (n == 0) NotFound[Task,String]("0") else Ok[Task,String](n.toString) })).
-          valueOr(msg => Stream.emit(BadRequest[Task,String](msg)))
+            map({ n => if (n == 0) NotFound.body("0") else Ok.body(n.toString) })).
+          valueOr(msg => Stream.emit(BadRequest.message(msg)))
     }
 
   def createAlias(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Post >> paths.aliases.matcher >> authz.user(authCfg) map { (login: String) =>
       val alias = Alias.generate(login, "New alias")
       store.createAlias(alias).
-        map(_ => Ok[Task,Alias](alias))
+        map(_ => Ok.body(alias))
     }
 
   def listAliases(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Get >> paths.aliases.matcher >> authz.user(authCfg) map { (login: String) =>
       Stream.eval(store.listAliases(login).runLog).
-        map(Ok[Task,Vector[Alias]](_))
+        map(Ok.body(_))
     }
 
   def getAlias(store: UploadStore): Route[Task] =
     Get >> paths.aliases.matcher / as[String] map { (id: String) =>
       store.getActiveAlias(id).
-        map(Ok[Task,Alias](_)).
+        map(Ok.body(_)).
         through(NotFound.whenEmpty)
     }
 
@@ -62,6 +62,6 @@ object alias {
     Delete >> paths.aliases.matcher / as[String] :: authz.user(authCfg) map {
       case id :: login :: HNil =>
         store.deleteAlias(id, login).
-          map({ n => if (n == 0) NotFound("0") else Ok(n.toString) })
+          map({ n => if (n == 0) NotFound.body("0") else Ok.body(n.toString) })
     }
 }

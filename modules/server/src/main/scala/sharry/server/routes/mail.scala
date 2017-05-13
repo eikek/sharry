@@ -25,23 +25,23 @@ object mail {
       (mail: String) =>
 
       Stream.eval(Address.parse(mail)).
-        map(_ => Ok[Task,Message](Message("Address is valid"))).
-        onError(ex => Stream.emit(BadRequest[Task, Message](Message(ex))))
+        map(_ => Ok.message("Address is valid")).
+        onError(ex => Stream.emit(BadRequest.message(ex)))
     }
 
 
   def sendMail(authCfg: AuthConfig, cfg: WebmailConfig, smtp: GetSetting): Route[Task] =
     Post >> paths.mailSend.matcher >> authz.user(authCfg) >> jsonBody[SimpleMail] map {
       (mail: SimpleMail) =>
-      if (!cfg.enable) Stream.emit(BadRequest(Message("Sending mails is disabled.")))
+      if (!cfg.enable) Stream.emit(BadRequest.message("Sending mails is disabled."))
       else client.send(smtp)(mail.parse).
         fold(SendResult.empty)({ (r, attempt) =>
           attempt.fold(r.addFailure, r.addSuccess)
         }).
         map({
-          case r@SendResult(_, Nil, _) => Ok(r.withMessage("No mails could be send."))
-          case r@SendResult(_, _, Nil) => Ok(r.withMessage("All mails have been sent."))
-          case r => Ok(r.withMessage("Some mails could not be send."))
+          case r@SendResult(_, Nil, _) => Ok.body(r.withMessage("No mails could be send."))
+          case r@SendResult(_, _, Nil) => Ok.body(r.withMessage("All mails have been sent."))
+          case r => Ok.body(r.withMessage("Some mails could not be send."))
         })
     }
 
@@ -64,7 +64,7 @@ object mail {
         val text = mustache.render(template)(data)
         val (subject, body) = text.span(_ != '\n')
 
-        Stream.emit(Ok(Map("lang" -> lang, "text" -> body.trim, "subject" -> subject.trim)))
+        Stream.emit(Ok.body(Map("lang" -> lang, "text" -> body.trim, "subject" -> subject.trim)))
     }
 
 

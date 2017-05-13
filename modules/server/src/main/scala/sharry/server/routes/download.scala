@@ -62,7 +62,7 @@ object download {
         store.getUploadByFileId(id, user).
           map(_._2).
           map(standardHeaders).
-          map(Ok() ++ _).
+          map(Ok.noBody ++ _).
           through(NotFound.whenEmpty)
     }
 
@@ -91,7 +91,7 @@ object download {
       case id ::  pass :: HNil =>
         store.getPublishedUploadByFileId(id).
           through(checkDownloadFile(pass)).
-          map(_.map(Ok() ++ standardHeaders(_))).
+          map(_.map(Ok.noBody ++ standardHeaders(_))).
           map(_.fold(identity, identity)).
           through(NotFound.whenEmpty)
     }
@@ -107,11 +107,11 @@ object download {
         store.getPublishedUpload(id).map({ info =>
           Upload.checkPassword(info.upload, pass.map(_.password)).
             leftMap(err => List(err)).
-            map(_ => List()).
+            map(_ => List[String]()).
             toEither.
             fold(
-              l => Ok[Task,List[String]](l),
-              l => Ok[Task,List[String]](l) ++ makeCookie,
+              l => Ok.body(l),
+              l => Ok.body(l) ++ makeCookie,
             )}).
           through(NotFound.whenEmpty)
     }
@@ -127,7 +127,7 @@ object download {
           through(streams.toByteChunks)
 
         val mt = file.meta.mimetype
-        PartialContent().withStreamBody(data)(encoder(mt)) ++
+        PartialContent.streamBody(data)(encoder(mt)) ++
           withContentLength(bytes, file.meta.length) ++
           withContentRange(bytes, file.meta.length) ++
           withAcceptRanges ++
@@ -144,7 +144,7 @@ object download {
           through(streams.toByteChunks)
 
         val mt = file.meta.mimetype
-        Ok().withStreamBody(data)(encoder(mt)) ++ standardHeaders(file)
+        Ok.streamBody(data)(encoder(mt)) ++ standardHeaders(file)
       case Left(r) => r
     })
 
@@ -154,7 +154,7 @@ object download {
         val data = Stream.emit(info).
           through(store.zipAll(8192 * 2)).
           through(streams.toByteChunks)
-        Ok().withStreamBody(data)(encoder(MimeType.`application/zip`)) ++
+        Ok.streamBody(data)(encoder(MimeType.`application/zip`)) ++
           withDisposition("attachment", info.upload.id+".zip") ++
           modify(info)
       case Left(r) =>
@@ -168,7 +168,7 @@ object download {
       case None => identity
       case Some(tag) =>
         _.map(_.flatMap { a =>
-          if (id(a) == tag) Left(NotModified() ++ modify(a))
+          if (id(a) == tag) Left(NotModified.noBody ++ modify(a))
           else Right(a)
         })
     }
@@ -176,7 +176,7 @@ object download {
   private def checkDownload1[A](pass: Option[String]): Pipe[Task, (Upload, A), ResponseOr[(Upload, A)]] =
     _.map { case (upload, a) =>
       Upload.checkUpload(upload, Instant.now, upload.downloads, pass).
-        leftMap(err => BadRequest[Task,List[String]](err.toList)).
+        leftMap(err => BadRequest.body(err.toList)).
         map(_ => (upload, a)).
         toEither
     }

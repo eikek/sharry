@@ -2,9 +2,9 @@ package sharry.server.routes
 
 import java.time.{Instant, ZoneId}
 import cats.data.Ior
-import fs2.{Pipe, Stream}
+import fs2.{Pipe, Task, Stream}
 import spinoco.fs2.http._
-import spinoco.fs2.http.body.BodyEncoder
+import spinoco.fs2.http.body.{BodyEncoder,StreamBodyEncoder}
 import spinoco.fs2.http.routing._
 import spinoco.protocol.http.header.value._
 import spinoco.protocol.http.header._
@@ -30,44 +30,33 @@ object syntax {
       Stream.empty
     )
 
-  object Ok {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.Ok)
-    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
+  val Ok = HttpStatusCode.Ok
+  val PartialContent = HttpStatusCode.PartialContent
+  val NotFound = HttpStatusCode.NotFound
+  val Unauthorized = HttpStatusCode.Unauthorized
+  val Forbidden = HttpStatusCode.Forbidden
+  val BadRequest = HttpStatusCode.BadRequest
+  val Created = HttpStatusCode.Created
+  val NoContent = HttpStatusCode.NoContent
+  val NotModified = HttpStatusCode.NotModified
+
+
+  implicit final class ResponseBuilder(val status: HttpStatusCode) extends AnyVal {
+    def noBody: HttpResponse[Task] = emptyResponse[Task](status)
+
+    def body[A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[Task] =
+      emptyResponse[Task](status).withBody(body)
+
+    def streamBody[A](body: Stream[Task,A])(implicit enc: StreamBodyEncoder[Task,A]): HttpResponse[Task] =
+      noBody.withStreamBody(body)(enc)
+
+    def message(msg: String) = body(Message(msg))
+    def message(err: Throwable) = body(Message(err))
+
+    def whenEmpty:Pipe[Task,HttpResponse[Task],HttpResponse[Task]] =
+      _.through(streams.ifEmpty(Stream.emit(emptyResponse(status))))
   }
 
-  object PartialContent {
-      def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.PartialContent)
-  }
-
-  object NotFound {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.NotFound)
-    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
-    def whenEmpty[F[_]]: Pipe[F, HttpResponse[F], HttpResponse[F]] =
-      _.through(streams.ifEmpty(Stream.emit(apply())))
-  }
-
-  object NotModified {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.NotModified)
-  }
-
-  object Unauthorized {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.Unauthorized)
-    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
-  }
-
-  object Forbidden {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.Forbidden)
-    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)  }
-
-  object BadRequest {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.BadRequest)
-    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
-  }
-
-  object Created {
-    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.Created)
-    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
-  }
 
   type ResponseUpdate[F[_]] = HttpResponse[F] => HttpResponse[F]
   object ResponseUpdate {

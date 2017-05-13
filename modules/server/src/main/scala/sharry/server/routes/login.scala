@@ -43,8 +43,8 @@ object login {
 
   def doLogin(e: Matcher[Task, Stream[Task,AuthResult]], domain: String, cfg: AuthConfig): Route[Task] = {
     def makeResponse(ar: AuthResult): HttpResponse[Task] = ar.
-      map(acc => Ok[Task, Account](acc.noPass).withHeader(`Set-Cookie`(makeCookie(acc, domain, cfg.maxCookieLifetime, cfg.appKey)))).
-      valueOr(err => Unauthorized[Task, String](err))
+      map(acc => Ok.body(acc.noPass).withHeader(`Set-Cookie`(makeCookie(acc, domain, cfg.maxCookieLifetime, cfg.appKey)))).
+      valueOr(err => Unauthorized.message(err))
 
     Post >> e map { (s: Stream[Task,AuthResult]) =>
       s.map(makeResponse)
@@ -54,7 +54,7 @@ object login {
   def removeCookie(domain: String): Route[Task] =
     Get >> paths.logout.matcher map { _ =>
       val c = makeCookie(Token.invalid, domain).copy(maxAge = Some(FiniteDuration(1, NANOSECONDS)))
-      Stream.emit(Ok[Task]().withHeader(`Set-Cookie`(c))).covary[Task]
+      Stream.emit(Ok.noBody.withHeader(`Set-Cookie`(c)))
     }
 
   def makeCookie(t: Token, domain: String): HttpCookie = {
