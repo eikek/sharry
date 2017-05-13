@@ -64,8 +64,9 @@ update msg model =
         UploadDeleted (Err error) ->
             let
                 x = Debug.log "Error deleting upload" (Data.errorMessage error)
+                m = clearModel model
             in
-                clearModel model ! [] |> defer Cmd.none
+                {m | errorMessage = Data.errorMessage error} ! [] |> defer Cmd.none
 
 
 modelEncoder: Model -> Encode.Value

@@ -43,6 +43,7 @@ object config {
       , simultaneousUploads: Int
       , maxFiles: Int
       , maxFileSize: Size
+      , aliasDeleteTime: Duration
       , cleanupEnable: Boolean
       , cleanupInterval: FiniteDuration
       , cleanupInvalidAge: Duration

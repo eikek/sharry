@@ -48,10 +48,9 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       webjar.endpoint(remoteConfig)
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
-        , upload.endpoint(cfg.authConfig, uploadStore)
+        , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore)
         , download.endpoint(cfg.authConfig, cfg.webConfig, uploadStore)
         , alias.endpoint(cfg.authConfig, uploadStore)
-        , routes.mail.endpoint(cfg.authConfig)
     )
   }
 
@@ -65,7 +64,6 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
     import ch.qos.logback.classic.LoggerContext
     import ch.qos.logback.classic.joran.JoranConfigurator
     import ch.qos.logback.core.util.StatusPrinter
-    println(s">>>>>> using logback config file $logFile")
     val context = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
     scala.util.Try {
       val config = new JoranConfigurator()

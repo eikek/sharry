@@ -50,6 +50,10 @@ object syntax {
     def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)
   }
 
+  object Forbidden {
+    def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.Forbidden)
+    def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)  }
+
   object BadRequest {
     def apply[F[_]](): HttpResponse[F] = emptyResponse(HttpStatusCode.BadRequest)
     def apply[F[_], A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[F] = apply().withBody(body)

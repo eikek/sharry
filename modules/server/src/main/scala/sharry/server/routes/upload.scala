@@ -23,7 +23,7 @@ import sharry.server.routes.syntax._
 object upload {
   private val logger = com.typesafe.scalalogging.Logger(getClass)
 
-  def endpoint(auth: AuthConfig, store: UploadStore) =
+  def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore) =
     choice(testUploadChunk(auth, store)
       , createUpload(auth, store)
       , uploadChunks(auth, store)
@@ -31,7 +31,7 @@ object upload {
       , getPublishedUpload(store)
       , getUpload(auth, store)
       , getAllUploads(auth, store)
-      , deleteUpload(auth, store))
+      , deleteUpload(auth, uploadCfg, store))
 
   def createUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Post >> paths.uploads.matcher >> authz.userId(authCfg, store) :: jsonBody[UploadCreate] map {
@@ -62,13 +62,43 @@ object upload {
       getOrElse(UploadCreate.parseValidity(meta.validity))
 
 
-  def deleteUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  private def checkDelete(id: String, alias: Alias, time: Duration, store: UploadStore) = {
+    // a request authorized by an alias id to delete an upload is only
+    // valid if issued less than X minutes after uploading and it was
+    // initially uploaded by this alias
+    val now = Instant.now
+    store.getUpload(id, alias.login).
+      map({ info =>
+        if (info.upload.alias == Some(alias.id)) {
+          info.upload.created.plus(time).isAfter(now)
+        } else {
+          false
+        }
+      })
+  }
+
+  private def doDeleteUpload(store: UploadStore, id: String, login: String) =
+    store.deleteUpload(id, login).
+      map(n => Ok[Task,Map[String,Int]](Map("filesRemoved" -> n))).
+      through(NotFound.whenEmpty)
+
+  def deleteUpload(authCfg: AuthConfig, uploadCfg: UploadConfig, store: UploadStore): Route[Task] =
     Delete >> paths.uploads.matcher / uploadId :: authz.userId(authCfg, store) map {
       case id :: user :: HNil =>
         if (id.isEmpty) Stream.emit(BadRequest("id is empty"))
-        else store.deleteUpload(id, user.login).
-          map(n => Ok[Task,Map[String,Int]](Map("filesRemoved" -> n))).
-          through(NotFound.whenEmpty)
+        else user match {
+          case Username(login) => doDeleteUpload(store, id, login)
+          case AliasId(alias) =>
+            checkDelete(id, alias, uploadCfg.aliasDeleteTime, store).
+              flatMap{
+                case true =>
+                  logger.info(s"Delete upload $id as requested by alias $alias")
+                  doDeleteUpload(store, id, alias.login)
+                case false =>
+                  logger.info(s"Not deleting upload $id as requested by alias $alias")
+                  Stream.emit(Forbidden("Not authorized for deletion."))
+              }
+        }
     }
 
   def getAllUploads(authCfg: AuthConfig, store: UploadStore): Route[Task] =

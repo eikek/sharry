@@ -46,7 +46,8 @@ GET :base/uploads/us4ai5ox9z58ljp2rwqazwe
 #
 
 # delete upload
-DELETE :base/uploads/ungg7ckc1h1hn3h90hqkkf
+DELETE :base/uploads/uvka5ab33opj5su1dto1t1b
+x-sharry-alias: VdKyo4obL9u1O2PpTpTI
 #
 
 # test download
