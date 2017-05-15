@@ -82,12 +82,8 @@ update msg model =
         UploadPublished (Ok info) ->
             let
                 model_ = clearModel model
-                href = info.upload.publishId
-                       |> Maybe.map Pid
-                       |> Maybe.map PL.downloadPageHref
-                       |> Maybe.withDefault ""
             in
-                model_ ! [Navigation.newUrl ("#id=" ++ (Maybe.withDefault "" info.upload.publishId))] |> defer Cmd.none
+                model_ ! [PL.downloadPage (Uid info.upload.id)] |> defer Cmd.none
 
         UploadPublished (Err error) ->
             {model | errorMessage = Data.errorMessage error} ! [] |> defer Cmd.none
