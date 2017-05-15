@@ -35,6 +35,17 @@ object Account {
     (v1 |+| v2 |+| v3).map(_ => login)
   }
 
+  def validate(a: Account): ValidatedNel[String, Account] = {
+    // internal accounts need a password
+    val v1: ValidatedNel[String, Unit] =
+      if (a.extern || a.password.isDefined) Validated.valid(())
+      else Validated.invalidNel("Internal accounts require a password")
+
+    val v2: ValidatedNel[String, Unit] = validateLogin(a.login).map(_ => ())
+
+    (v1 |+| v2).map(_ => a)
+  }
+
   def tryApply(
     login: String,
     password: Option[String],
