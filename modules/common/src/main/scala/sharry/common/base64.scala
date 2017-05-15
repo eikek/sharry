@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common
 
 import java.util.Base64
 import scodec.bits.ByteVector

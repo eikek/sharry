@@ -2,8 +2,8 @@ package sharry.store.data
 
 import java.time._
 import java.util.UUID
-import sharry.store.data.mime._
-import sharry.store.data.sizes._
+import sharry.common.mime._
+import sharry.common.sizes._
 
 case class FileMeta(
   id: String,

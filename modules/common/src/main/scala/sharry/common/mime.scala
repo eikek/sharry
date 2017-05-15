@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common
 
 import javax.activation.{MimeType => JMimeType}
 import scala.collection.JavaConverters._

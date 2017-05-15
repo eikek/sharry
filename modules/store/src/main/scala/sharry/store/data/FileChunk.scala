@@ -1,7 +1,7 @@
 package sharry.store.data
 
 import scodec.bits.ByteVector
-import sharry.store.data.sizes._
+import sharry.common.sizes._
 
 case class FileChunk(
   fileId: String,

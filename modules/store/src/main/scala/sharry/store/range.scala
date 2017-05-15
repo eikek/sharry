@@ -4,8 +4,8 @@ import cats.data.Ior
 import cats.implicits._
 import fs2.{Pipe, Stream, Task}
 import scodec.bits.ByteVector
-import sharry.store.data.sizes._
-import sharry.store.data.streams
+import sharry.common.sizes._
+import sharry.common.streams
 
 object range {
   type RangeSpec = Size => Option[Range]

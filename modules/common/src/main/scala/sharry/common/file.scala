@@ -1,9 +1,10 @@
-package sharry.store.data
+package sharry.common
 
 import java.nio.file.{Files, Path, Paths}
 import fs2.{io, Stream, Task}
 import scala.collection.JavaConverters._
-import sharry.store.data.sizes._
+
+import sizes._
 
 object file {
 

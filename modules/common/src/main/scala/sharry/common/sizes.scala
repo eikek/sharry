@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common
 
 object sizes {
 

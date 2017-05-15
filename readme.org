@@ -17,6 +17,8 @@ Sharry allows to share files with others in a simple way. It is a
 self-hosted web application. The basic concept is: upload files and
 get a url back that can then be shared.
 
+[[https://imgs.xkcd.com/comics/file_transfer.png]]
+
 ** How it works
 *** Authenticated users -> others
 

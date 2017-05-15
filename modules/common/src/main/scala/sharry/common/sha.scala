@@ -1,12 +1,13 @@
-package sharry.store.data
+package sharry.common
 
 import java.nio.file.Path
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import scodec.bits.ByteVector
 import fs2.{Pipe, Task}
-import sharry.store.data.file._
-import sharry.store.data.sizes._
+
+import file._
+import sizes._
 
 object sha {
   private def create: MessageDigest =

@@ -1,15 +1,18 @@
 package sharry.store.binary
 
 import java.time.Instant
-import cats.free.Free.pure
 import com.typesafe.scalalogging.Logger
 import fs2.{Pipe, Stream, Task}
 import fs2.util.Catchable
+import cats.free.Free.pure
 import scodec.bits.ByteVector
 import doobie.imports._
+
 import sharry.store.data._
-import sharry.store.data.mime._
-import sharry.store.data.sizes._
+import sharry.common._
+import sharry.common.mime._
+import sharry.common.sizes._
+import sharry.common.streams
 import sharry.store.range._
 import sharry.store.mimedetect._
 

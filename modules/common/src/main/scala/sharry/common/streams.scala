@@ -1,11 +1,12 @@
-package sharry.store.data
+package sharry.common
 
 import java.io.InputStream
 import scodec.bits.ByteVector
 import fs2.{io, Chunk, Handle, Pipe, Pull, Stream, Task}
 import fs2.util.Suspendable
 import com.typesafe.scalalogging.Logger
-import sharry.store.data.sizes._
+
+import sizes._
 
 /** Some utility for fs2.Stream */
 object streams {

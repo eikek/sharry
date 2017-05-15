@@ -6,11 +6,11 @@ import doobie.imports._
 import cats.implicits._
 
 import sharry.store.range._
-import sharry.store.data.mime._
-import sharry.store.data.rng._
-import sharry.store.data.sizes._
-import sharry.store.data.streams
-import sharry.store.data.zip
+import sharry.common.mime._
+import sharry.common.rng._
+import sharry.common.sizes._
+import sharry.common.streams
+import sharry.common.zip
 import sharry.store.data.{Alias, FileMeta, FileChunk, Upload, UploadFile, UploadInfo}
 import sharry.store.binary.BinaryStore
 

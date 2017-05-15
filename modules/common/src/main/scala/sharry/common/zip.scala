@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common
 
 import java.lang.AutoCloseable
 import java.io.{InputStream, PipedInputStream, PipedOutputStream}

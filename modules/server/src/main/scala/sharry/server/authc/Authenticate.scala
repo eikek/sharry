@@ -4,7 +4,7 @@ import java.time.Instant
 import com.typesafe.scalalogging.Logger
 import fs2.{Stream, Task, Pipe}
 import com.github.t3hnar.bcrypt._
-import sharry.store.data.streams
+import sharry.common.streams
 import sharry.store.data.Account
 import sharry.store.account.AccountStore
 import sharry.server.config.AuthConfig

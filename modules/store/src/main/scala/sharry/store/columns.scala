@@ -4,8 +4,8 @@ import java.time.{Duration, Instant}
 import java.time.temporal._
 import com.typesafe.scalalogging.Logger
 import scodec.bits.ByteVector
-import sharry.store.data.mime.MimeType
-import sharry.store.data.sizes._
+import sharry.common.mime.MimeType
+import sharry.common.sizes._
 import doobie.imports._
 import doobie.util.log.{Success, ProcessingFailure, ExecFailure}
 

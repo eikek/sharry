@@ -6,7 +6,7 @@ import com.github.t3hnar.bcrypt._
 import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
 
-import sharry.store.data.streams
+import sharry.common.streams
 import sharry.store.data.Account
 import sharry.store.account.AccountStore
 import sharry.server.config.{AuthConfig, WebConfig}

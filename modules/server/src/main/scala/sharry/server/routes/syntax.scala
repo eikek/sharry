@@ -10,8 +10,8 @@ import spinoco.protocol.http.header.value._
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.{header =>_, _}
 
-import sharry.store.data.sizes._
-import sharry.store.data.streams
+import sharry.common.sizes._
+import sharry.common.streams
 
 object syntax {
 

@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec

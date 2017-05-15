@@ -3,8 +3,8 @@ package sharry.store.upload
 import java.time.Instant
 import fs2.{Pipe, Strategy, Stream, Task}
 
-import sharry.store.data.mime._
-import sharry.store.data.sizes._
+import sharry.common.mime._
+import sharry.common.sizes._
 import sharry.store.range._
 import sharry.store.data.{Alias, FileMeta, FileChunk, Upload, UploadFile, UploadInfo}
 

@@ -3,7 +3,7 @@ package sharry.store
 import com.typesafe.scalalogging.Logger
 import fs2.{Pure, Stream, Task}
 import doobie.imports._
-import sharry.store.data.streams
+import sharry.common.streams
 
 object evolution {
 

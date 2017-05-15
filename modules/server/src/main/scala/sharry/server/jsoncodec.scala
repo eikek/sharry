@@ -6,8 +6,8 @@ import io.circe.generic.semiauto._, io.circe._, io.circe.syntax._
 import sharry.server.authc.Token
 import sharry.server.email._
 import sharry.store.data._
-import sharry.store.data.mime._
-import sharry.store.data.sizes._
+import sharry.common.mime._
+import sharry.common.sizes._
 
 object jsoncodec {
   case class UserPass(login: String, pass: String)

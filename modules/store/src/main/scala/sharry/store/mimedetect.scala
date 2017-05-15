@@ -6,7 +6,7 @@ import org.apache.tika.metadata.{HttpHeaders, Metadata, TikaMetadataKeys}
 import org.apache.tika.mime.MediaType
 import scodec.bits.ByteVector
 import fs2.Stream
-import sharry.store.data.mime._
+import sharry.common.mime._
 
 object mimedetect {
   private val tika = new TikaConfig().getDetector

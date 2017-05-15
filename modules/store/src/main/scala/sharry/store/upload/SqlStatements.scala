@@ -6,8 +6,8 @@ import cats.implicits._
 import doobie.imports._
 import com.typesafe.scalalogging.Logger
 
-import sharry.store.data.mime._
-import sharry.store.data.sizes._
+import sharry.common.mime._
+import sharry.common.sizes._
 import sharry.store.columns._
 import sharry.store.binary.Statements
 import sharry.store.data.{Alias, FileMeta, Upload, UploadFile, UploadInfo}

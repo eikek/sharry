@@ -2,7 +2,7 @@ package sharry.store.binary
 
 import java.time.Instant
 import fs2.{Pipe, Stream, Task}
-import sharry.store.data.sizes._
+import sharry.common.sizes._
 import sharry.store.range._
 import sharry.store.data._
 import sharry.store.mimedetect._

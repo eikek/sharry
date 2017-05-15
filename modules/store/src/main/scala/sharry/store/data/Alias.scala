@@ -1,7 +1,7 @@
 package sharry.store.data
 
 import java.time.{Duration, Instant}
-import sharry.store.data.rng._
+import sharry.common.rng._
 
 case class Alias(
   id: String

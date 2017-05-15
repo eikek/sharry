@@ -8,7 +8,7 @@ import yamusca.imports._
 import sharry.store.upload.UploadStore
 import sharry.store.account.AccountStore
 import sharry.store.data.{Alias, Upload}
-import sharry.store.data.streams
+import sharry.common.streams
 import sharry.server.config._
 import sharry.server.email._
 

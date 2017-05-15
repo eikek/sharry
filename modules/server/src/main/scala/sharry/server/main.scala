@@ -19,9 +19,9 @@ import spinoco.protocol.http.codec.HttpRequestHeaderCodec
 
 import com.typesafe.scalalogging.Logger
 
-import sharry.store.data.file._
+import sharry.common.file._
 import sharry.store.evolution
-import sharry.store.data.streams
+import sharry.common.streams
 
 object main {
   implicit val logger = Logger(getClass)

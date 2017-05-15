@@ -7,7 +7,7 @@ lazy val sharedSettings = Seq(
   scalaVersion := `scala-version`,
   scalacOptions ++= Seq(
     "-encoding", "UTF-8",
-    //  "-Xfatal-warnings", // fail when there are warnings
+    "-Xfatal-warnings", // fail when there are warnings
     "-deprecation",
     "-feature",
     "-unchecked",
@@ -17,11 +17,22 @@ lazy val sharedSettings = Seq(
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-unused-import"
-  )
+  ),
+  scalacOptions in (Compile, console) ~= (_ filterNot (Set("-Xfatal-warnings", "-Ywarn-unused-import").contains)),
+  scalacOptions in (Test) := (scalacOptions in (Compile, console)).value
 )
 
-lazy val coreDeps = Seq(`cats-core`, `fs2-core`, `fs2-io`, `scala-logging`)
+lazy val coreDeps = Seq(`cats-core`, `fs2-core`, `fs2-io`, `scala-logging`, `scodec-bits`)
 lazy val testDeps = Seq(scalatest, `logback-classic`).map(_ % "test")
+
+lazy val common = project.in(file("modules/common")).
+  disablePlugins(AssemblyPlugin).
+  settings(sharedSettings).
+  settings(Seq(
+    name := "sharry-common",
+    description := "Some common utility code",
+    libraryDependencies ++= coreDeps ++ testDeps
+  ))
 
 lazy val store = project.in(file("modules/store")).
   disablePlugins(AssemblyPlugin).
@@ -31,7 +42,8 @@ lazy val store = project.in(file("modules/store")).
     description := "Storage for files and account data",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `doobie-core`, h2, postgres, tika, `scodec-bits`, `scala-bcrypt`
-    )))
+    ))).
+  dependsOn(common)
 
 
 // resumable.js is too old as webjar, so download it from github
@@ -120,12 +132,12 @@ lazy val server = project.in(file("modules/server")).
     buildInfoOptions += BuildInfoOption.ToJson,
     buildInfoOptions += BuildInfoOption.BuildTime
   )).
-  dependsOn(store, webapp)
+  dependsOn(common, store, webapp)
 
 lazy val root = project.in(file(".")).
   disablePlugins(AssemblyPlugin).
   settings(sharedSettings).
-  aggregate(store, server, webapp)
+  aggregate(common, store, server, webapp)
 
 addCommandAlias("run-sharry", ";project server;run")
 addCommandAlias("make", ";set elmMinify in (webapp, Compile) := true ;assembly")

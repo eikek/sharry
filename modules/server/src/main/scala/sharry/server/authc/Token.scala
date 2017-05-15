@@ -7,7 +7,7 @@ import scala.util.Try
 import scodec.bits.ByteVector
 import com.github.t3hnar.bcrypt
 import sharry.store.data.Account
-import sharry.store.data.sign
+import sharry.common.sign
 
 case class Token(salt: String, login: String, ends: Instant, signature: String) {
   def asString = s"${salt}%${login}%${ends.toString}%${signature}"

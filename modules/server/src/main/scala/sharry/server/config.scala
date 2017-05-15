@@ -13,8 +13,8 @@ import pureconfig.error._
 import pureconfig.ConvertHelpers._
 import spinoco.protocol.http.Uri
 import yamusca.imports._
-import sharry.store.data.sizes._
-import sharry.store.data.file._
+import sharry.common.sizes._
+import sharry.common.file._
 import sharry.server.email._
 
 object config {
