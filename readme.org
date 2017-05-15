@@ -17,33 +17,29 @@ Sharry allows to share files with others in a simple way. It is a
 self-hosted web application. The basic concept is: upload files and
 get a url back that can then be shared.
 
-[[https://imgs.xkcd.com/comics/file_transfer.png]]
+#+begin_html
+<a href="https://travis-ci.org/eikek/sharry"><img src="https://travis-ci.org/eikek/sharry.svg"></a>
+<a href="https://xkcd.com/949/"><img height="400" align="right" style="float:right" src="https://imgs.xkcd.com/comics/file_transfer.png"></a>
+#+end_html
 
 ** How it works
 *** Authenticated users -> others
 
-Authenticated users can share files with others by uploading their
-files on a web site together with an optional password and a time
-period. The time period defines how long the file is available for
-download. The next screen displays the new information: the download
-link, the password and the date until the link is valid. It is
-possible to send this information via email to other people.
+Authenticated users can upload their files on a web site together with
+an optional password and a time period. The time period defines how
+long the file is available for download. Then a public URL is
+generated that can be shared, e.g. via email.
 
 The download page is hard to guess, but open to everyone.
 
 *** Others -> Authenticated users
 
-It's also possible to allow anonymous users to send files to
-registered ones. Each registered user can maintain alias pages. An
-alias page just presents a simple upload form and is open to
-everyone. The form does not allow to specify a password or validation
-time span in contrast to the upload form for authenticated users. The
-files uploaded through this page are stored on the server and the user
-belonging to the alias is notified via email.
-
-Alias pages can be created, deleted or disabled. They are meant to be
-shared with others. The links to the alias pages are random and "hard
-to guess", but otherwise publicly accessible.
+Anonymous can send files to registered ones. Each registered user can
+maintain alias pages. An alias page is behind a “hard-to-guess” URL
+(just like the download page) and allows everyone to upload files to
+the corresponding user. The form does not allow to specify a password
+or validation period, but a description can be given. The user
+belonging to the alias can be notified via email.
 
 *** Others -> Others
 
