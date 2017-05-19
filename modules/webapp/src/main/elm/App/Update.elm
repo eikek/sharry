@@ -6,6 +6,7 @@ import Resumable
 import Data exposing (accountDecoder)
 import App.Model exposing (..)
 import Ports exposing (..)
+import PageLocation as PL
 
 import App.Pages as Pages
 import Pages.Login.Update as LoginUpdate
@@ -89,7 +90,7 @@ update msg model =
         Logout ->
             case model.user of
                 Just acc ->
-                    (initModel model.serverConfig Nothing model.location, removeAccount acc)
+                    initModel model.serverConfig Nothing model.location ! [removeAccount acc, PL.indexPage]
                 Nothing ->
                     (model, Cmd.none)
 

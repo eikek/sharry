@@ -118,13 +118,13 @@ navbar: Account -> Model -> Html Msg
 navbar account model =
     div [class "ui fixed compact menu"]
         [
-         a [onClick (SetPage PL.indexPage), class "header item"] [text model.serverConfig.appName]
-        ,a [onClick (SetPage PL.uploadsPage), class "item"] [text "My Uploads"]
-        ,a [onClick (SetPage PL.aliasListPage), class "item"][text "Aliases"]
+         a [href PL.indexPageHref, class "header item"] [text model.serverConfig.appName]
+        ,a [href PL.uploadsPageHref, class "item"] [text "My Uploads"]
+        ,a [href PL.aliasListPageHref, class "item"][text "Aliases"]
         ,div [class "right menu"]
             [
-             a [onClick (SetPage PL.accountEditPage), class "item"] [text "Edit Accounts"] |> adminHtml account
-            ,a [onClick (SetPage PL.profilePage), class "item"][text "Profile"] |> nonAdminHtml account
+             a [href PL.accountEditPageHref, class "item"] [text "Edit Accounts"] |> adminHtml account
+            ,a [href PL.profilePageHref, class "item"][text "Profile"] |> nonAdminHtml account
             ,a [onClick (Logout), class "item"][text "Logout"]
             ]
         ]
