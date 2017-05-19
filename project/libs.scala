@@ -17,8 +17,8 @@ object libs {
 
   // https://github.com/functional-streams-for-scala/fs2
   // MIT
-  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.9.5"
-  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.9.5"
+  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.9.6"
+  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.9.6"
 
   // https://github.com/Spinoco/fs2-http
   // MIT
@@ -51,9 +51,9 @@ object libs {
 
   // https://github.com/circe/circe
   // ASL 2.0
-  val `circe-core` = "io.circe" %% "circe-core" % "0.7.1"
-  val `circe-generic` = "io.circe" %% "circe-generic" % "0.7.1"
-  val `circe-parser` = "io.circe" %% "circe-parser" % "0.7.1"
+  val `circe-core` = "io.circe" %% "circe-core" % "0.8.0"
+  val `circe-generic` = "io.circe" %% "circe-generic" % "0.8.0"
+  val `circe-parser` = "io.circe" %% "circe-parser" % "0.8.0"
 
   // http://tika.apache.org
   // ASL 2.0
@@ -92,7 +92,7 @@ object libs {
 
   // http://dnsjava.org/
   // BSD
-  val dnsjava = "dnsjava" % "dnsjava" % "2.1.7" intransitive()
+  val dnsjava = "dnsjava" % "dnsjava" % "2.1.8" intransitive()
 
   // https://github.com/eikek/yamusca
   // MIT
