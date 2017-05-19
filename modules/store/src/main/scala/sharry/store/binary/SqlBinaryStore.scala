@@ -1,6 +1,7 @@
 package sharry.store.binary
 
 import java.time.Instant
+import java.time.temporal._
 import com.typesafe.scalalogging.Logger
 import fs2.{Pipe, Stream, Task}
 import fs2.util.Catchable
@@ -67,7 +68,7 @@ class SqlBinaryStore(xa: Transactor[Task]) extends BinaryStore with Statements {
                 }
               } yield m
           }
-        } yield meta
+        } yield meta.map(m => m.copy(timestamp = m.timestamp.truncatedTo(ChronoUnit.SECONDS)))
         Stream.eval(update.transact(xa))
     }
 

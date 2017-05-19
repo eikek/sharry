@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common
 
 import java.nio.file.{Files, Paths}
 import org.scalatest._

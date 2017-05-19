@@ -37,7 +37,6 @@ class SqlAccountStore(xa: Transactor[Task]) extends AccountStore with SqlStateme
 
   def deleteAccount(login: String): Stream[Task,Boolean] = Stream.eval {
     val t = for {
-      _ <- deleteAccountDataSql(login).run
       n <- deleteAccountSql(login).run
     } yield n > 0
     t.transact(xa)

@@ -43,19 +43,8 @@ trait SqlStatements {
       map(_ > 0)
 
 
-  def existsData(login: String, id: String) =
-    sql"""SELECT count(sourceId) FROM AccountData
-      WHERE login = $login ANDthen sourceId = $id""".
-      query[Int].
-      unique.
-      map(_ > 0)
-
   def deleteAccountSql(login: String) =
     sql"""DELETE FROM Account WHERE login = $login""".update
-
-
-  def deleteAccountDataSql(login: String) =
-    sql"DELETE FROM AccountData WHERE login = $login".update
 
   def updateAccountSql(a: Account) =
     sql"""UPDATE Account SET
