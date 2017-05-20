@@ -137,7 +137,7 @@ libraries:
 - [[https://github.com/pureconfig/pureconfig][pureconfig]] is reading the configuration file using [[https://github.com/typesafehub/config][config]] library
 - …
 
-See all of them in the [[project/libs.scala][libs]] file.
+See all of them in the [[./project/libs.scala][libs]] file.
 
 The frontend is written in [[http://elm-lang.org/][Elm]]. Two libraries aside from ~elm-lang/*~
 are used:
@@ -153,7 +153,7 @@ Non-elm components:
 ** Configuring
 
 Sharry reads a configuration file that can be given as an argument to
-the executable. Please see the [[modules/server/src/main/resources/reference.conf][default]] configuration for all available
+the executable. Please see the [[./modules/server/src/main/resources/reference.conf][default]] configuration for all available
 options. For more detailed information on its syntax, please refer to
 the [[https://github.com/typesafehub/config/blob/master/HOCON.md][specification]] and documentation of [[https://github.com/typesafehub/config][config library]]
 

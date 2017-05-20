@@ -139,7 +139,7 @@ following great libraries:
     [config](https://github.com/typesafehub/config) library
 -   …
 
-See all of them in the *libs* file.
+See all of them in the [libs](./project/libs.scala) file.
 
 The frontend is written in [Elm](http://elm-lang.org/). Two libraries
 aside from `elm-lang/*` are used:
@@ -160,9 +160,10 @@ Configuring
 -----------
 
 Sharry reads a configuration file that can be given as an argument to
-the executable. Please see the *default* configuration for all available
-options. For more detailed information on its syntax, please refer to
-the
+the executable. Please see the
+[default](./modules/server/src/main/resources/reference.conf)
+configuration for all available options. For more detailed information
+on its syntax, please refer to the
 [specification](https://github.com/typesafehub/config/blob/master/HOCON.md)
 and documentation of [config
 library](https://github.com/typesafehub/config)
