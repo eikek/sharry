@@ -190,6 +190,7 @@ type alias RemoteUrls =
     ,uploads: String
     ,uploadData: String
     ,uploadPublish: String
+    ,uploadUnpublish: String
     ,download: String
     ,downloadZip: String
     ,downloadPublished: String

@@ -19,6 +19,7 @@ object paths {
     "uploads" -> api1/"uploads",
     "uploadData" -> api1/"upload-data",
     "uploadPublish" -> api1/"upload-publish",
+    "uploadUnpublish" -> api1/"upload-unpublish",
     "download" -> api1/"dl"/"file",
     "downloadZip" -> api1/"dl"/"zip",
     "downloadPublished" -> Path("dlp")/"file",
@@ -41,6 +42,7 @@ object paths {
   def uploads = mounts("uploads")
   def uploadData = mounts("uploadData")
   def uploadPublish = mounts("uploadPublish")
+  def uploadUnpublish = mounts("uploadUnpublish")
   def download = mounts("download")
   def downloadZip = mounts("downloadZip")
   def downloadPublished = mounts("downloadPublished")

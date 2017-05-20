@@ -30,6 +30,7 @@ object upload {
       , createUpload(auth, uploadCfg, store)
       , uploadChunks(auth, store)
       , publishUpload(auth, store)
+      , unpublishUpload(auth, store)
       , getPublishedUpload(store)
       , getUpload(auth, store)
       , getAllUploads(auth, store)
@@ -125,7 +126,16 @@ object upload {
       case id :: user :: HNil =>
         store.publishUpload(id, user).flatMap {
           case Right(pid) => store.getPublishedUpload(pid).map(Ok.body(_))
-          case Left(msg) => Stream.emit(BadRequest.body(Map("error" -> msg)))
+          case Left(msg) => Stream.emit(BadRequest.message(msg))
+        }
+    }
+
+  def unpublishUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+    Post >> paths.uploadUnpublish.matcher / uploadId :: authz.user(authCfg) map {
+      case id :: login :: HNil =>
+        store.unpublishUpload(id, login).flatMap {
+          case Right(_) => store.getUpload(id, login).map(Ok.body(_))
+          case Left(msg) => Stream.emit(BadRequest.message(msg))
         }
     }
 

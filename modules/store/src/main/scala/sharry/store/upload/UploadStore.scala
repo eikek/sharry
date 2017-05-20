@@ -30,6 +30,8 @@ trait UploadStore {
 
   def publishUpload(id: String, login: String): Stream[Task, Either[String, String]]
 
+  def unpublishUpload(id: String, login: String): Stream[Task,Either[String,Unit]]
+
   def getUploadByFileId(fileId: String, login: String): Stream[Task, (Upload, UploadInfo.File)]
 
   def getPublishedUploadByFileId(fileId: String): Stream[Task, (Upload, UploadInfo.File)]

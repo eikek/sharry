@@ -84,6 +84,21 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
       }
   }
 
+  def unpublishUpload(id: String, login: String): Stream[Task,Either[String,Unit]] =
+    Stream.eval(sqlGetUpload(id, login).transact(xa)).
+      through(streams.optionToEmpty).
+      flatMap { up =>
+        up.publishId match {
+          case None =>
+            Stream.emit(Left(s"The upload $id is not published already."))
+          case Some(_) =>
+            Stream.eval(sqlUnpublishUpload(id, login).run.transact(xa)).
+              map(n =>
+                if (n == 1) Right(())
+                else Left("Internal error: unpublished more than one upload"))
+        }
+      }
+
   def getUploadByFileId(fileId: String, login: String): Stream[Task, (Upload, UploadInfo.File)] =
     Stream.eval(sqlGetUploadByFileId(fileId, login).transact(xa)).
       through(streams.optionToEmpty)

@@ -137,6 +137,11 @@ trait SqlStatements extends Statements {
           WHERE publishId is null AND id = $id AND login = $login""".
       update
 
+  def sqlUnpublishUpload(id: String, login: String) =
+    sql"""UPDATE Upload SET publishId = null, publishDate = null, publishUntil = null
+          WHERE id = $id AND login = $login""".
+      update
+
   def sqlUpdateDownloadStats(publishId: String, inc: Int, last: Instant) =
     sql"""UPDATE Upload SET downloads = downloads + $inc, lastDownload = $last WHERE publishId = $publishId""".
       update

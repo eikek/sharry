@@ -28,6 +28,7 @@ type Msg
     | DeleteDownload
     | DeleteDownloadResult (Result Http.Error Int)
     | PublishDownload
+    | UnpublishDownload
     | PublishDownloadResult (Result Http.Error UploadInfo)
     | OpenMailForm
     | MailFormCancel
@@ -86,7 +87,10 @@ update msg model =
             {model | info = info} ! []
 
         PublishDownloadResult (Err error) ->
-            {model | errorMessage = Debug.log "Error publishing download" [(Data.errorMessage error)]} ! []
+            {model | errorMessage = Debug.log "Error un-/publishing download" [(Data.errorMessage error)]} ! []
+
+        UnpublishDownload ->
+            model ! [httpUnpublishDownload model]
 
         OpenMailForm ->
             {model | mailForm = Just (MailForm.makeModel model.cfg.urls)} ! [httpGetTemplate model]
@@ -417,6 +421,8 @@ actionButtons model =
         <| Data.htmlList
             [(isOwner model && not (Data.isPublishedUpload model.info.upload),
                   Html.button [HA.class "ui button", HE.onClick PublishDownload][text "Publish"])
+            ,(isOwner model && Data.isPublishedUpload model.info.upload,
+                  Html.button [HA.class "ui button", HE.onClick UnpublishDownload][text "Unpublish"])
             ,(isOwner model,
                   Html.button [HA.class "negative ui button", HE.onClick DeleteDownload][text "Delete"])
             ,(List.length model.info.files > 1,
@@ -475,6 +481,11 @@ httpDeleteDownload model =
 httpPublishDownload: Model -> Cmd Msg
 httpPublishDownload model =
     Http.post (model.cfg.urls.uploadPublish ++ "/" ++ model.info.upload.id) Http.emptyBody Data.decodeUploadInfo
+        |> Http.send PublishDownloadResult
+
+httpUnpublishDownload: Model -> Cmd Msg
+httpUnpublishDownload model =
+    Http.post (model.cfg.urls.uploadUnpublish ++ "/" ++ model.info.upload.id) Http.emptyBody Data.decodeUploadInfo
         |> Http.send PublishDownloadResult
 
 httpGetTemplate: Model -> Cmd Msg
