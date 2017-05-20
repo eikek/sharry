@@ -93,7 +93,7 @@ update msg model =
         BackToTable ->
             case model.selected of
                 EditDetail m ->
-                    {model | selected = Table, aliases = List.map (insertAlias (Debug.log "alias new is " m.alia)) model.aliases} ! []
+                    {model | selected = Table, aliases = List.map (insertAlias m.alia) model.aliases} ! []
                 _ ->
                     {model | selected = Table} ! []
 

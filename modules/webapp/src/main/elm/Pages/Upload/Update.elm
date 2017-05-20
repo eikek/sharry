@@ -82,8 +82,9 @@ update msg model =
         UploadPublished (Ok info) ->
             let
                 model_ = clearModel model
+                handle = Maybe.withDefault "" model.uploadFormModel.resumableModel.handle
             in
-                model_ ! [PL.downloadPage (Uid info.upload.id)] |> defer Cmd.none
+                model_ ! [PL.downloadPage (Uid info.upload.id), Ports.resetResumable handle] |> defer Cmd.none
 
         UploadPublished (Err error) ->
             {model | errorMessage = Data.errorMessage error} ! [] |> defer Cmd.none

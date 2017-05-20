@@ -69,6 +69,17 @@ elmApp.ports.resumableRebind.subscribe(function(handle) {
     }
 });
 
+elmApp.ports.resetResumable.subscribe(function(handle) {
+    var r = sharryResumables[handle];
+    if (r) {
+        r.cancel();
+        delete sharryResumables[handle];
+        var cfg = r.opts;
+        var id = genId("u");
+        elmApp.ports.resumableHandle.send([cfg.page, id]);
+    }
+});
+
 elmApp.ports.resumableStart.subscribe(function(handle) {
     var r = sharryResumables[handle];
     if (r) {
