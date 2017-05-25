@@ -3,9 +3,6 @@ language: scala
 scala:
   - 2.12.2
 
-before_install:
-  - "npm install -g elm@0.18.0"
-
 jdk:
   - oraclejdk8
 
@@ -14,6 +11,13 @@ cache:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
 
+install:
+  - "nvm install node"
+  - "npm install -g elm"
+  - "npm install -g elm-test"
+
+before_script:
+  - export TZ=Europe/Berlin
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION "make"
+  - sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"

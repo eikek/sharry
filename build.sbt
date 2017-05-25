@@ -86,6 +86,9 @@ lazy val webapp = project.in(file("modules/webapp")).
       "evancz/elm-markdown" -> "3.0.0 <= v < 4.0.0",
       "NoRedInk/elm-decode-pipeline" -> "3.0.0 <= v < 4.0.0"
     ),
+    elmDependencies in Test ++= Seq(
+      "elm-community/elm-test" -> "4.0.0 <= v < 5.0.0"
+    ),
     // webjar stuff
     resourceGenerators in Compile += (elmMake in Compile).taskValue,
     webjarPackage in (Compile, webjarSource) := "sharry.webapp.route",
@@ -141,3 +144,4 @@ lazy val root = project.in(file(".")).
 
 addCommandAlias("run-sharry", ";project server;run")
 addCommandAlias("make", ";set elmMinify in (webapp, Compile) := true ;assembly")
+addCommandAlias("run-all-tests", ";test ;elmTest")

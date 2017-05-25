@@ -10,6 +10,7 @@ object ElmPlugin extends AutoPlugin {
 
   object autoImport {
     val elmMakeExecuteable = settingKey[String]("The executable `elm-make'")
+    val elmTestExecuteable = settingKey[String]("The executable `elm-test'")
     val elmMakeOutputPath = settingKey[File]("The directory to store elm-make output")
     val elmDependencies = settingKey[Seq[(String, String)]]("Elm package dependencies")
     val elmSources = settingKey[File]("Directory to scan for elm files")
@@ -21,8 +22,9 @@ object ElmPlugin extends AutoPlugin {
     val elmReactorPort = settingKey[Int]("The port for elm-reactor")
     val elmMakeCompilationLevel = settingKey[String]("The compilation level passed to google closure compiler. One of WHITESPACE_ONLY, SIMPLE or ADVANCED")
     val elmMinify = settingKey[Boolean]("Whether to run minifier after compilation")
-    val elmProject = taskKey[File]("Create elm-package.json")
+    val elmProject = taskKey[Seq[File]]("Create elm-package.json")
     val elmMake = taskKey[Seq[File]]("Compile elm files")
+    val elmTest = taskKey[Seq[File]]("Run elm tests using elm-test")
     val elmReactor = taskKey[Unit]("Run `elm-reactor'")
   }
 
@@ -30,10 +32,12 @@ object ElmPlugin extends AutoPlugin {
 
   lazy val elmSettings = Seq(
     elmMakeExecuteable := "elm-make",
+    elmTestExecuteable := "elm-test",
     elmReactorExecuteable := "elm-reactor",
     elmReactorPort := 8000,
     elmMakeOutputPath := (resourceManaged in Compile).value/"META-INF"/"resources"/"webjars"/(name in Compile).value/(version in Compile).value,
     elmSources := (sourceDirectory in Compile).value/"elm",
+    elmSources in Test := (sourceDirectory in Test).value/"elm",
     elmDebug := false,
     elmMinify := false,
     elmGithubRepo := (homepage.value match {
@@ -41,6 +45,7 @@ object ElmPlugin extends AutoPlugin {
       case _ => "https://github.com/user/repo.git"
     }),
     elmDependencies := Seq.empty,
+    elmDependencies in Test := (elmDependencies in Compile).value,
     elmWd := (target in Compile).value/"elm-make",
     elmMakeCompilationLevel := "SIMPLE",
     elmProject := {
@@ -50,25 +55,23 @@ object ElmPlugin extends AutoPlugin {
         Files.createSymbolicLink((wd/elmSources.value.getName).toPath, elmSources.value.toPath)
       }
       val pkgJson = wd/"elm-package.json"
-      val content = s"""{
-      |  "version" : "${version.value.replaceAll("[^0-9\\.]", "")}",
-      |  "summary" : "${description.value}",
-      |  "repository" : "${elmGithubRepo.value}",
-      |  "license" : "",
-      |  "source-directories" : [
-      |    "${elmSources.value.getName}"
-      |  ],
-      |  "exposed-modules" : [],
-      |  "dependencies" : {
-      |    ${elmDependencies.value.map({case (k,v) => "\""+k+"\" : \""+v+"\"" }).mkString(",\n    ")}
-      |  },
-      |  "elm-version" : "${elmVersion.value}"
-      |}""".stripMargin
+      val content = packageJson(elmDependencies, false).value
       if (!pkgJson.exists || Hash.toHex(Hash(pkgJson)) != Hash.toHex(Hash(content))) {
         streams.value.log.info("Generating elm-package.json")
         IO.write(pkgJson, content)
       }
-      pkgJson
+
+      val testPkgJson = wd/"tests"/"elm-package.json"
+      val testContent = packageJson(elmDependencies in Test, true).value
+      if (!testPkgJson.exists || Hash.toHex(Hash(testPkgJson)) != Hash.toHex(Hash(testContent))) {
+        streams.value.log.info("Generating tests/elm-package.json")
+        IO.write(testPkgJson, testContent)
+      }
+      if (!Files.exists((wd/"tests"/(elmSources in Test).value.getName).toPath) && Files.exists((elmSources in Test).value.toPath)) {
+        Files.createSymbolicLink((wd/"tests"/(elmSources in Test).value.getName).toPath, (elmSources in Test).value.toPath)
+      }
+
+      Seq(pkgJson, testPkgJson)
     },
     elmMake := {
       val pkg = elmProject.value
@@ -107,6 +110,15 @@ object ElmPlugin extends AutoPlugin {
         Seq(out)
       }
     },
+    elmTest := {
+      val wd = elmWd.value
+      val proc = Process(elmTestExecuteable.value, Some(wd))
+      runCmd(proc, streams.value.log,
+        "Elm tests successful",
+        "Elm tests failed")
+      val out = wd/"elm-stuff"/"generated-code"/"elm-community"/"elm-test"/"elmTestOutput.js"
+      if (out.exists) Seq(out) else Seq.empty[File]
+    },
     elmReactor := {
       val pkg = elmProject.value
       val wd = elmWd.value
@@ -119,8 +131,30 @@ object ElmPlugin extends AutoPlugin {
 
   override def projectSettings =
     inConfig(Compile)(elmSettings) ++ Seq(
-      watchSources ++= ((elmSources in Compile).value ** ("*.elm")).get
+      watchSources ++= ((elmSources in Compile).value ** ("*.elm")).get ++ ((elmSources in Test).value ** ("*.elm")).get
     )
+
+
+  def packageJson(deps: SettingKey[Seq[(String, String)]], test: Boolean) = Def.task {
+    val sources =
+      if (!test) Seq((elmSources in Compile).value.getName)
+      else Seq((elmSources in Test).value.getName, "../"+ (elmSources in Compile).value.getName)
+
+    s"""{
+    |  "version" : "${version.value.replaceAll("[^0-9\\.]", "")}",
+    |  "summary" : "${description.value}",
+    |  "repository" : "${elmGithubRepo.value}",
+    |  "license" : "",
+    |  "source-directories" : [
+    |    ${sources.mkString("\"", "\", \"", "\"")}
+    |  ],
+    |  "exposed-modules" : [],
+    |  "dependencies" : {
+    |    ${deps.value.map({case (k,v) => "\""+k+"\" : \""+v+"\"" }).mkString(",\n    ")}
+    |  },
+    |  "elm-version" : "${elmVersion.value}"
+    |}""".stripMargin
+  }
 
 
   def runCmd(proc: ProcessBuilder, log: Logger, success: String, error: String): Unit = {
