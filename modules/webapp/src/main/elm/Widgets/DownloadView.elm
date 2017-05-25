@@ -205,7 +205,7 @@ uploadInfoItems model =
                    div [HA.class "header"]
                        [text "Uploaded at"]
                   ,div [HA.class "content"]
-                      [text model.info.upload.created]
+                      [text (Data.formatDate model.info.upload.created)]
                   ]
               ]
               
@@ -232,7 +232,7 @@ uploadInfoItems model =
                   div [HA.class "header"]
                       [text "Published on"]
                  ,div [HA.class "content"]
-                     [Maybe.withDefault "-" model.info.upload.publishDate |> text]
+                     [Maybe.map Data.formatDate model.info.upload.publishDate |> Maybe.withDefault "-" |> text]
                  ]
              ]
              
@@ -272,7 +272,7 @@ downloadInfoItems model =
                   div [HA.class "header"]
                       [text "Last download at"]
                  ,div [HA.class "content"]
-                     [Maybe.withDefault "-" model.info.upload.lastDownload |> text]
+                     [Maybe.map Data.formatDate model.info.upload.lastDownload |> Maybe.withDefault "-" |> text]
                  ]
              ]
              
@@ -283,7 +283,7 @@ downloadInfoItems model =
                   div [HA.class "header"]
                       [text "Valid until"]
                  ,div [HA.class "content"]
-                     [Maybe.withDefault "-" model.info.upload.validUntil |> text]
+                     [Maybe.map Data.formatDate model.info.upload.validUntil |> Maybe.withDefault "-" |> text]
                  ]
              ]
          ]
@@ -311,7 +311,7 @@ validatedHint model =
          div [HA.class "ui info message"]
              [
               div [HA.class "header"]
-                  [text "This download is not a valid public download!"]
+                  [text "This is not a valid public download!"]
              ,Html.ul [HA.class "list"]
                  (List.map (\s -> Html.li[][text s]) model.info.upload.validated)
              ]

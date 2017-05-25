@@ -175,7 +175,7 @@ createRow model alia =
         [
          td []
              [a [href (PL.aliasUploadPageHref alia.id)][text alia.name]]
-        ,td [class "center aligned"][text alia.created]
+        ,td [class "center aligned"][alia.created |> Data.formatDate |> text]
         ,td [class "center aligned"]
             [
              text (Data.formatDuration alia.validity)

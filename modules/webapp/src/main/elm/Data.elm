@@ -3,6 +3,7 @@ module Data exposing (..)
 import Html exposing (Html)
 import List
 import Http
+import Date
 import Json.Decode as Decode exposing(field, at)
 import Json.Encode as Encode
 import Json.Decode.Pipeline as JP
@@ -380,3 +381,24 @@ messagesToHtml messages =
                 f m = Html.li [][Html.text m]
             in
                 Html.ul [] (List.map f messages)
+
+formatInt2: Int -> String
+formatInt2 n =
+    if n < 10 then "0" ++ (toString n)
+    else toString n
+
+formatDate: String -> String
+formatDate str =
+    case (Date.fromString str) of
+        Ok d ->
+            let
+                year = Date.year d |> toString
+                month = Date.month d |> toString
+                dow = Date.dayOfWeek d |> toString
+                day = Date.day d |> formatInt2
+                hour = Date.hour d |> formatInt2
+                min = Date.minute d |> formatInt2
+            in
+                dow ++ ", " ++ day ++ ". " ++ month ++ " " ++ year ++ ", " ++ hour ++ ":" ++ min
+        _ ->
+            str

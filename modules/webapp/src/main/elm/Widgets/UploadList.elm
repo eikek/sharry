@@ -121,7 +121,7 @@ createRow upload =
              [
               a [href (PL.downloadPageHref (Uid upload.id))][text upload.id]
              ]
-        ,td [class "center aligned"][text upload.created]
+        ,td [class "center aligned"][Data.formatDate upload.created |> text]
         ,td [class "center aligned"]
             [
              i [class (if upload.requiresPassword then yes else no)][]
