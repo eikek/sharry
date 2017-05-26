@@ -43,7 +43,7 @@ object libs {
 
   // https://jdbc.postgresql.org/
   // BSD
-  val postgres = "org.postgresql" % "postgresql" % "9.4.1212"
+  val postgres = "org.postgresql" % "postgresql" % "42.1.1"
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0
@@ -75,7 +75,7 @@ object libs {
 
   // https://github.com/Semantic-Org/Semantic-UI
   // MIT
-  val `semantic-ui` = webjar("Semantic-UI", "2.2.9")
+  val `semantic-ui` = webjar("Semantic-UI", "2.2.10")
 
   // https://github.com/23/resumable.js
   // MIT
