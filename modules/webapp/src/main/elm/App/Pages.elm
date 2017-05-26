@@ -77,7 +77,7 @@ findIndexPage model =
 
 findLoginPage: Model -> Maybe (Model, Cmd Msg)
 findLoginPage model =
-    if model.location.hash == PL.loginPageHref then
+    if String.startsWith PL.loginPageHref model.location.hash then
         let
             m = clearModel model
         in
@@ -99,7 +99,7 @@ findDownloadPage model =
     let
         location = model.location
         mCmd = Maybe.map (httpGetUpload model.serverConfig) (PL.downloadPageId location.hash)
-        f cmd = model ! [cmd]
+        f cmd = {model | page = DownloadPage} ! [cmd]
     in
         Maybe.map f mCmd
 

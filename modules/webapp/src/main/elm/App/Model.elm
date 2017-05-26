@@ -1,12 +1,13 @@
 module App.Model exposing (..)
 
 import Resumable
-import Data exposing (Alias, Account, RemoteConfig, UploadInfo, Upload, accountDecoder)
+import Data exposing (Alias, Account, RemoteConfig, UploadInfo, Upload, UploadId(..), accountDecoder)
 import Http
 import Time exposing (Time)
 import Pages.Login.Model as LoginModel
 import Pages.AccountEdit.Model as AccountEditModel
 import Pages.Upload.Model as UploadModel
+import PageLocation as PL
 
 import Widgets.DownloadView as DownloadView
 import Pages.Login.Update as LoginUpdate
@@ -70,6 +71,17 @@ type alias Model =
     , serverConfig: RemoteConfig
     , deferred: List (Cmd Msg)
     }
+
+isPublicPage: Model -> Bool
+isPublicPage model =
+    case model.page of
+        LoginPage -> True
+        AliasUploadPage -> True
+        DownloadPage ->
+            case PL.downloadPageId model.location.hash of
+                Just (Uid _) -> False
+                _ -> True
+        _ -> False
 
 initModel: RemoteConfig -> Maybe Account -> Navigation.Location -> Model
 initModel cfg acc location =

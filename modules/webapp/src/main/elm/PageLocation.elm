@@ -18,10 +18,26 @@ indexPage =
 loginPageHref: String
 loginPageHref = "#login"
 
-loginPage: Cmd msg
-loginPage =
-    Navigation.newUrl loginPageHref
+loginPage: Navigation.Location -> Cmd msg
+loginPage location  =
+    let
+        url =
+            if (String.length location.hash > 1) then
+                (loginPageHref ++ "&redirect=" ++ location.hash)
+            else
+                loginPageHref
+    in
+        Navigation.newUrl url
 
+loginPageRedirect: Navigation.Location -> Cmd msg
+loginPageRedirect loc =
+    let
+        prefix = loginPageHref ++ "&redirect=#"
+    in
+        if String.startsWith prefix loc.hash then
+            Navigation.newUrl (String.dropLeft ((String.length prefix) - 1) loc.hash)
+        else
+            indexPage
 
 -- uploads page
 

@@ -31,27 +31,35 @@ update msg model =
             let
                 (model_, cmd) = Pages.withLocation {model | location = loc}
             in
-                -- unfortunately, the upload pages still needs some
-                -- more: setup of resumable.js event handlers. This is
-                -- tricky because the command must execute _after_ the
-                -- dom elements are present.
-                --
-                -- putting the below in `findNewSharePage` function
-                -- resulted in an uncaugh-type runtime error from
-                -- within elm, that I couldn't resolve.
-                --
-                -- So now these special cases are handled here. In
-                -- order to route the response back to the correct
-                -- part of the model, we add a page attribute.
-                if model_.page == NewSharePage then
-                    let
-                        cfg = Resumable.makeStandardConfig model_.serverConfig
-                        msgs = List.map UploadMsg (UploadModel.resumableMsg (Resumable.Initialize {cfg | page = "newshare"}))
-                        (model__, cmd_) = List.foldl combineResults (model_, Cmd.none) msgs
-                    in
-                        model__ ! [cmd, cmd_]
-                else
-                    (model_, cmd)
+                case model.user of
+                    Just _ ->
+                        -- unfortunately, the upload pages still needs some
+                        -- more: setup of resumable.js event handlers. This is
+                        -- tricky because the command must execute _after_ the
+                        -- dom elements are present.
+                        --
+                        -- putting the below in `findNewSharePage` function
+                        -- resulted in an uncaugh-type runtime error from
+                        -- within elm, that I couldn't resolve.
+                        --
+                        -- So now these special cases are handled here. In
+                        -- order to route the response back to the correct
+                        -- part of the model, we add a page attribute.
+                        if model_.page == NewSharePage then
+                            let
+                                cfg = Resumable.makeStandardConfig model_.serverConfig
+                                msgs = List.map UploadMsg (UploadModel.resumableMsg (Resumable.Initialize {cfg | page = "newshare"}))
+                                (model__, cmd_) = List.foldl combineResults (model_, Cmd.none) msgs
+                            in
+                                model__ ! [cmd, cmd_]
+                        else
+                            (model_, cmd)
+
+                    Nothing ->
+                        if isPublicPage model_ then
+                            (model_, cmd)
+                        else
+                            model_ ! [PL.loginPage loc]
 
         SetPage cmd ->
             model ! [cmd]
@@ -62,10 +70,11 @@ update msg model =
         LoginMsg msg ->
             let
                 (val, cmd, user) = LoginUpdate.update msg model.login
+                redirect = PL.loginPageRedirect model.location
             in
                 case user of
                     Just n ->
-                        ({model | login = val, page = IndexPage, user = Just n }, setAccount n)
+                        {model | login = val, page = IndexPage, user = Just n } ! [setAccount n, redirect]
                     _ ->
                         ({model | login = val}, Cmd.map LoginMsg cmd)
 
