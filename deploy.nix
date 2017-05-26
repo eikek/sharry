@@ -2,7 +2,7 @@
 #    nixops create -d sharry deploy.nix
 #
 # first build the app
-#    sbt assembly
+#    sbt make
 #
 # start it
 #    nixops deploy -d sharry
@@ -14,23 +14,27 @@
 
   sharry =
     { config, pkgs, ... }:
+    with pkgs.lib;
     let
-      sharry = pkgs.stdenv.mkDerivation rec {
+      versionsbt =  last (splitString ":=" (builtins.readFile ./version.sbt));
+      version = builtins.replaceStrings [" " "\n" ''"'' ] ["" "" ""] versionsbt; #"]
+      sharry = pkgs.stdenv.mkDerivation {
         name = "sharry-${version}";
-        version = "0.0.1-SNAPSHOT";
-        src = ./modules/server/target/scala-2.12/sharry-server-0.0.1-SNAPSHOT.jar.sh;
+        version = version;
+        src = (./modules/server/target/scala-2.12 + "/sharry-server-${version}.jar.sh");
         unpackPhase = "true";
         installPhase = ''
-          mkdir -p $out/bin
-          cp $src $out/bin/sharry-server
-          chmod 755 $out/bin/sharry-server
-          cat > $out/bin/sharry <<-EOF
+          mkdir -p $out/{bin,program}
+          cp $src $out/program/sharry-server
+          chmod 755 $out/program/sharry-server
+
+          cat > $out/bin/sharry-server <<-EOF
           #!/usr/bin/env bash
           export SHARRY_JAVA_OPTS="-Dsharry.authc.extern.admin.enable=true -Dsharry.web.baseurl=http://10.233.1.2/"
           export PATH=${pkgs.jre}/bin:$PATH
-          $out/bin/sharry-server
+          $out/program/sharry-server "\$@"
           EOF
-          chmod 755 $out/bin/sharry
+          chmod 755 $out/bin/sharry-server
         '';
       };
       dataDir = "/var/run/sharry";
@@ -66,7 +70,7 @@
         '';
 
         script = ''
-          ${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh sharry -c "cd ${dataDir} && ${sharry}/bin/sharry"
+          ${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh sharry -c "cd ${dataDir} && ${sharry}/bin/sharry-server"
         '';
       };
 
@@ -90,6 +94,7 @@
         '';
       };
 
-      deployment.targetEnv = "container";
+      # deployment.targetEnv = "virtualbox"
+      deployment.targetEnv = "container"; # works only on nixos
     };
 }
