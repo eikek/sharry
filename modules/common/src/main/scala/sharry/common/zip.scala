@@ -11,7 +11,6 @@ import fs2.util.{Effect, Async}
 
 object zip {
 
-
   def zip[F[_]](chunkSize: Int)(implicit F: Async[F]): Pipe[F, (String, Stream[F,Byte]), Byte] = {
     val zipped = F.delay {
       val pout = new PipedOutputStream()
