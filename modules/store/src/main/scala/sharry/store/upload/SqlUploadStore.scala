@@ -34,6 +34,9 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
   def updateMime(fileId: String, mimeType: MimeType): Stream[Task, Int] =
     Stream.eval(setFileMetaMimeType(fileId, mimeType).run.transact(xa))
 
+  def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[Task, Int] =
+    Stream.eval(sqlSetUploadTimestamp(uploadId, fileId, time).transact(xa))
+
   def addChunk(fc: FileChunk): Stream[Task, Unit] =
     binaryStore.saveFileChunk(fc)
 

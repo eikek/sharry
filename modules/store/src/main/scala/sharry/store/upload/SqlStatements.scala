@@ -33,6 +33,11 @@ trait SqlStatements extends Statements {
             ${uc.downloads}, ${uc.lastDownload}, ${uc.publishId}, ${uc.publishDate}, ${until})""".update
   }
 
+  def sqlSetUploadTimestamp(uploadId: String, fileId: String, time: Instant) =
+    for {
+      a <- sql"""UPDATE FileMeta SET timestamp = $time WHERE id = $fileId""".update.run
+      b <- sql"""UPDATE Upload SET created = $time WHERE id = $uploadId""".update.run
+    } yield a + b
 
   def setFileMetaMimeType(fileId: String, mimetype: MimeType) =
     sql"""UPDATE FileMeta SET mimetype = ${mimetype.asString} WHERE id = $fileId""".update

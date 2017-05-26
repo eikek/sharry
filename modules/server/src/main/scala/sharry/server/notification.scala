@@ -16,7 +16,12 @@ object notification {
 
   type Notifier = (String, Alias, Duration) => Stream[Task,Unit]
 
-  def scheduleNotify(smtp: GetSetting, webCfg: WebConfig, mailCfg: WebmailConfig, store: UploadStore, accounts: AccountStore)(id: String, alias: Alias, time: Duration)(implicit S: Strategy, SCH: Scheduler): Stream[Task, Unit] = {
+  def scheduleNotify(smtp: GetSetting
+    , webCfg: WebConfig
+    , mailCfg: WebmailConfig
+    , store: UploadStore
+    , accounts: AccountStore)
+    (implicit S: Strategy, SCH: Scheduler): Notifier = { (id, alias, time) =>
 
     val send = client.send_(smtp)_
     val workTask = findRecipient(id, alias, store, accounts).
@@ -35,12 +40,17 @@ object notification {
     }
   }
 
-  private def schedule[A](task: Task[A], delay: Duration)(implicit S: Strategy, SCH: Scheduler): Task[Unit] = {
+  private def schedule[A](task: Task[A], delay: Duration)
+    (implicit S: Strategy, SCH: Scheduler): Task[Unit] = {
+
     val fd = FiniteDuration(delay.toMillis, MILLISECONDS)
     time.sleep[Task](fd).evalMap(_ => task).run
   }
 
-  def checkAliasAccess(id: String, alias: Alias, time: Duration, store: UploadStore) = {
+  def checkAliasAccess(id: String
+    , alias: Alias
+    , time: Duration
+    , store: UploadStore) = {
     // a request authorized by an alias id to delete an upload is only
     // valid if issued less than X minutes after uploading and it was
     // initially uploaded by this alias
@@ -53,7 +63,8 @@ object notification {
   }
 
 
-  def makeNotifyMail(webCfg: WebConfig, mailCfg: WebmailConfig)(data: (Upload, String)): Task[Mail] = {
+  def makeNotifyMail(webCfg: WebConfig, mailCfg: WebmailConfig)
+    (data: (Upload, String)): Task[Mail] = {
     val (upload, recipient) = data
     val templ = mailCfg.notifyTemplates(mailCfg.defaultLanguage)
     val ctx = Context(
@@ -70,7 +81,10 @@ object notification {
       , text = body)
   }
 
-  def findRecipient(uploadId: String, alias: Alias, store: UploadStore, accounts: AccountStore): Stream[Task,(Upload,String)] =
+  def findRecipient(uploadId: String
+    , alias: Alias
+    , store: UploadStore
+    , accounts: AccountStore): Stream[Task,(Upload,String)] =
     for {
       info <- {
         store.getUpload(uploadId, alias.login).
@@ -83,6 +97,4 @@ object notification {
           through(streams.optionToEmpty)
       }
     } yield (info.upload, receiver)
-
-
 }

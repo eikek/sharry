@@ -190,7 +190,13 @@ object upload {
             store.addChunk(chunk) ++ mimeUpdate(chunk.chunkData)
           })
 
-        init.drain ++ chunk.drain ++ Stream.emit(Ok.noBody)
+        val updateTimestamp =
+          if (info.chunkNumber == info.totalChunks)
+            store.updateTimestamp(info.token, fileId, Instant.now)
+          else
+            Stream.empty
+
+        init.drain ++ chunk.drain ++ updateTimestamp.drain ++ Stream.emit(Ok.noBody)
     }
 
 
