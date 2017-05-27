@@ -10,7 +10,7 @@ import sharry.common.mime._
 import sharry.common.sizes._
 import sharry.store.columns._
 import sharry.store.binary.Statements
-import sharry.store.data.{Alias, FileMeta, Upload, UploadFile, UploadInfo}
+import sharry.store.data._
 
 trait SqlStatements extends Statements {
 
@@ -226,4 +226,11 @@ trait SqlStatements extends Statements {
       query[Alias].
       option
 
+  def sqlGetUploadSize(id: String) =
+    sql"""SELECT count(*), COALESCE(sum(length), 0)
+          FROM UploadFile AS uf
+          INNER JOIN FileMeta AS fm
+          WHERE uf.fileid = fm.id AND uf.uploadid = $id""".
+      query[UploadSize].
+      unique
 }

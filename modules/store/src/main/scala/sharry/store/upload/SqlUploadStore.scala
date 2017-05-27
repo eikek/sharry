@@ -11,7 +11,7 @@ import sharry.common.rng._
 import sharry.common.sizes._
 import sharry.common.streams
 import sharry.common.zip
-import sharry.store.data.{Alias, FileMeta, FileChunk, Upload, UploadFile, UploadInfo}
+import sharry.store.data._
 import sharry.store.binary.BinaryStore
 
 class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends UploadStore with SqlStatements {
@@ -68,6 +68,9 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
     }
     resp.through(streams.optionToEmpty)
   }
+
+  def getUploadSize(id: String): Stream[Task, UploadSize] =
+    Stream.eval(sqlGetUploadSize(id).transact(xa))
 
   def publishUpload(id: String, login: String): Stream[Task, Either[String, String]] = {
     Stream.eval(sqlGetUpload(id, login).transact(xa)).

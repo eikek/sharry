@@ -28,7 +28,7 @@ object upload {
   def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore, notifier: Notifier) =
     choice(testUploadChunk(auth, store)
       , createUpload(auth, uploadCfg, store)
-      , uploadChunks(auth, store)
+      , uploadChunks(auth, uploadCfg, store)
       , publishUpload(auth, store)
       , unpublishUpload(auth, store)
       , getPublishedUpload(store)
@@ -161,7 +161,7 @@ object upload {
       }
     }
 
-  def uploadChunks(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def uploadChunks(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
     Post >> paths.uploadData.matcher >> authz.userId(authCfg, store) :: chunkInfo :: body[Task].bytes map {
       case user :: info :: bytes :: HNil  =>
         val fileId = makeFileId(info)
@@ -196,7 +196,21 @@ object upload {
           else
             Stream.empty
 
-        init.drain ++ chunk.drain ++ updateTimestamp.drain ++ Stream.emit(Ok.noBody)
+        val sizeCheck = store.getUploadSize(info.token).
+          map({
+            case UploadSize(n, len) =>
+              n <= cfg.maxFiles && (len + info.currentChunkSize.bytes) <= cfg.maxFileSize
+          }).
+          through(streams.ifEmpty(Stream.emit(true)))
+
+        sizeCheck.flatMap {
+          case true =>
+            init.drain ++ chunk.drain ++ updateTimestamp.drain ++ Stream.emit(Ok.noBody)
+          case false =>
+            logger.info("Uploading too many or too large files. Return with error.")
+            // http 404,415,500,501 tells resumable.js to cancel entire upload (other codes let it retry)
+            Stream.emit(NotFound.message("Size limit exceeded"))
+        }
     }
 
 

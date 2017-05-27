@@ -6,7 +6,7 @@ import fs2.{Pipe, Strategy, Stream, Task}
 import sharry.common.mime._
 import sharry.common.sizes._
 import sharry.store.range._
-import sharry.store.data.{Alias, FileMeta, FileChunk, Upload, UploadFile, UploadInfo}
+import sharry.store.data._
 
 trait UploadStore {
 
@@ -29,6 +29,8 @@ trait UploadStore {
   def getUpload(id: String, login: String): Stream[Task, UploadInfo]
 
   def getPublishedUpload(id: String):  Stream[Task, UploadInfo]
+
+  def getUploadSize(id: String): Stream[Task, UploadSize]
 
   def publishUpload(id: String, login: String): Stream[Task, Either[String, String]]
 
