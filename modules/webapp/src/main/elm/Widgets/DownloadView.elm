@@ -1,7 +1,6 @@
 module Widgets.DownloadView exposing (..)
 
 import Http
-import Markdown
 import Html exposing (Html, div, text, h2, h3)
 import Html.Attributes as HA
 import Html.Events as HE
@@ -141,7 +140,7 @@ viewPage model =
             ,(not (isOwner model) && isValid model && isAskPassword model,
                   passwordForm model)
             ,(True, div [HA.class "sixteen wide column"]
-                  [(Markdown.toHtml [] msg)])
+                  [(Data.markdownHtml msg)])
             ,(True, div [HA.class "eight wide column"]
                   (uploadInfoItems model))
             ,(True, div [HA.class "six wide column"]

@@ -1,10 +1,10 @@
 module Pages.AliasUpload.View exposing (..)
 
-import Markdown
 import Html exposing (Html, a, div, text, h1, h2, button, i)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 
+import Data
 import Pages.AliasUpload.Model exposing (..)
 import Widgets.AliasUploadForm as AliasUploadForm
 import Widgets.UploadProgress as UploadProgress
@@ -65,8 +65,7 @@ userDimmer model =
                   ,div [class "eight wide column"]
                       [
                        div [class "ui info message"]
-                           [Markdown.toHtml []
-
+                           [Data.markdownHtml
                                 """This page is not intended for
                                  you. Rather give the URL away to
                                  other, _anonymous_, users to allow
@@ -109,8 +108,7 @@ doneMessage model =
             [
              div [class "header"][text "All done."]
             ,div [class "content"]
-                [Markdown.toHtml []
-
+                [Data.markdownHtml
                      """Your files have been uploaded. If you changed
                      your mind, you can remove them by clicking the
                      _Delete_ button. To upload more, simply refresh

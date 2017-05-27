@@ -1,7 +1,6 @@
 module Pages.AccountEdit.View exposing (..)
 
 import List
-import Markdown
 import Html exposing (Html, div, text, span, i, input, a, p, h2)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
@@ -62,7 +61,7 @@ infoText model =
 
 modifyHint: Html a
 modifyHint =
-    Markdown.toHtml [] """
+    Data.markdownHtml """
 This will update the account as follows:
 
 * leave `password` empty to not change it
@@ -71,7 +70,7 @@ This will update the account as follows:
 
 createHint: Html a
 createHint =
-    Markdown.toHtml [] """
+    Data.markdownHtml """
 Create a new account:
 
 * supply `Password` for internal accounts

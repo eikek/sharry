@@ -1,7 +1,6 @@
 module Pages.Upload.View exposing (..)
 
 import List
-import Markdown
 import Html exposing (Html, button, form, h1, div, label, text, textarea, select, option, i, input, a, p)
 import Html.Attributes exposing (class, name, type_, href, classList, rows, placeholder, value, selected)
 import Html.Events exposing (onInput, onClick)

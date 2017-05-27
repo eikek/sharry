@@ -4,6 +4,7 @@ import Html exposing (Html)
 import List
 import Http
 import Date
+import Markdown
 import Json.Decode as Decode exposing(field, at)
 import Json.Encode as Encode
 import Json.Decode.Pipeline as JP
@@ -402,3 +403,11 @@ formatDate str =
                 dow ++ ", " ++ day ++ ". " ++ month ++ " " ++ year ++ ", " ++ hour ++ ":" ++ min
         _ ->
             str
+
+markdownHtml: String -> Html msg
+markdownHtml str =
+    let
+        defaultOpts = Markdown.defaultOptions
+        markedOptions = { defaultOpts | sanitize = True, smartypants = True }
+    in
+        Markdown.toHtmlWith markedOptions [] str
