@@ -1,8 +1,6 @@
 package sharry.common
 
-import java.nio.file.{Files, Paths}
 import java.io.ByteArrayInputStream
-import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import org.scalatest._
 import fs2.{io, Pure, Strategy, Stream, Task}
