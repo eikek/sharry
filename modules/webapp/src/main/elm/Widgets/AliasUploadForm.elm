@@ -8,6 +8,7 @@ import Ports
 import Resumable
 import Resumable.Update as ResumableUpdate
 import Data exposing (RemoteConfig, defer, bytesReadable)
+import Widgets.MarkdownHelp as MarkdownHelp
 
 type alias Limits =
     { maxFileSize: Int
@@ -16,6 +17,7 @@ type alias Limits =
 
 type alias Model =
     { errorMessage: Maybe String
+    , showMarkdownHelp: Bool
     , description: String
     , limits: Limits
     , resumableModel: Resumable.Model
@@ -23,11 +25,11 @@ type alias Model =
 
 emptyModel: RemoteConfig -> Model
 emptyModel cfg =
-    Model Nothing "" (Limits cfg.maxFileSize cfg.maxFiles) Resumable.emptyModel
+    Model Nothing False "" (Limits cfg.maxFileSize cfg.maxFiles) Resumable.emptyModel
 
 clearModel: Model -> Model
 clearModel model =
-    Model Nothing "" model.limits (Resumable.clearModel model.resumableModel)
+    Model Nothing False "" model.limits (Resumable.clearModel model.resumableModel)
 
 hasError: Model -> Bool
 hasError model =
@@ -51,6 +53,7 @@ errorMessage model =
 type Msg
     = SetDescription String
     | ResumableMsg Resumable.Msg
+    | ToggleMarkdownHelp
 
 update: Msg -> Model -> (Model, Cmd Msg, Cmd Msg)
 update msg model =
@@ -64,10 +67,14 @@ update msg model =
             in
                 {model | resumableModel = rmodel} ! [] |> defer (Cmd.map ResumableMsg cmd)
 
+        ToggleMarkdownHelp ->
+            {model | showMarkdownHelp = not model.showMarkdownHelp} ! [] |> defer Cmd.none
 
 
 view: Model -> Html Msg
 view model =
+    if model.showMarkdownHelp then markdownHelp
+    else
     form [classList [("ui form", True)
                     ,("error", hasError model)
                     ]
@@ -78,7 +85,10 @@ view model =
         [errorMessage model |> Data.messagesToHtml]
     ,div [class "field"]
         [
-         label [][text "Description (supports Markdown)"]
+         label [][text "Description (supports "
+                 ,a[onClick ToggleMarkdownHelp, class "ui link"][text "Markdown"]
+                 ,text ")"
+                 ]
         , textarea [name "description"
                    , rows 5
                    , onInput SetDescription
@@ -118,4 +128,16 @@ infoView cfg =
                    " files with a total of " ++
                    (bytesReadable Data.B (toFloat cfg.maxFileSize)) ++
                    ".")
+        ]
+
+markdownHelp:Html Msg
+markdownHelp =
+    div [onClick ToggleMarkdownHelp]
+        [h3 [class "ui horizontal clearing divider header"]
+             [i [class "help icon"][]
+             ,text "Markdown Help"
+             ]
+        ,div [class "ui center aligned segment"]
+            [text "Click somewhere on the help text to close it."]
+        ,MarkdownHelp.helpTextHtml
         ]

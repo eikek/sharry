@@ -1,6 +1,6 @@
 module Widgets.UploadForm exposing (..)
 
-import Html exposing (Html, button, form, h3, div, label, text, textarea, select, option, i, input, a, p)
+import Html exposing (Html, button, form, h1, h3, div, label, text, textarea, select, option, i, input, a, p)
 import Html.Attributes exposing (class, name, type_, href, classList, rows, placeholder, value, selected)
 import Html.Events exposing (onInput, onClick)
 
@@ -8,6 +8,7 @@ import Ports
 import Resumable
 import Resumable.Update as ResumableUpdate
 import Data exposing (RemoteConfig, defer, bytesReadable)
+import Widgets.MarkdownHelp as MarkdownHelp
 
 type alias Limits =
     { maxFileSize: Int
@@ -17,6 +18,7 @@ type alias Limits =
 
 type alias Model =
     { errorMessage: Maybe String
+    , showMarkdownHelp: Bool
     , description: String
     , validityNum: Int
     , validityNumStr: String
@@ -32,6 +34,7 @@ type alias Model =
 emptyModel: RemoteConfig -> Model
 emptyModel cfg =
     {errorMessage = Nothing
+    ,showMarkdownHelp = False
     ,description = ""
     ,validityNum = 5
     ,validityNumStr = "5"
@@ -47,6 +50,7 @@ emptyModel cfg =
 clearModel: Model -> Model
 clearModel model =
     {errorMessage = Nothing
+    ,showMarkdownHelp = False
     ,description = ""
     ,validityNum = 5
     ,validityNumStr = "5"
@@ -89,6 +93,7 @@ type Msg
     | RandomPassword String
     | TogglePasswordVisible
     | ResumableMsg Resumable.Msg
+    | ToggleMarkdownHelp
 
 updateNumber: String -> Model -> (Int -> Model -> Model) -> Model
 updateNumber str model apply =
@@ -149,10 +154,14 @@ update msg model =
             in
                 {model | resumableModel = rmodel} ! [] |> defer (Cmd.map ResumableMsg cmd)
 
+        ToggleMarkdownHelp ->
+            {model | showMarkdownHelp = Debug.log "have it " not model.showMarkdownHelp} ! [] |> defer Cmd.none
 
 
 view: Model -> Html Msg
 view model =
+    if model.showMarkdownHelp then markdownHelp model
+    else
     form [classList [("ui form", True)
                     ,("error", hasError model)
                     ]
@@ -163,7 +172,10 @@ view model =
         [errorMessage model |> Data.messagesToHtml]
     ,div [class "field"]
         [
-         label [][text "Description (supports Markdown)"]
+         label [][text "Description (supports "
+                 ,a[onClick ToggleMarkdownHelp, class "ui link"][text "Markdown"]
+                 ,text ")"
+                 ]
         , textarea [name "description"
                    , rows 5
                    , onInput SetDescription
@@ -262,4 +274,16 @@ infoView cfg =
                    ". The maximum validity is " ++
                    (Data.formatDuration cfg.maxValidity) ++
                    ".")
+        ]
+
+markdownHelp: Model -> Html Msg
+markdownHelp model =
+    div [onClick ToggleMarkdownHelp]
+        [h3 [class "ui horizontal clearing divider header"]
+             [i [class "help icon"][]
+             ,text "Markdown Help"
+             ]
+        ,div [class "ui center aligned segment"]
+            [text "Click somewhere on the help text to close it."]
+        ,MarkdownHelp.helpTextHtml
         ]
