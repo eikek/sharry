@@ -20,7 +20,7 @@ trait UploadStore {
 
   def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[Task, Int]
 
-  def addChunk(fc: FileChunk): Stream[Task, Unit]
+  def addChunk(uploadId: String, fc: FileChunk): Stream[Task, Unit]
 
   def chunkExists(uploadId: String, fileId: String, chunkNr: Int, chunkLength: Size): Stream[Task, Boolean]
 

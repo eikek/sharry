@@ -37,8 +37,11 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
   def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[Task, Int] =
     Stream.eval(sqlSetUploadTimestamp(uploadId, fileId, time).transact(xa))
 
-  def addChunk(fc: FileChunk): Stream[Task, Unit] =
-    binaryStore.saveFileChunk(fc)
+  def addChunk(uploadId: String, fc: FileChunk): Stream[Task, Unit] =
+    chunkExists(uploadId, fc.fileId, fc.chunkNr, fc.chunkLength).flatMap {
+      case true => Stream.emit(())
+      case false => binaryStore.saveFileChunk(fc)
+    }
 
   def chunkExists(uploadId: String, fileId: String, chunkNr: Int, chunkLength: Size): Stream[Task, Boolean] =
     Stream.eval(sqlChunkExists(uploadId, fileId, chunkNr, chunkLength).transact(xa))

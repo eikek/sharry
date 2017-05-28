@@ -187,7 +187,7 @@ object upload {
           through(streams.append).
           map(data => FileChunk(fileId, info.chunkNumber, data)).
           flatMap(chunk => {
-            store.addChunk(chunk) ++ mimeUpdate(chunk.chunkData)
+            store.addChunk(info.token, chunk) ++ mimeUpdate(chunk.chunkData)
           })
 
         val updateTimestamp =
