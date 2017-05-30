@@ -17,14 +17,14 @@ import spinoco.protocol.http.HttpRequestHeader
 import spinoco.protocol.http.HttpStatusCode
 import spinoco.protocol.http.codec.HttpRequestHeaderCodec
 
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 
 import sharry.common.file._
 import sharry.store.evolution
 import sharry.common.streams
 
 object main {
-  implicit val logger = Logger(getClass)
+  implicit val logger = getLogger
   val ES = Executors.newCachedThreadPool(Strategy.daemonThreadFactory("sharry-server-ACG"))
   implicit val ACG = AsynchronousChannelGroup.withThreadPool(ES) // http.server requires a group
   implicit val S = Strategy.fromExecutor(ES) // Async (Task) requires a strategy
@@ -102,7 +102,7 @@ object main {
 
   private def logRequestErrors[F[_]](error: Throwable): Stream[F, HttpResponse[F]] = Stream.suspend {
     implicit val enc = BodyEncoder.utf8String
-    logger.error("Error in request", error)
+    logger.error(error)("Error in request")
     Stream.emit(HttpResponse(HttpStatusCode.InternalServerError).withBody(error.getClass + ":" + error.getMessage))
   }
 

@@ -1,6 +1,6 @@
 package sharry.store.account
 
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import doobie.imports._
 import sharry.store.data._
 import sharry.store.Limit

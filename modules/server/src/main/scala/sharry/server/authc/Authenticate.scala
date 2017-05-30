@@ -1,7 +1,7 @@
 package sharry.server.authc
 
 import java.time.Instant
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import fs2.{Stream, Task, Pipe}
 import com.github.t3hnar.bcrypt._
 import sharry.common.streams
@@ -10,7 +10,7 @@ import sharry.store.account.AccountStore
 import sharry.server.config.AuthConfig
 
 final class Authenticate(store: AccountStore, authConfig: AuthConfig, ext: ExternAuthc) {
-  implicit private val logger = Logger(getClass)
+  implicit private[this] val logger = getLogger
 
   def authc(login: String, pass: String): Stream[Task,AuthResult] = {
     if (authConfig.enable) {

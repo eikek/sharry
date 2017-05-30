@@ -1,7 +1,7 @@
 package sharry.server.authc
 
 import java.nio.channels.AsynchronousChannelGroup
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import scala.sys.process._
 import fs2.{Strategy, Stream, Task}
 import cats.syntax.either._
@@ -18,7 +18,7 @@ trait ExternAuthc {
 }
 
 object ExternAuthc {
-  implicit private val logger = Logger(getClass)
+  implicit private[this] val logger = getLogger
 
   def apply(f: (String, String) => Stream[Task,Option[Account]]): ExternAuthc =
     new ExternAuthc {

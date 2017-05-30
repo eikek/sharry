@@ -2,7 +2,7 @@ package sharry.store.binary
 
 import java.time.Instant
 import java.time.temporal._
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import fs2.{Pipe, Stream, Task}
 import fs2.util.Catchable
 import cats.free.Free.pure
@@ -18,7 +18,7 @@ import sharry.store.range._
 import sharry.store.mimedetect._
 
 class SqlBinaryStore(xa: Transactor[Task]) extends BinaryStore with Statements {
-  implicit private val logger = Logger(getClass)
+  implicit private[this] val logger = getLogger
 
   def delete(id: String): Stream[Task,Boolean] = {
     val sql = for {

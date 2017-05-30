@@ -1,6 +1,6 @@
 package sharry.store.binary
 
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import doobie.imports._
 import scodec.bits.ByteVector
 import sharry.store.data._

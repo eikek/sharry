@@ -59,9 +59,9 @@ object libs {
   // ASL 2.0
   val tika = "org.apache.tika" % "tika-core" % "1.14"
 
-  // https://github.com/typesafehub/scala-logging
+  // https://github.com/Log4s/log4s
   // ASL 2.0
-  val `scala-logging` = "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
+  val log4s = "org.log4s" %% "log4s" % "1.3.4"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1

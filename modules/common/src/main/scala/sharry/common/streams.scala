@@ -4,7 +4,7 @@ import java.io.InputStream
 import scodec.bits.ByteVector
 import fs2.{io, Chunk, Handle, Pipe, Pull, Stream, Task}
 import fs2.util.Suspendable
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 
 import sizes._
 

@@ -6,6 +6,7 @@ import shapeless.{::,HNil}
 import scodec.bits.ByteVector
 import spinoco.fs2.http.routing._
 import com.github.t3hnar.bcrypt._
+import org.log4s._
 
 import sharry.store.data._
 import sharry.common.sizes._
@@ -23,7 +24,7 @@ import sharry.server.notification.Notifier
 import sharry.server.routes.syntax._
 
 object upload {
-  private implicit val logger = com.typesafe.scalalogging.Logger(getClass)
+  private implicit val logger = getLogger
 
   def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore, notifier: Notifier) =
     choice(testUploadChunk(auth, store)

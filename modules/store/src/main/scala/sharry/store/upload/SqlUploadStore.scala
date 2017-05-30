@@ -4,6 +4,7 @@ import java.time.Instant
 import fs2.{Pipe, Strategy, Stream, Task}
 import doobie.imports._
 import cats.implicits._
+import org.log4s._
 
 import sharry.store.range._
 import sharry.common.mime._
@@ -15,7 +16,7 @@ import sharry.store.data._
 import sharry.store.binary.BinaryStore
 
 class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends UploadStore with SqlStatements {
-  private val logger = com.typesafe.scalalogging.Logger(getClass)
+  private[this] val logger = getLogger
 
   def createUpload(up: Upload): Stream[Task, Unit] =
     Stream.eval(insertUploadConfig(up).run.transact(xa)).map(_ => ())

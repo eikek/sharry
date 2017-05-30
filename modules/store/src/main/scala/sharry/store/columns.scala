@@ -2,7 +2,7 @@ package sharry.store
 
 import java.time.{Duration, Instant}
 import java.time.temporal._
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import scodec.bits.ByteVector
 import sharry.common.mime.MimeType
 import sharry.common.sizes._

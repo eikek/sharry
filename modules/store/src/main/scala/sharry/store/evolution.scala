@@ -1,13 +1,13 @@
 package sharry.store
 
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import fs2.{Pure, Stream, Task}
 import doobie.imports._
 import sharry.common.streams
 
 object evolution {
 
-  implicit private val logger = Logger(getClass)
+  implicit private[this] val logger = getLogger
 
   type Change = Transactor[Task] => Stream[Task, Unit]
 

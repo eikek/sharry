@@ -4,7 +4,7 @@ import java.time.{Duration, Instant}
 import cats.data.NonEmptyList
 import cats.implicits._
 import doobie.imports._
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 
 import sharry.common.mime._
 import sharry.common.sizes._
@@ -14,7 +14,7 @@ import sharry.store.data._
 
 trait SqlStatements extends Statements {
 
-  private val logger = Logger(getClass)
+  private[this] val logger = getLogger
   private implicit val logHandler = logSql(logger)
 
   def insertUploadConfig(uc: Upload) = {

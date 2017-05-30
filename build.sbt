@@ -22,7 +22,7 @@ lazy val sharedSettings = Seq(
   scalacOptions in (Test) := (scalacOptions in (Compile, console)).value
 )
 
-lazy val coreDeps = Seq(`cats-core`, `fs2-core`, `fs2-io`, `scala-logging`, `scodec-bits`)
+lazy val coreDeps = Seq(`cats-core`, `fs2-core`, `fs2-io`, log4s, `scodec-bits`)
 lazy val testDeps = Seq(scalatest, `logback-classic`).map(_ % "test")
 
 lazy val common = project.in(file("modules/common")).

@@ -1,7 +1,7 @@
 package sharry.server.email
 
 import javax.mail._
-import com.typesafe.scalalogging.Logger
+import org.log4s._
 import shapeless.syntax.std.tuple._
 import cats.data.ValidatedNel
 import cats.data.Validated.{Valid,Invalid}
@@ -11,7 +11,7 @@ import fs2.util.Attempt
 import Header._
 
 object client {
-  private val logger = Logger(getClass)
+  private[this] val logger = getLogger
 
   def send_(setting: GetSetting)(mail: Mail): Stream[Task, Attempt[Mail]] = {
     splitMail(mail).
@@ -50,7 +50,7 @@ object client {
     mimeMsg.map(Transport.send).
       map(_ => mail).
       handleWith({ case ex =>
-        logger.error(s"Error sending mail: $mail", ex)
+        logger.error(ex)(s"Error sending mail: $mail")
         Task.fail(new Exception(mail.singleRecipient + ": "+ ex.getMessage))
       }).
       attempt
