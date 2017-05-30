@@ -44,7 +44,7 @@ object main {
        | • Running initialize tasks …
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––""".stripMargin)
     evolution(app.cfg.jdbc.url).runChanges(app.jdbc).unsafeRun
-    Task.start(startCleanup(app).unsafeTimed(10.seconds)).unsafeRun
+    Task.start(startCleanup(app)).unsafeRun
 
     val shutdown =
       streams.slog[Task](_.info("Closing database")) ++
@@ -83,6 +83,7 @@ object main {
   private def startCleanup(app: App)(implicit SCH: Scheduler): Task[Unit] = {
     val cfg = app.uploadConfig
     if (cfg.cleanupEnable) {
+      logger.info(s"Scheduling cleanup job every ${cfg.cleanupInterval}")
       val stream = time.awakeEvery[Task](cfg.cleanupInterval).
         flatMap({ _ =>
           logger.info("Running cleanup job")

@@ -14,7 +14,7 @@ object evolution {
   object Change {
     def apply(update: Update0): Change =
       xa => {
-        streams.slogT(_.trace(update.sql)) ++
+        streams.slogT(_.info(update.sql)) ++
         Stream.eval(update.run.transact(xa)).map(_ => ())
       }
   }
