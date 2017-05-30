@@ -10,14 +10,27 @@ cache:
   directories:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
+    - sysconfcpus
 
 install:
-  - "nvm install node"
-  - "npm install -g elm"
-  - "npm install -g elm-test"
+  - nvm install node
+  - nvm use node
+  - node --version
+  - npm --version
+  - npm install -g elm elm-test
+  # Faster compile on Travis.
+  - |
+    if [ ! -d sysconfcpus/bin ];
+    then
+      git clone https://github.com/obmarg/libsysconfcpus.git;
+      cd libsysconfcpus;
+      ./configure --prefix=$TRAVIS_BUILD_DIR/sysconfcpus;
+      make && make install;
+      cd ..;
+    fi
 
 before_script:
   - export TZ=Europe/Berlin
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"
+  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"
