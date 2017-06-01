@@ -9,7 +9,7 @@ object libs {
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0
-  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.7.0"
+  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.7.2"
 
   // https://github.com/typelevel/cats
   // MIT http://opensource.org/licenses/mit-license.php
@@ -57,7 +57,7 @@ object libs {
 
   // http://tika.apache.org
   // ASL 2.0
-  val tika = "org.apache.tika" % "tika-core" % "1.14"
+  val tika = "org.apache.tika" % "tika-core" % "1.15"
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
@@ -83,7 +83,7 @@ object libs {
 
   // https://github.com/jquery/jquery
   // MIT
-  val jquery = webjar("jquery", "3.2.0")
+  val jquery = webjar("jquery", "3.2.1")
 
   // https://java.net/projects/javamail/pages/Home
   // CDDL 1.0, GPL 2.0

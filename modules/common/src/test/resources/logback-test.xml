@@ -1,0 +1,13 @@
+<configuration scan="true">
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %level [%thread] %logger [%file:%line] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="sharry" level="warn" />
+
+  <root level="info">
+    <appender-ref ref="stdout"/>
+  </root>
+</configuration>

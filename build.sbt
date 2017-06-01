@@ -43,7 +43,7 @@ lazy val store = project.in(file("modules/store")).
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `doobie-core`, h2, postgres, tika, `scodec-bits`, `scala-bcrypt`
     ))).
-  dependsOn(common)
+  dependsOn(common % "compile->compile;test->test")
 
 
 // resumable.js is too old as webjar, so download it from github
@@ -135,7 +135,7 @@ lazy val server = project.in(file("modules/server")).
     buildInfoOptions += BuildInfoOption.ToJson,
     buildInfoOptions += BuildInfoOption.BuildTime
   )).
-  dependsOn(common, store, webapp)
+  dependsOn(common % "compile->compile;test->test", store, webapp)
 
 lazy val root = project.in(file(".")).
   disablePlugins(AssemblyPlugin).
