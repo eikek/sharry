@@ -92,7 +92,7 @@ You need Java8, [sbt](http://scala-sbt.org) and
 run:
 
 ``` {.shell .rundoc-block rundoc-language="shell" rundoc-exports="both"}
-sbt assembly
+sbt make
 ```
 
 This creates a file in `modules/server/target/scala-2.12` named
@@ -162,16 +162,24 @@ Configuring
 Sharry reads a configuration file that can be given as an argument to
 the executable. Please see the
 [default](./modules/server/src/main/resources/reference.conf)
-configuration for all available options. For more detailed information
-on its syntax, please refer to the
+configuration for all available options and their default values. It
+also contains hopefully helpful comments.
+
+For more detailed information on its syntax, please refer to the
 [specification](https://github.com/typesafehub/config/blob/master/HOCON.md)
 and documentation of [config
-library](https://github.com/typesafehub/config)
+library](https://github.com/typesafehub/config).
 
 The important settings are
 
 -   `sharry.web.bindHost` and `sharry.web.bindPort` the host and port
     for binding the http server
+-   `sharry.web.baseurl` this must be set to the external base url. So
+    if the app is at <http://example.com/>, then it should be set to
+    this value. It is used to restrict the authentication cookie and to
+    create links in the web application. Please note, that currently a
+    trailing slash must be used in order to make it parse (this will
+    change in the future).
 -   `sharry.db.driver|user|url|password` the JDBC settings; currently it
     should work with postgres and h2
 -   `sharry.upload.max-file-size` maximum file size to upload
