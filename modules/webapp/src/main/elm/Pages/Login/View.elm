@@ -13,7 +13,7 @@ view model =
         [
          div [ class "column login-page-column" ]
              [
-              img [class "ui fluid image login-page-image" , src "static/sharry-webapp/logo.jpg"] []
+              img [class "ui fluid image login-page-image" , src "static/sharry-webapp/logo.png"] []
               , h2 [ class "ui brown image header"]
                   [
                    div [class "content"]
