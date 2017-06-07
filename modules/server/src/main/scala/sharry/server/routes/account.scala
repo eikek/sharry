@@ -20,7 +20,7 @@ import sharry.server.routes.syntax._
 object account {
 
   def endpoint(auth: Authenticate, authCfg: AuthConfig, store: AccountStore, cfg: WebConfig) =
-    choice(listLogins(auth, store)
+    choice2(listLogins(auth, store)
       , createAccount(auth, store)
       , modifyAccount(auth, store)
       , updateEmail(authCfg, store)

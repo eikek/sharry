@@ -40,6 +40,25 @@ object syntax {
   val NoContent = HttpStatusCode.NoContent
   val NotModified = HttpStatusCode.NotModified
 
+  /** Matches any supplied matcher or fails on first with status in `stop`.
+    * This is a slightly modified version of original `choice`.
+    */
+  def choiceUntil[F[_],A](stop: Set[HttpStatusCode])(matcher: Matcher[F, A], matchers: Matcher[F, A]*): Matcher[F, A] = {
+    def go(m: Matcher[F,A], next: Seq[Matcher[F, A]]): Matcher[F, A] = {
+      next.headOption match {
+        case None => m
+        case Some(nm) => m.flatMapR[F, F, A] {
+          case MatchResult.Success(a) => Matcher.success(a)
+          case f: MatchResult.Failed[F] if stop contains f.response.header.status => Matcher.respond(f.response)
+          case f: MatchResult.Failed[F] => go(nm, next.tail)
+        }
+      }
+    }
+    go(matcher, matchers)
+  }
+
+  def choice2[F[_],A](matcher: Matcher[F, A], matchers: Matcher[F, A]*): Matcher[F, A] =
+    choiceUntil[F,A](Set(Unauthorized, Forbidden))(matcher, matchers: _*)
 
   implicit final class ResponseBuilder(val status: HttpStatusCode) extends AnyVal {
     def noBody: HttpResponse[Task] = emptyResponse[Task](status)
@@ -159,7 +178,7 @@ object syntax {
       }
       h match {
         case Some(GenericHeader(_, value)) => MatchResult.success(value.trim)
-        case _ => MatchResult.reply(HttpStatusCode.Forbidden)
+        case _ => MatchResult.reply(HttpStatusCode.Unauthorized)
       }
     }
 

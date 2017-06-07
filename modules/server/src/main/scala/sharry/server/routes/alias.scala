@@ -16,7 +16,7 @@ import sharry.server.jsoncodec._
 object alias {
 
   def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore) =
-    choice(updateAlias(auth, uploadCfg, store)
+    choice2(updateAlias(auth, uploadCfg, store)
       , createAlias(auth, uploadCfg, store)
       , getAlias(store)
       , listAliases(auth, store)

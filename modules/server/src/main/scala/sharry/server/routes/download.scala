@@ -26,7 +26,7 @@ object download {
   private implicit val zipPool = Strategy.fromFixedDaemonPool(10, "sharry-zip")
 
   def endpoint(auth: AuthConfig, webCfg: WebConfig, store: UploadStore) =
-    choice(downloadZip(auth, store)
+    choice2(downloadZip(auth, store)
       , download(auth, store)
       , downloadPublishedZip(store)
       , downloadPublished(webCfg, store)

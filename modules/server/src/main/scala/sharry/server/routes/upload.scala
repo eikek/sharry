@@ -27,7 +27,7 @@ object upload {
   private implicit val logger = getLogger
 
   def endpoint(auth: AuthConfig, uploadCfg: UploadConfig, store: UploadStore, notifier: Notifier) =
-    choice(testUploadChunk(auth, store)
+    choice2(testUploadChunk(auth, store)
       , createUpload(auth, uploadCfg, store)
       , uploadChunks(auth, uploadCfg, store)
       , publishUpload(auth, store)

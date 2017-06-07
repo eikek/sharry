@@ -2,7 +2,6 @@ package sharry.server
 
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
-import spinoco.fs2.http.routing._
 
 import sharry.store.account._
 import sharry.store.binary._
@@ -49,7 +48,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
 
 
   def endpoints = {
-    choice(
+    routes.syntax.choice2(
       webjar.endpoint(remoteConfig)
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)

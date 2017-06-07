@@ -14,7 +14,7 @@ import sharry.server.jsoncodec._
 object mail {
 
   def endpoint(auth: AuthConfig, smtp: GetSetting, mailCfg: WebmailConfig): Route[Task] =
-    choice(checkMailAddress(auth)
+    choice2(checkMailAddress(auth)
       , sendMail(auth, mailCfg, smtp)
       , getDownloadTemplate(auth, mailCfg)
       , getAliasTemplate(auth, mailCfg))

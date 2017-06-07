@@ -10,6 +10,7 @@ import sharry.store.data.{Alias, Account}
 import sharry.store.upload.UploadStore
 import sharry.server.authc._
 import sharry.server.config._
+import sharry.server.routes.syntax._
 
 object authz {
   val aliasHeaderName = "X-Sharry-Alias"
@@ -20,7 +21,7 @@ object authz {
       case token if token.verify(Instant.now, cfg.appKey) =>
         Matcher.success(token.login)
       case _ =>
-        Matcher.respondWith(HttpStatusCode.Forbidden)
+        Matcher.respond(Unauthorized.message("Not authenticated"))
     }
 
   def admin(auth: Authenticate): Matcher[Task, Account] =
@@ -29,9 +30,9 @@ object authz {
       flatMap {
         case Some(Right(account)) =>
           if (account.admin) Matcher.success(account)
-          else Matcher.respondWith(HttpStatusCode.Forbidden)
+          else Matcher.respond(Forbidden.message("Not authorized for admin actions"))
         case Some(Left(err)) =>
-          Matcher.respondWith(HttpStatusCode.Forbidden)
+          Matcher.respond(Unauthorized.message("Not authenticated."))
         case None =>
           Matcher.respondWith(HttpStatusCode.InternalServerError)
       }
