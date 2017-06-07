@@ -15,6 +15,7 @@ object config {
       , projectName: String
       , aliasHeaderName: String
       , mailEnabled: Boolean
+      , highlightjsTheme: String
   )
 
 }

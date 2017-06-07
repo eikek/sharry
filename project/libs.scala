@@ -85,6 +85,10 @@ object libs {
   // MIT
   val jquery = webjar("jquery", "3.2.1")
 
+  // https://highlightjs.org/
+  // BSD
+  val highlightjs = "org.webjars.bower" % "highlightjs" % "9.10.0"
+
   // https://java.net/projects/javamail/pages/Home
   // CDDL 1.0, GPL 2.0
   val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.5.6"

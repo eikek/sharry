@@ -44,7 +44,7 @@ object WebjarPlugin extends AutoPlugin {
     webjarSource := {
       val entry = packageToFile((webjarPackage in webjarSource).value)
       val target = (sourceManaged in Compile).value/entry/(webjarFile in webjarSource).value
-      val webjars: Seq[ModuleID] = (libraryDependencies in Compile).value.filter(_.organization == "org.webjars")
+      val webjars: Seq[ModuleID] = (libraryDependencies in Compile).value.filter(_.organization startsWith "org.webjars")
       val files: Seq[Webjar] = Attributed.data((dependencyClasspath in Compile).value).collect(findWebjarFile(webjars)) ++
         internalResources.value.map(_.toWebjar)
       val code = s"""package ${(webjarPackage in webjarSource).value}
@@ -70,7 +70,7 @@ object WebjarPlugin extends AutoPlugin {
       streams.value.log.info("Generating webjar toc file")
       val entry = packageToFile((webjarPackage in webjarSource).value)
       val target = (resourceManaged in Compile).value/entry/"toc.json"
-      val webjars: Seq[ModuleID] = (libraryDependencies in Compile).value.filter(_.organization == "org.webjars")
+      val webjars: Seq[ModuleID] = (libraryDependencies in Compile).value.filter(_.organization startsWith "org.webjars")
       val files: Seq[Webjar] = Attributed.data((dependencyClasspath in Compile).value).collect(findWebjarFile(webjars))
       val libMap = files.map(wj => wj.hash -> wj.listEntries).toMap
       val intMap = internalResources.value.map(r => r.hash -> r.entries)
