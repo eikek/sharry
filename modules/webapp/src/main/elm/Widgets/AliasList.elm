@@ -57,7 +57,7 @@ update msg model =
             let
                 x = Debug.log "Error deleting upload" (Data.errorMessage error)
             in
-                model ! []
+                model ! [PL.timeoutCmd error]
 
         AliasListResult (Ok list) ->
             {model | aliases = list} ! []
@@ -66,7 +66,7 @@ update msg model =
             let
                 x = Debug.log "Error getting upload list" (Data.errorMessage error)
             in
-                model ! []
+                model ! [PL.timeoutCmd error]
 
         AddNewAlias ->
             model ! [httpAddAlias model]
@@ -75,7 +75,7 @@ update msg model =
             model ! [httpGetAliases model]
 
         NewAliasResult (Err error) ->
-            model ! []
+            model ! [PL.timeoutCmd error]
 
         AliasEditMsg msg ->
             case model.selected of

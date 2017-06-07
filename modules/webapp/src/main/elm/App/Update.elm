@@ -145,7 +145,7 @@ update msg model =
             let
                 x = Debug.log "Error getting published download " (Data.errorMessage error)
             in
-            model ! []
+                model ! [PL.timeoutCmd error]
 
         LoadUploadsResult (Ok uploads) ->
             {model | uploadList = UploadListModel.makeModel model.serverConfig.urls uploads, page = UploadListPage} ! []
@@ -154,7 +154,7 @@ update msg model =
             let
                 x = Debug.log "Error getting list of uploads " (Data.errorMessage error)
             in
-            model ! []
+                model ! [PL.timeoutCmd error]
 
         LoadAliasesResult (Ok aliases) ->
             {model | aliases = AliasListModel.makeModel model.serverConfig aliases, page = AliasListPage} ! []
@@ -163,7 +163,7 @@ update msg model =
             let
                 x = Debug.log "Error getting list of aliases " (Data.errorMessage error)
             in
-            model ! []
+                model ! [PL.timeoutCmd error]
 
         LoadAliasResult (Ok alia) ->
             let
@@ -177,13 +177,13 @@ update msg model =
             let
                 x = Debug.log "Error getting alias " (Data.errorMessage error)
             in
-            model ! []
+                model ! [PL.timeoutCmd error]
 
         UploadListMsg msg ->
             let
                 (ulm, ulc) = UploadListUpdate.update msg model.uploadList
             in
-            {model | uploadList = ulm} ! [Cmd.map UploadListMsg ulc]
+                {model | uploadList = ulm} ! [Cmd.map UploadListMsg ulc]
 
         ProfileMsg msg ->
             case model.profile of

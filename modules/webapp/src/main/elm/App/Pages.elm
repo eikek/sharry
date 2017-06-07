@@ -4,6 +4,7 @@ import Http
 import Navigation
 import Json.Decode as Decode
 
+import Ports
 import Data exposing (UploadId(..), RemoteConfig)
 import PageLocation as PL
 import App.Model exposing (..)
@@ -21,19 +22,13 @@ pageExtracts =
     ,findProfilePage
     ,findAliasListPage
     ,findAliasUploadPage
+    ,findTimeoutPage
     ]
 
 withLocation: Model -> (Model, Cmd Msg)
 withLocation model =
     let
         default = (model, Cmd.none)
-        -- goLoop list =
-        --     case list of
-        --         [] -> default
-        --         f :: tail ->
-        --             case (f model) of
-        --                 Just t -> t
-        --                 Nothing -> goLoop tail
         all =  List.map (\f -> f model) pageExtracts
         result = List.foldl (Data.maybeOrElse) Nothing all
     in
@@ -143,3 +138,16 @@ findAliasUploadPage model =
             {model | page = AliasUploadPage} ! [httpGetAlias model.serverConfig id] |> Just
         Nothing ->
             Nothing
+
+findTimeoutPage: Model -> Maybe (Model, Cmd Msg)
+findTimeoutPage model =
+    if model.location.hash == PL.timeoutPageHref then
+        let
+            cmd = model.user
+                |> Maybe.map Ports.removeAccount
+                |> Maybe.withDefault Cmd.none
+            model_ = initModel model.serverConfig Nothing model.location
+        in
+            {model_ | page = TimeoutPage} ! [cmd] |> Just
+    else
+        Nothing

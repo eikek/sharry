@@ -53,7 +53,7 @@ update msg model =
             let
                 x = Debug.log "Error deleting upload" (Data.errorMessage error)
             in
-                clearModel model ! [] |> defer Cmd.none
+                clearModel model ! [PL.timeoutCmd error] |> defer Cmd.none
 
         MoveToUpload ->
             if model.mode == Settings then
@@ -74,7 +74,7 @@ update msg model =
                 ufm = model.uploadFormModel
                 um = {ufm | errorMessage = Just (Data.errorMessage error)}
             in
-                {model | uploadFormModel = um} ! [] |> defer Cmd.none
+                {model | uploadFormModel = um} ! [PL.timeoutCmd error] |> defer Cmd.none
 
         MoveToPublish ->
             model ! [httpPublishUpload model] |> defer Cmd.none
@@ -87,7 +87,7 @@ update msg model =
                 model_ ! [PL.downloadPage (Uid info.upload.id), Ports.resetResumable handle] |> defer Cmd.none
 
         UploadPublished (Err error) ->
-            {model | errorMessage = Data.errorMessage error} ! [] |> defer Cmd.none
+            {model | errorMessage = Data.errorMessage error} ! [PL.timeoutCmd error] |> defer Cmd.none
 
 modelEncoder: Model -> Encode.Value
 modelEncoder model =

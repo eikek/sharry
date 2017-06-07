@@ -68,7 +68,7 @@ update msg model =
             {model| validPassword = List.isEmpty list, errorMessage = list} ! []
             
         PasswordCheck (Err error) ->
-            {model | errorMessage =  [Data.errorMessage error]} ! []
+            {model | errorMessage =  [Data.errorMessage error]} ! [PL.timeoutCmd error]
 
         DeleteDownload ->
             model ! [httpDeleteDownload model]
@@ -77,7 +77,7 @@ update msg model =
             model ! [PL.uploadsPage]
 
         DeleteDownloadResult (Err error) ->
-            {model | errorMessage = Debug.log "Error deleting download" [(Data.errorMessage error)]} ! []
+            {model | errorMessage = Debug.log "Error deleting download" [(Data.errorMessage error)]} ! [PL.timeoutCmd error]
 
         PublishDownload ->
             model ! [httpPublishDownload model]
@@ -86,7 +86,7 @@ update msg model =
             {model | info = info} ! []
 
         PublishDownloadResult (Err error) ->
-            {model | errorMessage = Debug.log "Error un-/publishing download" [(Data.errorMessage error)]} ! []
+            {model | errorMessage = Debug.log "Error un-/publishing download" [(Data.errorMessage error)]} ! [PL.timeoutCmd error]
 
         UnpublishDownload ->
             model ! [httpUnpublishDownload model]

@@ -264,6 +264,13 @@ errorMessage err =
         Http.BadUrl msg ->
             "Internal error: invalid url for request."
 
+isUnauthorized: Http.Error -> Bool
+isUnauthorized err =
+    case err of
+        Http.BadStatus resp ->
+            resp.status.code == 401
+        _ ->
+            False
 
 decodeError: Http.Response String -> String
 decodeError resp =

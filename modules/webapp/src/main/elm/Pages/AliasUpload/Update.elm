@@ -7,6 +7,7 @@ import Json.Encode as Encode
 import Resumable
 import Ports
 import Data exposing (defer)
+import PageLocation as PL
 import Pages.AliasUpload.Model exposing (..)
 import Widgets.AliasUploadForm as AliasUploadForm
 import Widgets.UploadProgress as UploadProgress
@@ -43,7 +44,7 @@ update msg model =
                 ufm = model.uploadForm
                 um = {ufm | errorMessage = Just (Data.errorMessage error)}
             in
-                {model | uploadForm = um} ! [] |> defer Cmd.none
+                {model | uploadForm = um} ! [PL.timeoutCmd error] |> defer Cmd.none
 
         ResetForm ->
             clearModel model ! [Ports.reloadPage ()] |> defer Cmd.none
@@ -66,7 +67,7 @@ update msg model =
             let
                 m = clearModel model
             in
-                {m | errorMessage = Data.errorMessage error} ! [] |> defer Cmd.none
+                {m | errorMessage = Data.errorMessage error} ! [PL.timeoutCmd error] |> defer Cmd.none
 
         NotifyResult res ->
             model ! [] |> defer Cmd.none

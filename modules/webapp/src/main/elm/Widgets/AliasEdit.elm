@@ -7,6 +7,7 @@ import Html.Attributes exposing (class, classList, selected, value, placeholder,
 import Html.Events exposing (onInput, onCheck, onClick)
 
 import Data exposing (Alias, RemoteUrls)
+import PageLocation as PL
 
 type alias Model =
     {alia: Alias
@@ -80,7 +81,7 @@ update msg model =
             {model| infoMessage = Just "Alias has been updated."} ! []
 
         SubmitAliasResult (Err error) ->
-            {model | errorMessage = Just (Data.errorMessage error)} ! []
+            {model | errorMessage = Just (Data.errorMessage error)} ! [PL.timeoutCmd error]
 
 
 

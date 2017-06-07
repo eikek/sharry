@@ -9,6 +9,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 
 import Data exposing (RemoteUrls)
+import PageLocation as PL
 
 type alias Model =
     {urls: RemoteUrls
@@ -78,8 +79,8 @@ update msg model =
                 , text = t.text
             } ! []
 
-        TemplateResult (Err err) ->
-            {model | errorMessage = [Data.errorMessage err]} ! []
+        TemplateResult (Err error) ->
+            {model | errorMessage = [Data.errorMessage error]} ! [PL.timeoutCmd error]
 
         SetText text ->
             let
@@ -113,7 +114,7 @@ update msg model =
                 {model | sending = False, errorMessage = errors, successMessage = success} ! []
 
         MailSendResult (Err error) ->
-            {model | sending = False, errorMessage = ["Error sending mails: " ++ (Data.errorMessage error)]} ! []
+            {model | sending = False, errorMessage = ["Error sending mails: " ++ (Data.errorMessage error)]} ! [PL.timeoutCmd error]
 
         SendMail ->
             let

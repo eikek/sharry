@@ -7,6 +7,7 @@ import Html.Events exposing (onInput, onClick)
 import Json.Decode as Decode exposing(field)
 import Json.Encode as Encode
 import Data exposing (Account, RemoteUrls, accountDecoder)
+import PageLocation as PL
 
 type State
     = Init
@@ -84,7 +85,7 @@ update msg model =
                  | state = Init
                  , errorMsg = (Data.errorMessage error)
              }
-            , Cmd.none, Nothing)
+            , PL.timeoutCmd error, Nothing)
 
         SelectLogin login ->
             let
@@ -101,7 +102,7 @@ update msg model =
             ({model | errorMsg = ""}, Cmd.none, Just acc)
 
         GetAccountResult (Err error) ->
-            (errorModel model (Data.errorMessage error) , Cmd.none, Nothing)
+            (errorModel model (Data.errorMessage error), PL.timeoutCmd error, Nothing)
 
 {-- view --}
 

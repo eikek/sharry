@@ -6,6 +6,7 @@ import Html.Events exposing (onInput, onSubmit)
 import Http
 
 import Data exposing (Account, RemoteUrls)
+import PageLocation as PL
 
 type alias Model =
     {account: Account
@@ -47,7 +48,7 @@ update msg model =
             {model | account = acc, infoMessage = Just "Password was updated."} ! []
 
         UpdatePasswordResult (Err error) ->
-            {model | errorMessage = Data.errorMessage error |> Just} ! []
+            {model | errorMessage = Data.errorMessage error |> Just} ! [PL.timeoutCmd error]
 
         UpdatePassword ->
             let

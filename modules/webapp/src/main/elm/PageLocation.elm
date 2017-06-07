@@ -1,7 +1,8 @@
 module PageLocation exposing (..)
 
 import Navigation
-import Data exposing (UploadId(..))
+import Http
+import Data exposing (UploadId(..), isUnauthorized)
 
 -- index page
 
@@ -33,9 +34,13 @@ loginPageRedirect: Navigation.Location -> Cmd msg
 loginPageRedirect loc =
     let
         prefix = loginPageHref ++ "&redirect=#"
+        url = if String.startsWith prefix loc.hash then
+                  String.dropLeft ((String.length prefix) - 1) loc.hash
+              else
+                  "#"
     in
-        if String.startsWith prefix loc.hash then
-            Navigation.newUrl (String.dropLeft ((String.length prefix) - 1) loc.hash)
+        if url /= timeoutPageHref && url /= loginPageHref then
+            Navigation.newUrl url
         else
             indexPage
 
@@ -127,3 +132,20 @@ aliasUploadPageId hash =
 aliasUploadPage: String -> Cmd msg
 aliasUploadPage id =
     Navigation.newUrl (aliasUploadPageHref id)
+
+
+-- timeout page
+
+timeoutPageHref: String
+timeoutPageHref = "#timeout"
+
+timeoutPage: Cmd msg
+timeoutPage =
+    Navigation.newUrl timeoutPageHref
+
+timeoutCmd: Http.Error -> Cmd msg
+timeoutCmd err =
+    if Data.isUnauthorized err then
+        timeoutPage
+    else
+        Cmd.none

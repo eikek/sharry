@@ -20,6 +20,7 @@ import Pages.UploadList.View as UploadListView
 import Pages.Profile.View as ProfileView
 import Pages.AliasList.View as AliasListView
 import Pages.AliasUpload.View as AliasUploadView
+import Pages.Timeout.View as TimeoutView
 
 view: Model -> Html Msg
 view model =
@@ -36,6 +37,10 @@ view model =
                     div [class "ui container"]
                         [(Html.map AliasUploadMsg (AliasUploadView.view model.aliasUpload))
                         ,(footer model)]
+
+                TimeoutPage ->
+                    div [class "ui container"]
+                        [TimeoutView.view]
 
                 _ ->
                     Html.map LoginMsg (LoginView.view model.login)
@@ -103,6 +108,13 @@ view model =
                         [(navbar acc model)
                         ,(Html.map AliasUploadMsg (AliasUploadView.view model.aliasUpload))
                         ,(footer model)]
+
+                TimeoutPage ->
+                    div [class "ui container"]
+                        [(navbar acc model)
+                        ,TimeoutView.view
+                        ,(footer model)
+                        ]
 
 
 adminHtml: Account -> Html Msg -> Html Msg

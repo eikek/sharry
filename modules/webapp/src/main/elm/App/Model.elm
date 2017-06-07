@@ -55,6 +55,7 @@ type Page
     | ProfilePage
     | AliasListPage
     | AliasUploadPage
+    | TimeoutPage
 
 type alias Model =
     { page: Page

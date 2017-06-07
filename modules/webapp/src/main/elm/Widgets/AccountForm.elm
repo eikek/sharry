@@ -5,6 +5,7 @@ import Html exposing (Html, form, div, h2, button, label, input, text, i, ul, li
 import Html.Attributes exposing (class, classList, type_, value, name, placeholder, checked)
 import Html.Events exposing (..)
 import Data exposing (Account, accountEncoder, accountDecoder, httpPut, RemoteUrls)
+import PageLocation as PL
 
 {- the model -}
 type Update
@@ -105,7 +106,7 @@ update msg model =
             let
                 msg = Data.errorMessage error
             in
-            ({model | errors = msg :: model.errors, success = Nothing}, Cmd.none)
+                {model | errors = msg :: model.errors, success = Nothing} ! [PL.timeoutCmd error]
 
         ToggleShowPassword ->
             ({model | showPass = (not model.showPass)}, Cmd.none)
