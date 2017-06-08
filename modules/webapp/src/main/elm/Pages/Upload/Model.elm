@@ -5,6 +5,7 @@ import Data exposing (Account, RemoteConfig, UploadInfo)
 import Resumable
 import Widgets.UploadForm as UploadForm
 import Widgets.UploadProgress as UploadProgress
+import Widgets.MarkdownEditor as MarkdownEditor
 
 type Mode
     = Settings
@@ -17,11 +18,13 @@ type alias Model =
     , mode: Mode
     , serverConfig: RemoteConfig
     , errorMessage: String
+    , markdownEditorModel: Maybe MarkdownEditor.Model
+    , showMarkdownHelp: Bool
     }
 
 emptyModel: RemoteConfig -> Model
 emptyModel cfg =
-    Model (UploadForm.emptyModel cfg) UploadProgress.emptyModel Settings cfg ""
+    Model (UploadForm.emptyModel cfg) UploadProgress.emptyModel Settings cfg "" Nothing False
 
 clearModel: Model -> Model
 clearModel model =
@@ -30,6 +33,8 @@ clearModel model =
     , mode = Settings
     , serverConfig = model.serverConfig
     , errorMessage = ""
+    , markdownEditorModel = Nothing
+    , showMarkdownHelp = False
     }
 
 hasError: Model -> Bool
@@ -51,6 +56,9 @@ type Msg
     | CancelUpload
     | UploadDeleted (Result Http.Error Int)
     | UploadPublished (Result Http.Error UploadInfo)
+    | ToggleMarkdownEditor
+    | MarkdownEditorMsg MarkdownEditor.Msg
+    | ToggleMarkdownHelp
 
 
 resumableMsg: Resumable.Msg -> List Msg

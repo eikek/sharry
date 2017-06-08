@@ -12,6 +12,7 @@ import Resumable
 import Resumable.Update as ResumableUpdate
 import Widgets.UploadForm as UploadForm
 import Widgets.UploadProgress as UploadProgress
+import Widgets.MarkdownEditor as MarkdownEditor
 import Pages.Upload.Model exposing (..)
 
 update: Msg -> Model -> (Model, Cmd Msg, Cmd Msg)
@@ -88,6 +89,37 @@ update msg model =
 
         UploadPublished (Err error) ->
             {model | errorMessage = Data.errorMessage error} ! [PL.timeoutCmd error] |> defer Cmd.none
+
+        MarkdownEditorMsg memsg ->
+            case model.markdownEditorModel of
+                Just mem ->
+                    let
+                        (mem_, cmd) = MarkdownEditor.update memsg mem
+                    in
+                        {model | markdownEditorModel = Just mem_} ! [Cmd.map MarkdownEditorMsg cmd] |> defer Cmd.none
+                Nothing ->
+                    model ! [] |> defer Cmd.none
+
+        ToggleMarkdownEditor ->
+            case model.markdownEditorModel of
+                Just mem ->
+                    let
+                        ufm = model.uploadFormModel
+                        ufm_ = {ufm | description = mem.text}
+                        -- its a little hacky: going back means to rebind the resumable handlers
+                        handle = Maybe.withDefault "" model.uploadFormModel.resumableModel.handle
+                        cmd = Ports.resumableRebind handle
+                    in
+                        {model | markdownEditorModel = Nothing, uploadFormModel = ufm_} ! [] |> defer cmd
+                Nothing ->
+                    let
+                        mem = MarkdownEditor.initModel model.uploadFormModel.description
+                    in
+                        {model | markdownEditorModel = Just mem} ! [] |> defer Cmd.none
+
+        ToggleMarkdownHelp ->
+            {model | showMarkdownHelp = not model.showMarkdownHelp} ! [] |> defer Cmd.none
+
 
 modelEncoder: Model -> Encode.Value
 modelEncoder model =

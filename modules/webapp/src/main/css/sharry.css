@@ -43,3 +43,18 @@ body > .grid {
     opacity: 0.5;
     font-size: 0.7em;
 }
+
+blockquote {
+    padding-left: 0.8em;
+    border-left: 4px solid #8b4513;
+}
+
+.sharry-md-edit {
+    width: 100%;
+    height: 30em;
+    border: none;
+    outline: none;
+    border-right: 1px solid black;
+    font-family: monospace;
+    font-size: 1em;
+}

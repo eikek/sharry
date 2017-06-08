@@ -1,7 +1,7 @@
 module Pages.Upload.View exposing (..)
 
 import List
-import Html exposing (Html, button, form, h1, div, label, text, textarea, select, option, i, input, a, p)
+import Html exposing (Html, button, form, h1, div, label, text, textarea, select, option, i, input, a, p, h3)
 import Html.Attributes exposing (class, name, type_, href, classList, rows, placeholder, value, selected)
 import Html.Events exposing (onInput, onClick)
 
@@ -9,21 +9,66 @@ import Resumable
 import Data exposing (Account, RemoteConfig, bytesReadable)
 import Widgets.UploadForm as UploadForm
 import Widgets.UploadProgress as UploadProgress
+import Widgets.MarkdownEditor as MarkdownEditor
+import Widgets.MarkdownHelp as MarkdownHelp
 import Pages.Upload.Model exposing (..)
 import Pages.Upload.Update exposing (..)
 
 view: Model -> Html Msg
 view model =
-    div [class "main ui grid container"]
-        [
-         div [class "sixteen wide column"]
-             [
-              h1 [class "ui header"][text "New Share"]
-             ,(steps model)
-             ,(renderError model)
+    case model.markdownEditorModel of
+        Just mem ->
+            div []
+                [
+                 div [class "main ui grid container"]
+                     [
+                      div [class "row"]
+                          [button [class "ui primary button", onClick ToggleMarkdownEditor][text "Back"]
+                          ,button [class "ui button", onClick ToggleMarkdownHelp][text "Help"]
+                          ]
+                     ,div [class "row"]
+                         [
+                          div [class "ui"]
+                              [text "Write Markdown in the input below and a preview is displayed "
+                              ,text "at the right as you type. Click Help button to show syntax help."
+                              ]
+                         ]
+                     ]
+                ,if model.showMarkdownHelp then
+                     markdownHelp model
+                 else
+                     Html.map MarkdownEditorMsg (MarkdownEditor.view mem)
+                ]
+
+        Nothing ->
+            div [class "main ui grid container"]
+                (mainView model)
+
+
+mainView: Model -> List (Html Msg)
+mainView model =
+    [
+     div [class "sixteen wide column"]
+         [h1 [class "ui header"][text "New Share"]
+         ]
+    ,div [class "sixteen wide column"]
+        [(steps model)
+        ,(renderError model)
+        ]
+    ,div [class "sixteen wide column"]
+        (stepView model)
+    ]
+
+markdownHelp: Model -> Html Msg
+markdownHelp model =
+    div [onClick ToggleMarkdownHelp]
+        [h3 [class "ui horizontal clearing divider header"]
+             [i [class "help icon"][]
+             ,text "Markdown Help"
              ]
-        ,div [class "sixteen wide column"]
-            (stepView model)
+        ,div [class "ui center aligned segment"]
+            [text "Click somewhere on the help text to close it."]
+        ,MarkdownHelp.helpTextHtml
         ]
 
 renderError: Model -> Html Msg
@@ -51,6 +96,7 @@ stepView model =
         Settings ->
                 [
                  (cancelButton model)
+                ,button [class "ui basic button", onClick ToggleMarkdownEditor][text "Edit Description"]
                 ,Html.map UploadFormMsg (UploadForm.view model.uploadFormModel)
                 ]
 
