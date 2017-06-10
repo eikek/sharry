@@ -67,8 +67,13 @@ update msg model =
                 ufm = model.uploadFormModel
                 um = {ufm | errorMessage = Nothing}
                 handle = Maybe.withDefault "" model.uploadFormModel.resumableModel.handle
+                (cmd1, cmd2) =
+                    if UploadForm.hasFiles model.uploadFormModel then
+                        (Ports.resumableStart handle, Cmd.none)
+                    else
+                        (Cmd.none, Ports.resumableSetComplete (handle, "."++UploadProgress.progressClass))
             in
-                {model | mode = Upload, uploadFormModel = um} ! [Ports.resumableStart handle] |> defer Cmd.none
+                {model | mode = Upload, uploadFormModel = um} ! [cmd1] |> defer cmd2
 
         UploadCreated (Err error) ->
             let

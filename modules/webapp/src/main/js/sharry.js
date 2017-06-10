@@ -46,6 +46,17 @@ elmApp.ports.makeRandomString.subscribe(function(prefix) {
 
 var sharryResumables = {};
 
+elmApp.ports.resumableSetComplete.subscribe(function(handleSelector) {
+    var handle = handleSelector[0];
+    var r = sharryResumables[handle];
+    if (r) {
+        var page = r.opts.page;
+        $(handleSelector[1]).progress('set percent', 100);
+        elmApp.ports.resumableComplete.send(page);
+    }
+});
+
+
 var registerCallbacks = function(r, browseClass, dropClass) {
     var nodes0 = document.querySelectorAll(browseClass);
     if (nodes0.length == 1) {

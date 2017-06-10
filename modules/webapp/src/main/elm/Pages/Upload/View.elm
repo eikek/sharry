@@ -29,13 +29,13 @@ view model =
                      ,div [class "row"]
                          [
                           div [class "ui"]
-                              [text "Write Markdown in the input below and a preview is displayed "
+                              [text "Write Markdown in the left input below and a preview is displayed "
                               ,text "at the right as you type. Click Help button to show syntax help."
                               ]
                          ]
                      ]
                 ,if model.showMarkdownHelp then
-                     markdownHelp model
+                     markdownHelp
                  else
                      Html.map MarkdownEditorMsg (MarkdownEditor.view mem)
                 ]
@@ -59,8 +59,8 @@ mainView model =
         (stepView model)
     ]
 
-markdownHelp: Model -> Html Msg
-markdownHelp model =
+markdownHelp: Html Msg
+markdownHelp =
     div [onClick ToggleMarkdownHelp]
         [h3 [class "ui horizontal clearing divider header"]
              [i [class "help icon"][]
@@ -96,7 +96,7 @@ stepView model =
         Settings ->
                 [
                  (cancelButton model)
-                ,button [class "ui basic button", onClick ToggleMarkdownEditor][text "Edit Description"]
+                ,button [class "ui basic button", onClick ToggleMarkdownEditor][text "Description Editor"]
                 ,Html.map UploadFormMsg (UploadForm.view model.uploadFormModel)
                 ]
 

@@ -6,6 +6,8 @@ import Resumable
 import Data exposing (Account, Alias, RemoteConfig)
 import Widgets.AliasUploadForm as AliasUploadForm
 import Widgets.UploadProgress as UploadProgress
+import Widgets.MarkdownHelp as MarkdownHelp
+import Widgets.MarkdownEditor as MarkdownEditor
 
 type Mode
     = Form
@@ -20,11 +22,13 @@ type alias Model =
     ,mode: Mode
     ,errorMessage: String
     ,account: Maybe Account
+    ,markdownEditorModel: Maybe MarkdownEditor.Model
+    ,showMarkdownHelp: Bool
     }
 
 emptyModel: RemoteConfig -> Maybe Account -> Model
 emptyModel cfg acc =
-    Model cfg Nothing (AliasUploadForm.emptyModel cfg) UploadProgress.emptyModel Form "" acc
+    Model cfg Nothing (AliasUploadForm.emptyModel cfg) UploadProgress.emptyModel Form "" acc Nothing False
 
 makeModel: RemoteConfig -> Maybe Account -> Alias -> Model
 makeModel cfg acc alia =
@@ -42,6 +46,8 @@ clearModel model =
     , mode = Form
     , errorMessage = ""
     , account = model.account
+    , markdownEditorModel = Nothing
+    , showMarkdownHelp = False
     }
 
 isAliasUser: Model -> Bool
@@ -77,6 +83,9 @@ type Msg
     | ResetForm
     | UploadDeleted (Result Http.Error Int)
     | NotifyResult (Result Http.Error ())
+    | ToggleMarkdownEditor
+    | MarkdownEditorMsg MarkdownEditor.Msg
+    | ToggleMarkdownHelp
 
 makeResumableMsg: Resumable.Msg -> List Msg
 makeResumableMsg rmsg =
