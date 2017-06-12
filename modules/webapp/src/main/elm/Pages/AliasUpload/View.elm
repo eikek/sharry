@@ -73,7 +73,7 @@ stepView model =
     case model.mode of
         Form ->
             [
-            button [class "ui basic button", onClick ToggleMarkdownEditor][text "Description Editor"]
+             button [class "ui basic button", onClick ToggleMarkdownEditor][text "Description Editor"]
             ,(Html.map AliasUploadFormMsg (AliasUploadForm.view model.uploadForm))
             ,(uploadButton model)
             ,(cancelButton model)

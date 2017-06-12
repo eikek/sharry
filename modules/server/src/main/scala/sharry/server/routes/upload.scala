@@ -3,6 +3,7 @@ package sharry.server.routes
 import java.time.{Duration, Instant}
 import fs2.{Stream, Task}
 import shapeless.{::,HNil}
+import scala.util.Try
 import scodec.bits.ByteVector
 import spinoco.fs2.http.routing._
 import com.github.t3hnar.bcrypt._
@@ -110,6 +111,7 @@ object upload {
     Get >> paths.uploads.matcher / uploadId :: authz.user(authCfg) map {
       case id :: user :: HNil =>
         store.getUpload(id, user).
+          map(processDescription(paths.download)).
           map(Ok.body(_)).
           through(NotFound.whenEmpty)
     }
@@ -117,10 +119,43 @@ object upload {
   def getPublishedUpload(store: UploadStore): Route[Task] =
     Get >> paths.uploadPublish.matcher / uploadId map { id =>
       store.getPublishedUpload(id).
+        map(processDescription(paths.downloadPublished)).
         map(Ok.body(_)).
         through(NotFound.whenEmpty)
     }
 
+  private def processDescription(baseUrl: paths.Path)(u: UploadInfo): UploadInfo = {
+    import yamusca.imports._
+
+    val fromFile: UploadInfo.File => Value =
+      f => Value.map(
+        "filename" -> Value.of(f.filename),
+        "url" -> Value.of((baseUrl / f.meta.id).path),
+        "mimetype" -> Value.of(f.meta.mimetype.asString),
+        "size" -> Value.of(f.meta.length.asString)
+      )
+
+    val ctx = Context { key => key match {
+      case "id" => u.upload.publishId.map(Value.of)
+      case "files" => Some(Value.fromSeq(u.files.map(fromFile)))
+      case name if name startsWith "file_" =>
+        Try(name.drop(5).toInt).toOption match {
+          case Some(i) if i < u.files.size =>
+            Some(fromFile(u.files(i)))
+          case _ =>
+            None
+        }
+      case _ => None
+    }}
+
+    val desc = u.upload.description.map(mustache.parse) match {
+      case Some(Right(t)) => Some(mustache.render(t)(ctx))
+      case Some(Left(err)) => u.upload.description
+      case None => None
+    }
+
+    u.copy(upload = u.upload.copy(description = desc))
+  }
 
   def publishUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
     Post >> paths.uploadPublish.matcher / uploadId :: authz.user(authCfg) map {

@@ -2,7 +2,7 @@ package sharry.server
 
 import java.time.{Duration, Instant}
 import cats.syntax.either._
-import io.circe.generic.semiauto._, io.circe._, io.circe.syntax._
+import io.circe.generic.semiauto._, io.circe._
 import sharry.server.authc.Token
 import sharry.server.email._
 import sharry.store.data._
@@ -135,33 +135,4 @@ object jsoncodec {
   implicit val _uploadMetaDec: Decoder[UploadCreate] = deriveDecoder[UploadCreate]
   implicit val _uploadMetaEnc: Encoder[UploadCreate] = deriveEncoder[UploadCreate]
 
-  implicit def _outcomeDec[A](implicit deca: Decoder[A]): Decoder[Outcome[A]] = {
-    new Decoder[Outcome[A]] {
-      def apply(c: HCursor): Decoder.Result[Outcome[A]] = {
-        for {
-          state <- c.get[String]("state")
-          a <- c.get[A]("result")
-          verify <- state.toLowerCase match {
-            case "created" => Right(sharry.store.data.Created(a))
-            case "unmodified" => Right(Unmodified(a))
-            case _ => Left(DecodingFailure(s"Wrong outcome state $state", c.history))
-          }
-        } yield verify
-      }
-    }
-  }
-
-  implicit def _outcomeEnc[A](implicit enca: Encoder[A]): Encoder[Outcome[A]] =
-    new Encoder[Outcome[A]] {
-      def apply(oc: Outcome[A]): Json = {
-        val state = oc match {
-          case Created(_) => "created".asJson
-          case Unmodified(_) => "unmodified".asJson
-        }
-        Json.obj(
-          "state" -> state,
-          "result" -> enca(oc.result)
-        ).asJson
-      }
-    }
 }
