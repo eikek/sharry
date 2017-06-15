@@ -3,6 +3,7 @@ package sharry.server
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
 
+import sharry.docs.{md, route}
 import sharry.store.account._
 import sharry.store.binary._
 import sharry.store.upload._
@@ -51,6 +52,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
   def endpoints = {
     routes.syntax.choice2(
       webjar.endpoint(remoteConfig)
+        , route.manual(paths.manual.matcher, md.Context(BuildInfo.version))
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)
