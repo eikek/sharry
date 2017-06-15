@@ -2,7 +2,7 @@ package sharry.webapp.route
 
 import java.time.{Instant, ZoneId}
 import io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
-import fs2.{text, Stream, Task}
+import fs2.{text, pipe, Stream, Task}
 import shapeless.{HNil, ::}
 import scodec.bits.BitVector
 import spinoco.fs2.http.routing._
@@ -10,6 +10,7 @@ import spinoco.fs2.http.HttpResponse
 import spinoco.protocol.http.{HttpResponseHeader, HttpStatusCode}
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.header.value._
+import yamusca.imports._
 
 import sharry.webapp.config._
 
@@ -177,21 +178,19 @@ object webjar {
     def render(config: RemoteConfig): Stream[Task, Byte] = {
       resource.lookup("sharry-webapp", Seq("index.html")) match {
         case Find.Found((wj, url)) =>
+          val data = Context(
+            "config" -> Value.of(config.asJson.spaces4),
+            "highlightjsTheme" -> Value.of(config.highlightjsTheme))
           url.readAll(8192).
             through(text.utf8Decode).
-            through(text.lines).
-            map(replace(config)).
-            intersperse("\n").
+            fold1(_ + _).
+            map(mustache.parse).
+            map(_.left.map(err => new Exception(s"${err.message} at ${err.index}"))).
+            through(pipe.rethrow).
+            map(mustache.render(_)(data)).
             through(text.utf8Encode)
 
         case _ => sys.error("index.html not found")
-      }
-    }
-
-    private def replace(config: RemoteConfig): String => String = {
-      line => {
-        if (!line.contains("{{config}}")) line
-        else config.asJson.spaces4
       }
     }
   }

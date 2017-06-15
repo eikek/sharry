@@ -17,8 +17,8 @@ object libs {
 
   // https://github.com/functional-streams-for-scala/fs2
   // MIT
-  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.9.6"
-  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.9.6"
+  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.9.7"
+  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.9.7"
 
   // https://github.com/Spinoco/fs2-http
   // MIT
@@ -47,7 +47,7 @@ object libs {
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0
-  val h2 = "com.h2database" % "h2" % "1.4.195"
+  val h2 = "com.h2database" % "h2" % "1.4.196"
 
   // https://github.com/circe/circe
   // ASL 2.0
@@ -61,7 +61,7 @@ object libs {
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.3.4"
+  val log4s = "org.log4s" %% "log4s" % "1.3.5"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
@@ -71,7 +71,7 @@ object libs {
   // ASL 2.0
   // using:
   // - jbcrypt: ISC/BSD
-  val `scala-bcrypt` = "com.github.t3hnar" %% "scala-bcrypt" % "3.0"
+  val `scala-bcrypt` = "com.github.t3hnar" %% "scala-bcrypt" % "3.1"
 
   // https://github.com/Semantic-Org/Semantic-UI
   // MIT
@@ -84,6 +84,10 @@ object libs {
   // https://github.com/jquery/jquery
   // MIT
   val jquery = webjar("jquery", "3.2.1")
+
+  // https://highlightjs.org/
+  // BSD
+  val highlightjs = "org.webjars.bower" % "highlightjs" % "9.10.0"
 
   // https://java.net/projects/javamail/pages/Home
   // CDDL 1.0, GPL 2.0

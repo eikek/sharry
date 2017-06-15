@@ -415,6 +415,6 @@ markdownHtml: String -> Html msg
 markdownHtml str =
     let
         defaultOpts = Markdown.defaultOptions
-        markedOptions = { defaultOpts | sanitize = True, smartypants = True }
+        markedOptions = {defaultOpts | sanitize = True, smartypants = True, githubFlavored = Just { tables = True, breaks = False}}
     in
         Markdown.toHtmlWith markedOptions [] str

@@ -72,7 +72,7 @@ lazy val webapp = project.in(file("modules/webapp")).
     name := "sharry-webapp",
     description := "A web frontend for sharry",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `semantic-ui`, jquery, `logback-classic`,
+      `semantic-ui`, jquery, highlightjs, `logback-classic`, yamusca,
       `circe-core`, `circe-generic`, `circe-parser`, `fs2-http`
     ),
     // elm stuff

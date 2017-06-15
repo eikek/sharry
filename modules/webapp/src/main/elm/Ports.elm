@@ -23,6 +23,7 @@ port resumableStart: Resumable.Handle -> Cmd msg
 port resumablePause: Resumable.Handle -> Cmd msg
 port resumableCancel: Resumable.Handle -> Cmd msg
 port resumableRetry: (Resumable.Handle, List String) -> Cmd msg
+port resumableSetComplete: (Resumable.Handle, String) -> Cmd msg
 
 port resumableFileAdded: ((String, Resumable.File) -> msg) -> Sub msg
 port resumableFileSuccess: ((String, Resumable.File) -> msg) -> Sub msg

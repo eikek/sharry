@@ -1,6 +1,6 @@
 module Pages.AliasUpload.View exposing (..)
 
-import Html exposing (Html, a, div, text, h1, h2, button, i)
+import Html exposing (Html, a, div, text, h1, h2, h3, button, i)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 
@@ -8,9 +8,42 @@ import Data
 import Pages.AliasUpload.Model exposing (..)
 import Widgets.AliasUploadForm as AliasUploadForm
 import Widgets.UploadProgress as UploadProgress
+import Widgets.MarkdownEditor as MarkdownEditor
+import Widgets.MarkdownHelp as MarkdownHelp
 
 view: Model -> Html Msg
 view model =
+    case model.markdownEditorModel of
+        Just mem ->
+            div []
+                [
+                 div [class "main ui grid container"]
+                     [
+                      div [class "row"]
+                          [button [class "ui primary button", onClick ToggleMarkdownEditor][text "Back"]
+                          ,button [class "ui button", onClick ToggleMarkdownHelp][text "Help"]
+                          ]
+                     ,div [class "row"]
+                         [
+                          div [class "ui"]
+                              [text "Write Markdown in the left input below and a preview is displayed "
+                              ,text "at the right as you type. Click Help button to show syntax help."
+                              ]
+                         ]
+                     ]
+                ,if model.showMarkdownHelp then
+                     markdownHelp
+                 else
+                     Html.map MarkdownEditorMsg (MarkdownEditor.view mem)
+                ]
+
+        Nothing ->
+            div [class "main ui grid container"]
+                [(mainView model)]
+
+
+mainView: Model -> Html Msg
+mainView model =
     div [class "main ui grid container"]
         [
          (userDimmer model)
@@ -23,13 +56,25 @@ view model =
             (stepView model)
         ]
 
+markdownHelp: Html Msg
+markdownHelp =
+    div [onClick ToggleMarkdownHelp]
+        [h3 [class "ui horizontal clearing divider header"]
+             [i [class "help icon"][]
+             ,text "Markdown Help"
+             ]
+        ,div [class "ui center aligned segment"]
+            [text "Click somewhere on the help text to close it."]
+        ,MarkdownHelp.helpTextHtml
+        ]
 
 stepView: Model -> List (Html Msg)
 stepView model =
     case model.mode of
         Form ->
             [
-             (Html.map AliasUploadFormMsg (AliasUploadForm.view model.uploadForm))
+             button [class "ui basic button", onClick ToggleMarkdownEditor][text "Description Editor"]
+            ,(Html.map AliasUploadFormMsg (AliasUploadForm.view model.uploadForm))
             ,(uploadButton model)
             ,(cancelButton model)
             ]

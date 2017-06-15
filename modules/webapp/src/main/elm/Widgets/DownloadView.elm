@@ -162,7 +162,10 @@ viewPage model =
                             [text (fileSummary model)]
                        ]
                   ,div [HA.class "ui relaxed divided list"]
-                      (List.map (renderFile model) model.info.files)
+                      (if List.isEmpty model.info.files then
+                          [text "No files attached."]
+                      else
+                          (List.map (renderFile model) model.info.files))
                   ])
             ]
 

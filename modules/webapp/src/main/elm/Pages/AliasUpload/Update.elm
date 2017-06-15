@@ -11,6 +11,7 @@ import PageLocation as PL
 import Pages.AliasUpload.Model exposing (..)
 import Widgets.AliasUploadForm as AliasUploadForm
 import Widgets.UploadProgress as UploadProgress
+import Widgets.MarkdownEditor as MarkdownEditor
 
 update: Msg -> Model -> (Model, Cmd Msg, Cmd Msg)
 update msg model =
@@ -36,8 +37,13 @@ update msg model =
                 ufm = model.uploadForm
                 um = {ufm | errorMessage = Nothing}
                 handle = Maybe.withDefault "" model.uploadForm.resumableModel.handle
+                (cmd1, cmd2) =
+                    if AliasUploadForm.hasFiles model.uploadForm then
+                        (Ports.resumableStart handle, Cmd.none)
+                    else
+                        (Cmd.none, Ports.resumableSetComplete (handle, "."++UploadProgress.progressClass))
             in
-                {model | mode = Upload, uploadForm = um} ! [Ports.resumableStart handle] |> defer Cmd.none
+                {model | mode = Upload, uploadForm = um} ! [cmd1] |> defer cmd2
 
         UploadCreated (Err error) ->
             let
@@ -71,6 +77,36 @@ update msg model =
 
         NotifyResult res ->
             model ! [] |> defer Cmd.none
+
+        MarkdownEditorMsg memsg ->
+            case model.markdownEditorModel of
+                Just mem ->
+                    let
+                        (mem_, cmd) = MarkdownEditor.update memsg mem
+                    in
+                        {model | markdownEditorModel = Just mem_} ! [Cmd.map MarkdownEditorMsg cmd] |> defer Cmd.none
+                Nothing ->
+                    model ! [] |> defer Cmd.none
+
+        ToggleMarkdownEditor ->
+            case model.markdownEditorModel of
+                Just mem ->
+                    let
+                        ufm = model.uploadForm
+                        ufm_ = {ufm | description = mem.text}
+                        -- its a little hacky: going back means to rebind the resumable handlers
+                        handle = Maybe.withDefault "" model.uploadForm.resumableModel.handle
+                        cmd = Ports.resumableRebind handle
+                    in
+                        {model | markdownEditorModel = Nothing, uploadForm = ufm_} ! [] |> defer cmd
+                Nothing ->
+                    let
+                        mem = MarkdownEditor.initModel model.uploadForm.description
+                    in
+                        {model | markdownEditorModel = Just mem} ! [] |> defer Cmd.none
+
+        ToggleMarkdownHelp ->
+            {model | showMarkdownHelp = not model.showMarkdownHelp} ! [] |> defer Cmd.none
 
 
 modelEncoder: Model -> Encode.Value

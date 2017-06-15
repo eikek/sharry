@@ -32,7 +32,7 @@ object config {
 
   case class AdminAccount(enable: Boolean, login: String, password: String)
 
-  case class WebConfig(bindHost: String, bindPort: Int, appName: String, baseurl: String) {
+  case class WebConfig(bindHost: String, bindPort: Int, appName: String, baseurl: String, highlightjsTheme: String) {
     lazy val domain = Uri.parse(baseurl).require.host.host
   }
 

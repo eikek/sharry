@@ -13,6 +13,9 @@ type alias Model =
     { resumableModel: Resumable.Model
     }
 
+progressClass: String
+progressClass = "sharry-upload-progress"
+
 emptyModel: Model
 emptyModel =
     Model Resumable.emptyModel
@@ -40,7 +43,7 @@ update msg model =
         ResumableMsg msg ->
             let
                 (um, ucmd) = ResumableUpdate.update msg model.resumableModel
-                progressCmd = \p -> Ports.setProgress (".sharry-upload-progress", p, hasErrors model)
+                progressCmd = \p -> Ports.setProgress ("."++progressClass, p, hasErrors model)
             in
                 case msg of
                     Resumable.Initialize cfg ->
@@ -105,7 +108,7 @@ view model =
     in
     div []
         [
-         div [classList [("ui indicating progress sharry-upload-progress", True)
+         div [classList [("ui indicating progress " ++ progressClass, True)
                         ,("error", hasErrors model)]]
              [
               div [class "bar"]

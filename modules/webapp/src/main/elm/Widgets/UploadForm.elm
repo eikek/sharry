@@ -67,9 +67,14 @@ hasError: Model -> Bool
 hasError model =
     Data.isPresent model.errorMessage || Data.nonEmpty model.resumableModel.errorFiles
 
+hasFiles: Model -> Bool
+hasFiles model =
+    (List.length model.resumableModel.files) > 0
+
 isReady: Model -> Bool
 isReady model =
-    (not <| Data.isPresent model.errorMessage) && (List.length model.resumableModel.files) > 0
+    (not <| Data.isPresent model.errorMessage) &&
+        ((hasFiles model) || (not <| String.isEmpty model.description))
 
 errorMessage: Model -> List String
 errorMessage model =
@@ -274,6 +279,7 @@ infoView cfg =
                    ". The maximum validity is " ++
                    (Data.formatDuration cfg.maxValidity) ++
                    ".")
+        ,text " The »Upload« button is enabled when a description is present and/or files are selected."
         ]
 
 markdownHelp: Model -> Html Msg
