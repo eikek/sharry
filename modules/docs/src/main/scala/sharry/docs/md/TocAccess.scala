@@ -5,6 +5,8 @@ trait TocAccess {
   // the abstract method is implemented by an sbt generated object `toc.scala`
   def contents: List[(String, String, String, Long)]
 
+  lazy val names = contents.map(_._1)
+
   def find(path: String): Option[ManualPage] =
     contents.find(_._1 == path).
       flatMap {

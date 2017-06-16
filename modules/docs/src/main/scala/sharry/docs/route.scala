@@ -21,15 +21,22 @@ object route {
   def restPath: Matcher[Task, String] =
     path.map(p => p.segments.mkString("/"))
 
+  def linkPrefix: Matcher[Task, String] =
+    param[String]("mdLinkPrefix").?.map {
+      case Some(p) => p
+      case None => ""
+    }
+
   def manual(prefix: Matcher[Task, String], ctx: md.Context): Route[Task] =
-    Get >> ifNoneMatch :: prefix / restPath map {
-      case noneMatch :: p :: HNil =>
+    Get >> ifNoneMatch :: prefix / restPath :: linkPrefix map {
+      case noneMatch :: p :: prefix :: HNil =>
         md.toc.find(p) match {
           case Some(mf) =>
-            if (Some(mf.checksum) == noneMatch) Stream.emit(emptyResponse(NotModified))
+            val tag = mf.checksum + prefix
+            if (Some(tag) == noneMatch) Stream.emit(emptyResponse(NotModified))
             else Stream.emit(emptyResponse(Ok).
-              withHeader(ETag(EntityTag(mf.checksum, false)), `Content-Length`(mf.size)).
-              withStreamBody(mf.read(ctx))(encoder(mf.mimetype)))
+              withHeader(ETag(EntityTag(tag, false))).
+              withStreamBody(mf.read(ctx, prefix))(encoder(mf.mimetype)))
 
           case None =>
             Stream.emit(emptyResponse(NotFound))

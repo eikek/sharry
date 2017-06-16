@@ -149,3 +149,16 @@ timeoutCmd err =
         timeoutPage
     else
         Cmd.none
+
+-- manual page
+
+manualPageHref: String -> String
+manualPageHref name =
+    "#manual/" ++ name
+
+manualPageName: String -> Maybe String
+manualPageName hash =
+    if String.startsWith "#manual/" hash then
+        String.dropLeft 8 hash |> Just
+    else
+        Nothing

@@ -23,6 +23,7 @@ import Pages.AliasList.Model as AliasListModel
 import Pages.AliasList.Update as AliasListUpdate
 import Pages.AliasUpload.Model as AliasUploadModel
 import Pages.AliasUpload.Update as AliasUploadUpdate
+import Pages.Manual.Model as ManualModel
 
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -206,6 +207,24 @@ update msg model =
                 (val, cmd, cmdd) = AliasUploadUpdate.update msg model.aliasUpload
             in
                 ({model| aliasUpload = val, deferred = (Cmd.map AliasUploadMsg cmdd) :: model.deferred}, Cmd.map AliasUploadMsg cmd)
+
+        ManualPageContent (Ok cnt) ->
+            let
+                (mm, cmd) = ManualModel.update (ManualModel.Content cnt) model.manualModel
+            in
+                {model | manualModel = mm} ! [Cmd.map ManualMsg cmd]
+
+        ManualPageContent (Err error) ->
+            let
+                x = Debug.log "Error loading manual page " (Data.errorMessage error)
+            in
+                model ! []
+
+        ManualMsg msg ->
+            let
+                (mm, cmd) = ManualModel.update msg model.manualModel
+            in
+                {model | manualModel = mm} ! [Cmd.map ManualMsg cmd]
 
 
 combineResults: Msg -> (Model, Cmd Msg) -> (Model, Cmd Msg)

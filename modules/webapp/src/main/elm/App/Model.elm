@@ -20,6 +20,7 @@ import Pages.UploadList.Model as UploadListModel
 import Pages.Profile.Model as ProfileModel
 import Pages.AliasList.Model as AliasListModel
 import Pages.AliasUpload.Model as AliasUploadModel
+import Pages.Manual.Model as ManualModel
 import Time exposing (Time)
 import Navigation
 
@@ -44,6 +45,8 @@ type Msg
     | LoadAliasesResult (Result Http.Error (List Alias))
     | AliasUploadMsg AliasUploadModel.Msg
     | LoadAliasResult (Result Http.Error Alias)
+    | ManualPageContent (Result Http.Error String)
+    | ManualMsg ManualModel.Msg
 
 type Page
     = LoginPage
@@ -56,6 +59,7 @@ type Page
     | AliasListPage
     | AliasUploadPage
     | TimeoutPage
+    | ManualPage
 
 type alias Model =
     { page: Page
@@ -68,6 +72,7 @@ type alias Model =
     , profile: Maybe ProfileModel.Model
     , aliases: AliasListModel.Model
     , aliasUpload: AliasUploadModel.Model
+    , manualModel: ManualModel.Model
     , user: Maybe Account
     , serverConfig: RemoteConfig
     , deferred: List (Cmd Msg)
@@ -96,6 +101,7 @@ initModel cfg acc location =
     , profile = Maybe.map (ProfileModel.makeModel cfg.urls) acc
     , aliases = AliasListModel.emptyModel cfg
     , aliasUpload = AliasUploadModel.emptyModel cfg acc
+    , manualModel = ManualModel.makeModel ""
     , user = acc
     , serverConfig = cfg
     , deferred = []

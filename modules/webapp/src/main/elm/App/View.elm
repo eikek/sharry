@@ -21,6 +21,7 @@ import Pages.Profile.View as ProfileView
 import Pages.AliasList.View as AliasListView
 import Pages.AliasUpload.View as AliasUploadView
 import Pages.Timeout.View as TimeoutView
+import Pages.Manual.View as ManualView
 
 view: Model -> Html Msg
 view model =
@@ -41,6 +42,10 @@ view model =
                 TimeoutPage ->
                     div [class "ui container"]
                         [TimeoutView.view]
+
+                ManualPage ->
+                    div [class "ui container"]
+                        [ManualView.view model.manualModel]
 
                 _ ->
                     Html.map LoginMsg (LoginView.view model.login)
@@ -116,6 +121,13 @@ view model =
                         ,(footer model)
                         ]
 
+                ManualPage ->
+                    div [class "ui container"]
+                        [(navbar acc model)
+                        ,ManualView.view model.manualModel
+                        ,(footer model)
+                        ]
+
 
 adminHtml: Account -> Html Msg -> Html Msg
 adminHtml account html =
@@ -137,6 +149,7 @@ navbar account model =
             [
              a [href PL.accountEditPageHref, class "item"] [text "Edit Accounts"] |> adminHtml account
             ,a [href PL.profilePageHref, class "item"][text "Profile"] |> nonAdminHtml account
+            ,a [href (PL.manualPageHref "index.md"), class "item"][text "Manual"]
             ,a [onClick (Logout), class "item"][text "Logout"]
             ]
         ]
