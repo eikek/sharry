@@ -23,7 +23,7 @@ sudo apt-get install openjdk-8-jre
 
 Windows users: I'm sorry there is no binary for windows. If you can
 help out, I'd appreciate pull requests. But not everything is lost,
-you can run this file with a longer command:
+you should be able to run this file with a longer command:
 
 ```
 java -jar /path/to/sharry-server-{{version}}.jar.sh
@@ -47,10 +47,10 @@ myself, so take these tips with some salt):
 sudo apt-get install git openjdk-8-jdk npm nodejs-legacy
 ```
 
-Install Elm via npm und node:
+Install Elm via npm and node:
 
 ```
-sudo npm install -g elm
+sudo npm install -g elm elm-test
 ```
 
 Install sbt, see [sbt homepage](http://www.scala-sbt.org/download.html) for instructiions.  One possible
@@ -73,6 +73,7 @@ sbt make
 ```
 
 This will take a while. The final product can be found here:
+
 ```
 modules/server/target/scala-2.12/sharry-server-$version.jar.sh
 ```

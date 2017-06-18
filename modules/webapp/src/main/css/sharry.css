@@ -60,14 +60,17 @@ blockquote {
 }
 
 .sharry-manual {
-    font-size: 1.25em;
+    font-size: 1.1em;
     line-height: normal;
     padding-bottom: 80px;
 }
 
 .sharry-manual pre {
-    font-size: 0.8em;
     padding: 9px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.sharry-manual pre code, code {
+   font-size: 0.8em;
 }

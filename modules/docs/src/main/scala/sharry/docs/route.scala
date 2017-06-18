@@ -28,15 +28,15 @@ object route {
     }
 
   def manual(prefix: Matcher[Task, String], ctx: md.Context): Route[Task] =
-    Get >> ifNoneMatch :: prefix / restPath :: linkPrefix map {
-      case noneMatch :: p :: prefix :: HNil =>
+    Get >> ifNoneMatch :: prefix :/: restPath :: linkPrefix map {
+      case noneMatch :: otherPrefix :: p :: mdPrefix :: HNil =>
         md.toc.find(p) match {
           case Some(mf) =>
-            val tag = mf.checksum + prefix
+            val tag = mf.checksum + mdPrefix
             if (Some(tag) == noneMatch) Stream.emit(emptyResponse(NotModified))
             else Stream.emit(emptyResponse(Ok).
               withHeader(ETag(EntityTag(tag, false))).
-              withStreamBody(mf.read(ctx, prefix))(encoder(mf.mimetype)))
+              withStreamBody(mf.read(ctx, otherPrefix+"/", mdPrefix))(encoder(mf.mimetype)))
 
           case None =>
             Stream.emit(emptyResponse(NotFound))
