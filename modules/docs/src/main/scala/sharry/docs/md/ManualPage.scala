@@ -21,7 +21,7 @@ case class ManualPage(
       through(text.utf8Decode).
       fold1(_ + _).
       map(mustache.parse).
-      map(_.left.map(err => new Exception(s"${err.message} at ${err.index}"))).
+      map(_.left.map(err => new Exception(s"${err._2} at ${err._1.pos}"))).
       through(pipe.rethrow).
       map(mustache.render(_)(ctx)).
       map(replaceLinks(linkPrefix)).

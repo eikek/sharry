@@ -100,5 +100,5 @@ object libs {
 
   // https://github.com/eikek/yamusca
   // MIT
-  val yamusca = "com.github.eikek" %% "yamusca" % "0.2.0"
+  val yamusca = "com.github.eikek" %% "yamusca" % "0.3.0"
 }
