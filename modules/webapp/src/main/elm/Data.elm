@@ -205,6 +205,7 @@ type alias RemoteUrls =
     ,mailAliasTemplate: String
     ,mailSend: String
     ,uploadNotify: String
+    ,manual: String
     }
 
 type alias RemoteConfig =

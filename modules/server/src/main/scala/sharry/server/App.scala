@@ -2,7 +2,9 @@ package sharry.server
 
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
+import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 
+import sharry.docs.{md, route}
 import sharry.store.account._
 import sharry.store.binary._
 import sharry.store.upload._
@@ -38,7 +40,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       , uploadConfig.maxFiles
       , uploadConfig.maxFileSize.toBytes
       , uploadConfig.maxValidity.toString
-      , makeProjectString
+      , App.makeProjectString
       , routes.authz.aliasHeaderName
       , cfg.webmailConfig.enable
       , cfg.webConfig.highlightjsTheme
@@ -49,8 +51,10 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
 
 
   def endpoints = {
+    val opts = ConfigRenderOptions.defaults().setOriginComments(false).setJson(false)
     routes.syntax.choice2(
       webjar.endpoint(remoteConfig)
+        , route.manual(paths.manual.matcher, md.Context(App.makeVersion, ConfigFactory.defaultReference().getConfig("sharry").root().render(opts)))
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)
@@ -58,11 +62,6 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
         , alias.endpoint(cfg.authConfig, uploadConfig, uploadStore)
         , mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
     )
-  }
-
-  def makeProjectString: String = {
-    import BuildInfo._
-    s"Sharry ${version}"
   }
 
   def setupLogging(logFile: Path): Unit = {
@@ -78,5 +77,19 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       config.doConfigure(logFile.toString)
     }
     StatusPrinter.printInCaseOfErrorsOrWarnings(context)
+  }
+}
+
+object App {
+  def makeVersion: String = {
+    val v =
+      BuildInfo.version +
+      BuildInfo.gitDescribedVersion.map(c => s" ($c)").getOrElse("")
+
+    if (BuildInfo.gitUncommittedChanges) v + " [dirty workingdir]" else v
+  }
+
+  def makeProjectString: String = {
+    s"Sharry ${makeVersion}"
   }
 }

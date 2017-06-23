@@ -23,6 +23,7 @@ pageExtracts =
     ,findAliasListPage
     ,findAliasUploadPage
     ,findTimeoutPage
+    ,findManualPage
     ]
 
 withLocation: Model -> (Model, Cmd Msg)
@@ -62,6 +63,11 @@ httpGetAlias: RemoteConfig -> String -> Cmd Msg
 httpGetAlias cfg id =
     Http.get (cfg.urls.aliases ++"/"++ id) Data.decodeAlias
         |> Http.send LoadAliasResult
+
+httpGetManualPage: RemoteConfig -> String -> Cmd Msg
+httpGetManualPage cfg page =
+    Http.getString (cfg.urls.manual ++ "/" ++ page ++ "?mdLinkPrefix=%23manual/")
+        |> Http.send ManualPageContent
 
 findIndexPage: Model -> Maybe (Model, Cmd Msg)
 findIndexPage model =
@@ -151,3 +157,11 @@ findTimeoutPage model =
             {model_ | page = TimeoutPage} ! [cmd] |> Just
     else
         Nothing
+
+findManualPage: Model -> Maybe (Model, Cmd Msg)
+findManualPage model =
+    case PL.manualPageName model.location.hash of
+        Just name ->
+            {model | page = ManualPage} ! [httpGetManualPage model.serverConfig name] |> Just
+        Nothing ->
+            Nothing

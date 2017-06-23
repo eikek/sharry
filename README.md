@@ -84,6 +84,13 @@ This will build the project and start the server. Point your browser to
 <http://localhost:9090> and login with user `admin` and password
 `admin`.
 
+Documentation
+-------------
+
+There is a user manual in the [./docs](./docs) folder (sources). These
+pages are shown in each sharry instance, for example
+[here](https://sharrydemo.eknet.org/#manual/index.md).
+
 Building
 --------
 

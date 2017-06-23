@@ -1,6 +1,8 @@
 import libs._
 import Path.relativeTo
 import java.nio.file.{Files, StandardCopyOption}
+import org.apache.tika.Tika
+import com.typesafe.sbt.SbtGit.GitKeys._
 
 lazy val sharedSettings = Seq(
   name := "sharry",
@@ -105,10 +107,45 @@ lazy val webapp = project.in(file("modules/webapp")).
     }).taskValue,
     resourceGenerators in Compile += (webjarWebPackageResources in Compile).taskValue))
 
+lazy val docs = project.in(file("modules/docs")).
+  settings(sharedSettings).
+  settings(
+    name := "sharry-docs",
+    libraryDependencies ++= coreDeps ++ Seq(yamusca, `fs2-http`),
+    sourceGenerators in Compile += (Def.task {
+      val docdir = (baseDirectory in LocalRootProject).value/"docs"
+      val tika = new Tika()
+      val list = sbt.Path.allSubpaths(docdir).toList.map {
+        case (file, path) =>
+          val checksum = Hash.toHex(Hash(file))
+          (path, checksum, tika.detect(file), file.length)
+      }
+
+      val code = s"""package sharry.docs.md
+           |object toc extends TocAccess {
+           | val contents: List[(String, String, String, Long)] = ${list.map(t => "(\""+t._1+"\",\""+ t._2+"\", \""+t._3+"\", "+t._4+")")}
+           |}""".stripMargin
+
+      val tocFile = (sourceManaged in Compile).value/"toc.scala"
+      IO.write(tocFile, code)
+      Seq(tocFile)
+    }).taskValue,
+    resourceGenerators in Compile += (Def.task {
+      val docdir = (baseDirectory in LocalRootProject).value/"docs"
+      val target = (resourceManaged in Compile).value/"sharry"/"docs"/"md"
+      sbt.Path.allSubpaths(docdir).toSeq.map {
+        case (file, path) =>
+          val targetFile = target/path
+          IO.copy(Seq((file, targetFile)))
+          targetFile
+      }
+    }).taskValue
+  )
+
 lazy val server = project.in(file("modules/server")).
   enablePlugins(BuildInfoPlugin).
   settings(sharedSettings).
-  settings(Seq(
+  settings(
     name := "sharry-server",
     description := "The sharry application as a rest server",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
@@ -130,12 +167,12 @@ lazy val server = project.in(file("modules/server")).
       "-Dsharry.db.url=jdbc:h2:./target/sharry-db.h2",
       "-Dsharry.optionalConfig=" + ((baseDirectory in LocalRootProject).value / "dev.conf")
     ),
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
     buildInfoPackage := "sharry.server",
     buildInfoOptions += BuildInfoOption.ToJson,
     buildInfoOptions += BuildInfoOption.BuildTime
-  )).
-  dependsOn(common % "compile->compile;test->test", store, webapp)
+  ).
+  dependsOn(common % "compile->compile;test->test", store, webapp, docs)
 
 lazy val root = project.in(file(".")).
   disablePlugins(AssemblyPlugin).
