@@ -83,6 +83,7 @@ isPublicPage model =
     case model.page of
         LoginPage -> True
         AliasUploadPage -> True
+        ManualPage -> True
         DownloadPage ->
             case PL.downloadPageId model.location.hash of
                 Just (Uid _) -> False

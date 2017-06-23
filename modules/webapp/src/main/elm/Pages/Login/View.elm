@@ -6,6 +6,7 @@ import Html.Attributes exposing (class, classList, type_, placeholder, src, href
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Pages.Login.Model exposing (Model)
 import Pages.Login.Data exposing (..)
+import PageLocation as PL
 
 view: Model -> Html Msg
 view model =
@@ -50,10 +51,24 @@ view model =
                        ]
                  ]
              , br [][]
-             , a [href "https://github.com/eikek/sharry"]
+             , div [class "ui mini horizontal divided list"]
                  [
-                  i [class "github icon"] []
-                 , text "Github"
+                  div [class "item"]
+                      [
+                       a [href "https://github.com/eikek/sharry"]
+                           [
+                            i [class "github icon"] []
+                           , text "Github"
+                           ]
+                      ]
+                 , div [class "item"]
+                     [
+                      a [href (PL.manualPageHref "index.md")]
+                          [
+                           i [class "help circle outline icon"][]
+                          ,text "Manual"
+                          ]
+                     ]
                  ]
              ]
         ]
