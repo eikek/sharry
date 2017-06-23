@@ -2,6 +2,7 @@ import libs._
 import Path.relativeTo
 import java.nio.file.{Files, StandardCopyOption}
 import org.apache.tika.Tika
+import com.typesafe.sbt.SbtGit.GitKeys._
 
 lazy val sharedSettings = Seq(
   name := "sharry",
@@ -166,7 +167,7 @@ lazy val server = project.in(file("modules/server")).
       "-Dsharry.db.url=jdbc:h2:./target/sharry-db.h2",
       "-Dsharry.optionalConfig=" + ((baseDirectory in LocalRootProject).value / "dev.conf")
     ),
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
     buildInfoPackage := "sharry.server",
     buildInfoOptions += BuildInfoOption.ToJson,
     buildInfoOptions += BuildInfoOption.BuildTime

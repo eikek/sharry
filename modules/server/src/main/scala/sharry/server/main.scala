@@ -33,7 +33,7 @@ object main {
   def main(args: Array[String]): Unit = {
     logger.info(s"""
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-       | Sharry ${BuildInfo.version} (build ${BuildInfo.builtAtString.dropRight(4)}UTC) is starting up …
+       | Sharry ${App.makeVersion} build at ${BuildInfo.builtAtString.dropRight(4)}UTC is starting up …
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––""".stripMargin)
     val startupCfg = StartConfig.parse(args)
     startupCfg.setup.unsafeRun
