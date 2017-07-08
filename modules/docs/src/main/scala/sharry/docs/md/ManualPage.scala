@@ -4,6 +4,7 @@ import java.net.URL
 import fs2.{io, text, pipe, Stream, Task}
 import scodec.bits.ByteVector
 import yamusca.imports._
+import yamusca.converter.syntax._
 
 case class ManualPage(
   name: String
@@ -16,7 +17,7 @@ case class ManualPage(
   def readAll(chunkSize: Int): Stream[Task, Byte] =
     io.readInputStream(Task.delay(url.openStream), chunkSize)
 
-  def read(ctx: Context, pathPrefix: String, linkPrefix: String): Stream[Task, ByteVector] = {
+  def read(ctx: ManualContext, pathPrefix: String, linkPrefix: String): Stream[Task, ByteVector] = {
     if (name.endsWith(".md")) {
       readAll(16384).
         through(text.utf8Decode).
@@ -24,7 +25,7 @@ case class ManualPage(
         map(mustache.parse).
         map(_.left.map(err => new Exception(s"${err._2} at ${err._1.pos}"))).
         through(pipe.rethrow).
-        map(mustache.render(_)(ctx)).
+        map(ctx.render).
         map(replaceLinks(pathPrefix, linkPrefix)).
         through(text.utf8Encode).
         rechunkN(16384, true).

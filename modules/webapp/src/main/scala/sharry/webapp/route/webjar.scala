@@ -10,6 +10,7 @@ import spinoco.fs2.http.HttpResponse
 import spinoco.protocol.http.{HttpResponseHeader, HttpStatusCode}
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.header.value._
+import yamusca.implicits._
 import yamusca.imports._
 
 import sharry.webapp.config._
@@ -175,19 +176,23 @@ object webjar {
 
   object html {
 
+    case class Data(config: String, highlightjsTheme: String)
+    object Data {
+      implicit val dataConverter: ValueConverter[Data] =
+        ValueConverter.deriveConverter[Data]
+    }
+
     def render(config: RemoteConfig): Stream[Task, Byte] = {
       resource.lookup("sharry-webapp", Seq("index.html")) match {
         case Find.Found((wj, url)) =>
-          val data = Context(
-            "config" -> Value.of(config.asJson.spaces4),
-            "highlightjsTheme" -> Value.of(config.highlightjsTheme))
+          val data = Data(config.asJson.spaces4, config.highlightjsTheme)
           url.readAll(8192).
             through(text.utf8Decode).
             fold1(_ + _).
             map(mustache.parse).
             map(_.left.map(err => new Exception(s"${err._2} at ${err._1.pos}"))).
             through(pipe.rethrow).
-            map(mustache.render(_)(data)).
+            map(data.render).
             through(text.utf8Encode)
 
         case _ => sys.error("index.html not found")

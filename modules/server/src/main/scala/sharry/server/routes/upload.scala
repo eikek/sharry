@@ -125,23 +125,22 @@ object upload {
     }
 
   private def processDescription(baseUrl: paths.Path)(u: UploadInfo): UploadInfo = {
-    import yamusca.imports._
+    import yamusca.imports._, yamusca.implicits._
 
-    val fromFile: UploadInfo.File => Value =
-      f => Value.map(
-        "filename" -> Value.of(f.filename),
-        "url" -> Value.of((baseUrl / f.meta.id).path),
-        "mimetype" -> Value.of(f.meta.mimetype.asString),
-        "size" -> Value.of(f.meta.length.asString)
-      )
+    implicit val fileConverter: ValueConverter[UploadInfo.File] = f => Map(
+      "filename" -> f.filename,
+      "url" -> (baseUrl / f.meta.id).path,
+      "mimetype" -> f.meta.mimetype.asString,
+      "size" -> f.meta.length.asString
+    ).asMustacheValue
 
-    val ctx = Context { key => key match {
+    val ctx = Context.from { key => key match {
       case "id" => u.upload.publishId.map(Value.of)
-      case "files" => Some(Value.fromSeq(u.files.map(fromFile)))
+      case "files" => Some(u.files.asMustacheValue)
       case name if name startsWith "file_" =>
         Try(name.drop(5).toInt).toOption match {
           case Some(i) if i < u.files.size =>
-            Some(fromFile(u.files(i)))
+            Some(u.files(i).asMustacheValue)
           case _ =>
             None
         }

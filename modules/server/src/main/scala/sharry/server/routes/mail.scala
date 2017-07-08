@@ -4,6 +4,7 @@ import fs2.{Stream, Task}
 import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
 import yamusca.imports._
+import yamusca.implicits._
 
 import sharry.server.paths
 import sharry.server.config._
@@ -60,7 +61,9 @@ object mail {
           orElse(f(cfg.defaultLanguage)).
           getOrElse(optLang.getOrElse(cfg.defaultLanguage) -> Template(Literal("")))
 
-        val data = Context("username" -> Value.of(login), "url" -> Value.of(url), "password" -> Value.of(pass getOrElse false))
+        val data = Context("username" -> login.asMustacheValue
+          , "url" -> url.asMustacheValue
+          , "password" -> pass.asMustacheValue)
         val text = mustache.render(template)(data)
         val (subject, body) = text.span(_ != '\n')
 

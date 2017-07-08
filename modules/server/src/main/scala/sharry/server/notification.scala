@@ -3,7 +3,7 @@ package sharry.server
 import java.time.{Duration, Instant}
 import fs2.{time, Strategy, Scheduler, Stream, Task}
 import scala.concurrent.duration.{MILLISECONDS, FiniteDuration}
-import yamusca.imports._
+import yamusca.implicits._
 
 import sharry.store.upload.UploadStore
 import sharry.store.account.AccountStore
@@ -67,14 +67,14 @@ object notification {
     (data: (Upload, String)): Task[Mail] = {
     val (upload, recipient) = data
     val templ = mailCfg.notifyTemplates(mailCfg.defaultLanguage)
-    val ctx = Context(
-      "username" -> Value.of(upload.login)
-        , "uploadId" -> Value.of(upload.id)
-        , "alias" -> Value.of(upload.aliasName)
-        , "aliasId" -> Value.of(upload.alias)
-        , "uploadUrl" -> Value.of(webCfg.baseurl + "#uid=" + upload.id)
+    val ctx = Map(
+      "username" -> Some(upload.login)
+        , "uploadId" -> Some(upload.id)
+        , "alias" -> upload.aliasName
+        , "aliasId" -> upload.alias
+        , "uploadUrl" -> Some(webCfg.baseurl + "#uid=" + upload.id)
     )
-    val text = mustache.render(templ)(ctx)
+    val text = ctx.render(templ)
     val (subject, body) = text.span(_ != '\n')
     Mail(to = recipient
       , subject = subject

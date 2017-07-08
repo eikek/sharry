@@ -10,6 +10,8 @@ import spinoco.protocol.http.{HttpStatusCode, HttpResponseHeader}
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.header.value._
 
+import md.ManualContext
+
 object route {
 
   def ifNoneMatch: Matcher[Task, Option[String]] =
@@ -27,7 +29,7 @@ object route {
       case None => ""
     }
 
-  def manual(prefix: Matcher[Task, String], ctx: md.Context): Route[Task] =
+  def manual(prefix: Matcher[Task, String], ctx: ManualContext): Route[Task] =
     Get >> ifNoneMatch :: prefix :/: restPath :: linkPrefix map {
       case noneMatch :: otherPrefix :: p :: mdPrefix :: HNil =>
         md.toc.find(p) match {
