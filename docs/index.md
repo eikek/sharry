@@ -35,3 +35,4 @@ example github issues, email or pull request.
 2. [Install](install.md)
 3. [Configuration](configuration.md)
 4. [Web application](webapp.md)
+5. [Rest Api](rest.md)

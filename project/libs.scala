@@ -61,7 +61,7 @@ object libs {
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.3.5"
+  val log4s = "org.log4s" %% "log4s" % "1.3.6"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
