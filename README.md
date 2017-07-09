@@ -87,8 +87,8 @@ This will build the project and start the server. Point your browser to
 Documentation
 -------------
 
-There is a user manual in the [./docs](./docs) folder (sources). These
-pages are shown in each sharry instance, for example
+There is a user manual in the [docs](./docs/index.md) folder (sources).
+These pages are shown in each sharry instance, for example
 [here](https://sharrydemo.eknet.org/#manual/index.md).
 
 Building

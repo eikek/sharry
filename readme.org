@@ -92,7 +92,7 @@ to http://localhost:9090 and login with user =admin= and password
 
 ** Documentation
 
-There is a user manual in the [[./docs]] folder (sources). These pages are
+There is a user manual in the [[./docs/index.md][docs]] folder (sources). These pages are
 shown in each sharry instance, for example [[https://sharrydemo.eknet.org/#manual/index.md][here]].
 
 ** Building
