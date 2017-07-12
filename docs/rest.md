@@ -63,8 +63,16 @@ externally authenticated).
 Uploads can either be created and deleted by authenticated users, or
 via a `X-Sharry-Alias` header specifying a valid alias id.
 
+To upload files, first create a new upload via `POST
+api/v1/uploads`. Currently `id` must be non-existent, it can be some
+random string. If this was successful, use the `POST
+api/v1/upload-data` to upload the files in chunks. The `token` query
+parameter is the `id` from the previous call.
+
+
 -   `POST api/v1/uploads`
-    -   json body `{id: String, description: String, validity: String, maxdownloads: Int, password: String}`
+    -   json body `{id: String, description: String, validity: String,
+        maxdownloads: Int, password: String}`
     -   creates a new upload, `id` must not exist
 -   `DELETE api/v1/uploads/<id>`
     -   delete the upload with given id
@@ -105,6 +113,9 @@ via a `X-Sharry-Alias` header specifying a valid alias id.
         chunkSize: Int, currentChunkSize: Int, totalSize: Long,
         fileIdentifier: String, filename: String, totalChunks: Int`
         are required to identify the chunk
+    -   the `token` query parameter is the upload id; the
+        `fileIdentifier` is some string identifying the file, the
+        webapp uses the filename + file size, for example.
 
 ## Download Files
 
