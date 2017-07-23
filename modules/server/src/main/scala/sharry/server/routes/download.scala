@@ -131,8 +131,6 @@ object download {
           withContentLength(bytes, file.meta.length) ++
           withContentRange(bytes, file.meta.length) ++
           withAcceptRanges ++
-          withETag(file.meta.id) ++
-          withLastModified(file.meta.timestamp) ++
           withDisposition("inline", file.filename)
       case Left(r) => r
     })
