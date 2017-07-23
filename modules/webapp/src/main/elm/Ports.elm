@@ -13,6 +13,8 @@ port randomString: (String -> msg) -> Sub msg
 
 port setProgress: (String, Float, Bool) -> Cmd msg
 
+port initAccordionAndTabs: () -> Cmd msg
+
 port makeResumable: Resumable.Config -> Cmd msg
 port resetResumable: Resumable.Handle -> Cmd msg
 port resumableHandle: ((String, Resumable.Handle) -> msg) -> Sub msg

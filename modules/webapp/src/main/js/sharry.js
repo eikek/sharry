@@ -23,6 +23,12 @@ elmApp.ports.setProgress.subscribe(function(selectorPercentError) {
     }
 });
 
+elmApp.ports.initAccordionAndTabs.subscribe(function() {
+    //https://github.com/Semantic-Org/Semantic-UI/issues/5421
+    $('.ui.accordion').accordion({animateChildren: false});
+    $('.tabular.menu .item').tab({history: false});
+});
+
 
 // very nice, found here: https://gist.github.com/gordonbrander/2230317
 var genId = function (prefix) {

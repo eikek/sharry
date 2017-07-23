@@ -139,8 +139,9 @@ update msg model =
         UploadData (Ok data) ->
             let
                 dlmodel = DownloadModel.makeModel data model.serverConfig model.user
+                defcmd = (Ports.initAccordionAndTabs ()) :: model.deferred
             in
-                {model | download = dlmodel, page = DownloadPage} ! []
+                {model | download = dlmodel, page = DownloadPage, deferred = defcmd} ! []
 
         UploadData (Err error) ->
             let

@@ -161,7 +161,7 @@ viewPage model =
                        ,div [HA.class "sub header"]
                             [text (fileSummary model)]
                        ]
-                  ,div [HA.class "ui relaxed divided list"]
+                  ,div [HA.class "ui fluid accordion"]
                       (if List.isEmpty model.info.files then
                           [text "No files attached."]
                       else
@@ -347,6 +347,10 @@ renderFile model file =
                           model.cfg.urls.downloadPublished ++ "/" ++ file.id
                       else
                           "#"
+        downloadUrlAbs = if String.startsWith "/" downloadUrl then
+                              model.cfg.urls.baseUrl ++ String.dropLeft 1 downloadUrl
+                          else
+                              model.cfg.urls.baseUrl ++ downloadUrl
         mimecss = case Data.parseMime file.mimetype of
                       ("application", "zip") -> "file archive outline"
                       ("application", "pdf") -> "file pdf outline"
@@ -362,14 +366,37 @@ renderFile model file =
                           "file powerpoint outline"
                       _ -> "file outline"
     in
-        div [HA.class "item"]
-            [Html.i [HA.class ("large " ++ mimecss ++ " middle aligned icon")][]
+        div []
+            [div [HA.class "title"]
+                 [Html.i [HA.class ("large dropdown middle aligned icon")][]
+                 ,Html.i [HA.class ("large " ++ mimecss ++ " middle aligned icon")][]
+                 ,Html.a [HA.class "header", HA.href downloadUrl]
+                     [text file.filename
+                     ]
+                 ,text " ("
+                 ,Data.bytesReadable Data.B (toFloat file.length) |> text
+                 ,text ")"
+                 ]
             ,div [HA.class "content"]
-                [
-                 Html.a [HA.class "header", HA.href downloadUrl]
-                     [text file.filename]
-                ,div [HA.class "content"]
-                    [Data.bytesReadable Data.B (toFloat file.length) |> text]
+                [div [HA.class "ui pointing secondary tabular menu"]
+                     [Html.a [HA.class "active item", HA.attribute "data-tab" ("preview-"++file.id)][text "Preview"]
+                     ,Html.a [HA.class "item", HA.attribute "data-tab" ("embed-"++file.id)][text "Embed"]
+                     ]
+                ,div [HA.class "ui bottom active tab", HA.attribute "data-tab" ("preview-"++file.id)]
+                    [
+                     Html.embed [HA.type_ file.mimetype, HA.src downloadUrl, HA.width 560, HA.height 315, HA.attribute "allowFullscreen" ""][]
+                    ]
+                ,div [HA.class "ui bottom attached tab", HA.attribute "data-tab" ("embed-"++file.id)]
+                    [
+                     Html.pre [HA.style [("margin-left", "1em")]]
+                         [Html.code [HA.class "lang-html"]
+                              [text ("<embed src=\"" ++ downloadUrlAbs ++
+                                         "\"\n   type=\"" ++ file.mimetype ++
+                                         "\"\n   src=\"560\" height=\"315\" " ++
+                                         "/>")
+                              ]
+                         ]
+                    ]
                 ]
         ]
 
