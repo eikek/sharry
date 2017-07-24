@@ -5,7 +5,6 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest._
-import cats.data.Ior
 import doobie.imports._
 import sharry.common.sizes._
 import sharry.common._
@@ -15,20 +14,6 @@ import sharry.store.range._
 import sharry.store.mimedetect._
 
 class BinaryStoreTest extends FlatSpec with Matchers with StoreFixtures {
-
-  "range" should "calculate correct boundaries" in {
-    import RangeSpec._
-    bytes(Some(80), Some(210))(100.bytes) should be (Some(Range(Ior.both(0->80, 3->10))))
-    bytes(Some(50), Some(100))(100.bytes) should be (Some(Range(Ior.both(0->50, 2->50))))
-    bytes(Some(680), None)(250.bytes) should be (Some(Range(Ior.left(2 -> 180))))
-    bytes(Some(680), Some(1212))(250.bytes) should be (Some(Range(Ior.both(2->180, 6->108))))
-    bytes(Some(5 * 1024 * 1020), Some(6 * 1024 * 1002))(256.kbytes) should be (
-      Some(Range(Ior.both(19->241664, 25->155648)))
-    )
-    bytes(Some(500), Some(100))(15000.bytes) should be (Some(Range(Ior.both(0->500, 1->14400))))
-    bytes(None, Some(1024))(15000.bytes) should be (Some(Range(Ior.right(1->13976))))
-    bytes(None, Some(15000))(15000.bytes) should be (Some(Range(Ior.right(1->0))))
-  }
 
   "save" should "save a file" in newDb { xa =>
     val store = new SqlBinaryStore(xa)

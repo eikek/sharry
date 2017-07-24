@@ -8,29 +8,46 @@ import sharry.common.sizes._
 import sharry.common.streams
 
 object range {
-  type RangeSpec = Size => Option[Range]
+  case class FileSettings(length: Size, chunkSize: Size)
+  type RangeSpec = FileSettings => Option[Range]
 
   object RangeSpec {
     val none: RangeSpec = _ => Range.empty
     val all: RangeSpec = _ => Range.all
 
     /** Calculating Range given the chunksize */
-    def bytes(offset: Option[Int], count: Option[Int]): RangeSpec = { chunkSz =>
+    def bytes(offset: Option[Int], count: Option[Int]): RangeSpec = { case FileSettings(flen, chunkSz) =>
       val chunkSize = chunkSz.bytes
       val left = offset.map { off =>
         (off / chunkSize, off % chunkSize)
       }
-      // count = (chunkSize - dropL) + (chunkSize - dropR) + (chunkSize * (limit -2))
-      //         first row             last row              intermediate rows
-      // limit = ((count - (cs - dropL) - (cs -dropR)) / cs) + 2
-      val right = count.map { len =>
-        val rest = (offset.orEmpty + len) % chunkSize
-        val dropR = if (rest == 0) 0 else chunkSize - rest
+      val right = count.flatMap { clen =>
         val dropL = left.map(_._2).orEmpty
-        val limit = ((len - (chunkSize - dropL) - (chunkSize - dropR)) / chunkSize) + 2
-        (limit, dropR)
+        val rest = (offset.orEmpty + clen) % chunkSize
+
+        // when last chunk:
+        // |------x----y----|
+        // |------|      x = (offset + count) mod chunkSize
+        // |-----------| y = flen mod chunkSize
+        //        |----| dropR = y - x
+        val dropR = {
+          val onLastChunk = (offset.orEmpty + clen) / chunkSize == (flen.bytes / chunkSize)
+          val last =
+            if (onLastChunk) (flen.bytes % chunkSize) -1
+            else chunkSize
+          if (rest == 0) 0 else last - rest
+        }
+
+        // count = (chunkSize - dropL) + (chunkSize - dropR) + (chunkSize * (limit -2))
+        //         first row             last row              intermediate rows
+        // limit = ((count - (cs - dropL) - (cs -dropR)) / cs) + 2
+        val limit = ((clen - (chunkSize - dropL) - (chunkSize - dropR)) / chunkSize) + 2
+        if (dropR < 0) None
+        else Some((limit, dropR))
       }
-        (left, right) match {
+      val outOfRange = (offset.orEmpty + count.orEmpty) > flen.bytes
+      if (outOfRange) None
+      else (left, right) match {
         case (Some(l), Some(r)) => Some(Range(Ior.both(l, r)))
         case (Some(l),       _) => Some(Range(Ior.left(l)))
         case (_,       Some(r)) => Some(Range(Ior.right(r)))
@@ -38,9 +55,9 @@ object range {
       }
     }
 
-    def firstChunks(n: Int): RangeSpec = { chunkSize =>
+    def firstChunks(n: Int): RangeSpec = { settings =>
       require (n > 0)
-      bytes(None, Some(n * chunkSize.bytes))(chunkSize)
+      bytes(None, Some(n * settings.chunkSize.bytes))(settings)
     }
 
     val firstChunk: RangeSpec = firstChunks(1)

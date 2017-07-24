@@ -82,10 +82,10 @@ class SqlBinaryStore(xa: Transactor[Task]) extends BinaryStore with Statements {
       else Stream.eval(selectChunkData(id, Some(chunk).filter(_ > 0), Some(1)).unique.transact(xa)) ++ mkData(id, chunksLeft -1, chunk+1)
 
     _.flatMap { fm =>
-      range(fm.chunksize) match {
+      range(FileSettings(fm.length, fm.chunksize)) match {
         case Some(r) =>
           logger.trace(s"Get file ${fm.id} for $r")
-          mkData(fm.id, r.limit.getOrElse(fm.chunks) - r.offset.getOrElse(0), r.offset.getOrElse(0)).
+          mkData(fm.id, r.limit.getOrElse(fm.chunks - r.offset.getOrElse(0)), r.offset.getOrElse(0)).
             through(Range.dropLeft(r)).
             through(Range.dropRight(r)).
             through(streams.unchunk)
@@ -98,7 +98,7 @@ class SqlBinaryStore(xa: Transactor[Task]) extends BinaryStore with Statements {
 
   def fetchData2(range: RangeSpec): Pipe[Task, FileMeta, Byte] =
     _.flatMap { fm =>
-      range(fm.chunksize).map { r =>
+      range(FileSettings(fm.length, fm.chunksize)).map { r =>
         logger.trace(s"Get file ${fm.id} for $r")
         r.select(selectChunkData(fm.id, r.offset, r.limit).process.transact(xa))
       } getOrElse {

@@ -54,6 +54,7 @@ object main {
       bindTo = new InetSocketAddress(app.cfg.webConfig.bindHost, app.cfg.webConfig.bindPort),
       requestCodec = requestHeaderCodec,
       requestHeaderReceiveTimeout = 10.seconds,
+      sendFailure = handleSendFailure _, // (Option[HttpRequestHeader], HttpResponse[F], Throwable) => Stream[F, Nothing],
       requestFailure = logRequestErrors _)(route(app.endpoints)).
       onFinalize(shutdown.run)
 
@@ -105,6 +106,13 @@ object main {
     implicit val enc = BodyEncoder.utf8String
     logger.error(error)("Error in request")
     Stream.emit(HttpResponse(HttpStatusCode.InternalServerError).withBody(error.getClass + ":" + error.getMessage))
+  }
+
+  private def handleSendFailure[F[_]](header: Option[HttpRequestHeader], response: HttpResponse[F], err:Throwable): Stream[F, Nothing] = {
+    Stream.suspend {
+      logger.error(err)(s"Error sending response! Request headers: ${header}")
+      Stream.empty
+    }
   }
 
   private def requestHeaderCodec: Codec[HttpRequestHeader] = {
