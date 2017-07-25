@@ -75,7 +75,7 @@ lazy val webapp = project.in(file("modules/webapp")).
     description := "A web frontend for sharry",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `semantic-ui`, jquery, highlightjs, `logback-classic`, yamusca,
-      `circe-core`, `circe-generic`, `circe-parser`, `fs2-http`
+      `circe-core`, `circe-generic`, `circe-parser`, `fs2-http`, `spinoco-http`
     ),
     // elm stuff
     elmVersion := "0.18.0 <= v < 0.19.0",
@@ -111,7 +111,7 @@ lazy val docs = project.in(file("modules/docs")).
   settings(sharedSettings).
   settings(
     name := "sharry-docs",
-    libraryDependencies ++= coreDeps ++ Seq(yamusca, `fs2-http`),
+    libraryDependencies ++= coreDeps ++ Seq(yamusca, `fs2-http`, `spinoco-http`),
     sourceGenerators in Compile += (Def.task {
       val docdir = (baseDirectory in LocalRootProject).value/"docs"
       val tika = new Tika()
@@ -150,7 +150,7 @@ lazy val server = project.in(file("modules/server")).
     description := "The sharry application as a rest server",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `logback-classic`, `circe-core`, `circe-generic`, `circe-parser`,
-      pureconfig, `scala-bcrypt`, `fs2-http`, `doobie-hikari`,
+      pureconfig, `scala-bcrypt`, `fs2-http`, `spinoco-http`, `doobie-hikari`,
       `javax-mail`, `javax-mail-api`, dnsjava, yamusca
     ),
     assemblyJarName in assembly := s"sharry-server-${version.value}.jar.sh",

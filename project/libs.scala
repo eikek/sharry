@@ -23,6 +23,10 @@ object libs {
   // https://github.com/Spinoco/fs2-http
   // MIT
   val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.1.7"
+  // https://github.com/Spinoco/protocol
+  // MIT
+  // version that comes with fs2-http has some bugs
+  val `spinoco-http` = "com.spinoco" %% "protocol-http" % "0.2.3"
 
   // https://github.com/scalatest/scalatest
   // ASL 2.0
@@ -34,7 +38,7 @@ object libs {
 
   // https://github.com/scodec/scodec-bits
   // 3-clause BSD
-  val `scodec-bits` = "org.scodec" %% "scodec-bits" % "1.1.4"
+  val `scodec-bits` = "org.scodec" %% "scodec-bits" % "1.1.5"
 
   // https://github.com/tpolecat/doobie
   // MIT
@@ -43,7 +47,7 @@ object libs {
 
   // https://jdbc.postgresql.org/
   // BSD
-  val postgres = "org.postgresql" % "postgresql" % "42.1.1"
+  val postgres = "org.postgresql" % "postgresql" % "42.1.3"
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0
@@ -57,7 +61,7 @@ object libs {
 
   // http://tika.apache.org
   // ASL 2.0
-  val tika = "org.apache.tika" % "tika-core" % "1.15"
+  val tika = "org.apache.tika" % "tika-core" % "1.16"
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
@@ -87,12 +91,12 @@ object libs {
 
   // https://highlightjs.org/
   // BSD
-  val highlightjs = "org.webjars.bower" % "highlightjs" % "9.10.0"
+  val highlightjs = "org.webjars.bower" % "highlightjs" % "9.12.0"
 
   // https://java.net/projects/javamail/pages/Home
   // CDDL 1.0, GPL 2.0
-  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.5.6"
-  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.5.6"
+  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.6.0"
+  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.6.0"
 
   // http://dnsjava.org/
   // BSD
