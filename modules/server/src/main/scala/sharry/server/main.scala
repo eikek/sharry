@@ -110,7 +110,12 @@ object main {
 
   private def handleSendFailure[F[_]](header: Option[HttpRequestHeader], response: HttpResponse[F], err:Throwable): Stream[F, Nothing] = {
     Stream.suspend {
-      logger.error(err)(s"Error sending response! Request headers: ${header}")
+      err match {
+        case _: java.io.IOException if err.getMessage == "Broken pipe" || err.getMessage == "Connection reset by peer" =>
+          logger.warn(s"Error sending response: ${err.getMessage}! Request headers: ${header}")
+        case _ =>
+          logger.error(err)(s"Error sending response! Request headers: ${header}")
+      }
       Stream.empty
     }
   }
