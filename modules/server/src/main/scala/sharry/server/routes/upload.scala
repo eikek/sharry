@@ -232,10 +232,15 @@ object upload {
             Stream.empty
 
         val sizeCheck = store.getUploadSize(info.token).
-          map({
-            case UploadSize(n, len) =>
-              n <= cfg.maxFiles && (len + info.currentChunkSize.bytes) <= cfg.maxFileSize
+          map({ case us@UploadSize(n, len) =>
+            (us, n <= cfg.maxFiles && (len + info.currentChunkSize.bytes) <= cfg.maxFileSize)
           }).
+          evalMap({ case (UploadSize(n, len), result) => Task.delay {
+            if (!result) {
+              logger.info(s"Current upload chunk (${info.currentChunkSize.bytes.asString}) exceeds max size: size=${len + info.currentChunkSize.bytes} and count=$n")
+            }
+            result
+          }}).
           through(streams.ifEmpty(Stream.emit(true)))
 
         sizeCheck.flatMap {

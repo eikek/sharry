@@ -229,8 +229,18 @@ trait SqlStatements extends Statements {
   def sqlGetUploadSize(id: String) =
     sql"""SELECT count(*), COALESCE(sum(length), 0)
           FROM UploadFile AS uf
-          INNER JOIN FileMeta AS fm
-          WHERE uf.fileid = fm.id AND uf.uploadid = $id""".
+          INNER JOIN FileMeta AS fm ON uf.fileid = fm.id
+          WHERE uf.uploadid = $id""".
       query[UploadSize].
       unique
+
+  def sqlGetUploadSizeFromChunks(id: String) =
+    sql"""SELECT count(distinct fm.id), COALESCE(sum(length(fc.chunkdata)), 0)
+          FROM UploadFile AS uf
+          INNER JOIN FileMeta AS fm ON uf.fileid = fm.id
+          INNER JOIN FileChunk AS fc ON fc.fileid = fm.id
+          WHERE uf.uploadid = $id""".
+      query[UploadSize].
+      unique
+
 }

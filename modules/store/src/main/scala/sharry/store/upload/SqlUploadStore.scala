@@ -74,7 +74,7 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
   }
 
   def getUploadSize(id: String): Stream[Task, UploadSize] =
-    Stream.eval(sqlGetUploadSize(id).transact(xa))
+    Stream.eval(sqlGetUploadSizeFromChunks(id).transact(xa))
 
   def publishUpload(id: String, login: String): Stream[Task, Either[String, String]] = {
     Stream.eval(sqlGetUpload(id, login).transact(xa)).

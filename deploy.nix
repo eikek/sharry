@@ -30,7 +30,6 @@
 
           cat > $out/bin/sharry-server <<-EOF
           #!/usr/bin/env bash
-          export SHARRY_JAVA_OPTS="-Dsharry.authc.extern.admin.enable=true -Dsharry.web.baseurl=http://10.233.1.2/"
           export PATH=${pkgs.jre}/bin:$PATH
           $out/program/sharry-server "\$@"
           EOF
@@ -38,6 +37,29 @@
         '';
       };
       dataDir = "/var/run/sharry";
+      conf = pkgs.writeText "sharry-conf" ''
+        sharry {
+          authc {
+            extern.admin.enable = true
+          }
+          upload {
+            chunk-size = "256K"
+            simultaneous-uploads = 1
+            max-files = 5
+            max-file-size = "500K"
+            max-validity = "6 hours"
+            cleanup-enable = true
+            cleanup-interval = 8 hours
+            cleanup-invalid-age = 2 minutes
+            alias-delete-time = 2 minutes
+            enable-upload-notification = false
+          }
+          web {
+            baseurl = "http://10.233.2.2/"
+            bind-host = "0.0.0.0"
+          }
+        }
+      '';
     in
     {
 
@@ -70,7 +92,7 @@
         '';
 
         script = ''
-          ${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh sharry -c "cd ${dataDir} && ${sharry}/bin/sharry-server"
+          ${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh sharry -c "cd ${dataDir} && ${sharry}/bin/sharry-server ${conf}"
         '';
       };
 
