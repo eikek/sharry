@@ -172,9 +172,7 @@ The important settings are
 - ~sharry.web.baseurl~ this must be set to the external base url. So
   if the app is at http://example.com/, then it should be set to this
   value. It is used to restrict the authentication cookie and to
-  create links in the web application. Please note, that currently a
-  trailing slash must be used in order to make it parse (this will
-  change in the future).
+  create links in the web application.
 - ~sharry.db.driver|user|url|password~ the JDBC settings; currently it
   should work with postgres and h2
 - ~sharry.upload.max-file-size~ maximum file size to upload
