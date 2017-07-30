@@ -21,6 +21,7 @@ import Pages.Profile.Model as ProfileModel
 import Pages.AliasList.Model as AliasListModel
 import Pages.AliasUpload.Model as AliasUploadModel
 import Pages.Manual.Model as ManualModel
+import Pages.Error.Model as ErrorModel
 import Time exposing (Time)
 import Navigation
 
@@ -60,6 +61,7 @@ type Page
     | AliasUploadPage
     | TimeoutPage
     | ManualPage
+    | ErrorPage
 
 type alias Model =
     { page: Page
@@ -73,6 +75,7 @@ type alias Model =
     , aliases: AliasListModel.Model
     , aliasUpload: AliasUploadModel.Model
     , manualModel: ManualModel.Model
+    , errorModel: ErrorModel.Model
     , user: Maybe Account
     , serverConfig: RemoteConfig
     , deferred: List (Cmd Msg)
@@ -84,6 +87,7 @@ isPublicPage model =
         LoginPage -> True
         AliasUploadPage -> True
         ManualPage -> True
+        ErrorPage -> True
         DownloadPage ->
             case PL.downloadPageId model.location.hash of
                 Just (Uid _) -> False
@@ -103,6 +107,7 @@ initModel cfg acc location =
     , aliases = AliasListModel.emptyModel cfg
     , aliasUpload = AliasUploadModel.emptyModel cfg acc
     , manualModel = ManualModel.makeModel ""
+    , errorModel = ErrorModel.emptyModel
     , user = acc
     , serverConfig = cfg
     , deferred = []

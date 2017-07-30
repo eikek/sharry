@@ -24,6 +24,7 @@ import Pages.AliasList.Update as AliasListUpdate
 import Pages.AliasUpload.Model as AliasUploadModel
 import Pages.AliasUpload.Update as AliasUploadUpdate
 import Pages.Manual.Model as ManualModel
+import Pages.Error.Model as ErrorModel
 
 update: Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -145,27 +146,27 @@ update msg model =
 
         UploadData (Err error) ->
             let
-                x = Debug.log "Error getting published download " (Data.errorMessage error)
+                msg = Debug.log "Error getting published download " (Data.errorMessage error)
             in
-                model ! [PL.timeoutCmd error]
+                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
 
         LoadUploadsResult (Ok uploads) ->
             {model | uploadList = UploadListModel.makeModel model.serverConfig.urls uploads, page = UploadListPage} ! []
 
         LoadUploadsResult (Err error) ->
             let
-                x = Debug.log "Error getting list of uploads " (Data.errorMessage error)
+                msg = Debug.log "Error getting list of uploads " (Data.errorMessage error)
             in
-                model ! [PL.timeoutCmd error]
+                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
 
         LoadAliasesResult (Ok aliases) ->
             {model | aliases = AliasListModel.makeModel model.serverConfig aliases, page = AliasListPage} ! []
 
         LoadAliasesResult (Err error) ->
             let
-                x = Debug.log "Error getting list of aliases " (Data.errorMessage error)
+                msg = Debug.log "Error getting list of aliases " (Data.errorMessage error)
             in
-                model ! [PL.timeoutCmd error]
+                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
 
         LoadAliasResult (Ok alia) ->
             let
@@ -177,9 +178,13 @@ update msg model =
 
         LoadAliasResult (Err error) ->
             let
-                x = Debug.log "Error getting alias " (Data.errorMessage error)
+                msg = Debug.log "Error getting alias " (Data.errorMessage error)
             in
-                model ! [PL.timeoutCmd error]
+                --empty/invalid alias is handled at the page
+                if Data.isNotFound error then
+                    model ! [PL.timeoutCmd error]
+                else
+                    {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
 
         UploadListMsg msg ->
             let
@@ -217,9 +222,9 @@ update msg model =
 
         ManualPageContent (Err error) ->
             let
-                x = Debug.log "Error loading manual page " (Data.errorMessage error)
+                msg = Debug.log "Error loading manual page " (Data.errorMessage error)
             in
-                model ! []
+                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! []
 
         ManualMsg msg ->
             let

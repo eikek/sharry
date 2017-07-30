@@ -1,13 +1,13 @@
 module Data exposing (..)
 
-import Html exposing (Html)
-import List
-import Http
 import Date
-import Markdown
+import Html exposing (Html)
+import Http
 import Json.Decode as Decode exposing(field, at)
-import Json.Encode as Encode
 import Json.Decode.Pipeline as JP
+import Json.Encode as Encode
+import List
+import Markdown
 
 -- Account type
 
@@ -265,13 +265,19 @@ errorMessage err =
         Http.BadUrl msg ->
             "Internal error: invalid url for request."
 
-isUnauthorized: Http.Error -> Bool
-isUnauthorized err =
+isStatusCode: Int -> Http.Error -> Bool
+isStatusCode status err =
     case err of
         Http.BadStatus resp ->
-            resp.status.code == 401
+            resp.status.code == status
         _ ->
             False
+
+isUnauthorized: Http.Error -> Bool
+isUnauthorized = isStatusCode 401
+
+isNotFound: Http.Error -> Bool
+isNotFound = isStatusCode 404
 
 decodeError: Http.Response String -> String
 decodeError resp =
@@ -284,6 +290,7 @@ decodeError resp =
                 _ -> resp.body
     in
         if ((String.length text) > 0) then text
+        else if (resp.status.code == 404) then "The object was not found."
         else "Some error occured at the server without giving specific error message: " ++ (toString resp.status)
 
 

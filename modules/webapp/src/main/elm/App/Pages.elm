@@ -24,6 +24,7 @@ pageExtracts =
     ,findAliasUploadPage
     ,findTimeoutPage
     ,findManualPage
+    ,findErrorPage
     ]
 
 withLocation: Model -> (Model, Cmd Msg)
@@ -165,3 +166,10 @@ findManualPage model =
             {model | page = ManualPage} ! [httpGetManualPage model.serverConfig name] |> Just
         Nothing ->
             Nothing
+
+findErrorPage: Model -> Maybe (Model, Cmd Msg)
+findErrorPage model =
+    if PL.errorPageHref == model.location.hash then
+        {model | page = ErrorPage} ! [] |> Just
+    else
+        Nothing

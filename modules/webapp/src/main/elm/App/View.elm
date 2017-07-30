@@ -22,6 +22,7 @@ import Pages.AliasList.View as AliasListView
 import Pages.AliasUpload.View as AliasUploadView
 import Pages.Timeout.View as TimeoutView
 import Pages.Manual.View as ManualView
+import Pages.Error.View as ErrorView
 
 view: Model -> Html Msg
 view model =
@@ -46,6 +47,10 @@ view model =
                 ManualPage ->
                     div [class "ui container"]
                         [ManualView.view model.manualModel]
+
+                ErrorPage ->
+                    div [class "ui container"]
+                        [ErrorView.view model.errorModel]
 
                 _ ->
                     Html.map LoginMsg (LoginView.view model.login)
@@ -125,6 +130,13 @@ view model =
                     div [class "ui container"]
                         [(navbar acc model)
                         ,ManualView.view model.manualModel
+                        ,(footer model)
+                        ]
+
+                ErrorPage ->
+                    div [class "ui container"]
+                        [(navbar acc model)
+                        ,ErrorView.view model.errorModel
                         ,(footer model)
                         ]
 

@@ -162,3 +162,11 @@ manualPageName hash =
         String.dropLeft 8 hash |> Just
     else
         Nothing
+
+-- error page
+errorPageHref: String
+errorPageHref = "#error"
+
+errorPage: Cmd msg
+errorPage =
+    Navigation.newUrl errorPageHref
