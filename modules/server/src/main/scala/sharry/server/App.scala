@@ -4,6 +4,7 @@ import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 
+import sharry.common.BuildInfo
 import sharry.docs.route
 import sharry.docs.md.ManualContext
 import sharry.store.account._

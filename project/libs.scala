@@ -105,4 +105,15 @@ object libs {
   // https://github.com/eikek/yamusca
   // MIT
   val yamusca = "com.github.eikek" %% "yamusca-core" % "0.4.0"
+
+  // https://github.com/vsch/flexmark-java
+  // BSD 2-Clause
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.26.4"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.26.4"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.26.4"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.26.4"
+
+  // https://github.com/jhy/jsoup
+  // MIT
+  val jsoup = "org.jsoup" % "jsoup" % "1.10.3"
 }

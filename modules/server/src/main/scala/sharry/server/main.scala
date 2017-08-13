@@ -19,9 +19,10 @@ import spinoco.protocol.http.codec.HttpRequestHeaderCodec
 
 import org.log4s._
 
+import sharry.common.BuildInfo
 import sharry.common.file._
-import sharry.store.evolution
 import sharry.common.streams
+import sharry.store.evolution
 
 object main {
   implicit val logger = getLogger
