@@ -62,7 +62,7 @@ Besides the configuration file, every option can be overridden by a
 corresponding system property. They are passed to the java command:
 
 ```
-SHARRY_JAVA_OPTS="-Dsome.property=value sharry-server-{{version}}.jar.sh
+SHARRY_JAVA_OPTS="-Dsome.property=value sharry-server-{{versionShort}}.jar.sh
 ```
 
 For all possible options, please refer to the default configuration at
