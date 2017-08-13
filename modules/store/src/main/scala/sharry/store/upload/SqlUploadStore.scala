@@ -5,6 +5,7 @@ import fs2.{Pipe, Strategy, Stream, Task}
 import doobie.imports._
 import cats.implicits._
 import org.log4s._
+import fs2.interop.cats._
 
 import sharry.store.range._
 import sharry.common.mime._

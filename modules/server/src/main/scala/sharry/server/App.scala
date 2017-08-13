@@ -4,6 +4,7 @@ import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 
+import sharry.common.BuildInfo
 import sharry.docs.route
 import sharry.docs.md.ManualContext
 import sharry.store.account._
@@ -55,7 +56,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
     val opts = ConfigRenderOptions.defaults().setOriginComments(false).setJson(false)
     routes.syntax.choice2(
       webjar.endpoint(remoteConfig)
-        , route.manual(paths.manual.matcher, ManualContext(App.makeVersion, ConfigFactory.defaultReference().getConfig("sharry").root().render(opts)))
+        , route.manual(paths.manual.matcher, ManualContext(App.makeVersion, BuildInfo.version, ConfigFactory.defaultReference().getConfig("sharry").root().render(opts)))
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)

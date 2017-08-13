@@ -19,9 +19,10 @@ import spinoco.protocol.http.codec.HttpRequestHeaderCodec
 
 import org.log4s._
 
+import sharry.common.BuildInfo
 import sharry.common.file._
-import sharry.store.evolution
 import sharry.common.streams
+import sharry.store.evolution
 
 object main {
   implicit val logger = getLogger
@@ -48,7 +49,7 @@ object main {
 
     val shutdown =
       streams.slog[Task](_.info("Closing database")) ++
-      Stream.eval(app.jdbc.shutdown)
+      Stream.eval(Task.delay(app.jdbc.kernel.close()))
 
     val server = http.server[Task](
       bindTo = new InetSocketAddress(app.cfg.webConfig.bindHost, app.cfg.webConfig.bindPort),

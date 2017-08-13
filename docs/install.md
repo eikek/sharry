@@ -11,7 +11,7 @@ yourself or download a prebuild executable.
 
 There are prebuild files for download:
 
-- [Sharry {{version}}](https://eknet.org/main/projects/sharry/sharry-server-{{version}}.jar.sh)
+- [Sharry {{versionShort}}](https://eknet.org/main/projects/sharry/sharry-server-{{versionShort}}.jar.sh)
 
 This is a bash script that can be run in any Linux distribution and
 OSX that has JRE 8 installed. On Ubuntu, for example, this can be done
@@ -26,7 +26,7 @@ help out, I'd appreciate pull requests. But not everything is lost,
 you should be able to run this file with a longer command:
 
 ```
-java -jar /path/to/sharry-server-{{version}}.jar.sh
+java -jar /path/to/sharry-server-{{versionShort}}.jar.sh
 ```
 
 

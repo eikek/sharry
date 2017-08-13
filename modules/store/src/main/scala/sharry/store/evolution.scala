@@ -3,6 +3,7 @@ package sharry.store
 import org.log4s._
 import fs2.{Pure, Stream, Task}
 import doobie.imports._
+import fs2.interop.cats._
 import sharry.common.streams
 
 object evolution {

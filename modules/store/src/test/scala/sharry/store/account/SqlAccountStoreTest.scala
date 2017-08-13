@@ -2,6 +2,7 @@ package sharry.store.account
 
 import org.scalatest._
 import doobie.imports._
+import fs2.interop.cats._
 import sharry.store._
 import sharry.store.data._
 

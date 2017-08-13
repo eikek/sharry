@@ -28,13 +28,28 @@ lazy val coreDeps = Seq(`cats-core`, `fs2-core`, `fs2-io`, log4s, `scodec-bits`)
 lazy val testDeps = Seq(scalatest, `logback-classic`).map(_ % "test")
 
 lazy val common = project.in(file("modules/common")).
+  enablePlugins(BuildInfoPlugin).
   disablePlugins(AssemblyPlugin).
   settings(sharedSettings).
   settings(Seq(
     name := "sharry-common",
     description := "Some common utility code",
-    libraryDependencies ++= coreDeps ++ testDeps
+    libraryDependencies ++= coreDeps ++ testDeps,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
+    buildInfoPackage := "sharry.common",
+    buildInfoOptions += BuildInfoOption.ToJson,
+    buildInfoOptions += BuildInfoOption.BuildTime
   ))
+
+lazy val mdutil = project.in(file("modules/mdutil")).
+  settings(sharedSettings).
+  settings(
+    name := "sharry-mdutil",
+    description := "Markdown utility for sharry based on flexmark-java",
+    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
+      `flexmark-core`,  `flexmark-gfm-tables`,  `flexmark-gfm-strikethrough`,
+      `flexmark-formatter`, jsoup
+    ))
 
 lazy val store = project.in(file("modules/store")).
   disablePlugins(AssemblyPlugin).
@@ -140,10 +155,10 @@ lazy val docs = project.in(file("modules/docs")).
           targetFile
       }
     }).taskValue
-  )
+  ).
+  dependsOn(mdutil)
 
 lazy val server = project.in(file("modules/server")).
-  enablePlugins(BuildInfoPlugin).
   settings(sharedSettings).
   settings(
     name := "sharry-server",
@@ -166,19 +181,16 @@ lazy val server = project.in(file("modules/server")).
       "-Dsharry.authc.extern.admin.enable=true",
       "-Dsharry.db.url=jdbc:h2:./target/sharry-db.h2",
       "-Dsharry.optionalConfig=" + ((baseDirectory in LocalRootProject).value / "dev.conf")
-    ),
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
-    buildInfoPackage := "sharry.server",
-    buildInfoOptions += BuildInfoOption.ToJson,
-    buildInfoOptions += BuildInfoOption.BuildTime
+    )
   ).
   dependsOn(common % "compile->compile;test->test", store, webapp, docs)
+
 
 lazy val root = project.in(file(".")).
   disablePlugins(AssemblyPlugin).
   settings(sharedSettings).
-  aggregate(common, store, server, webapp)
+  aggregate(common, mdutil, store, server, webapp)
 
 addCommandAlias("run-sharry", ";project server;run")
-addCommandAlias("make", ";set elmMinify in (webapp, Compile) := true ;assembly")
+addCommandAlias("make", ";project server ;set elmMinify in (webapp, Compile) := true ;assembly")
 addCommandAlias("run-all-tests", ";test ;elmTest")

@@ -6,6 +6,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest._
 import doobie.imports._
+import fs2.interop.cats._
 import sharry.common.sizes._
 import sharry.common._
 import sharry.store._

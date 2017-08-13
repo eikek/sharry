@@ -5,6 +5,7 @@ import fs2.{io, text, pipe, Stream, Task}
 import scodec.bits.ByteVector
 import yamusca.imports._
 import yamusca.converter.syntax._
+import sharry.mdutil.{Document, Link}
 
 case class ManualPage(
   name: String
@@ -36,22 +37,16 @@ case class ManualPage(
     }
   }
 
-  private val markdownLink = """\[.*?\]\((.*?)\)""".r
-  private val htmlSrcLink = """src="(.*?)"""".r
-
   private def replaceLinks(pathPrefix: String, mdLinkPrefix: String)(content: String): String = {
     if (mdLinkPrefix == "") content
-    else List(markdownLink, htmlSrcLink).foldLeft(content) { (r, link) =>
-      link.replaceSomeIn(r, { m =>
-        val file = m.group(1)
-        val pre = if (file.endsWith(".md")) mdLinkPrefix else pathPrefix
-        if (toc.names.contains(file)) {
-          val starting = m.start(1) - m.start(0)
-          val end1 = m.end(1) - m.start(0)
-          val end2 = m.end(0) - m.start(0)
-          Some(m.matched.substring(0, starting) + pre + m.group(1) + m.matched.substring(end1, end2))
-        } else None
-      })
+    else {
+      val doc = Document.parse(content).
+        mapLinks(link => {
+          val pre = if (link.path.endsWith(".md")) mdLinkPrefix else pathPrefix
+          if (toc.names.contains(link.path)) Link(pre + link.path)
+          else link
+        })
+      doc.renderMd
     }
   }
 }

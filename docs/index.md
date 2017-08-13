@@ -1,6 +1,6 @@
 # Sharry Manual
 
-This is the user manual for sharry `{{version}}`.
+This is the user manual for sharry `{{versionLong}}`.
 
 
 ## Introduction
