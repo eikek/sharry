@@ -49,7 +49,7 @@ object main {
 
     val shutdown =
       streams.slog[Task](_.info("Closing database")) ++
-      Stream.eval(app.jdbc.shutdown)
+      Stream.eval(Task.delay(app.jdbc.kernel.close()))
 
     val server = http.server[Task](
       bindTo = new InetSocketAddress(app.cfg.webConfig.bindHost, app.cfg.webConfig.bindPort),

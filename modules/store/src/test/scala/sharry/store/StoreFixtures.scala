@@ -4,6 +4,7 @@ import java.io.InputStream
 import java.time.Instant
 import java.net.URL
 import fs2.{Stream, Task}
+import fs2.interop.cats._
 import doobie.imports._
 import sharry.common._
 import sharry.common.file._

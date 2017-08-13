@@ -42,12 +42,12 @@ object libs {
 
   // https://github.com/tpolecat/doobie
   // MIT
-  val `doobie-core` = "org.tpolecat" %% "doobie-core-cats" % "0.4.1"
-  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari-cats" % "0.4.1"
+  val `doobie-core` = "org.tpolecat" %% "doobie-core-cats" % "0.4.2"
+  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari-cats" % "0.4.2"
 
   // https://jdbc.postgresql.org/
   // BSD
-  val postgres = "org.postgresql" % "postgresql" % "42.1.3"
+  val postgres = "org.postgresql" % "postgresql" % "42.1.4"
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0

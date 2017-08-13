@@ -12,22 +12,22 @@ import doobie.util.log.{Success, ProcessingFailure, ExecFailure}
 object columns {
 
   implicit val bvMeta: Meta[ByteVector] =
-    Meta[Array[Byte]].nxmap(
+    Meta[Array[Byte]].xmap(
       ar => ByteVector(ar),
       bv => bv.toArray
     )
 
   implicit val mimetypeMeta: Meta[MimeType] =
-    Meta[String].nxmap(MimeType.parse(_).get, _.asString)
+    Meta[String].xmap(MimeType.parse(_).get, _.asString)
 
   implicit val instantMeta: Meta[Instant] =
-    Meta[String].nxmap(Instant.parse, _.truncatedTo(ChronoUnit.SECONDS).toString)
+    Meta[String].xmap(Instant.parse, _.truncatedTo(ChronoUnit.SECONDS).toString)
 
   implicit val durationMeta: Meta[Duration] =
-    Meta[String].nxmap(Duration.parse, _.toString)
+    Meta[String].xmap(Duration.parse, _.toString)
 
-  implicit val sizeMeta: Atom[Size] =
-    Atom[Long].imap[Size](n => Bytes(n))(_.toBytes)
+  implicit val sizeMeta: Meta[Size] =
+    Meta[Long].xmap[Size](n => Bytes(n), _.toBytes)
 
   implicit class FragmentOps(sqlf: Fragment) {
     def offset(n: Option[Int]): Fragment =

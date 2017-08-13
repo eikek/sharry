@@ -7,6 +7,7 @@ import scala.concurrent.duration.FiniteDuration
 import com.typesafe.config.ConfigValue
 import scodec.bits.ByteVector
 import fs2.Task
+import fs2.interop.cats._
 import doobie.hikari.hikaritransactor._
 import pureconfig._
 import pureconfig.error._
