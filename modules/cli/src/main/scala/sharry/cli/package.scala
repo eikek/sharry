@@ -1,14 +1,16 @@
-package sharry.server
+package sharry
 
 import fs2.Task
 import spinoco.fs2.http.body.{BodyDecoder, BodyEncoder}
-import spinoco.protocol.http.header.value.{ContentType, MediaType}
 import spinoco.fs2.http.routing.{body => rbody}
+import spinoco.protocol.http.header.value.{ContentType, MediaType}
+import spinoco.protocol.http.Uri
 import scodec.{Attempt, Err}
 import scodec.bits.ByteVector
 import io.circe.{Json, Encoder, Decoder}, io.circe.parser._, io.circe.syntax._
 
-package object routes {
+//TODO this is the same code as in server/route/package.scala
+package object cli {
 
   private def parseJson(b: ByteVector): Attempt[Json] =
     for {
@@ -42,5 +44,13 @@ package object routes {
 
   implicit final class StringOps(s: String) {
     def asNonEmpty: Option[String] = Option(s).map(_.trim).filter(_.nonEmpty)
+  }
+
+  implicit final class UriOps(uri: Uri) {
+    def / (seg: String): Uri = uri.copy(path = uri.path / seg)
+    def / (path: Uri.Path): Uri = uri.copy(path = uri.path.copy(segments = uri.path.segments ++ path.segments))
+
+    def asString: String =
+      Uri.codec.encode(uri).require.decodeUtf8.right.get
   }
 }

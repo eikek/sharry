@@ -25,7 +25,7 @@ object syntax {
     HttpResponse(
       HttpResponseHeader(
         status = status,
-        reason = "",
+        reason = status.label,
         headers = Nil),
       Stream.empty
     )

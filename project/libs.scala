@@ -2,7 +2,7 @@ import sbt._
 
 object libs {
 
-  val `scala-version` = "2.12.3"
+  val `scala-version` = "2.12.4"
 
   def webjar(name: String, version: String): ModuleID =
     "org.webjars" % name % version
@@ -105,6 +105,10 @@ object libs {
   // https://github.com/eikek/yamusca
   // MIT
   val yamusca = "com.github.eikek" %% "yamusca-core" % "0.4.0"
+
+  // https://github.com/scopt/scopt
+  // MIT
+  val scopt = "com.github.scopt" %% "scopt" % "3.7.0"
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause

@@ -1,5 +1,6 @@
 package sharry.common
 
+import java.nio.file.{Paths, Path}
 import java.time.{Instant, Duration}
 import io.circe._
 
@@ -11,6 +12,8 @@ trait JsonCodec {
   implicit val _durationDec: Decoder[Duration] = Decoder.decodeString.map(Duration.parse)
   implicit val _durationEnc: Encoder[Duration] = Encoder.encodeString.contramap[Duration](_.toString)
 
+  implicit val _pathDec: Decoder[Path] = Decoder.decodeString.map(Paths.get(_))
+  implicit val _pathEnc: Encoder[Path] = Encoder.encodeString.contramap(_.toString)
 
 }
 

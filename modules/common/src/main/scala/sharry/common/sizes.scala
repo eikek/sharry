@@ -71,15 +71,15 @@ object sizes {
   }
 
   implicit final class IntSizeOps(val n: Int) extends AnyVal {
-    def gbytes = GBytes(n.toDouble)
-    def mbytes = MBytes(n.toDouble)
-    def kbytes = KBytes(n.toDouble)
-    def bytes = Bytes(n.toLong)
+    def gbytes: Size = GBytes(n.toDouble)
+    def mbytes: Size = MBytes(n.toDouble)
+    def kbytes: Size = KBytes(n.toDouble)
+    def bytes: Size = Bytes(n.toLong)
   }
   implicit final class LongSizeOps(val n: Long) extends AnyVal {
-    def gbytes = GBytes(n.toDouble)
-    def mbytes = MBytes(n.toDouble)
-    def kbytes = KBytes(n.toDouble)
-    def bytes = Bytes(n)
+    def gbytes: Size = GBytes(n.toDouble)
+    def mbytes: Size = MBytes(n.toDouble)
+    def kbytes: Size = KBytes(n.toDouble)
+    def bytes: Size = Bytes(n)
   }
 }

@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common.data
 
 import java.time._
 import java.util.UUID

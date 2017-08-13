@@ -5,6 +5,7 @@ import fs2.{Pipe, Strategy, Stream, Task}
 
 import sharry.common.mime._
 import sharry.common.sizes._
+import sharry.common.data._
 import sharry.store.range._
 import sharry.store.data._
 

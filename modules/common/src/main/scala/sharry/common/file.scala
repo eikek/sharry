@@ -1,8 +1,9 @@
 package sharry.common
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path, Paths, StandardOpenOption}
 import fs2.{io, Stream, Task}
 import scala.collection.JavaConverters._
+import _root_.io.circe.Encoder, _root_.io.circe.syntax._
 
 import sizes._
 
@@ -53,6 +54,11 @@ object file {
     def readAll(chunkSize: Size): Stream[Task,Byte] =
       io.file.readAll[Task](path, chunkSize.bytes)
 
+    def write(str: String): Path =
+      Files.write(path, str.getBytes("UTF-8"), StandardOpenOption.CREATE_NEW)
+
+    def write[A](value: A)(implicit enc: Encoder[A]): Path =
+      write(value.asJson.noSpaces)
   }
 
 }

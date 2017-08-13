@@ -1,4 +1,4 @@
-package sharry.store.data
+package sharry.common.data
 
 import io.circe._, io.circe.generic.semiauto._
 

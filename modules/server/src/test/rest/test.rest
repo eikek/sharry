@@ -24,8 +24,8 @@ Cookie: sharry_auth=$2a$10$TZEBhNY4UyGUb.rH6S0uR.%admin%2017-05-03T23:33:38.262Z
 
 
 # test chunk
-GET :base/upload-data?token=u4ihtpp5x1urb14um2v54f8&resumableChunkNumber=9&resumableChunkSize=262144&resumableCurrentChunkSize=262144&resumableTotalSize=4117764&resumableType=application%2Fpdf&resumableIdentifier=4117764-Alfine_11_Gangpdf&resumableFilename=Alfine_11_Gang.pdf&resumableRelativePath=Alfine_11_Gang.pdf&resumableTotalChunks=16
-Cookie: sharry_auth=$2a$10$K1QGtyoaTbJNNTC6jLFZHu%eike%2017-04-29T00:29:46.066Z%2437b87679ebec0156071b09083bd768bee05da6c939bfd29bf2b673394d65dc
+GET :base/upload-data?token=u4ihtpp5x1urb14um2v54f8&resumableChunkNumber=9&resumableChunkSize=262144&resumableCurrentChunkSize=262144&resumableTotalSize=4117764&resumableIdentifier=4117764-Alfine_11_Gangpdf&resumableFilename=Alfine_11_Gang.pdf&resumableRelativePath=Alfine_11_Gang.pdf&resumableTotalChunks=16
+Cookie: sharry_auth=$2a$10$.dhdWe7StqcNH2TsUlhN1O%admin%2017-10-28T23:03:42.573Z%b2d610385ececcf4aa1f76466786d543f0c0bd19200d59db85ac987b55c6d6e0
 #
 
 # publish upload

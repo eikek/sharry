@@ -1,11 +1,11 @@
-package sharry.store.data
+package sharry.common.data
 
 import java.time.{Duration, Instant}
 import cats.data.{Validated, NonEmptyList => Nel}
 import cats.implicits._
-import com.github.t3hnar.bcrypt._
 import io.circe._, io.circe.generic.semiauto._
-import sharry.common.data.UploadWeb
+import com.github.t3hnar.bcrypt._
+
 import sharry.common.JsonCodec
 
 case class Upload (
@@ -29,6 +29,8 @@ case class Upload (
 }
 
 object Upload {
+  val empty = Upload("","",Duration.ZERO,0)
+
   def isValid(up: Upload, now: Instant, downloads: Int): Validated[Nel[String], Unit] =
     up.publishDate match {
       case Some(pd) =>

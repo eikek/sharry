@@ -4,7 +4,7 @@ import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
 import scala.collection.JavaConverters._
 
-import sharry.common.BuildInfo
+import sharry.common.version
 import sharry.docs.route
 import sharry.docs.md.ManualContext
 import sharry.store.account._
@@ -41,11 +41,12 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       , uploadConfig.maxFiles
       , uploadConfig.maxFileSize.toBytes
       , uploadConfig.maxValidity.toString
-      , App.makeProjectString
+      , version.projectString
       , routes.authz.aliasHeaderName
       , cfg.webmailConfig.enable
       , cfg.webConfig.highlightjsTheme
       , cfg.webConfig.welcomeMessage
+      , version.shortVersion
   )
 
   val notifier: notification.Notifier = notification.scheduleNotify(
@@ -55,7 +56,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
   def endpoints = {
     routes.syntax.choice2(
       webjar.endpoint(remoteConfig)
-        , route.manual(paths.manual.matcher, ManualContext(App.makeVersion, BuildInfo.version, defaultConfig))
+        , route.manual(paths.manual.matcher, ManualContext(version.longVersion, version.shortVersion, defaultConfig, defaultCliConfig, cliHelp))
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)
@@ -74,6 +75,18 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       headOption.getOrElse("")
   }
 
+  private lazy val defaultCliConfig = {
+    Option(getClass.getResource("/reference-cli.conf")).
+      map(scala.io.Source.fromURL(_).getLines.mkString("\n")).
+      headOption.getOrElse("")
+  }
+
+  private lazy val cliHelp = {
+    Option(getClass.getResource("/cli-help.txt")).
+      map(scala.io.Source.fromURL(_).getLines.mkString("\n")).
+      headOption.getOrElse("")
+  }
+
   def setupLogging(logFile: Path): Unit = {
     import org.slf4j.LoggerFactory
     import ch.qos.logback.classic.LoggerContext
@@ -87,19 +100,5 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       config.doConfigure(logFile.toString)
     }
     StatusPrinter.printInCaseOfErrorsOrWarnings(context)
-  }
-}
-
-object App {
-  def makeVersion: String = {
-    val v =
-      BuildInfo.version +
-      BuildInfo.gitDescribedVersion.map(c => s" ($c)").getOrElse("")
-
-    if (BuildInfo.gitUncommittedChanges) v + " [dirty workingdir]" else v
-  }
-
-  def makeProjectString: String = {
-    s"Sharry ${makeVersion}"
   }
 }

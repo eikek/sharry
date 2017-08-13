@@ -11,8 +11,7 @@ import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._
 
 import sharry.store.range._
-import sharry.store.data._
-import sharry.common.data.Pass
+import sharry.common.data._
 import sharry.common.mime._
 import sharry.common.streams
 import sharry.server.paths

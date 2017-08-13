@@ -36,3 +36,4 @@ example github issues, email or pull request.
 3. [Configuration](configuration.md)
 4. [Web application](webapp.md)
 5. [Rest Api](rest.md)
+6. [Commandline Client](cli.md)

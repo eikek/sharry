@@ -8,6 +8,7 @@ import org.log4s._
 
 import sharry.common.mime._
 import sharry.common.sizes._
+import sharry.common.data._
 import sharry.store.columns._
 import sharry.store.binary.Statements
 import sharry.store.data._

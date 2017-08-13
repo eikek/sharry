@@ -5,6 +5,7 @@ import doobie.imports._
 import scodec.bits.ByteVector
 import sharry.store.data._
 import sharry.store.columns._
+import sharry.common.data._
 
 trait Statements {
 

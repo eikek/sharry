@@ -279,15 +279,4 @@ object upload {
         if (token.isEmpty) Matcher.respond[Task](BadRequest.message("Token is empty"))
         else Matcher.success(ChunkInfo(token, num, size, currentSize, totalSize, ident, file, total))
   }
-
-  case class ChunkInfo(
-    token: String
-      , chunkNumber: Int
-      , chunkSize: Int
-      , currentChunkSize: Int
-      , totalSize: Long
-      , fileIdentifier: String
-      , filename: String
-      , totalChunks: Int
-  )
 }

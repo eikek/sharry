@@ -5,6 +5,7 @@ import fs2.{Pipe, Stream, Task}
 import sharry.common.sizes._
 import sharry.store.range._
 import sharry.store.data._
+import sharry.common.data._
 import sharry.store.mimedetect._
 
 /** A store for binary data.

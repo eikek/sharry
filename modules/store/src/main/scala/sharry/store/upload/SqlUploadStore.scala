@@ -13,6 +13,7 @@ import sharry.common.rng._
 import sharry.common.sizes._
 import sharry.common.streams
 import sharry.common.zip
+import sharry.common.data._
 import sharry.store.data._
 import sharry.store.binary.BinaryStore
 
