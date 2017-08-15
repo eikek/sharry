@@ -140,7 +140,7 @@ update msg model =
         UploadData (Ok data) ->
             let
                 dlmodel = DownloadModel.makeModel data model.serverConfig model.user
-                defcmd = (Ports.initAccordionAndTabs ()) :: model.deferred
+                defcmd = (Ports.initAccordionAndTabs ()) :: (Ports.initEmbeds ()) :: model.deferred
             in
                 {model | download = dlmodel, page = DownloadPage, deferred = defcmd} ! []
 

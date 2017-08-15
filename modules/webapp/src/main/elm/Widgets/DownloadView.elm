@@ -365,6 +365,11 @@ renderFile model file =
                       ("application", "vnd.openxmlformats-officedocument.presentationml.presentation") ->
                           "file powerpoint outline"
                       _ -> "file outline"
+        niceEmbed = case Data.parseMime file.mimetype of
+                        ("application", "pdf") -> Just "circle arrow right"
+                        ("image", _) -> Just "circle arrow right"
+                        ("video", _) -> Just "video play outline"
+                        _ -> Nothing
     in
         div []
             [div [HA.class "title"]
@@ -384,7 +389,19 @@ renderFile model file =
                      ]
                 ,div [HA.class "ui bottom active tab", HA.attribute "data-tab" ("preview-"++file.id)]
                     [
-                     Html.embed [HA.type_ file.mimetype, HA.src downloadUrl, HA.width 560, HA.height 315, HA.attribute "allowFullscreen" ""][]
+                     case niceEmbed of
+                         Just icon ->
+                             div [HA.class "ui embed"
+                                 ,HA.attribute "data-url" downloadUrl
+                                 ,HA.attribute "data-icon" icon
+                                 ,HA.attribute "data-placeholder" "static/sharry-webapp/placeholder.png"]
+                             []
+                         Nothing ->
+                             Html.embed [HA.type_ file.mimetype
+                                        ,HA.src downloadUrl
+                                        ,HA.attribute "width" "100%"
+                                        ,HA.attribute "allowFullscreen" ""]
+                             []
                     ]
                 ,div [HA.class "ui bottom attached tab", HA.attribute "data-tab" ("embed-"++file.id)]
                     [

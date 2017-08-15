@@ -29,6 +29,20 @@ elmApp.ports.initAccordionAndTabs.subscribe(function() {
     $('.tabular.menu .item').tab({history: false});
 });
 
+elmApp.ports.initEmbeds.subscribe(function() {
+    $('.ui.embed').embed({
+        onDisplay: function () {
+            // For images an img tag is rendered without a width
+            // attribue resulting in displaying the image in original
+            // size. This adds a widh attribute, so it is resized to
+            // see the full image
+            $(this).find("iframe").bind("load", function() {
+                $(this).contents().find("img").attr("width", "100%");
+            });
+        }
+    });
+});
+
 
 // very nice, found here: https://gist.github.com/gordonbrander/2230317
 var genId = function (prefix) {
