@@ -221,6 +221,7 @@ type alias RemoteConfig =
     , projectName: String
     , aliasHeaderName: String
     , mailEnabled: Bool
+    , welcomeMessage: String
     }
 
 

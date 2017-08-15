@@ -29,7 +29,7 @@ init flags location =
                if flags.remoteConfig.authEnabled || hasAccount then
                    Cmd.none
                else
-                   Cmd.map LoginMsg (LoginCmd.authenticate (LoginModel.sharryModel flags.remoteConfig.urls))
+                   Cmd.map LoginMsg (LoginCmd.authenticate (LoginModel.sharryModel flags.remoteConfig.urls flags.remoteConfig.welcomeMessage))
               ,cmd_
               ]
     in

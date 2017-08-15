@@ -46,6 +46,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       , routes.authz.aliasHeaderName
       , cfg.webmailConfig.enable
       , cfg.webConfig.highlightjsTheme
+      , cfg.webConfig.welcomeMessage
   )
 
   val notifier: notification.Notifier = notification.scheduleNotify(

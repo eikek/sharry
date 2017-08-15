@@ -7,6 +7,7 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Pages.Login.Model exposing (Model)
 import Pages.Login.Data exposing (..)
 import PageLocation as PL
+import Data
 
 view: Model -> Html Msg
 view model =
@@ -70,5 +71,12 @@ view model =
                           ]
                      ]
                  ]
+             , (welcomeMessage model)
              ]
         ]
+
+welcomeMessage: Model -> Html msg
+welcomeMessage model =
+    if String.isEmpty model.welcomeMessage then span [][]
+    else div [class "ui basic segment"]
+        [ Data.markdownHtml model.welcomeMessage ]

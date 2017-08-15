@@ -7,16 +7,17 @@ type alias Model =
     , password: String
     , error: String
     , loginUrl: String
+    , welcomeMessage: String
     }
 
 emptyModel: Model
 emptyModel =
-    Model "" "" "" ""
+    Model "" "" "" "" ""
 
-sharryModel: RemoteUrls -> Model
+sharryModel: RemoteUrls -> String -> Model
 sharryModel urls =
     Model "sharry" "sharry" "" urls.authLogin
 
-fromUrls: RemoteUrls -> Model
+fromUrls: RemoteUrls -> String -> Model
 fromUrls urls =
     Model "" "" "" urls.authLogin

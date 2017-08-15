@@ -16,6 +16,7 @@ object config {
       , aliasHeaderName: String
       , mailEnabled: Boolean
       , highlightjsTheme: String
+      , welcomeMessage: String
   )
 
 }

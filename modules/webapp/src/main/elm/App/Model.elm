@@ -98,7 +98,7 @@ initModel: RemoteConfig -> Maybe Account -> Navigation.Location -> Model
 initModel cfg acc location =
     { page = Maybe.withDefault LoginPage (Maybe.map (\x -> IndexPage) acc)
     , location = location
-    , login = LoginModel.fromUrls cfg.urls
+    , login = LoginModel.fromUrls cfg.urls cfg.welcomeMessage
     , accountEdit = AccountEditModel.emptyModel cfg.urls
     , upload = UploadModel.emptyModel cfg
     , download = DownloadModel.emptyModel
