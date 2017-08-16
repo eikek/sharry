@@ -75,9 +75,9 @@ can delete those files to save space.
 
 ** Try it
 
-There is a demo installation at https://sharrydemo.eknet.org. It
-doesn't require authentication, everyone acts as the same user. The
-mail feature is not enabled and uploads are restricted to 500K.
+There is a demo installation at https://sharrydemo.eknet.org. You can
+use the account ~sharry~ and no password to log in. The mail feature
+is not enabled and uploads are restricted to 1.5M.
 
 Or, clone this project and use sbt (see below for prerequisites) to
 compile and run:
