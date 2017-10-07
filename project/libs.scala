@@ -9,7 +9,7 @@ object libs {
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0
-  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.7.2"
+  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.8.0"
 
   // https://github.com/typelevel/cats
   // MIT http://opensource.org/licenses/mit-license.php
@@ -22,7 +22,7 @@ object libs {
 
   // https://github.com/Spinoco/fs2-http
   // MIT
-  val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.1.7"
+  val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.1.8"
   // https://github.com/Spinoco/protocol
   // MIT
   // version that comes with fs2-http has some bugs
@@ -30,7 +30,7 @@ object libs {
 
   // https://github.com/scalatest/scalatest
   // ASL 2.0
-  val scalatest = "org.scalatest" %% "scalatest" % "3.0.3"
+  val scalatest = "org.scalatest" %% "scalatest" % "3.0.4"
 
   // https://github.com/rickynils/scalacheck
   // unmodified 3-clause BSD
@@ -42,8 +42,8 @@ object libs {
 
   // https://github.com/tpolecat/doobie
   // MIT
-  val `doobie-core` = "org.tpolecat" %% "doobie-core-cats" % "0.4.2"
-  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari-cats" % "0.4.2"
+  val `doobie-core` = "org.tpolecat" %% "doobie-core-cats" % "0.4.4"
+  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari-cats" % "0.4.4"
 
   // https://jdbc.postgresql.org/
   // BSD
@@ -65,7 +65,7 @@ object libs {
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.3.6"
+  val log4s = "org.log4s" %% "log4s" % "1.4.0"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
@@ -108,10 +108,10 @@ object libs {
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.26.4"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.26.4"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.26.4"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.26.4"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.27.0"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.27.0"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.27.0"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.27.0"
 
   // https://github.com/jhy/jsoup
   // MIT
