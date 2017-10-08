@@ -4,6 +4,7 @@ import sbt._
 import sbt.Keys._
 import java.nio.file._
 import scala.util.{Failure, Success, Try}
+import scala.sys.process._
 import com.google.javascript.jscomp.CommandLineRunner
 
 object ElmPlugin extends AutoPlugin {
@@ -50,6 +51,7 @@ object ElmPlugin extends AutoPlugin {
     elmMakeCompilationLevel := "SIMPLE",
     elmProject := {
       val wd = elmWd.value
+      val logger = streams.value.log
       IO.createDirectories(Seq(wd))
       if (!Files.exists((wd/elmSources.value.getName).toPath) && Files.exists(elmSources.value.toPath)) {
         Files.createSymbolicLink((wd/elmSources.value.getName).toPath, elmSources.value.toPath)
@@ -57,14 +59,14 @@ object ElmPlugin extends AutoPlugin {
       val pkgJson = wd/"elm-package.json"
       val content = packageJson(elmDependencies, false).value
       if (!pkgJson.exists || Hash.toHex(Hash(pkgJson)) != Hash.toHex(Hash(content))) {
-        streams.value.log.info("Generating elm-package.json")
+        logger.info("Generating elm-package.json")
         IO.write(pkgJson, content)
       }
 
       val testPkgJson = wd/"tests"/"elm-package.json"
       val testContent = packageJson(elmDependencies in Test, true).value
       if (!testPkgJson.exists || Hash.toHex(Hash(testPkgJson)) != Hash.toHex(Hash(testContent))) {
-        streams.value.log.info("Generating tests/elm-package.json")
+        logger.info("Generating tests/elm-package.json")
         IO.write(testPkgJson, testContent)
       }
       if (!Files.exists((wd/"tests"/(elmSources in Test).value.getName).toPath) && Files.exists((elmSources in Test).value.toPath)) {
@@ -74,6 +76,7 @@ object ElmPlugin extends AutoPlugin {
       Seq(pkgJson, testPkgJson)
     },
     elmMake := {
+      val logger = streams.value.log
       val pkg = elmProject.value
       val wd = elmWd.value
       // need to check all files whether to decide for recompile
@@ -84,28 +87,28 @@ object ElmPlugin extends AutoPlugin {
       val filesToCompile = IO.listFiles(elmSources.value, GlobFilter("*.elm")).
         map(f => elmSources.value.getName + java.io.File.separator + f.getName)
       if (allFiles.isEmpty) {
-        streams.value.log.info("No elm source files found.")
+        logger.info("No elm source files found.")
         Seq.empty
       } else {
         val newest = allFiles.sortBy(-_.lastModified).head
         val out = elmMakeOutputPath.value/"elm-main.js"
         val minified = elmMakeOutputPath.value/"elm-main.min.js"
         if (!out.exists || newest.lastModified >= out.lastModified) {
-          streams.value.log.info(s"Compiling ${filesToCompile.size} elm files …")
+          logger.info(s"Compiling ${filesToCompile.size} elm files …")
           IO.delete(Seq(out, minified))
           val opts: Seq[String] = if (elmDebug.value) Seq("--debug", "--yes") else Seq("--yes")
           val proc = Process(elmMakeExecuteable.value +: (filesToCompile ++ opts ++ Seq("--output", out.toString)), Some(wd))
-          runCmd(proc, streams.value.log,
+          runCmd(proc, logger,
             "Elm files compiled successfully",
             "Error compiling elm files")
           if (elmMinify.value) {
-            streams.value.log.info("Running Closure compiler…")
+            logger.info("Running Closure compiler…")
             val clrun = new Minify("--compilation_level", elmMakeCompilationLevel.value, "--js", out.toString, "--js_output_file", minified.toString)
             clrun.compile()
             IO.move(minified, out)
           }
         } else {
-          streams.value.log.info("Elm files are up to date")
+          logger.info("Elm files are up to date")
         }
         Seq(out)
       }
@@ -172,10 +175,10 @@ object ElmPlugin extends AutoPlugin {
 
   final class ProcLogger(log: Logger) extends ProcessLogger {
     def buffer[T](f: => T): T = f
-    def error(s: => String): Unit = {
+    def err(s: => String): Unit = {
       log.error(s)
     }
-    def info(s: => String): Unit = {
+    def out(s: => String): Unit = {
       log.info(s)
     }
   }

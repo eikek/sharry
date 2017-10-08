@@ -68,8 +68,9 @@ lazy val fetchResumableJs = Def.task {
   val dir = (target in Compile).value
   val url = new java.net.URL("https://raw.githubusercontent.com/23/resumable.js/feb33c8f8d5d614d3d476fc2b3e82372c7b6408a/resumable.js")
   val outFile = dir / "resumable.js"
+  val logger = streams.value.log
   if (!outFile.exists) {
-    streams.value.log.info(s"Downloading $url -> ${outFile.getName} …")
+    logger.info(s"Downloading $url -> ${outFile.getName} …")
     val conn = url.openConnection()
     conn.connect()
     val inStream = conn.getInputStream

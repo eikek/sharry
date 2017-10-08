@@ -1,7 +1,7 @@
 sudo: false
 language: scala
 scala:
-  - 2.12.2
+  - 2.12.3
 
 jdk:
   - oraclejdk8
@@ -33,4 +33,4 @@ before_script:
   - export TZ=Europe/Berlin
 
 script:
-  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"
+  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 3 sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"

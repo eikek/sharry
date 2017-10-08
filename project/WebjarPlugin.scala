@@ -10,7 +10,7 @@ import java.util.zip.ZipInputStream
 import java.net.{URI, URLEncoder}
 import java.util.{HashMap => JMap}
 import java.time.Instant
-import io.circe._, io.circe.generic.auto._, io.circe.syntax._
+import _root_.io.circe._, _root_.io.circe.generic.auto._, _root_.io.circe.syntax._
 
 object WebjarPlugin extends AutoPlugin {
 
@@ -42,6 +42,7 @@ object WebjarPlugin extends AutoPlugin {
     webjarPackage in webjarSource := "webjars",
     webjarWebPackages := Seq.empty,
     webjarSource := {
+      val logger = streams.value.log
       val entry = packageToFile((webjarPackage in webjarSource).value)
       val target = (sourceManaged in Compile).value/entry/(webjarFile in webjarSource).value
       val webjars: Seq[ModuleID] = (libraryDependencies in Compile).value.filter(_.organization startsWith "org.webjars")
@@ -60,7 +61,7 @@ object WebjarPlugin extends AutoPlugin {
       |  val modules = ${files.map({ wj => "ModuleId(\""+wj.module.organization+"\", \""+wj.module.name+"\", \""+ wj.module.revision +"\", \""+wj.hash+"\")"})}
       |}""".stripMargin
       if (!target.exists || Hash.toHex(Hash(target)) != Hash.toHex(Hash(code))) {
-        streams.value.log.info(s"Generating ${(webjarFile in webjarSource).value}")
+        logger.info(s"Generating ${(webjarFile in webjarSource).value}")
         IO.createDirectories(Seq(target.getParentFile))
         IO.write(target, code)
       }
