@@ -128,6 +128,7 @@ object upload {
     import yamusca.imports._, yamusca.implicits._
 
     implicit val fileConverter: ValueConverter[UploadInfo.File] = f => Map(
+      "id" -> f.clientFileId,
       "filename" -> f.filename,
       "url" -> (baseUrl / f.meta.id).path,
       "mimetype" -> f.meta.mimetype.asString,
@@ -144,6 +145,12 @@ object upload {
           case _ =>
             None
         }
+      case name if name startsWith "fileid_" =>
+        Try(name.drop(7)).
+          toOption.
+          filter(_.trim.nonEmpty).
+          flatMap(id => u.files.find(_.clientFileId == id)).
+          map(_.asMustacheValue)
       case _ => None
     }}
 
@@ -204,7 +211,7 @@ object upload {
         val init = info.chunkNumber match {
           case 1 =>
             val fm = FileMeta(fileId, Instant.now, MimeType.unknown, info.totalSize.bytes, info.totalChunks, info.chunkSize.bytes)
-            store.createUploadFile(info.token, fm, info.filename)
+            store.createUploadFile(info.token, fm, info.filename, info.fileIdentifier)
           case _ => Stream.empty
         }
 

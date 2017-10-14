@@ -73,14 +73,16 @@ The description text is further processed as a [mustache](http://mustache.github
 and allows to refer to the attached files. You can access the
 following properties of any uploaded file:
 
+- `id`
 - `filename`
 - `url`
 - `mimetype`
 - `size`
 
-The files are refered to by `file_n` where `n` denotes the first,
-second etc. file starting by 0. So this would render the url of
-the first file:
+The files are refered to by either `file_n` where `n` denotes the
+first, second etc. file starting by 0 or by `fileid_<id>` where `id`
+is the file-id that was specified when it was uploaded (it is chosen
+by the client). So this would render the url of the first file:
 
 ```
 {{#file_0}}{{url}}{{/file_0}}
@@ -92,12 +94,28 @@ or
 {{file_0.url}}
 ```
 
+or using the id:
+
+```
+{{fileid_6487425-DSC0100JPG.url}}
+```
+
+The web application uses the file size and the file name (without
+dots) for the id, as show in the example above.
+
+This makes it possible to embed files in the description, for example
+to display an image file, you could write the following description:
+
+```
+![an image]({{fileid_6487425-DSCF0343JPG.url}})
+```
+
 There is also a `files` property that can be used to iterate through
-all uploaded files. So this would render the urls of all files:
+all uploaded files. So this would render the id and url of all files:
 
 ```
 {{#files}}
-- {{url}}
+- {{id}}: {{url}}
 {{/files}}
 ```
 

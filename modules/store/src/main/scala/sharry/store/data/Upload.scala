@@ -66,4 +66,5 @@ case class UploadFile(
     , filename: String
     , downloads: Int
     , lastDownload: Option[Instant]
+    , clientFileId: String
 )

@@ -10,5 +10,6 @@ object UploadInfo {
   case class File(
     meta: FileMeta
       , filename: String
+      , clientFileId: String
   )
 }

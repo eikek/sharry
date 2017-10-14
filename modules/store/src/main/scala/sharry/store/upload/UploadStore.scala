@@ -12,7 +12,7 @@ trait UploadStore {
 
   def createUpload(up: Upload): Stream[Task, Unit]
 
-  def createUploadFile(uploadId: String, file: FileMeta, filename: String): Stream[Task, UploadFile]
+  def createUploadFile(uploadId: String, file: FileMeta, filename: String, clientFileId: String): Stream[Task, UploadFile]
 
   def deleteUpload(id: String, login: String): Stream[Task, Int]
 

@@ -30,8 +30,8 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
     } yield n
   }
 
-  def createUploadFile(uploadId: String, file: FileMeta, filename: String): Stream[Task, UploadFile] =
-    Stream.eval(insertUploadFile(uploadId, file, filename, 0, None).transact(xa))
+  def createUploadFile(uploadId: String, file: FileMeta, filename: String, clientFileId: String): Stream[Task, UploadFile] =
+    Stream.eval(insertUploadFile(uploadId, file, filename, 0, None, clientFileId).transact(xa))
 
   def updateMime(fileId: String, mimeType: MimeType): Stream[Task, Int] =
     Stream.eval(setFileMetaMimeType(fileId, mimeType).run.transact(xa))
