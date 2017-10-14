@@ -8,6 +8,7 @@ import sharry.server.email._
 import sharry.store.data._
 import sharry.common.mime._
 import sharry.common.sizes._
+import sharry.common.data._
 
 object jsoncodec {
   case class UserPass(login: String, pass: String)
@@ -134,5 +135,7 @@ object jsoncodec {
 
   implicit val _uploadMetaDec: Decoder[UploadCreate] = deriveDecoder[UploadCreate]
   implicit val _uploadMetaEnc: Encoder[UploadCreate] = deriveEncoder[UploadCreate]
+
+  implicit val _remoteConfigEnc: Encoder[RemoteConfig] = deriveEncoder[RemoteConfig]
 
 }

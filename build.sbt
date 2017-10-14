@@ -121,7 +121,8 @@ lazy val webapp = project.in(file("modules/webapp")).
       val resumable = fetchResumableJs.value
       WebPackage("org.webjars", name.value, version.value, elmFiles ++ htmlFiles ++ cssFiles ++ jsFiles ++ resumable)
     }).taskValue,
-    resourceGenerators in Compile += (webjarWebPackageResources in Compile).taskValue))
+    resourceGenerators in Compile += (webjarWebPackageResources in Compile).taskValue)).
+  dependsOn(common)
 
 lazy val docs = project.in(file("modules/docs")).
   settings(sharedSettings).

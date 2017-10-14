@@ -10,11 +10,10 @@ import sharry.docs.md.ManualContext
 import sharry.store.account._
 import sharry.store.binary._
 import sharry.store.upload._
-import sharry.webapp.config.RemoteConfig
 import sharry.server.authc._
 import sharry.webapp.route.webjar
-import sharry.webapp.config._
-import sharry.server.routes.{account, login, upload, download, alias, mail}
+import sharry.common.data._
+import sharry.server.routes.{account, login, upload, download, alias, mail, settings}
 
 /** Instantiate the app from a given configuration */
 final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, S: fs2.Strategy, SCH: fs2.Scheduler) {
@@ -63,6 +62,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
         , download.endpoint(cfg.authConfig, cfg.webConfig, uploadStore)
         , alias.endpoint(cfg.authConfig, uploadConfig, uploadStore)
         , mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
+        , settings.endpoint(remoteConfig)
     )
   }
 
