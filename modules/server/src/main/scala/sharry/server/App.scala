@@ -2,7 +2,7 @@ package sharry.server
 
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
-import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
+import scala.collection.JavaConverters._
 
 import sharry.common.BuildInfo
 import sharry.docs.route
@@ -54,10 +54,9 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
 
 
   def endpoints = {
-    val opts = ConfigRenderOptions.defaults().setOriginComments(false).setJson(false)
     routes.syntax.choice2(
       webjar.endpoint(remoteConfig)
-        , route.manual(paths.manual.matcher, ManualContext(App.makeVersion, BuildInfo.version, ConfigFactory.defaultReference().getConfig("sharry").root().render(opts)))
+        , route.manual(paths.manual.matcher, ManualContext(App.makeVersion, BuildInfo.version, defaultConfig))
         , login.endpoint(auth, cfg.webConfig, cfg.authConfig)
         , account.endpoint(auth, cfg.authConfig, accountStore, cfg.webConfig)
         , upload.endpoint(cfg.authConfig, uploadConfig, uploadStore, notifier)
@@ -65,6 +64,14 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
         , alias.endpoint(cfg.authConfig, uploadConfig, uploadStore)
         , mail.endpoint(cfg.authConfig, cfg.smtpSetting, cfg.webmailConfig)
     )
+  }
+
+  private lazy val defaultConfig = {
+    getClass.getClassLoader.getResources("reference.conf").
+      asScala.toList.
+      filter(_.toString contains "sharry-server").
+      map(scala.io.Source.fromURL(_).getLines.mkString("\n")).
+      headOption.getOrElse("")
   }
 
   def setupLogging(logFile: Path): Unit = {
