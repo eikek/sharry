@@ -8,8 +8,13 @@ case class SmtpSetting(
   port: Int,
   user: String,
   password: String,
-  from: String
-)
+  from: String,
+  startTls: Boolean,
+  ssl: Boolean
+) {
+
+  def hidePass = copy(password = if (password.isEmpty) "<no-pass>" else "***")
+}
 
 
 object SmtpSetting {
@@ -19,7 +24,7 @@ object SmtpSetting {
       map(_.map(fromMx))
 
   def fromMx(host: String): SmtpSetting =
-    SmtpSetting(host, 0, "", "", "")
+    SmtpSetting(host, 0, "", "", "", false, false)
 
   private def findMx(domain: String): Task[List[String]] = Task.delay {
     val records = new Lookup(domain, Type.MX).run()
