@@ -76,20 +76,39 @@ object client {
 
   private def makeSession(setting: SmtpSetting): Task[Session] = {
     val props = System.getProperties()
+    logger.debug(s"Make mail session from ${setting.hidePass}")
+    props.setProperty("mail.transport.protocol", "smtp");
     if (setting.host.nonEmpty) {
-      props.setProperty("mail.smtp.host", setting.host)
+      logger.debug(s"Using mail host ${setting.host}")
+      props.setProperty(s"mail.smtp.host", setting.host)
       if (setting.port > 0) {
+        logger.debug(s"Using mailport ${setting.port}")
         props.setProperty("mail.smtp.port", setting.port.toString)
       }
       if (setting.user.nonEmpty) {
         props.setProperty("mail.user", setting.user)
+        props.setProperty("mail.smtp.auth", "true")
       }
-      if (setting.password.nonEmpty) {
-        props.setProperty("mail.password", setting.password)
+      if (setting.startTls) {
+        props.setProperty("mail.smtp.starttls.enable", "true")
+      }
+      if (setting.ssl) {
+        props.setProperty("mail.smtp.ssl.enable", "true")
       }
     }
     if (Option(props.getProperty("mail.smtp.host")).exists(_.nonEmpty))
-      Task.now(Session.getInstance(props))
+      Task.now {
+        if (setting.user.nonEmpty) {
+          Session.getInstance(props, new Authenticator() {
+            override def getPasswordAuthentication() = {
+              logger.debug(s"Authenticating with ${setting.user}/${setting.hidePass.password}")
+              new PasswordAuthentication(setting.user, setting.password)
+            }
+          })
+        } else {
+          Session.getInstance(props)
+        }
+      }
     else
       Task.fail(new Exception("no smtp host provided"))
   }
