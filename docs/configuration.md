@@ -300,7 +300,5 @@ The following is the default configuration as shipped with sharry for
 reference.
 
 ```
-sharry {
 {{& default-configuration}}
-}
 ```
