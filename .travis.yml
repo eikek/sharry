@@ -1,4 +1,6 @@
-sudo: false
+# must use non-containerized build, because elm-compiler is too slow
+# otherwise and using the trick with sysconfcpu breaks sbt
+sudo: true
 language: scala
 scala:
   - 2.12.3
@@ -18,19 +20,9 @@ install:
   - node --version
   - npm --version
   - npm install -g elm elm-test
-  # Faster compile on Travis.
-  - |
-    if [ ! -d sysconfcpus/bin ];
-    then
-      git clone https://github.com/obmarg/libsysconfcpus.git;
-      cd libsysconfcpus;
-      ./configure --prefix=$TRAVIS_BUILD_DIR/sysconfcpus;
-      make && make install;
-      cd ..;
-    fi
 
 before_script:
   - export TZ=Europe/Berlin
 
 script:
-  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 3 sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"
+  - sbt ++$TRAVIS_SCALA_VERSION ";run-all-tests ;make"
