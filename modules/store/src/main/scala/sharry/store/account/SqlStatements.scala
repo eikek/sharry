@@ -2,7 +2,7 @@ package sharry.store.account
 
 import org.log4s._
 import doobie.imports._
-import sharry.store.data._
+import sharry.common.data.Account
 import sharry.store.Limit
 import sharry.store.columns._
 

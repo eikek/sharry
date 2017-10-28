@@ -10,6 +10,7 @@ import com.github.t3hnar.bcrypt._
 import org.log4s._
 
 import sharry.store.data._
+import sharry.common.data._
 import sharry.common.sizes._
 import sharry.common.mime._
 import sharry.common.streams
@@ -19,7 +20,6 @@ import sharry.store.mimedetect.MimeInfo
 import sharry.store.upload.UploadStore
 import sharry.server.paths
 import sharry.server.config._
-import sharry.server.jsoncodec._
 import sharry.server.notification
 import sharry.server.notification.Notifier
 import sharry.server.routes.syntax._

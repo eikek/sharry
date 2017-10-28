@@ -6,12 +6,12 @@ import fs2.{Stream, Task}
 import cats.syntax.either._
 import spinoco.fs2.http.routing._
 
+import sharry.common.data._
 import sharry.store.data._
 import sharry.server.paths
 import sharry.server.config._
 import sharry.store.upload.UploadStore
 import sharry.server.routes.syntax._
-import sharry.server.jsoncodec._
 
 object alias {
 

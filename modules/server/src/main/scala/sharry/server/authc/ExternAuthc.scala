@@ -10,7 +10,7 @@ import spinoco.fs2.http.HttpRequest
 import spinoco.protocol.http.{HttpMethod, Uri, HttpStatusCode}
 import spinoco.protocol.http.header.value.ContentType
 
-import sharry.store.data._
+import sharry.common.data._
 import sharry.server.config._
 
 trait ExternAuthc {

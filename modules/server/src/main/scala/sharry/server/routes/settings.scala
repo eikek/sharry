@@ -1,14 +1,11 @@
 package sharry.server.routes
 
 import fs2.{Stream, Task}
-//import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
 
 import sharry.common.data._
 import sharry.server.paths
-//import sharry.server.config._
 import sharry.server.routes.syntax._
-import sharry.server.jsoncodec._
 
 object settings {
 

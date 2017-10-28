@@ -11,11 +11,10 @@ import spinoco.protocol.http.header.`Set-Cookie`
 import spinoco.fs2.http.routing._
 import spinoco.fs2.http.HttpResponse
 
-import sharry.store.data.Account
+import sharry.common.data._
 import sharry.server.config.{AuthConfig, WebConfig}
 import sharry.server.paths
 import sharry.server.authc._
-import sharry.server.jsoncodec._
 import sharry.server.routes.syntax._
 
 object login {

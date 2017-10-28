@@ -35,6 +35,7 @@ lazy val common = project.in(file("modules/common")).
     name := "sharry-common",
     description := "Some common utility code",
     libraryDependencies ++= coreDeps ++ testDeps,
+    libraryDependencies ++= Seq(`circe-core`, `circe-generic`, `circe-parser`),
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
     buildInfoPackage := "sharry.common",
     buildInfoOptions += BuildInfoOption.ToJson,
@@ -91,7 +92,7 @@ lazy val webapp = project.in(file("modules/webapp")).
     description := "A web frontend for sharry",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `semantic-ui`, jquery, highlightjs, `logback-classic`, yamusca,
-      `circe-core`, `circe-generic`, `circe-parser`, `fs2-http`, `spinoco-http`
+      `fs2-http`, `spinoco-http`
     ),
     // elm stuff
     elmVersion := "0.18.0 <= v < 0.19.0",
@@ -166,9 +167,8 @@ lazy val server = project.in(file("modules/server")).
     name := "sharry-server",
     description := "The sharry application as a rest server",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `logback-classic`, `circe-core`, `circe-generic`, `circe-parser`,
-      pureconfig, `scala-bcrypt`, `fs2-http`, `spinoco-http`, `doobie-hikari`,
-      `javax-mail`, `javax-mail-api`, dnsjava, yamusca
+      `logback-classic`, pureconfig, `scala-bcrypt`, `fs2-http`, `spinoco-http`,
+      `doobie-hikari`, `javax-mail`, `javax-mail-api`, dnsjava, yamusca
     ),
     assemblyJarName in assembly := s"sharry-server-${version.value}.jar.sh",
     assemblyOption in assembly := (assemblyOption in assembly).value.copy(
@@ -186,7 +186,6 @@ lazy val server = project.in(file("modules/server")).
     )
   ).
   dependsOn(common % "compile->compile;test->test", store, webapp, docs)
-
 
 lazy val root = project.in(file(".")).
   disablePlugins(AssemblyPlugin).

@@ -6,7 +6,8 @@ import java.time.temporal.TemporalAmount
 import scala.util.Try
 import scodec.bits.ByteVector
 import com.github.t3hnar.bcrypt
-import sharry.store.data.Account
+import io.circe._
+import sharry.common.data.Account
 import sharry.common.sign
 
 case class Token(salt: String, login: String, ends: Instant, signature: String) {
@@ -43,4 +44,11 @@ object Token {
         invalid
     }
   }
+
+  implicit val _jsonEnc: Encoder[Token] =
+    Encoder.forProduct1("token")(t => t.asString)
+
+  implicit val _jsonDec: Decoder[Token] =
+    Decoder.forProduct1("token")(Token.parse)
+
 }

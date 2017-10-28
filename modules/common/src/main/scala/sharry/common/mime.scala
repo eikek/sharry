@@ -3,6 +3,7 @@ package sharry.common
 import javax.activation.{MimeType => JMimeType}
 import scala.collection.JavaConverters._
 import scala.util.Try
+import io.circe._
 
 /** Utility around `javax.activation.MimeType'. */
 object mime {
@@ -56,6 +57,9 @@ object mime {
       `text/html` -> "html",
       `application/x-xz` -> "xz"
     )
+
+    implicit val _mimeTypeDec: Decoder[MimeType] = Decoder.decodeString.map(s => MimeType.parse(s).get)
+    implicit val _mimeTypeEnc: Encoder[MimeType] = Encoder.encodeString.contramap[MimeType](_.asString)
   }
 
   object BaseType {

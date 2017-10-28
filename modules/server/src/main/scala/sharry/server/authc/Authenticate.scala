@@ -5,7 +5,7 @@ import org.log4s._
 import fs2.{Stream, Task, Pipe}
 import com.github.t3hnar.bcrypt._
 import sharry.common.streams
-import sharry.store.data.Account
+import sharry.common.data.Account
 import sharry.store.account.AccountStore
 import sharry.server.config.AuthConfig
 
