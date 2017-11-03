@@ -1,8 +1,9 @@
 package sharry.common.data
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import io.circe._, io.circe.generic.semiauto._
 import sharry.common.JsonCodec
+import sharry.common.duration._
 
 /** Used when retrieving an upload from the server */
 // TODO rename

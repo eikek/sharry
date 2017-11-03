@@ -1,8 +1,7 @@
 package sharry.server.routes
 
-import java.time.{Instant, Duration}
+import java.time.Instant
 
-import scala.concurrent.duration._
 import scodec.bits.ByteVector
 import cats.syntax.either._
 import fs2.{Stream, Task}
@@ -11,6 +10,7 @@ import spinoco.protocol.http.header.`Set-Cookie`
 import spinoco.fs2.http.routing._
 import spinoco.fs2.http.HttpResponse
 
+import sharry.common.duration._
 import sharry.common.data._
 import sharry.server.config.{AuthConfig, WebConfig}
 import sharry.server.paths
@@ -52,7 +52,7 @@ object login {
 
   def removeCookie(domain: String): Route[Task] =
     Get >> paths.logout.matcher map { _ =>
-      val c = makeCookie(Token.invalid, domain).copy(maxAge = Some(FiniteDuration(1, NANOSECONDS)))
+      val c = makeCookie(Token.invalid, domain).copy(maxAge = Some(0.seconds.asScala))
       Stream.emit(Ok.noBody.withHeader(`Set-Cookie`(c)))
     }
 
@@ -60,7 +60,7 @@ object login {
     HttpCookie(name = cookieName
       , content =  t.asString
       , httpOnly = true
-      , maxAge = Some(FiniteDuration(Duration.between(Instant.now, t.ends).toNanos, NANOSECONDS))
+      , maxAge = Some(Duration.between(Instant.now, t.ends).asScala)
       , path = Some(paths.api1.path)
       , domain = Some(domain)
       , params = Map.empty
@@ -70,7 +70,7 @@ object login {
   }
 
   def makeCookie(a: Account, domain: String, cookieAge: Duration, appKey: ByteVector): HttpCookie =
-    makeCookie(Token(a.login, Instant.now.plus(cookieAge), appKey), domain)
+    makeCookie(Token(a.login, Instant.now.plus(cookieAge.asJava), appKey), domain)
 
   val cookieName = "sharry_auth"
 }

@@ -1,10 +1,7 @@
 package sharry.server
 
 import java.nio.file.Path
-import java.time.Duration
 import java.util.UUID
-import scala.concurrent.duration.FiniteDuration
-import com.typesafe.config.ConfigValue
 import scodec.bits.ByteVector
 import fs2.Task
 import fs2.interop.cats._
@@ -16,6 +13,7 @@ import spinoco.protocol.http.Uri
 import yamusca.imports._
 import sharry.common.sizes._
 import sharry.common.file._
+import sharry.common.duration._
 import sharry.server.email._
 
 object config {
@@ -68,7 +66,7 @@ object config {
       , aliasDeleteTime: Duration
       , enableUploadNotification: Boolean
       , cleanupEnable: Boolean
-      , cleanupInterval: FiniteDuration
+      , cleanupInterval: Duration
       , cleanupInvalidAge: Duration
   )
 
@@ -119,13 +117,10 @@ object config {
     }
   ))
 
-  implicit def durationConvert: ConfigReader[Duration] = {
-    val dc = implicitly[ConfigReader[scala.concurrent.duration.Duration]]
-    new ConfigReader[Duration] {
-      def from(v: ConfigValue) =
-        dc.from(v).map(fd => Duration.ofNanos(fd.toNanos))
-    }
-  }
+  implicit def durationConvert: ConfigReader[Duration] = ConfigReader.fromString[Duration](catchReadError(s =>
+    Duration.unsafeParse(s)
+  ))
+
 
   implicit def bytevectorConvert: ConfigReader[ByteVector] =
     ConfigReader.fromString[ByteVector](catchReadError(s =>

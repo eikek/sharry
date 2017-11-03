@@ -87,10 +87,10 @@ object main {
     val cfg = app.uploadConfig
     if (cfg.cleanupEnable) {
       logger.info(s"Scheduling cleanup job every ${cfg.cleanupInterval}")
-      val stream = time.awakeEvery[Task](cfg.cleanupInterval).
+      val stream = time.awakeEvery[Task](cfg.cleanupInterval.asScala).
         flatMap({ _ =>
           logger.info("Running cleanup job")
-          val since = Instant.now.minus(cfg.cleanupInvalidAge)
+          val since = Instant.now.minus(cfg.cleanupInvalidAge.asJava)
           app.uploadStore.cleanup(since).
             through(streams.ifEmpty(Stream.emit(0))).sum.
             evalMap(n => Task.delay(logger.info(s"Cleanup job removed $n uploads"))) ++

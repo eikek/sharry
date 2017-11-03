@@ -2,8 +2,7 @@ package sharry.cli
 
 import spinoco.protocol.http.Uri
 import java.nio.file.{Path, Paths, Files}
-import java.time.Duration
-import com.typesafe.config.{ConfigValue, ConfigValueFactory, ConfigFactory}
+import com.typesafe.config.{ConfigValueFactory, ConfigFactory}
 
 import cats.syntax.either._
 import fs2.Task
@@ -14,6 +13,7 @@ import org.log4s._
 import io.circe._, io.circe.generic.semiauto._
 
 import sharry.common.JsonCodec
+import sharry.common.duration._
 
 object config {
   private val logger = getLogger
@@ -65,7 +65,7 @@ object config {
   }
 
   object Config {
-    val empty = Config(Mode.PublishFiles, Uri.http("localhost", ""), AuthMethod.NoAuth, Duration.ZERO, 0, Paths.get(""))
+    val empty = Config(Mode.PublishFiles, Uri.http("localhost", ""), AuthMethod.NoAuth, Duration.zero, 0, Paths.get(""))
 
     private def readValue[A](s: String)(implicit r: ConfigReader[A]): Either[ConfigReaderFailures, A] =
       r.from(ConfigValueFactory.fromAnyRef(s))
@@ -141,13 +141,9 @@ object config {
       Paths.get(s)
     ))
 
-    implicit def durationConvert: ConfigReader[Duration] = {
-      val dc = implicitly[ConfigReader[scala.concurrent.duration.Duration]]
-      new ConfigReader[Duration] {
-        def from(v: ConfigValue) =
-          dc.from(v).map(fd => Duration.ofNanos(fd.toNanos))
-      }
-    }
+    implicit def durationConvert: ConfigReader[Duration] = ConfigReader.fromString[Duration](catchReadError(s =>
+      Duration.unsafeParse(s)
+    ))
 
     implicit def modeConvert: ConfigReader[Mode] =
       ConfigReader.fromString[Mode](s => loc => s match {

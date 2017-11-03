@@ -1,11 +1,12 @@
 package sharry.store
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import java.time.temporal._
 import org.log4s._
 import scodec.bits.ByteVector
 import sharry.common.mime.MimeType
 import sharry.common.sizes._
+import sharry.common.duration._
 import doobie.imports._
 import doobie.util.log.{Success, ProcessingFailure, ExecFailure}
 
@@ -24,7 +25,7 @@ object columns {
     Meta[String].xmap(Instant.parse, _.truncatedTo(ChronoUnit.SECONDS).toString)
 
   implicit val durationMeta: Meta[Duration] =
-    Meta[String].xmap(Duration.parse, _.toString)
+    Meta[String].xmap((java.time.Duration.parse _) andThen Duration.fromJava, _.asJava.toString)
 
   implicit val sizeMeta: Meta[Size] =
     Meta[Long].xmap[Size](n => Bytes(n), _.toBytes)

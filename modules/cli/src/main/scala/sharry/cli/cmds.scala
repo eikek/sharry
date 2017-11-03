@@ -1,9 +1,7 @@
 package sharry.cli
 
 import java.nio.file.Path
-import java.time.Duration
 
-import scala.concurrent.duration._
 import fs2.{async, concurrent, text, time, Pipe, Strategy, Scheduler, Stream, Task}
 import fs2.io.file
 import fs2.async.mutable.Signal
@@ -18,6 +16,7 @@ import yamusca.implicits._
 import sharry.common.data._
 import sharry.common.file._
 import sharry.common.sizes._
+import sharry.common.duration._
 import sharry.cli.config._
 import sharry.mdutil.{Document,Link}
 
@@ -120,7 +119,7 @@ object cmds extends requestlog {
       _.flatMap { ctx =>
         ctx.cookie match {
           case Some(s) =>
-            val interval = math.max(2000, ctx.remoteConfig.cookieAge - 1000).millis
+            val interval = math.max(2000, ctx.remoteConfig.cookieAge - 1000).millis.asScala
             val setter: Stream[Task, Unit] = for {
               _ <- time.awakeEvery[Task](interval)
               _ <- log(_.debug("Awake for refreshing cookie"))
@@ -146,7 +145,7 @@ object cmds extends requestlog {
       _ <- log(_.debug(s"Creating upload: $up"))
       req <- ctx.createUploadReq(up)
       resp <- client.dorequest(req).through(ClientError.onSuccess)
-      upload <- Stream(Upload(up.id, "", Duration.ZERO, up.maxdownloads))
+      upload <- Stream(Upload(up.id, "", Duration.zero, up.maxdownloads))
     } yield ctx.copy(upload = upload))
   }
 

@@ -1,9 +1,10 @@
 package sharry.store.data
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import io.circe._, io.circe.generic.semiauto._
 import sharry.common.JsonCodec
 import sharry.common.rng._
+import sharry.common.duration._
 
 case class Alias(
   id: String

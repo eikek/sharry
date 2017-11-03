@@ -1,6 +1,6 @@
 package sharry.store.upload
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import cats.data.NonEmptyList
 import cats.implicits._
 import doobie.imports._
@@ -8,6 +8,7 @@ import org.log4s._
 
 import sharry.common.mime._
 import sharry.common.sizes._
+import sharry.common.duration._
 import sharry.common.data._
 import sharry.store.columns._
 import sharry.store.binary.Statements
@@ -25,7 +26,7 @@ trait SqlStatements extends Statements {
     // this upload, this date is overwritten.
     //TODO: introduce a global validity for non-published uploads
     val until = uc.alias match {
-      case Some(a) => Some(Instant.now plus uc.validity)
+      case Some(a) => Some(Instant.now plus uc.validity.asJava)
       case None => uc.validUntil
     }
     sql"""INSERT INTO Upload VALUES (
@@ -139,7 +140,7 @@ trait SqlStatements extends Statements {
     } yield upload.map(up => UploadInfo(up, files))
 
   def sqlPublishUpload(id: String, login: String, publishId: String, publishDate: Instant, valid: Duration) =
-    sql"""UPDATE Upload SET publishId = $publishId, publishDate = $publishDate, publishUntil = ${publishDate.plus(valid)}
+    sql"""UPDATE Upload SET publishId = $publishId, publishDate = $publishDate, publishUntil = ${publishDate.plus(valid.asJava)}
           WHERE publishId is null AND id = $id AND login = $login""".
       update
 

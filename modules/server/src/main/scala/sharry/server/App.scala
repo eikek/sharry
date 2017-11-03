@@ -35,12 +35,12 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
     paths.mounts.mapValues(_.path) + ("baseUrl" -> cfg.webConfig.baseurl)
       , cfg.webConfig.appName
       , cfg.authConfig.enable
-      , cfg.authConfig.maxCookieLifetime.toMillis
+      , cfg.authConfig.maxCookieLifetime.millis
       , uploadConfig.chunkSize.toBytes
       , uploadConfig.simultaneousUploads
       , uploadConfig.maxFiles
       , uploadConfig.maxFileSize.toBytes
-      , uploadConfig.maxValidity.toString
+      , uploadConfig.maxValidity.formatExact
       , version.projectString
       , routes.authz.aliasHeaderName
       , cfg.webmailConfig.enable

@@ -1,7 +1,5 @@
 package sharry.cli
 
-import java.time.Duration
-
 import cats.implicits._
 import cats.data.{Validated, ValidatedNel}
 import fs2.{text, Chunk, Stream, Task}
@@ -12,6 +10,7 @@ import sharry.common.data._
 import sharry.common.file._
 import sharry.common.sizes._
 import sharry.common.rng._
+import sharry.common.duration._
 import spinoco.fs2.http.HttpRequest
 import spinoco.fs2.http.body.StreamBodyEncoder
 import spinoco.protocol.http._
@@ -66,7 +65,7 @@ case class Context(
       UploadCreate(
         id = "c"+ Gen.ident(16, 32).generate()
           , description = d
-          , validity = config.valid.toHours() + "h"
+          , validity = config.valid.formatExact
           , maxdownloads = config.maxDownloads
           , password = config.password.getOrElse(""))
     }
@@ -139,10 +138,10 @@ object Context {
       ctx.count <= ctx.remoteConfig.maxFiles,
       s"Number of files (${ctx.count}) exceeds server limit (${ctx.remoteConfig.maxFiles}).")
 
-    val maxValidity = Duration.parse(ctx.remoteConfig.maxValidity)
-    val v3 = successWhen(
-      !maxValidity.minus(ctx.config.valid).isNegative,
-      s"Validity (${ctx.config.valid}) exceeds server limit (${ctx.remoteConfig.maxValidity}).")
+    val v3 = Duration.parse(ctx.remoteConfig.maxValidity).toValidatedNel[String,Duration].andThen(maxValidity =>
+      successWhen(
+        !(maxValidity - ctx.config.valid).isNegative,
+        s"Validity (${ctx.config.valid}) exceeds server limit (${ctx.remoteConfig.maxValidity})."))
 
     val v4 = successWhen(
       ctx.count > 0 || ctx.config.description.isDefined || ctx.config.descriptionFile.isDefined,

@@ -1,6 +1,6 @@
 package sharry.cli
 
-import java.time.Duration
+import sharry.common.duration._
 import java.nio.file.Path
 
 import spinoco.protocol.http.{Uri, HostPort}

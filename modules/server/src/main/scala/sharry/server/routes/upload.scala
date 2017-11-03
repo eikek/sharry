@@ -1,6 +1,6 @@
 package sharry.server.routes
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import fs2.{Stream, Task}
 import shapeless.{::,HNil}
 import scala.util.Try
@@ -13,6 +13,7 @@ import sharry.store.data._
 import sharry.common.data._
 import sharry.common.sizes._
 import sharry.common.mime._
+import sharry.common.duration._
 import sharry.common.streams
 import sharry.common.sha
 import sharry.store.mimedetect
@@ -67,7 +68,7 @@ object upload {
       map(a => Right(a.validity)).
       getOrElse(UploadCreate.parseValidity(meta.validity)).
       flatMap { given =>
-        if (maxValidity.compareTo(given) >= 0) Right(given)
+        if (maxValidity >= given) Right(given)
         else Left("Validity time is too long.")
       }
 
@@ -185,7 +186,7 @@ object upload {
     Post >> paths.uploadNotify.matcher / uploadId :: authz.alias(store) map {
       case id :: alias :: HNil =>
         if (cfg.enableUploadNotification) {
-          notifier(id, alias, cfg.aliasDeleteTime.plusSeconds(30)).drain ++
+          notifier(id, alias, cfg.aliasDeleteTime + 30.seconds).drain ++
           Stream.emit(Ok.message("Notification scheduled."))
         } else {
           Stream.emit(Ok.message("Upload notifications disabled."))
