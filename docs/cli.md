@@ -4,14 +4,24 @@ Sharry provides a command line client for uploading/publishing
 files. Managing aliases or user accounts must still be done using the
 web interface.
 
-## Building
+## Getting it
 
-Run
+### Download
 
-    sbt make
+There are prebuild binary files here:
+
+- [Sharry Cli {{versionShort}}](https://eknet.org/main/projects/sharry/sharry-cli-{{versionShort}}.jar.sh)
+
+
+### Building
+
+You can build it from source. It requires Java >= 1.8 and
+[Sbt](http://scala-sbt.org). Run
+
+    sbt make-cli
 
 in the source root. This will create an executable jar file in
-`modules/cli/target/scala-2.12/sharry-cli_2.12-{{versionShort}}.jar`. You
+`modules/cli/target/scala-2.12/sharry-cli_2.12-{{versionShort}}.jar.sh`. You
 can link it to some shorter command, like `sharr` in your `$PATH`.
 
 ## Publishing files
@@ -32,14 +42,10 @@ Here is an example:
     http://localhost:9090#id=JNDKvZahrw5wmcN9Mxc2jOdLfOrOnkyzB3Sco
 
 The last url is the public url, if the upload is published. There are
-options to specify properties for the upload:
+options to specify properties for the upload.
 
-- description
-- validity
-- max downloads
-- password
-
-You can pass everything to the command or use defaults from the config file.
+You can pass everything to the command or use defaults from the config
+file.
 
 ```
 $ sharry --help

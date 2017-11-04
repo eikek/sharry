@@ -72,6 +72,7 @@ can delete those files to save space.
 - automatic removal of invalid uploads
 - external authentication (via system command or http requests)
 - managing accounts, uploads and alias pages
+- a command line client for uploading files
 
 ** Try it
 
@@ -90,22 +91,25 @@ This will build the project and start the server. Point your browser
 to http://localhost:9090 and login with user =admin= and password
 =admin=.
 
+Or, download a binary that are referenced in the [[https://sharrydemo.eknet.org/#manual/index.md][manual pages]].
+
 ** Documentation
 
 There is a user manual in the [[./docs/index.md][docs]] folder (sources). These pages are
-shown in each sharry instance, for example [[https://sharrydemo.eknet.org/#manual/index.md][here]].
+shown in each sharry instance, for example [[https://sharrydemo.eknet.org/#manual/index.md][here]]. The documentation to
+the command line client is included.
 
 ** Building
 
-You need Java8, [[http://scala-sbt.org][sbt]] and [[http://elm-lang.org/][Elm]] installed first. Then clone the project
-and run:
+For the server, you need Java8, [[http://scala-sbt.org][sbt]] and [[http://elm-lang.org/][Elm]] installed first. Then
+clone the project and run:
 
 #+begin_src shell :exports both
 sbt make
 #+end_src
 
 This creates a file in =modules/server/target/scala-2.12= named
-=sharry-*.jar.sh=. This is an executable jar file and can be used to
+=sharry-server-*.jar.sh=. This is an executable jar file and can be used to
 run sharry:
 
 The =--console= argument allows to terminate the server from the
@@ -130,10 +134,16 @@ $ ./modules/server/target/scala-2.12/sharry-server-0.0.1-SNAPSHOT.jar.sh --conso
 Hit RETURN to stop the server
 #+end_src
 
+The command also builds the command line client. It can be found at
+=modules/cli/target/scala-2.12= named =sharry-cli-*-.jar.sh=.
+
+Building only the command line client doesn't require Elm and can be
+done with =sbt make-cli=.
+
 ** Dependencies
 
-The server part is written in [[http://scala-lang.or][Scala]] and uses the following great
-libraries:
+The server and cli part is written in [[http://scala-lang.or][Scala]] and uses the following
+great libraries:
 
 - [[https://github.com/functional-streams-for-scala/fs2][fs2]] all the way
 - [[https://github.com/Spinoco/fs2-http][fs2-http]] for the http stack
@@ -155,7 +165,7 @@ Non-elm components:
 - [[https://github.com/23/resumable.js][resumable.js]] for handling uploads at the client
 
 
-** Configuring
+** Configuring (server)
 
 Sharry reads a configuration file that can be given as an argument to
 the executable. Please see the [[./modules/server/src/main/resources/reference.conf][default]] configuration for all available
