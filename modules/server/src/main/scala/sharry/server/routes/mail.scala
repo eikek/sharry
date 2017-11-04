@@ -5,12 +5,12 @@ import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
 import yamusca.imports._
 import yamusca.implicits._
+import io.circe._, io.circe.generic.semiauto._
 
 import sharry.server.paths
 import sharry.server.config._
 import sharry.server.email._
 import sharry.server.routes.syntax._
-import sharry.server.jsoncodec._
 
 object mail {
 
@@ -75,11 +75,19 @@ object mail {
     def parse: Task[Mail] = Mail(to, subject, text)
   }
 
+  object SimpleMail {
+    implicit val _jsonDecoder: Decoder[SimpleMail] = deriveDecoder[SimpleMail]
+  }
+
   case class SendResult(message: String, success: List[Address], failed: List[String]) {
     def addFailure(msg: Throwable) = copy(failed = msg.getMessage :: failed)
     def addSuccess(mail: Mail) = copy(success = mail.recipients ::: success)
     def withMessage(msg: String) = copy(message = msg)
   }
 
-  object SendResult { val empty = SendResult("", Nil, Nil) }
+  object SendResult {
+    val empty = SendResult("", Nil, Nil)
+
+    implicit val _jsonEncoder: Encoder[SendResult] = deriveEncoder[SendResult]
+  }
 }

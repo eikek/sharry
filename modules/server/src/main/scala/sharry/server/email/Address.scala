@@ -2,6 +2,7 @@ package sharry.server.email
 
 import javax.mail.internet.InternetAddress
 import fs2.Task
+import io.circe._
 
 case class Address(mail: InternetAddress) {
   lazy val address = mail.getAddress
@@ -20,4 +21,6 @@ object Address {
     a.validate
     Address(a)
   }
+
+  implicit val _jsonEncoder: Encoder[Address] = Encoder.encodeString.contramap[Address](_.mail.toString)
 }

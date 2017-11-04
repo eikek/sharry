@@ -100,22 +100,24 @@ parameter is the `id` from the previous call.
         receiver of a new upload to his or her alias page
 -   `GET api/v1/upload-data`
     -   checks whether a chunk is already uploaded
-    -   query paramaters for `token: String, chunkNumber: Int,
-        chunkSize: Int, currentChunkSize: Int, totalSize: Long,
-        fileIdentifier: String, filename: String, totalChunks: Int`
+    -   query paramaters for `token: String, resumableChunkNumber:
+        Int, resumableChunkSize: Int, resumableCurrentChunkSize: Int,
+        resumableTotalSize: Long, resumableFileIdentifier: String,
+        resumableFilename: String, resumableTotalChunks: Int`
     -   either `OK` (if the chunk exists) or `NoContent`
-    -   token is the upload id
+    -   `token` is the upload id
 -   `POST api/v1/upload-data`
     -   upload a chunk of a file
     -   body is the chunkdata as `application/octet-stream` (not
         multipart)
-    -   query paramaters for `token: String, chunkNumber: Int,
-        chunkSize: Int, currentChunkSize: Int, totalSize: Long,
-        fileIdentifier: String, filename: String, totalChunks: Int`
-        are required to identify the chunk
+    -   query paramaters for `token: String, resumableChunkNumber:
+        Int, resumableChunkSize: Int, resumableCurrentChunkSize: Int,
+        resumableTotalSize: Long, resumableIdentifier: String,
+        resumableFilename: String, resumableTotalChunks: Int` are
+        required to identify the chunk
     -   the `token` query parameter is the upload id; the
-        `fileIdentifier` is some string identifying the file, the
-        webapp uses the filename + file size, for example.
+        `resumableFileIdentifier` is some string identifying the file,
+        the webapp uses the filename + file size, for example.
 
 ## Download Files
 

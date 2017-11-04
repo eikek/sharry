@@ -1,14 +1,15 @@
 package sharry.server
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import fs2.{time, Strategy, Scheduler, Stream, Task}
-import scala.concurrent.duration.{MILLISECONDS, FiniteDuration}
 import yamusca.implicits._
 
 import sharry.store.upload.UploadStore
 import sharry.store.account.AccountStore
-import sharry.store.data.{Alias, Upload}
+import sharry.store.data.Alias
 import sharry.common.streams
+import sharry.common.duration._
+import sharry.common.data._
 import sharry.server.config._
 import sharry.server.email._
 
@@ -43,8 +44,7 @@ object notification {
   private def schedule[A](task: Task[A], delay: Duration)
     (implicit S: Strategy, SCH: Scheduler): Task[Unit] = {
 
-    val fd = FiniteDuration(delay.toMillis, MILLISECONDS)
-    time.sleep[Task](fd).evalMap(_ => task).run
+    time.sleep[Task](delay.asScala).evalMap(_ => task).run
   }
 
   def checkAliasAccess(id: String
@@ -58,7 +58,7 @@ object notification {
     store.getUpload(id, alias.login).
       map({ info =>
         info.upload.alias == Some(alias.id) &&
-        info.upload.created.plus(time).isAfter(now)
+        info.upload.created.plus(time.asJava).isAfter(now)
       })
   }
 

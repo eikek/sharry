@@ -4,7 +4,7 @@ import cats.syntax.either._
 import scodec.{Err, Codec}
 import scodec.bits.ByteVector
 
-import sharry.store.data._
+import sharry.common.data._
 
 package object authc {
   type AuthResult = Either[String, Account]

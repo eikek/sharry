@@ -1,7 +1,9 @@
-package sharry.store.data
+package sharry.common.data
 
 import java.time._
 import java.util.UUID
+import io.circe._, io.circe.generic.semiauto._
+import sharry.common.JsonCodec
 import sharry.common.mime._
 import sharry.common.sizes._
 
@@ -20,7 +22,10 @@ case class FileMeta(
 }
 
 object FileMeta {
+  import JsonCodec._
 
   def randomId: String = UUID.randomUUID().toString
 
+  implicit val _fileMetaDec: Decoder[FileMeta] = deriveDecoder[FileMeta]
+  implicit val _fileMetaEnc: Encoder[FileMeta] = deriveEncoder[FileMeta]
 }

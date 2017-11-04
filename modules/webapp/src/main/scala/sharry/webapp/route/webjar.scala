@@ -13,7 +13,7 @@ import spinoco.protocol.http.header.value._
 import yamusca.implicits._
 import yamusca.imports._
 
-import sharry.webapp.config._
+import sharry.common.data._
 
 object webjar {
   val webjarToc: Webjars.Toc = readWebjarToc.unsafeRun

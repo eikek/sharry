@@ -5,6 +5,7 @@ import fs2.{Pipe, Strategy, Stream, Task}
 
 import sharry.common.mime._
 import sharry.common.sizes._
+import sharry.common.data._
 import sharry.store.range._
 import sharry.store.data._
 
@@ -12,7 +13,7 @@ trait UploadStore {
 
   def createUpload(up: Upload): Stream[Task, Unit]
 
-  def createUploadFile(uploadId: String, file: FileMeta, filename: String): Stream[Task, UploadFile]
+  def createUploadFile(uploadId: String, file: FileMeta, filename: String, clientFileId: String): Stream[Task, UploadFile]
 
   def deleteUpload(id: String, login: String): Stream[Task, Int]
 

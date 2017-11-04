@@ -4,7 +4,7 @@ import org.scalatest._
 import doobie.imports._
 import fs2.interop.cats._
 import sharry.store._
-import sharry.store.data._
+import sharry.common.data._
 
 class SqlAccountStoreTest extends FlatSpec with Matchers with StoreFixtures {
 

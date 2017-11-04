@@ -8,11 +8,10 @@ import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
 
 import sharry.common.streams
-import sharry.store.data.Account
+import sharry.common.data.Account
 import sharry.store.account.AccountStore
 import sharry.server.config.{AuthConfig, WebConfig}
 import sharry.server.authc._
-import sharry.server.jsoncodec._
 import sharry.server.paths
 import sharry.server.email.Address
 import sharry.server.routes.syntax._

@@ -43,5 +43,4 @@ package object routes {
   implicit final class StringOps(s: String) {
     def asNonEmpty: Option[String] = Option(s).map(_.trim).filter(_.nonEmpty)
   }
-
 }

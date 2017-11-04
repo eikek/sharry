@@ -1,6 +1,6 @@
 package sharry.store.upload
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import cats.data.NonEmptyList
 import cats.implicits._
 import doobie.imports._
@@ -8,6 +8,8 @@ import org.log4s._
 
 import sharry.common.mime._
 import sharry.common.sizes._
+import sharry.common.duration._
+import sharry.common.data._
 import sharry.store.columns._
 import sharry.store.binary.Statements
 import sharry.store.data._
@@ -24,7 +26,7 @@ trait SqlStatements extends Statements {
     // this upload, this date is overwritten.
     //TODO: introduce a global validity for non-published uploads
     val until = uc.alias match {
-      case Some(a) => Some(Instant.now plus uc.validity)
+      case Some(a) => Some(Instant.now plus uc.validity.asJava)
       case None => uc.validUntil
     }
     sql"""INSERT INTO Upload VALUES (
@@ -70,10 +72,10 @@ trait SqlStatements extends Statements {
   }
 
   def insertUploadFile(f: UploadFile): Update0 =
-    sql"""INSERT INTO UploadFile VALUES (${f.uploadId}, ${f.fileId}, ${f.filename}, ${f.downloads}, ${f.lastDownload})""".update
+    sql"""INSERT INTO UploadFile VALUES (${f.uploadId}, ${f.fileId}, ${f.filename}, ${f.downloads}, ${f.lastDownload}, ${f.clientFileId})""".update
 
-  def insertUploadFile(id: String, fm: FileMeta, filename: String, downloads: Int, lastDownload: Option[Instant]): ConnectionIO[UploadFile] = {
-    val uf = UploadFile(id, fm.id, filename, downloads, lastDownload)
+  def insertUploadFile(id: String, fm: FileMeta, filename: String, downloads: Int, lastDownload: Option[Instant], clientFileId: String): ConnectionIO[UploadFile] = {
+    val uf = UploadFile(id, fm.id, filename, downloads, lastDownload, clientFileId)
     for {
       _ <- insertFileMeta(fm).run
       _ <- insertUploadFile(uf).run
@@ -103,7 +105,7 @@ trait SqlStatements extends Statements {
 
   def sqlGetPublishedUploadByFileId(fileId: String) =
     sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,
-                 fm.*, uf.filename
+                 fm.*, uf.filename, uf.clientFileId
           FROM Upload AS up
           INNER JOIN UploadFile AS uf ON uf.uploadId = up.id AND uf.fileId = $fileId
           INNER JOIN FileMeta AS fm ON fm.id = uf.fileId
@@ -114,7 +116,7 @@ trait SqlStatements extends Statements {
 
   def sqlGetUploadByFileId(fileId: String, login: String) =
     sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,
-                 fm.*, uf.filename
+                 fm.*, uf.filename, uf.clientFileId
           FROM Upload AS up
           INNER JOIN UploadFile AS uf ON uf.uploadId = up.id AND uf.fileId = $fileId
           INNER JOIN FileMeta AS fm ON fm.id = uf.fileId
@@ -124,7 +126,7 @@ trait SqlStatements extends Statements {
       option
 
   def sqlGetUploadFiles(id: String, login: String) =
-    sql"""SELECT fm.*, uf.filename from UploadFile AS uf
+    sql"""SELECT fm.*, uf.filename, uf.clientFileId from UploadFile AS uf
           INNER JOIN FileMeta AS fm ON uf.fileId = fm.id
           INNER JOIN Upload AS up ON up.id = uf.uploadId
           WHERE uf.uploadId = $id AND up.login = $login""".
@@ -138,7 +140,7 @@ trait SqlStatements extends Statements {
     } yield upload.map(up => UploadInfo(up, files))
 
   def sqlPublishUpload(id: String, login: String, publishId: String, publishDate: Instant, valid: Duration) =
-    sql"""UPDATE Upload SET publishId = $publishId, publishDate = $publishDate, publishUntil = ${publishDate.plus(valid)}
+    sql"""UPDATE Upload SET publishId = $publishId, publishDate = $publishDate, publishUntil = ${publishDate.plus(valid.asJava)}
           WHERE publishId is null AND id = $id AND login = $login""".
       update
 

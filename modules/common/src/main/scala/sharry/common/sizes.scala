@@ -1,5 +1,7 @@
 package sharry.common
 
+import io.circe._
+
 object sizes {
 
   sealed abstract class Size {
@@ -36,6 +38,9 @@ object sizes {
     def equals(s1: Size, s2: Size): Boolean =
       s1.toBytes == s2.toBytes
 
+    implicit val _sizeDec: Decoder[Size] = Decoder.decodeLong.map(b => Bytes(b))
+    implicit val _sizeEnc: Encoder[Size] = Encoder.encodeLong.contramap[Size](_.toBytes)
+
     private[sizes] def format(d: Double) = "%.2f".formatLocal(java.util.Locale.ROOT, d)
   }
 
@@ -66,15 +71,15 @@ object sizes {
   }
 
   implicit final class IntSizeOps(val n: Int) extends AnyVal {
-    def gbytes = GBytes(n.toDouble)
-    def mbytes = MBytes(n.toDouble)
-    def kbytes = KBytes(n.toDouble)
-    def bytes = Bytes(n.toLong)
+    def gbytes: Size = GBytes(n.toDouble)
+    def mbytes: Size = MBytes(n.toDouble)
+    def kbytes: Size = KBytes(n.toDouble)
+    def bytes: Size = Bytes(n.toLong)
   }
   implicit final class LongSizeOps(val n: Long) extends AnyVal {
-    def gbytes = GBytes(n.toDouble)
-    def mbytes = MBytes(n.toDouble)
-    def kbytes = KBytes(n.toDouble)
-    def bytes = Bytes(n)
+    def gbytes: Size = GBytes(n.toDouble)
+    def mbytes: Size = MBytes(n.toDouble)
+    def kbytes: Size = KBytes(n.toDouble)
+    def bytes: Size = Bytes(n)
   }
 }

@@ -11,6 +11,7 @@ import doobie.imports._
 import fs2.interop.cats._
 
 import sharry.store.data._
+import sharry.common.data._
 import sharry.common._
 import sharry.common.mime._
 import sharry.common.sizes._

@@ -1,6 +1,6 @@
 package sharry.server.routes
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import fs2.{Stream, Task}
 import shapeless.{::,HNil}
 import scala.util.Try
@@ -10,8 +10,10 @@ import com.github.t3hnar.bcrypt._
 import org.log4s._
 
 import sharry.store.data._
+import sharry.common.data._
 import sharry.common.sizes._
 import sharry.common.mime._
+import sharry.common.duration._
 import sharry.common.streams
 import sharry.common.sha
 import sharry.store.mimedetect
@@ -19,7 +21,6 @@ import sharry.store.mimedetect.MimeInfo
 import sharry.store.upload.UploadStore
 import sharry.server.paths
 import sharry.server.config._
-import sharry.server.jsoncodec._
 import sharry.server.notification
 import sharry.server.notification.Notifier
 import sharry.server.routes.syntax._
@@ -67,7 +68,7 @@ object upload {
       map(a => Right(a.validity)).
       getOrElse(UploadCreate.parseValidity(meta.validity)).
       flatMap { given =>
-        if (maxValidity.compareTo(given) >= 0) Right(given)
+        if (maxValidity >= given) Right(given)
         else Left("Validity time is too long.")
       }
 
@@ -128,6 +129,7 @@ object upload {
     import yamusca.imports._, yamusca.implicits._
 
     implicit val fileConverter: ValueConverter[UploadInfo.File] = f => Map(
+      "id" -> f.clientFileId,
       "filename" -> f.filename,
       "url" -> (baseUrl / f.meta.id).path,
       "mimetype" -> f.meta.mimetype.asString,
@@ -144,6 +146,12 @@ object upload {
           case _ =>
             None
         }
+      case name if name startsWith "fileid_" =>
+        Try(name.drop(7)).
+          toOption.
+          filter(_.trim.nonEmpty).
+          flatMap(id => u.files.find(_.clientFileId == id)).
+          map(_.asMustacheValue)
       case _ => None
     }}
 
@@ -178,7 +186,7 @@ object upload {
     Post >> paths.uploadNotify.matcher / uploadId :: authz.alias(store) map {
       case id :: alias :: HNil =>
         if (cfg.enableUploadNotification) {
-          notifier(id, alias, cfg.aliasDeleteTime.plusSeconds(30)).drain ++
+          notifier(id, alias, cfg.aliasDeleteTime + 30.seconds).drain ++
           Stream.emit(Ok.message("Notification scheduled."))
         } else {
           Stream.emit(Ok.message("Upload notifications disabled."))
@@ -204,7 +212,7 @@ object upload {
         val init = info.chunkNumber match {
           case 1 =>
             val fm = FileMeta(fileId, Instant.now, MimeType.unknown, info.totalSize.bytes, info.totalChunks, info.chunkSize.bytes)
-            store.createUploadFile(info.token, fm, info.filename)
+            store.createUploadFile(info.token, fm, info.filename, info.fileIdentifier)
           case _ => Stream.empty
         }
 
@@ -272,15 +280,4 @@ object upload {
         if (token.isEmpty) Matcher.respond[Task](BadRequest.message("Token is empty"))
         else Matcher.success(ChunkInfo(token, num, size, currentSize, totalSize, ident, file, total))
   }
-
-  case class ChunkInfo(
-    token: String
-      , chunkNumber: Int
-      , chunkSize: Int
-      , currentChunkSize: Int
-      , totalSize: Long
-      , fileIdentifier: String
-      , filename: String
-      , totalChunks: Int
-  )
 }

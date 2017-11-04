@@ -1,7 +1,8 @@
-package sharry.store.data
+package sharry.common.data
 
 import cats.data.{Validated, ValidatedNel}
 import cats.implicits._
+import io.circe._, io.circe.generic.semiauto._
 
 case class Account(
   login: String,
@@ -76,4 +77,18 @@ object Account {
       if (a.extern) Some(a.login)
       else None
   }
+
+  private def nonEmpty(o: Option[String]): Option[String] =
+    o.map(_.trim).filter(_.nonEmpty)
+
+  implicit val _accountDec: Decoder[Account] = {
+    val dec = Decoder.forProduct6("login", "password", "email", "enabled", "admin", "extern")(Account.tryApply)
+    dec.emap(_.toEither.leftMap(errs => errs.toList.mkString(", "))).
+      map(a => a.copy(password = nonEmpty(a.password), email = nonEmpty(a.email)))
+  }
+
+  implicit val _accountEnc: Encoder[Account] = deriveEncoder[Account].
+    contramap(a => a.copy(password = a.password.map(_ => "***")))
+
+
 }

@@ -174,6 +174,11 @@ object evolution {
          validity varchar(50) not null,
          created varchar(40) not null,
          enable boolean not null
-      )""".update)
+      )""".update),
+
+    Change(sql"""
+       ALTER TABLE UploadFile ADD COLUMN clientFileId varchar(512);
+       UPDATE UploadFile SET clientFileId = fileId WHERE clientFileId is null;
+       """.update)
   ).pure
 }

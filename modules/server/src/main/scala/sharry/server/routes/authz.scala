@@ -6,7 +6,8 @@ import fs2.Task
 import spinoco.fs2.http.routing._
 import spinoco.protocol.http._
 
-import sharry.store.data.{Alias, Account}
+import sharry.common.data.Account
+import sharry.store.data.Alias
 import sharry.store.upload.UploadStore
 import sharry.server.authc._
 import sharry.server.config._

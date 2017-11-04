@@ -22,6 +22,7 @@ import org.log4s._
 import sharry.common.BuildInfo
 import sharry.common.file._
 import sharry.common.streams
+import sharry.common.version
 import sharry.store.evolution
 
 object main {
@@ -34,7 +35,7 @@ object main {
   def main(args: Array[String]): Unit = {
     logger.info(s"""
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-       | Sharry ${App.makeVersion} build at ${BuildInfo.builtAtString.dropRight(4)}UTC is starting up …
+       | Sharry ${version.longVersion} build at ${BuildInfo.builtAtString.dropRight(4)}UTC is starting up …
        |––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––""".stripMargin)
     val startupCfg = StartConfig.parse(args)
     startupCfg.setup.unsafeRun
@@ -86,10 +87,10 @@ object main {
     val cfg = app.uploadConfig
     if (cfg.cleanupEnable) {
       logger.info(s"Scheduling cleanup job every ${cfg.cleanupInterval}")
-      val stream = time.awakeEvery[Task](cfg.cleanupInterval).
+      val stream = time.awakeEvery[Task](cfg.cleanupInterval.asScala).
         flatMap({ _ =>
           logger.info("Running cleanup job")
-          val since = Instant.now.minus(cfg.cleanupInvalidAge)
+          val since = Instant.now.minus(cfg.cleanupInvalidAge.asJava)
           app.uploadStore.cleanup(since).
             through(streams.ifEmpty(Stream.emit(0))).sum.
             evalMap(n => Task.delay(logger.info(s"Cleanup job removed $n uploads"))) ++

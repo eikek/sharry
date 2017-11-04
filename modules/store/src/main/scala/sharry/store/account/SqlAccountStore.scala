@@ -3,7 +3,7 @@ package sharry.store.account
 import fs2.{Task, Stream}
 import doobie.imports._
 import fs2.interop.cats._
-import sharry.store.data._
+import sharry.common.data.Account
 import sharry.store.Limit
 
 class SqlAccountStore(xa: Transactor[Task]) extends AccountStore with SqlStatements {

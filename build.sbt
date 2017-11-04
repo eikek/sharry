@@ -35,6 +35,7 @@ lazy val common = project.in(file("modules/common")).
     name := "sharry-common",
     description := "Some common utility code",
     libraryDependencies ++= coreDeps ++ testDeps,
+    libraryDependencies ++= Seq(`circe-core`, `circe-generic`, `circe-parser`, `scala-bcrypt`),
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
     buildInfoPackage := "sharry.common",
     buildInfoOptions += BuildInfoOption.ToJson,
@@ -58,7 +59,7 @@ lazy val store = project.in(file("modules/store")).
     name := "sharry-store",
     description := "Storage for files and account data",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `doobie-core`, h2, postgres, tika, `scodec-bits`, `scala-bcrypt`
+      `doobie-core`, h2, postgres, tika, `scodec-bits`
     ))).
   dependsOn(common % "compile->compile;test->test")
 
@@ -91,7 +92,7 @@ lazy val webapp = project.in(file("modules/webapp")).
     description := "A web frontend for sharry",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
       `semantic-ui`, jquery, highlightjs, `logback-classic`, yamusca,
-      `circe-core`, `circe-generic`, `circe-parser`, `fs2-http`, `spinoco-http`
+      `fs2-http`, `spinoco-http`
     ),
     // elm stuff
     elmVersion := "0.18.0 <= v < 0.19.0",
@@ -121,7 +122,8 @@ lazy val webapp = project.in(file("modules/webapp")).
       val resumable = fetchResumableJs.value
       WebPackage("org.webjars", name.value, version.value, elmFiles ++ htmlFiles ++ cssFiles ++ jsFiles ++ resumable)
     }).taskValue,
-    resourceGenerators in Compile += (webjarWebPackageResources in Compile).taskValue))
+    resourceGenerators in Compile += (webjarWebPackageResources in Compile).taskValue)).
+  dependsOn(common)
 
 lazy val docs = project.in(file("modules/docs")).
   settings(sharedSettings).
@@ -165,9 +167,8 @@ lazy val server = project.in(file("modules/server")).
     name := "sharry-server",
     description := "The sharry application as a rest server",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `logback-classic`, `circe-core`, `circe-generic`, `circe-parser`,
-      pureconfig, `scala-bcrypt`, `fs2-http`, `spinoco-http`, `doobie-hikari`,
-      `javax-mail`, `javax-mail-api`, dnsjava, yamusca
+      `logback-classic`, pureconfig, `scala-bcrypt`, `fs2-http`, `spinoco-http`,
+      `doobie-hikari`, `javax-mail`, `javax-mail-api`, dnsjava, yamusca
     ),
     assemblyJarName in assembly := s"sharry-server-${version.value}.jar.sh",
     assemblyOption in assembly := (assemblyOption in assembly).value.copy(
@@ -182,16 +183,55 @@ lazy val server = project.in(file("modules/server")).
       "-Dsharry.authc.extern.admin.enable=true",
       "-Dsharry.db.url=jdbc:h2:./target/sharry-db.h2",
       "-Dsharry.optionalConfig=" + ((baseDirectory in LocalRootProject).value / "dev.conf")
-    )
+    ),
+    resourceGenerators in Compile += Def.task {
+      val cliRef = (sourceDirectory in (cli, Compile)).value/"resources"/"reference.conf"
+      val target = (resourceManaged in Compile).value/"reference-cli.conf"
+      IO.copy(Seq(cliRef -> target))
+      Seq(target)
+    }.taskValue,
+    resourceGenerators in Compile += Def.task {
+      import scala.sys.process._
+      val jar = (assembly in (cli, Compile)).value
+      val help = (s"java -jar ${jar.getAbsoluteFile.toString} --help").!!
+      val target = (resourceManaged in Compile).value/"cli-help.txt"
+      IO.write(target, help)
+      Seq(target)
+    }.taskValue
   ).
   dependsOn(common % "compile->compile;test->test", store, webapp, docs)
 
+lazy val cli = project.in(file("modules/cli")).
+  settings(sharedSettings).
+  settings(
+    name := "sharry-cli",
+    description := "A CLI interface to sharry",
+    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
+      scopt, `logback-classic`, pureconfig, `fs2-http`, `spinoco-http`, yamusca
+    ),
+    assemblyJarName in assembly := s"sharry-cli-${version.value}.jar.sh",
+    assemblyOption in assembly := (assemblyOption in assembly).value.copy(
+      prependShellScript = Some(
+        Seq("#!/usr/bin/env sh", """exec java -jar -XX:+UseG1GC $SHARRYCLI_JAVA_OPTS "$0" "$@"""" + "\n")
+      )
+    ),
+    resourceGenerators in Compile += Def.task {
+      val src = (baseDirectory in LocalRootProject).value/"docs"/"cli.md"
+      val target = (resourceManaged in Compile).value/"cli.md"
+      IO.copy(Seq(src -> target))
+      Seq(target)
+    }.taskValue
+  ).
+  dependsOn(common % "compile->compile;test->test", mdutil)
 
 lazy val root = project.in(file(".")).
   disablePlugins(AssemblyPlugin).
   settings(sharedSettings).
-  aggregate(common, mdutil, store, server, webapp)
+  aggregate(common, mdutil, store, server, webapp, cli)
 
 addCommandAlias("run-sharry", ";project server;run")
-addCommandAlias("make", ";project server ;set elmMinify in (webapp, Compile) := true ;assembly")
+addCommandAlias("make-server", ";project server ;set elmMinify in (webapp, Compile) := true ;assembly")
+addCommandAlias("make-cli", ";project cli ;assembly")
+addCommandAlias("make", ";make-server ;make-cli")
 addCommandAlias("run-all-tests", ";test ;elmTest")
+addCommandAlias("cli", ";project cli ;run")

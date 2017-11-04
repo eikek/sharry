@@ -11,14 +11,13 @@ import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._
 
 import sharry.store.range._
-import sharry.store.data._
+import sharry.common.data._
 import sharry.common.mime._
 import sharry.common.streams
 import sharry.server.paths
 import sharry.server.config._
 import sharry.store.upload.UploadStore
 import sharry.server.routes.syntax._
-import sharry.server.jsoncodec.Pass
 
 object download {
 

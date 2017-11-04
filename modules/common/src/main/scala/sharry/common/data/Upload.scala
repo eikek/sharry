@@ -1,10 +1,13 @@
-package sharry.store.data
+package sharry.common.data
 
-import java.time.{Duration, Instant}
+import java.time.Instant
 import cats.data.{Validated, NonEmptyList => Nel}
 import cats.implicits._
+import io.circe._, io.circe.generic.semiauto._
 import com.github.t3hnar.bcrypt._
 
+import sharry.common.JsonCodec
+import sharry.common.duration._
 
 case class Upload (
   id: String
@@ -22,16 +25,18 @@ case class Upload (
     , aliasName: Option[String] = None
 ) {
 
-  lazy val validUntil = publishDate.map(pd => pd.plus(validity))
+  lazy val validUntil = publishDate.map(pd => pd.plus(validity.asJava))
 
 }
 
 object Upload {
+  val empty = Upload("","",Duration.zero,0)
+
   def isValid(up: Upload, now: Instant, downloads: Int): Validated[Nel[String], Unit] =
     up.publishDate match {
       case Some(pd) =>
         val until =
-          if (pd.plus(up.validity).isAfter(now)) Validated.valid(())
+          if (pd.plus(up.validity.asJava).isAfter(now)) Validated.valid(())
           else Validated.invalid(Nel.of("The validity time has expired."))
 
         val dls =
@@ -57,6 +62,33 @@ object Upload {
 
   def checkUpload(up: Upload, now: Instant, downloads: Int, password: Option[String]): Validated[Nel[String], Unit] =
     isValid(up, now, downloads).combine(checkPassword(up, password).toValidatedNel)
+
+  implicit val _uploadDec: Decoder[Upload] = {
+    import JsonCodec._
+    deriveDecoder[Upload]
+  }
+
+  implicit val _uploadEnc: Encoder[Upload] = {
+    UploadWeb._uploadWebEnc.contramap(fromUpload _)
+  }
+  private def fromUpload(up: Upload): UploadWeb =
+    UploadWeb(up.id
+      , up.login
+      , up.alias
+      , up.aliasName
+      , up.validity
+      , up.maxDownloads
+      , up.password.isDefined
+      , Upload.isValid(up, Instant.now, up.downloads).swap.toOption.map(_.toList).getOrElse(Nil)
+      , up.description
+      , up.created
+      , up.downloads
+      , up.lastDownload
+      , up.publishId
+      , up.publishDate
+      , up.validUntil
+    )
+
 }
 
 
@@ -66,4 +98,12 @@ case class UploadFile(
     , filename: String
     , downloads: Int
     , lastDownload: Option[Instant]
+    , clientFileId: String
 )
+
+object UploadFile {
+  import JsonCodec._
+
+  implicit val _uploadFileDec: Decoder[UploadFile] = deriveDecoder[UploadFile]
+  implicit val _uploadFileEnc: Encoder[UploadFile] = deriveEncoder[UploadFile]
+}

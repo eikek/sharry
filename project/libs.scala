@@ -2,7 +2,7 @@ import sbt._
 
 object libs {
 
-  val `scala-version` = "2.12.3"
+  val `scala-version` = "2.12.4"
 
   def webjar(name: String, version: String): ModuleID =
     "org.webjars" % name % version
@@ -106,14 +106,18 @@ object libs {
   // MIT
   val yamusca = "com.github.eikek" %% "yamusca-core" % "0.4.0"
 
+  // https://github.com/scopt/scopt
+  // MIT
+  val scopt = "com.github.scopt" %% "scopt" % "3.7.0"
+
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.27.0"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.27.0"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.27.0"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.27.0"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.28.0"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.28.0"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.28.0"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.28.0"
 
   // https://github.com/jhy/jsoup
   // MIT
-  val jsoup = "org.jsoup" % "jsoup" % "1.10.3"
+  val jsoup = "org.jsoup" % "jsoup" % "1.11.1"
 }

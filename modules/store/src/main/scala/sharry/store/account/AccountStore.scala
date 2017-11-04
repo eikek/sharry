@@ -1,7 +1,7 @@
 package sharry.store.account
 
 import fs2.{Stream, Task}
-import sharry.store.data._
+import sharry.common.data.Account
 import sharry.store.Limit
 
 /** On top of `ContentStore` associate accounts to data.
