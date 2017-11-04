@@ -47,8 +47,8 @@ package object cli {
   }
 
   implicit final class UriOps(uri: Uri) {
-    def / (seg: String): Uri = uri.copy(path = uri.path / seg)
-    def / (path: Uri.Path): Uri = uri.copy(path = uri.path.copy(segments = uri.path.segments ++ path.segments))
+    def / (seg: String): Uri = uri.copy(path = uri.path.copy(initialSlash = true) / seg)
+    def / (path: Uri.Path): Uri = uri.copy(path = uri.path.copy(segments = uri.path.segments ++ path.segments, initialSlash = true, trailingSlash = path.trailingSlash))
 
     def asString: String =
       Uri.codec.encode(uri).require.decodeUtf8.right.get

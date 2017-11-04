@@ -14,7 +14,7 @@ import sharry.common.duration._
 import spinoco.fs2.http.HttpRequest
 import spinoco.fs2.http.body.StreamBodyEncoder
 import spinoco.protocol.http._
-import spinoco.protocol.http.header.{Cookie, GenericHeader}
+import spinoco.protocol.http.header.{Cookie, GenericHeader,`Content-Length`}
 import spinoco.protocol.http.header.value.HttpCookie
 import io.circe._, io.circe.generic.semiauto._
 
@@ -92,6 +92,7 @@ case class Context(
   def uploadChunkReq(info: ChunkInfo, data: Chunk[Byte]): Stream[Task, HttpRequest[Task]] =
     authRequest(HttpRequest.get(uri("uploadData")).
       withMethod(HttpMethod.POST).
+      appendHeader(`Content-Length`(info.currentChunkSize.toLong)).
       withQuery(queryParams(info)).
       withStreamBody(Stream.chunk(data))(StreamBodyEncoder.byteEncoder))
 
