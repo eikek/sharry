@@ -122,7 +122,7 @@ view model =
                              (List.map
                                   (\n -> case n of
                                              (val, unit) -> option [value val, selected <| model.validityUnit == val][text unit])
-                                  [("h", "Hours"), ("d", "Days"), ("m", "Months")])
+                                  [("h", "Hours"), ("d", "Days")])
                          ]
                      ]
                 ]
