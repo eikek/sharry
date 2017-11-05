@@ -31,7 +31,7 @@ object alias {
           copy(enable = alias.enable)
         UploadCreate.parseValidity(alias.validity).
           flatMap({ given =>
-            if (cfg.maxValidity <= given) Right(given)
+            if (cfg.maxValidity >= given) Right(given)
             else Left("Validity time is too long.")
           }).
           map(v => a.copy(validity = v)).

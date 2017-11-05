@@ -93,7 +93,7 @@ update msg model =
         BackToTable ->
             case model.selected of
                 EditDetail m ->
-                    {model | selected = Table, aliases = List.map (insertAlias m.alia) model.aliases} ! []
+                    {model | selected = Table} ! [httpGetAliases model]
                 _ ->
                     {model | selected = Table} ! []
 
@@ -160,10 +160,6 @@ view model =
 createAliasEdit: AliasEdit.Model -> Html Msg
 createAliasEdit aliasModel =
     Html.map AliasEditMsg (AliasEdit.view aliasModel)
-
-insertAlias: Alias -> Alias -> Alias
-insertAlias new old =
-    if new.id == old.id then new else old
 
 createRow: Model -> Alias -> Html Msg
 createRow model alia =
