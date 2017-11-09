@@ -160,7 +160,7 @@ public ones.
 
 -   `POST api/v1/aliases`
     -   create a new alias
--   `POST api/v1/aliases/update`
+-   `POST api/v1/aliases/<id>`
     -   update existing alias
 -   `GET api/v1/aliases`
     -   get list of aliases

@@ -141,5 +141,5 @@ view model =
 
 httpSubmitAlias: Model -> Cmd Msg
 httpSubmitAlias model =
-    Http.post (model.urls.aliases ++"/update") (Http.jsonBody (Data.encodeAlias model.alia))  (Decode.succeed ())
+    Http.post (model.urls.aliases ++"/"++ model.alia.id) (Http.jsonBody (Data.encodeAlias model.alia))  (Decode.succeed ())
         |> Http.send SubmitAliasResult

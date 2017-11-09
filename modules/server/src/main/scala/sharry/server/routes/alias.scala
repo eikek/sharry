@@ -24,10 +24,10 @@ object alias {
       , deleteAlias(auth, store))
 
   def updateAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
-    Post >> paths.aliases.matcher /"update" >> authz.user(authCfg) :: jsonBody[AliasUpdate] map {
-      case login :: alias :: HNil =>
+    Post >> paths.aliases.matcher / as[String] :: authz.user(authCfg) :: jsonBody[AliasUpdate] map {
+      case aliasId :: login :: alias :: HNil =>
         val a = Alias.generate(login, alias.name, Duration.zero).
-          copy(id = alias.id).
+          copy(id = aliasId).
           copy(enable = alias.enable)
         UploadCreate.parseValidity(alias.validity).
           flatMap({ given =>
