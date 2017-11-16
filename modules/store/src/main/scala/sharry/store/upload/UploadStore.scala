@@ -64,5 +64,5 @@ trait UploadStore {
 
   def deleteAlias(id: String, login: String): Stream[Task, Int]
 
-  def updateAlias(alias: Alias): Stream[Task, Int]
+  def updateAlias(alias: Alias, id: String): Stream[Task, Int]
 }

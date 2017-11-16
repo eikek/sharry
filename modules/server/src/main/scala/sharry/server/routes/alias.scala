@@ -27,7 +27,7 @@ object alias {
     Post >> paths.aliases.matcher / as[String] :: authz.user(authCfg) :: jsonBody[AliasUpdate] map {
       case aliasId :: login :: alias :: HNil =>
         val a = Alias.generate(login, alias.name, Duration.zero).
-          copy(id = aliasId).
+          copy(id = alias.id).
           copy(enable = alias.enable)
         UploadCreate.parseValidity(alias.validity).
           flatMap({ given =>
@@ -35,7 +35,7 @@ object alias {
             else Left("Validity time is too long.")
           }).
           map(v => a.copy(validity = v)).
-          map(a => store.updateAlias(a).
+          map(a => store.updateAlias(a, aliasId).
             map({ n => if (n == 0) NotFound.body("0") else Ok.body(n.toString) })).
           valueOr(msg => Stream.emit(BadRequest.message(msg)))
     }
