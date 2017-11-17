@@ -3,11 +3,11 @@ package sharry.server.routes
 import shapeless.{::, HNil}
 import fs2.{Stream, Task}
 import cats.Order
-import cats.syntax.either._
 import spinoco.fs2.http.routing._
 
 import sharry.common.data._
 import sharry.common.duration._
+import sharry.common.streams
 import sharry.store.data._
 import sharry.server.paths
 import sharry.server.config._
@@ -29,14 +29,16 @@ object alias {
         val a = Alias.generate(login, alias.name, Duration.zero).
           copy(id = alias.id).
           copy(enable = alias.enable)
-        UploadCreate.parseValidity(alias.validity).
-          flatMap({ given =>
-            if (cfg.maxValidity >= given) Right(given)
-            else Left("Validity time is too long.")
-          }).
+        Duration.parse(alias.validity).
+          ensure("Validity time is too long.")(cfg.maxValidity >= _).
           map(v => a.copy(validity = v)).
-          map(a => store.updateAlias(a, aliasId).
-            map({ n => if (n == 0) NotFound.body("0") else Ok.body(n.toString) })).
+          andThen(a => Alias.validateId(a.id).map(_ => a)).
+          map(a => store.getAlias(a.id).
+            filter(a => a.id != aliasId).
+            map(_ => BadRequest.message(s"An alias with id '${a.id}' already exists.")).
+            through(streams.ifEmpty(
+              store.updateAlias(a, aliasId).
+                map({ n => if (n == 0) NotFound.body("0") else Ok.body(a) })))).
           valueOr(msg => Stream.emit(BadRequest.message(msg)))
     }
 
