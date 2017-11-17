@@ -34,7 +34,6 @@ object Document {
   private[mdutil] val parser = {
     val opts = new MutableDataSet()
     opts.set(Parser.EXTENSIONS, List(StrikethroughExtension.create, TablesExtension.create).asJava)
-    opts.set[java.lang.Boolean](Parser.BLANK_LINES_IN_AST, true)
     Parser.builder(opts).build
   }
 

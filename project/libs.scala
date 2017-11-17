@@ -112,10 +112,10 @@ object libs {
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.28.0"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.28.0"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.28.0"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.28.0"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.28.6"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.28.6"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.28.6"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.28.6"
 
   // https://github.com/jhy/jsoup
   // MIT
