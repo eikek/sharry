@@ -77,7 +77,7 @@ not enabled and uploads are restricted to 1.5M.
 Or, clone this project and use sbt (see below for prerequisites) to
 compile and run:
 
-``` {.shell .rundoc-block rundoc-language="shell" rundoc-exports="both"}
+``` shell
 sbt run-sharry
 ```
 
@@ -103,7 +103,7 @@ For the server, you need Java8, [sbt](http://scala-sbt.org) and
 [Elm](http://elm-lang.org/) installed first. Then clone the project and
 run:
 
-``` {.shell .rundoc-block rundoc-language="shell" rundoc-exports="both"}
+``` shell
 sbt make
 ```
 
@@ -116,7 +116,7 @@ terminal (otherwise it's `Ctrl-C`). By default a
 [H2](http://h2database.com) database is configured in the current
 working directory.
 
-``` {.shell .rundoc-block rundoc-language="shell" rundoc-exports="both"}
+``` shell
 $ ./modules/server/target/scala-2.12/sharry-server-0.0.1-SNAPSHOT.jar.sh --console
 2017-05-08T14:53:07.345+0200 INFO [main] sharry.server.main$ [main.scala:36]
 ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -138,7 +138,7 @@ The command also builds the command line client. It can be found at
 `modules/cli/target/scala-2.12` named `sharry-cli-*-.jar.sh`.
 
 Building only the command line client doesn't require Elm and can be
-done with `sbt make-cli`.
+built separately with `sbt make-cli`.
 
 Dependencies
 ------------
@@ -208,7 +208,7 @@ Every setting can also be given as a Java system property by adding it
 to the environment variable `SHARRY_JAVA_OPTS` (`-D` prefix is required
 here):
 
-``` {.shell .rundoc-block rundoc-language="shell" rundoc-exports="both"}
+``` shell
 SHARRY_JAVA_OPTS="-Dsharry.authc.enable=false" ./sharry-server-0.0.1-SNAPSHOT.jar.sh
 ```
 
@@ -219,7 +219,7 @@ This overrides same settings in the configuration file.
 When running behind a reverse proxy, it is importand to use HTTP 1.1.
 For example, a minimal nginx config would look like this:
 
-``` {.conf .rundoc-block rundoc-language="conf" rundoc-exports="both"}
+``` conf
 server {
   listen 0.0.0.0:80;
 
