@@ -158,7 +158,7 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
   def deleteAlias(id: String, login: String): Stream[Task, Int] =
     Stream.eval(sqlDeleteAlias(id, login).run.transact(xa))
 
-  def updateAlias(alias: Alias): Stream[Task, Int] =
-    Stream.eval(sqlUpdateAlias(alias).run.transact(xa))
+  def updateAlias(alias: Alias, id: String): Stream[Task, Int] =
+    Stream.eval(sqlUpdateAlias(alias, id).run.transact(xa))
 
 }

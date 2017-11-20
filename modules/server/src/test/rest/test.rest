@@ -105,7 +105,7 @@ Cookie: sharry_auth=$2a$10$1B.koVH2DoiD2pL0MOx31u%admin%2017-05-07T09:10:34.245Z
 
 # list aliases
 GET :base/aliases
-Cookie: sharry_auth=$2a$10$3L2RQt/HF2R8PfiOBndAB.%admin%2017-05-07T22:27:53.448Z%360d3db8357def2ff6c8f7b73a1d73b8eec93f04b3a7e92da7f6da9d8b1210a9
+Cookie: sharry_auth=$2a$10$0AvuBdbZeqCO2CEz2FqFRe%admin%2017-11-16T20:45:06.778Z%a90a036e86b3ced8a67cf9cbb68f4f782eb2a49a02ebc7a342869023a0d6eaf4
 #
 
 # get single alias
@@ -119,18 +119,18 @@ Cookie: sharry_auth=$2a$10$1B.koVH2DoiD2pL0MOx31u%admin%2017-05-07T09:10:34.245Z
 #
 
 # update alias
-POST :base/aliases
+POST :base/aliases/5CCKwPuhB4BUCw_P
 Content-Type: application/json
-Cookie: sharry_auth=$2a$10$3L2RQt/HF2R8PfiOBndAB.%admin%2017-05-07T22:27:53.448Z%360d3db8357def2ff6c8f7b73a1d73b8eec93f04b3a7e92da7f6da9d8b1210a9
+Cookie: sharry_auth=$2a$10$0AvuBdbZeqCO2CEz2FqFRe%admin%2017-11-16T20:45:06.778Z%a90a036e86b3ced8a67cf9cbb68f4f782eb2a49a02ebc7a342869023a0d6eaf4
 
 {
-    "id": "asDXbBdLTQqqGsrWsOwa54O",
-    "login": "admin",
-    "name": "from James",
-    "validity": "PT120H",
-    "created": "2017-05-07T16:10:38Z",
-    "enable": false
-  }
+  "id": "a1234",
+  "login": "admin",
+  "name": "from Betty",
+  "validity": "PT120H",
+  "created": "2017-05-07T16:10:38Z",
+  "enable": false
+}
 #
 
 

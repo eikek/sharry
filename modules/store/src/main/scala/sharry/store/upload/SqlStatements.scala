@@ -216,9 +216,9 @@ trait SqlStatements extends Statements {
   def sqlDeleteAlias(id: String, login: String) =
     sql"""DELETE FROM Alias WHERE id = $id AND login = $login""".update
 
-  def sqlUpdateAlias(a: Alias) =
-    sql"""UPDATE Alias SET name = ${a.name}, validity = ${a.validity}, enable = ${a.enable}
-          WHERE id = ${a.id} AND login = ${a.login}""".update
+  def sqlUpdateAlias(a: Alias, id: String) =
+    sql"""UPDATE Alias SET id = ${a.id}, name = ${a.name}, validity = ${a.validity}, enable = ${a.enable}
+          WHERE id = ${id} AND login = ${a.login}""".update
 
   def sqlGetActiveAlias(id: String) =
     sql"""SELECT al.id,al.login,al.name,al.validity,al.created,al.enable
