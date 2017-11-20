@@ -85,8 +85,8 @@ This will build the project and start the server. Point your browser to
 <http://localhost:9090> and login with user `admin` and password
 `admin`.
 
-Or, download a binary that are referenced in the [manual
-pages](https://sharrydemo.eknet.org/#manual/index.md).
+Or, download a binary from the [release
+page](https://github.com/eikek/sharry/releases).
 
 Documentation
 -------------
