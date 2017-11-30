@@ -59,7 +59,7 @@ lazy val store = project.in(file("modules/store")).
     name := "sharry-store",
     description := "Storage for files and account data",
     libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `doobie-core`, h2, postgres, tika, `scodec-bits`
+      `doobie-core`, `bitpeace-core`, h2, postgres, tika, `scodec-bits`
     ))).
   dependsOn(common % "compile->compile;test->test")
 

@@ -30,20 +30,6 @@ object columns {
   implicit val sizeMeta: Meta[Size] =
     Meta[Long].xmap[Size](n => Bytes(n), _.toBytes)
 
-  implicit class FragmentOps(sqlf: Fragment) {
-    def offset(n: Option[Int]): Fragment =
-      n.map(offset).getOrElse(sqlf)
-
-    def offset(n: Int): Fragment =
-      sqlf ++ sql""" OFFSET $n"""
-
-    def limit(n: Option[Int]): Fragment =
-      n.map(limit).getOrElse(sqlf)
-
-    def limit(n: Int): Fragment =
-      sqlf ++ sql""" LIMIT $n"""
-  }
-
   def logSql(logger: Logger): LogHandler = LogHandler {
     case Success(s, a, e1, e2) =>
       logger.trace(s"""Successful Statement Execution:

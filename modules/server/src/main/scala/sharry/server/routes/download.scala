@@ -9,8 +9,8 @@ import spinoco.protocol.http.header.value.ContentType
 import spinoco.fs2.http.body.StreamBodyEncoder
 import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._
+import bitpeace.RangeDef
 
-import sharry.store.range._
 import sharry.common.data._
 import sharry.common.mime._
 import sharry.common.streams
@@ -122,7 +122,7 @@ object download {
   private def deliverPartial(store: UploadStore)(bytes: Ior[Int, Int]): Pipe[Task, ResponseOr[UploadInfo.File], HttpResponse[Task]] =
     _.map({
       case Right(file) =>
-        val data = store.fetchData(RangeSpec.byteRange(bytes))(Stream.emit(file)).
+        val data = store.fetchData(RangeDef.byteRange(bytes))(Stream.emit(file)).
           through(streams.toByteChunks)
 
         val mt = file.meta.mimetype
@@ -137,7 +137,7 @@ object download {
   private def deliver(store: UploadStore): Pipe[Task, ResponseOr[UploadInfo.File], HttpResponse[Task]] =
     _.map({
       case Right(file) =>
-        val data = store.fetchData(RangeSpec.all)(Stream.emit(file)).
+        val data = store.fetchData(RangeDef.all)(Stream.emit(file)).
           through(streams.toByteChunks)
 
         val mt = file.meta.mimetype

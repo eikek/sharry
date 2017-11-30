@@ -106,6 +106,10 @@ object libs {
   // MIT
   val yamusca = "com.github.eikek" %% "yamusca-core" % "0.4.0"
 
+  // https://github.com/eikek/bitpeace
+  // MIT
+  val `bitpeace-core` = "com.github.eikek" %% "bitpeace-core" % "0.1.0"
+
   // https://github.com/scopt/scopt
   // MIT
   val scopt = "com.github.scopt" %% "scopt" % "3.7.0"

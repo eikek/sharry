@@ -3,18 +3,19 @@ package sharry.store.upload
 import java.time.Instant
 import cats.data.NonEmptyList
 import cats.implicits._
+import fs2.Task
 import doobie.imports._
 import org.log4s._
+import bitpeace.sql.Statements
 
 import sharry.common.mime._
 import sharry.common.sizes._
 import sharry.common.duration._
 import sharry.common.data._
 import sharry.store.columns._
-import sharry.store.binary.Statements
 import sharry.store.data._
 
-trait SqlStatements extends Statements {
+trait SqlStatements extends Statements[Task] {
 
   private[this] val logger = getLogger
   private implicit val logHandler = logSql(logger)
@@ -74,10 +75,9 @@ trait SqlStatements extends Statements {
   def insertUploadFile(f: UploadFile): Update0 =
     sql"""INSERT INTO UploadFile VALUES (${f.uploadId}, ${f.fileId}, ${f.filename}, ${f.downloads}, ${f.lastDownload}, ${f.clientFileId})""".update
 
-  def insertUploadFile(id: String, fm: FileMeta, filename: String, downloads: Int, lastDownload: Option[Instant], clientFileId: String): ConnectionIO[UploadFile] = {
-    val uf = UploadFile(id, fm.id, filename, downloads, lastDownload, clientFileId)
+  def insertUploadFile(id: String, fileId: String, filename: String, downloads: Int, lastDownload: Option[Instant], clientFileId: String): ConnectionIO[UploadFile] = {
+    val uf = UploadFile(id, fileId, filename, downloads, lastDownload, clientFileId)
     for {
-      _ <- insertFileMeta(fm).run
       _ <- insertUploadFile(uf).run
     } yield uf
   }
@@ -105,7 +105,7 @@ trait SqlStatements extends Statements {
 
   def sqlGetPublishedUploadByFileId(fileId: String) =
     sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,
-                 fm.*, uf.filename, uf.clientFileId
+                 fm.id,fm.timestamp,fm.mimetype,fm.length,fm.checksum,fm.chunks,fm.chunksize, uf.filename, uf.clientFileId
           FROM Upload AS up
           INNER JOIN UploadFile AS uf ON uf.uploadId = up.id AND uf.fileId = $fileId
           INNER JOIN FileMeta AS fm ON fm.id = uf.fileId
@@ -116,7 +116,7 @@ trait SqlStatements extends Statements {
 
   def sqlGetUploadByFileId(fileId: String, login: String) =
     sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,
-                 fm.*, uf.filename, uf.clientFileId
+                 fm.id,fm.timestamp,fm.mimetype,fm.length,fm.checksum,fm.chunks,fm.chunksize, uf.filename, uf.clientFileId
           FROM Upload AS up
           INNER JOIN UploadFile AS uf ON uf.uploadId = up.id AND uf.fileId = $fileId
           INNER JOIN FileMeta AS fm ON fm.id = uf.fileId
@@ -126,7 +126,7 @@ trait SqlStatements extends Statements {
       option
 
   def sqlGetUploadFiles(id: String, login: String) =
-    sql"""SELECT fm.*, uf.filename, uf.clientFileId from UploadFile AS uf
+    sql"""SELECT fm.id,fm.timestamp,fm.mimetype,fm.length,fm.checksum,fm.chunks,fm.chunksize, uf.filename, uf.clientFileId from UploadFile AS uf
           INNER JOIN FileMeta AS fm ON uf.fileId = fm.id
           INNER JOIN Upload AS up ON up.id = uf.uploadId
           WHERE uf.uploadId = $id AND up.login = $login""".
@@ -245,4 +245,27 @@ trait SqlStatements extends Statements {
       query[UploadSize].
       unique
 
+  implicit class BitpeaceFilemeta(fm: FileMeta) {
+    def asBitpeace: bitpeace.FileMeta = bitpeace.FileMeta(
+      fm.id
+        , fm.timestamp
+        , bitpeace.Mimetype(fm.mimetype.primary , fm.mimetype.sub, fm.mimetype.params)
+        , fm.length.toBytes
+        , fm.checksum
+        , fm.chunks
+        , fm.chunksize.toBytes.toInt
+    )
+  }
+
+  implicit class SharryFileMeta(fm: bitpeace.FileMeta) {
+    def asSharry: FileMeta = FileMeta(
+      fm.id
+        , fm.timestamp
+        , MimeType(fm.mimetype.primary, fm.mimetype.sub, fm.mimetype.params)
+        , fm.length.bytes
+        , fm.checksum
+        , fm.chunks
+        , fm.chunksize.bytes
+    )
+  }
 }

@@ -2,18 +2,18 @@ package sharry.store.upload
 
 import java.time.Instant
 import fs2.{Pipe, Strategy, Stream, Task}
+import bitpeace.{FileChunk, RangeDef, MimetypeHint}
 
 import sharry.common.mime._
 import sharry.common.sizes._
 import sharry.common.data._
-import sharry.store.range._
 import sharry.store.data._
 
 trait UploadStore {
 
   def createUpload(up: Upload): Stream[Task, Unit]
 
-  def createUploadFile(uploadId: String, file: FileMeta, filename: String, clientFileId: String): Stream[Task, UploadFile]
+  def createUploadFile(uploadId: String, fileId: String, filename: String, clientFileId: String): Stream[Task, UploadFile]
 
   def deleteUpload(id: String, login: String): Stream[Task, Int]
 
@@ -21,7 +21,7 @@ trait UploadStore {
 
   def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[Task, Int]
 
-  def addChunk(uploadId: String, fc: FileChunk): Stream[Task, Unit]
+  def addChunk(uploadId: String, fc: FileChunk, chunksize: Int, totalChunks: Int, hint: MimetypeHint): Stream[Task, FileMeta]
 
   def chunkExists(uploadId: String, fileId: String, chunkNr: Int, chunkLength: Size): Stream[Task, Boolean]
 
@@ -43,11 +43,11 @@ trait UploadStore {
 
   /** Fetch data using one connection per chunk. So connections are
     * closed immediately after reading a chunk. */
-  def fetchData(range: RangeSpec): Pipe[Task, UploadInfo.File, Byte]
+  def fetchData(range: RangeDef): Pipe[Task, UploadInfo.File, Byte]
 
   /** Fetch data using one connection for the whole stream. It is closed
     * once the stream terminates. */
-  def fetchData2(range: RangeSpec): Pipe[Task, UploadInfo.File, Byte]
+  def fetchData2(range: RangeDef): Pipe[Task, UploadInfo.File, Byte]
 
   def zipAll(chunkSize: Int)(implicit S: Strategy): Pipe[Task, UploadInfo, Byte]
 

@@ -24,6 +24,7 @@ object sizes {
     def <= (other: Size): Boolean =
       toBytes <= other.toBytes
 
+    def notZero: Boolean = this > Size.zero
 
     override def equals(o: Any): Boolean =
       o match {

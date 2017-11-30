@@ -2,8 +2,8 @@ package sharry.common
 
 import java.nio.file.{Paths, Path}
 import java.time.Instant
-import sharry.common.duration._
 import io.circe._
+import sharry.common.duration._
 
 /** Codecs for some java/base types.*/
 trait JsonCodec {

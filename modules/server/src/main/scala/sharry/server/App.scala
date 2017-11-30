@@ -3,12 +3,13 @@ package sharry.server
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
 import scala.collection.JavaConverters._
+import fs2.Task
+import bitpeace._
 
 import sharry.common.version
 import sharry.docs.route
 import sharry.docs.md.ManualContext
 import sharry.store.account._
-import sharry.store.binary._
 import sharry.store.upload._
 import sharry.server.authc._
 import sharry.webapp.route.webjar
@@ -23,9 +24,9 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
 
   val jdbc = cfg.jdbc.transactor.unsafeRun
 
-  val binaryStore: BinaryStore = new SqlBinaryStore(jdbc)
+  val bitpeaceConfig: BitpeaceConfig[Task] = BitpeaceConfig.defaultTika[Task]
   val accountStore: AccountStore = new SqlAccountStore(jdbc)
-  val uploadStore: UploadStore = new SqlUploadStore(jdbc, binaryStore)
+  val uploadStore: UploadStore = new SqlUploadStore(jdbc, bitpeaceConfig)
 
   val auth = new Authenticate(accountStore, cfg.authConfig, ExternAuthc(cfg))
 
