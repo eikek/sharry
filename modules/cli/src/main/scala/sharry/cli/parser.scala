@@ -99,7 +99,7 @@ object parser {
       opt[String]("pass").
         text("The password for authenticating with the server").
         action((pw, c) => c.copy(auth = c.auth match {
-          case AuthMethod.UserLogin(login, _, passCmd) => AuthMethod.UserLogin(login, pw, passCmd)
+          case AuthMethod.UserLogin(login, _, passCmd) => AuthMethod.UserLogin(login, pw, "")
           case _ =>  AuthMethod.UserLogin("", pw, "")
         })),
       opt[Duration]("valid").
