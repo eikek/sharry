@@ -12,6 +12,7 @@ case class FileMeta(
   timestamp: Instant,
   mimetype: MimeType,
   length: Size,
+  checksum: String,
   chunks: Int,
   chunksize: Size
 ) {

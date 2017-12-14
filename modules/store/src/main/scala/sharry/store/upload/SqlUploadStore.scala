@@ -6,8 +6,8 @@ import doobie.imports._
 import cats.implicits._
 import org.log4s._
 import fs2.interop.cats._
+import bitpeace.{Bitpeace, BitpeaceConfig, MimetypeHint, FileChunk, RangeDef}
 
-import sharry.store.range._
 import sharry.common.mime._
 import sharry.common.rng._
 import sharry.common.sizes._
@@ -15,10 +15,11 @@ import sharry.common.streams
 import sharry.common.zip
 import sharry.common.data._
 import sharry.store.data._
-import sharry.store.binary.BinaryStore
 
-class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends UploadStore with SqlStatements {
+class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) extends UploadStore with SqlStatements {
   private[this] val logger = getLogger
+
+  private val binaryStore: Bitpeace[Task] = Bitpeace(config, xa)
 
   def createUpload(up: Upload): Stream[Task, Unit] =
     Stream.eval(insertUploadConfig(up).run.transact(xa)).map(_ => ())
@@ -31,8 +32,8 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
     } yield n
   }
 
-  def createUploadFile(uploadId: String, file: FileMeta, filename: String, clientFileId: String): Stream[Task, UploadFile] =
-    Stream.eval(insertUploadFile(uploadId, file, filename, 0, None, clientFileId).transact(xa))
+  def createUploadFile(uploadId: String, fileId: String, filename: String, clientFileId: String): Stream[Task, UploadFile] =
+    Stream.eval(insertUploadFile(uploadId, fileId, filename, 0, None, clientFileId).transact(xa))
 
   def updateMime(fileId: String, mimeType: MimeType): Stream[Task, Int] =
     Stream.eval(setFileMetaMimeType(fileId, mimeType).run.transact(xa))
@@ -40,11 +41,8 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
   def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[Task, Int] =
     Stream.eval(sqlSetUploadTimestamp(uploadId, fileId, time).transact(xa))
 
-  def addChunk(uploadId: String, fc: FileChunk): Stream[Task, Unit] =
-    chunkExists(uploadId, fc.fileId, fc.chunkNr, fc.chunkLength).flatMap {
-      case true => Stream.emit(())
-      case false => binaryStore.saveFileChunk(fc)
-    }
+  def addChunk(uploadId: String, fc: FileChunk, chunksize: Int, totalChunks: Int, hint: MimetypeHint): Stream[Task, FileMeta] =
+    binaryStore.addChunk(fc, chunksize, totalChunks, hint).map(_.result.asSharry)
 
   def chunkExists(uploadId: String, fileId: String, chunkNr: Int, chunkLength: Size): Stream[Task, Boolean] =
     Stream.eval(sqlChunkExists(uploadId, fileId, chunkNr, chunkLength).transact(xa))
@@ -119,15 +117,15 @@ class SqlUploadStore(xa: Transactor[Task], binaryStore: BinaryStore) extends Upl
     Stream.eval(sqlGetPublishedUploadByFileId(fileId).transact(xa)).
       through(streams.optionToEmpty)
 
-  def fetchData(range: RangeSpec): Pipe[Task, UploadInfo.File, Byte] =
-    _.map(_.meta).through(binaryStore.fetchData(range))
+  def fetchData(range: RangeDef): Pipe[Task, UploadInfo.File, Byte] =
+    _.map(_.meta.asBitpeace).through(binaryStore.fetchData(range))
 
-  def fetchData2(range: RangeSpec): Pipe[Task, UploadInfo.File, Byte] =
-    _.map(_.meta).through(binaryStore.fetchData2(range))
+  def fetchData2(range: RangeDef): Pipe[Task, UploadInfo.File, Byte] =
+    _.map(_.meta.asBitpeace).through(binaryStore.fetchData2(range))
 
   def zipAll(chunkSize: Int)(implicit S: Strategy): Pipe[Task, UploadInfo, Byte] =
     _.flatMap(info => Stream.emits(info.files)).
-      map(f => f.filename -> Stream.emit(f).through(fetchData2(RangeSpec.all))).
+      map(f => f.filename -> Stream.emit(f).through(fetchData2(RangeDef.all))).
       through(zip.zip(chunkSize))
 
 

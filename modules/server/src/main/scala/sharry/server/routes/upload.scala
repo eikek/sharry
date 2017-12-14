@@ -1,23 +1,19 @@
 package sharry.server.routes
 
-import java.time.Instant
 import fs2.{Stream, Task}
 import shapeless.{::,HNil}
 import scala.util.Try
-import scodec.bits.ByteVector
 import spinoco.fs2.http.routing._
 import com.github.t3hnar.bcrypt._
 import org.log4s._
+import bitpeace.{FileChunk, MimetypeHint}
 
 import sharry.store.data._
 import sharry.common.data._
 import sharry.common.sizes._
-import sharry.common.mime._
 import sharry.common.duration._
 import sharry.common.streams
 import sharry.common.sha
-import sharry.store.mimedetect
-import sharry.store.mimedetect.MimeInfo
 import sharry.store.upload.UploadStore
 import sharry.server.paths
 import sharry.server.config._
@@ -207,37 +203,19 @@ object upload {
   def uploadChunks(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
     Post >> paths.uploadData.matcher >> authz.userId(authCfg, store) :: chunkInfo :: body[Task].bytes map {
       case user :: info :: bytes :: HNil  =>
+        // check totalChunks against totalLength/chunksize
+        // think about using reported totalLength for size-check, but it should not be possible to trick uploading too much
+
         val fileId = makeFileId(info)
-        // create FileMeta and UploadFile on chunkNr=1
-        val init = info.chunkNumber match {
-          case 1 =>
-            val fm = FileMeta(fileId, Instant.now, MimeType.unknown, info.totalSize.bytes, info.totalChunks, info.chunkSize.bytes)
-            store.createUploadFile(info.token, fm, info.filename, info.fileIdentifier)
-          case _ => Stream.empty
-        }
-
-        def mimeUpdate(bytes: ByteVector) =
-          info.chunkNumber match {
-            case 1 =>
-              val mime = mimedetect.fromBytes(bytes, MimeInfo.file(info.filename))
-              logger.debug(s"Start upload of ${info.filename} (${info.totalSize.bytes.asString}, ${mime.asString}) for $user")
-              store.updateMime(fileId, mime)
-            case _ =>
-              Stream.empty
-          }
-
         val chunk = bytes.take(info.currentChunkSize.toLong).
           through(streams.append).
-          map(data => FileChunk(fileId, info.chunkNumber, data)).
-          flatMap(chunk => {
-            store.addChunk(info.token, chunk) ++ mimeUpdate(chunk.chunkData)
-          })
+          map(data => FileChunk(fileId, info.chunkNumber -1, data))
 
-        val updateTimestamp =
-          if (info.chunkNumber == info.totalChunks)
-            store.updateTimestamp(info.token, fileId, Instant.now)
-          else
-            Stream.empty
+        val saveChunk = for {
+          ch <- chunk
+          out <- store.addChunk(info.token, ch, info.chunkSize, info.totalChunks, MimetypeHint.filename(info.filename))
+          _ <- if (out.length.notZero) store.createUploadFile(info.token, fileId, info.filename, info.fileIdentifier) else Stream.empty
+        } yield ()
 
         val sizeCheck = store.getUploadSize(info.token).
           map({ case us@UploadSize(n, len) =>
@@ -253,7 +231,7 @@ object upload {
 
         sizeCheck.flatMap {
           case true =>
-            init.drain ++ chunk.drain ++ updateTimestamp.drain ++ Stream.emit(Ok.noBody)
+            saveChunk.drain ++ Stream.emit(Ok.noBody)
           case false =>
             logger.info("Uploading too many or too large files. Return with error.")
             // http 404,415,500,501 tells resumable.js to cancel entire upload (other codes let it retry)

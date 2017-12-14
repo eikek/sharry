@@ -52,12 +52,6 @@ object mime {
       if (!mt.baseType.contains("unknown")) mt
       else unknown
 
-    val extension = Map(
-      `application/pdf` -> "pdf",
-      `text/html` -> "html",
-      `application/x-xz` -> "xz"
-    )
-
     implicit val _mimeTypeDec: Decoder[MimeType] = Decoder.decodeString.map(s => MimeType.parse(s).get)
     implicit val _mimeTypeEnc: Encoder[MimeType] = Encoder.encodeString.contramap[MimeType](_.asString)
   }
@@ -75,7 +69,5 @@ object mime {
       }
       MimeType(mt.getPrimaryType, mt.getSubType, params)
     }
-
-    def preferredExtension = MimeType.extension.get(asScala)
   }
 }

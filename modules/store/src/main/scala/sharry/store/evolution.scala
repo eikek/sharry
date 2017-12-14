@@ -179,6 +179,13 @@ object evolution {
     Change(sql"""
        ALTER TABLE UploadFile ADD COLUMN clientFileId varchar(512);
        UPDATE UploadFile SET clientFileId = fileId WHERE clientFileId is null;
-       """.update)
+       """.update),
+
+    Change(sql"""
+       ALTER TABLE FileMeta ADD COLUMN checksum varchar(254);
+       UPDATE FileMeta SET checksum = id WHERE checksum is null;
+       ALTER TABLE FileMeta ALTER COLUMN checksum set not null;
+      """.update),
+    Change(sql"""UPDATE FileChunk SET chunkNr = chunkNr - 1""".update)
   ).pure
 }
