@@ -97,14 +97,14 @@ case class Context(
       withStreamBody(Stream.chunk(data))(StreamBodyEncoder.byteEncoder))
 
   private def queryParams(info: ChunkInfo): Uri.Query =
-    Uri.Query.empty :+ ("token" -> info.token) :+
-      ("resumableChunkNumber" -> info.chunkNumber.toString) :+
-      ("resumableChunkSize" -> info.chunkSize.toString) :+
-      ("resumableCurrentChunkSize" -> info.currentChunkSize.toString) :+
-      ("resumableTotalSize" -> info.totalSize.toString) :+
-      ("resumableIdentifier" -> info.fileIdentifier) :+
-      ("resumableFilename" -> info.filename) :+
-      ("resumableTotalChunks" -> info.totalChunks.toString)
+    Uri.Query.empty :+ ("token", info.token) :+
+      ("resumableChunkNumber", info.chunkNumber.toString) :+
+      ("resumableChunkSize", info.chunkSize.toString) :+
+      ("resumableCurrentChunkSize", info.currentChunkSize.toString) :+
+      ("resumableTotalSize", info.totalSize.toString) :+
+      ("resumableIdentifier", info.fileIdentifier) :+
+      ("resumableFilename", info.filename) :+
+      ("resumableTotalChunks", info.totalChunks.toString)
 
   private def authRequest(req: HttpRequest[Task]): Stream[Task, HttpRequest[Task]] =
     config.auth match {

@@ -7,6 +7,7 @@ import shapeless.{HNil, ::}
 import scodec.bits.BitVector
 import spinoco.fs2.http.routing._
 import spinoco.fs2.http.HttpResponse
+import spinoco.protocol.mime._
 import spinoco.protocol.http.{HttpResponseHeader, HttpStatusCode}
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.header.value._
@@ -85,8 +86,8 @@ object webjar {
   }
 
   private def makeResponse(find: Find[(Webjars.ModuleId, Url)], path: Seq[String], len: Option[Long] = None): HttpResponse[Task] = {
-    def parseMediaType(s: String): MediaType =
-      MediaType.codec.decodeValue(BitVector(s.getBytes)).require
+    def parseContentType(s: String): ContentType =
+      ContentType.codec.decodeValue(BitVector.view(s.getBytes("UTF-8"))).require
 
     def make(wj: Webjars.ModuleId, status: HttpStatusCode): HttpResponse[Task] = {
       val p = path.mkString("/")
@@ -97,7 +98,7 @@ object webjar {
           headers = List(
             Some(ETag(EntityTag(wj.hash, false))),
             Some(`Last-Modified`(Webjars.lastModified.atZone(ZoneId.of("UTC")).toLocalDateTime)),
-            webjarToc.get(wj.hash).flatMap(_.get(p)).map(fi => `Content-Type`(ContentType(parseMediaType(fi.contentType), None, None))),
+            webjarToc.get(wj.hash).flatMap(_.get(p)).map(fi => `Content-Type`(parseContentType(fi.contentType))),
             len.orElse(webjarToc.get(wj.hash).flatMap(_.get(p)).map(_.length)).map(`Content-Length`.apply)
           ).collect({case Some(v) => v })),
         Stream.empty

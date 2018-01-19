@@ -8,7 +8,7 @@ import cats.syntax.either._
 import spinoco.fs2.http
 import spinoco.fs2.http.HttpRequest
 import spinoco.protocol.http.{HttpMethod, Uri, HttpStatusCode}
-import spinoco.protocol.http.header.value.ContentType
+import spinoco.protocol.mime.ContentType
 
 import sharry.common.data._
 import sharry.server.config._

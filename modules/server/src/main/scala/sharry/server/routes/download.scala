@@ -5,7 +5,7 @@ import cats.data.Ior
 import fs2.{Pipe, Strategy, Stream, Task}
 import shapeless.{::,HNil}
 import scodec.bits.{BitVector, ByteVector}
-import spinoco.protocol.http.header.value.ContentType
+import spinoco.protocol.mime.ContentType
 import spinoco.fs2.http.body.StreamBodyEncoder
 import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._

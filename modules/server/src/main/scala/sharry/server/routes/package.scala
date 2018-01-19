@@ -2,8 +2,8 @@ package sharry.server
 
 import fs2.Task
 import spinoco.fs2.http.body.{BodyDecoder, BodyEncoder}
-import spinoco.protocol.http.header.value.{ContentType, MediaType}
 import spinoco.fs2.http.routing.{body => rbody}
+import spinoco.protocol.mime._
 import scodec.{Attempt, Err}
 import scodec.bits.ByteVector
 import io.circe.{Json, Encoder, Decoder}, io.circe.parser._, io.circe.syntax._
@@ -30,7 +30,7 @@ package object routes {
     }
 
   implicit def jsonBodyEncoder[A](implicit je: Encoder[A]): BodyEncoder[A] =
-    BodyEncoder(ContentType(MediaType.`application/json`, None, None)) { a =>
+    BodyEncoder(ContentType.TextContent(MediaType.`application/json`, Some(MIMECharset.`UTF-8`))) { a =>
       ByteVector.encodeUtf8(a.asJson.spaces2).attempt
     }
 

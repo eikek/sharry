@@ -6,6 +6,7 @@ import fs2.{Pipe, Task, Stream}
 import spinoco.fs2.http._
 import spinoco.fs2.http.body.{BodyEncoder,StreamBodyEncoder}
 import spinoco.fs2.http.routing._
+import spinoco.protocol.mime.ContentDisposition
 import spinoco.protocol.http.header.value._
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.{header =>_, _}
@@ -107,16 +108,9 @@ object syntax {
   def withLastModified[F[_]](time: Instant): ResponseUpdate[F] =
     _.withHeader(`Last-Modified`(time.atZone(ZoneId.of("UTC")).toLocalDateTime))
 
-  private val goodChars: Set[Byte] = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ "_-.".toCharArray).map(_.toByte).toSet
+  def withDisposition[F[_]](value: String, filename: String): ResponseUpdate[F] =
+    _.withHeader(`Content-Disposition`(ContentDisposition(value, Map("filename" -> filename))))
 
-  def withDisposition[F[_]](value: String, filename: String): ResponseUpdate[F] = {
-    val fname = filename.getBytes("UTF-8").foldLeft("") { (str, b) =>
-      val c = if (!goodChars.contains(b)) "%%%X".format(b) else b.toChar.toString
-      str + c
-    }
-    // note: the Map() params are not correctly rendered (values are quoted)
-    _.withHeader(`Content-Disposition`(ContentDisposition(s"$value; filename*=UTF-8''$fname", Map())))
-  }
 
   def withContentRange[F[_]](bytes: Ior[Int, Int], length: Size): ResponseUpdate[F] =
     _.withHeader {
