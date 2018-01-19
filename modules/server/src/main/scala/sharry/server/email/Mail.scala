@@ -20,7 +20,7 @@ case class Mail(header: List[Header], body: Body) {
 
   /** Replace all same named headers with `h` */
   def withHeader(h: Header): Mail = {
-    val newHeader = header.
+    val newHeader = (h :: header).
       map(e => if (h.name == e.name) h else e).
       groupBy(_.name).
       map(_._2.head).
