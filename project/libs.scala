@@ -22,11 +22,11 @@ object libs {
 
   // https://github.com/Spinoco/fs2-http
   // MIT
-  val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.1.8"
+  val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.2.1"
   // https://github.com/Spinoco/protocol
   // MIT
   // version that comes with fs2-http has some bugs
-  val `spinoco-http` = "com.spinoco" %% "protocol-http" % "0.2.3"
+  //val `spinoco-http` = "com.spinoco" %% "protocol-http" % "0.3.2"
 
   // https://github.com/scalatest/scalatest
   // ASL 2.0
@@ -116,12 +116,12 @@ object libs {
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.28.6"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.28.6"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.28.6"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.28.6"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.28.32"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.28.32"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.28.32"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.28.32"
 
   // https://github.com/jhy/jsoup
   // MIT
-  val jsoup = "org.jsoup" % "jsoup" % "1.11.1"
+  val jsoup = "org.jsoup" % "jsoup" % "1.11.2"
 }

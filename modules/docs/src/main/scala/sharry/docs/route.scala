@@ -6,6 +6,7 @@ import scodec.bits.{ByteVector, BitVector}
 import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.body._
 import spinoco.fs2.http.routing._
+import spinoco.protocol.mime._
 import spinoco.protocol.http.{HttpStatusCode, HttpResponseHeader}
 import spinoco.protocol.http.header._
 import spinoco.protocol.http.header.value._
@@ -64,8 +65,10 @@ object route {
 
   private def asContentType(mt: String): ContentType = {
     val ct = ContentType.codec.decodeValue(BitVector(mt.getBytes)).require
-    if (mt.startsWith("text/")) ct.copy(charset = Some(HttpCharset.`UTF-8`))
-    else ct
+    ct match {
+      case ContentType.TextContent(mt, None) => ContentType.TextContent(mt, Some(MIMECharset.`UTF-8`))
+      case _ => ct
+    }
   }
 
 }
