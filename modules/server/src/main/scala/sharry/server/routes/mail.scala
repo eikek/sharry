@@ -7,6 +7,7 @@ import yamusca.imports._
 import yamusca.implicits._
 import io.circe._, io.circe.generic.semiauto._
 
+import sharry.store.account._
 import sharry.server.paths
 import sharry.server.config._
 import sharry.server.email._
@@ -14,9 +15,9 @@ import sharry.server.routes.syntax._
 
 object mail {
 
-  def endpoint(auth: AuthConfig, smtp: GetSetting, mailCfg: WebmailConfig): Route[Task] =
+  def endpoint(auth: AuthConfig, smtp: GetSetting, mailCfg: WebmailConfig, store: AccountStore): Route[Task] =
     choice2(checkMailAddress(auth)
-      , sendMail(auth, mailCfg, smtp)
+      , sendMail(auth, mailCfg, smtp, store)
       , getDownloadTemplate(auth, mailCfg)
       , getAliasTemplate(auth, mailCfg))
 
@@ -31,19 +32,29 @@ object mail {
     }
 
 
-  def sendMail(authCfg: AuthConfig, cfg: WebmailConfig, smtp: GetSetting): Route[Task] =
-    Post >> paths.mailSend.matcher >> authz.user(authCfg) >> jsonBody[SimpleMail] map {
-      (mail: SimpleMail) =>
-      if (!cfg.enable) Stream.emit(BadRequest.message("Sending mails is disabled."))
-      else client.send(smtp)(mail.parse).
-        fold(SendResult.empty)({ (r, attempt) =>
-          attempt.fold(r.addFailure, r.addSuccess)
-        }).
-        map({
-          case r@SendResult(_, Nil, _) => Ok.body(r.withMessage("No mails could be send."))
-          case r@SendResult(_, _, Nil) => Ok.body(r.withMessage("All mails have been sent."))
-          case r => Ok.body(r.withMessage("Some mails could not be send."))
-        })
+  def sendMail(authCfg: AuthConfig, cfg: WebmailConfig, smtp: GetSetting, store: AccountStore): Route[Task] =
+    Post >> paths.mailSend.matcher >> authz.user(authCfg) :: jsonBody[SimpleMail] map {
+      case user :: mail :: HNil =>
+        if (!cfg.enable) Stream.emit(BadRequest.message("Sending mails is disabled."))
+        else {
+          val msg = for {
+            msg   <- mail.parse
+            acc   <- store.getAccount(user).runLast
+            reply <- acc.flatMap(_.email) match {
+              case Some(em) => Address.parse(em).map(Some.apply)
+              case None => Task.now(None)
+            }
+          } yield reply.map(r => msg.withHeader(Header.GenericHeader("Reply-To", r.mail.toString))).getOrElse(msg)
+          client.send(smtp)(msg).
+            fold(SendResult.empty)({ (r, attempt) =>
+              attempt.fold(r.addFailure, r.addSuccess)
+            }).
+            map({
+              case r@SendResult(_, Nil, _) => Ok.body(r.withMessage("No mails could be send."))
+              case r@SendResult(_, _, Nil) => Ok.body(r.withMessage("All mails have been sent."))
+              case r => Ok.body(r.withMessage("Some mails could not be send."))
+            })
+        }
     }
 
 
