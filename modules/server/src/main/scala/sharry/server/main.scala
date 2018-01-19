@@ -24,6 +24,7 @@ import sharry.common.file._
 import sharry.common.streams
 import sharry.common.version
 import sharry.store.evolution
+import sharry.server.codec.HttpHeaderCodec
 
 object main {
   implicit val logger = getLogger
@@ -123,7 +124,7 @@ object main {
   }
 
   private def requestHeaderCodec: Codec[HttpRequestHeader] = {
-    val codec = HttpRequestHeaderCodec.defaultCodec
+    val codec = HttpRequestHeaderCodec.codec(HttpHeaderCodec.codec(Int.MaxValue))
     Codec (
       h => codec.encode(h),
       v => codec.decode(v) match {
