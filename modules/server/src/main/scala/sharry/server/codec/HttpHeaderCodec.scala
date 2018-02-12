@@ -15,7 +15,6 @@ object HttpHeaderCodec {
     */
   def codec(maxHeaderLength: Int, otherHeaders: (String, Codec[HttpHeader]) *):Codec[HttpHeader] = {
     val all = allCodecs ++
-      Map("referer" -> ignoreFailingReferer) ++
       otherHeaders.map { case (hdr,codec) => hdr.toLowerCase -> choice(codec, emptyHeader(hdr.toLowerCase)) }.toMap
     SpinocoCodec.codec(maxHeaderLength, all.toSeq: _*)
   }
@@ -36,9 +35,5 @@ object HttpHeaderCodec {
 
   val allCodecs = SpinocoCodec.allHeaderCodecs.
     map { case (name, codec) => name -> choice(codec, emptyHeader(name)) }
-
-
-  val ignoreFailingReferer: Codec[HttpHeader] =
-    choice(Referer.codec.headerCodec, provide(GenericHeader(Referer.codec.headerName, "")))
 
 }

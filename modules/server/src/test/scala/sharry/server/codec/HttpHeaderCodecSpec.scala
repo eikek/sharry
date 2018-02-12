@@ -17,11 +17,4 @@ class HttpHeaderCodecSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "not fail on spurous uri in referer header" in {
-
-    HttpHeaderCodec.codec(2000).decodeValue(BitVector.view("Referer: android-app://com.google.android.gm".getBytes)) should be (
-      Attempt.successful(GenericHeader("Referer", ""))
-    )
-
-  }
 }
