@@ -13,16 +13,16 @@ object libs {
 
   // https://github.com/typelevel/cats
   // MIT http://opensource.org/licenses/mit-license.php
-  val `cats-core` = "org.typelevel" %% "cats-core" % "0.9.0"
+  val `cats-core` = "org.typelevel" %% "cats-core" % "1.1.0"
 
   // https://github.com/functional-streams-for-scala/fs2
   // MIT
-  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.9.7"
-  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.9.7"
+  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.10.2"
+  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.10.2"
 
   // https://github.com/Spinoco/fs2-http
   // MIT
-  val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.2.2"
+  val `fs2-http` = "com.spinoco" %% "fs2-http" % "0.3.0"
 
   // https://github.com/scalatest/scalatest
   // ASL 2.0
@@ -38,12 +38,12 @@ object libs {
 
   // https://github.com/tpolecat/doobie
   // MIT
-  val `doobie-core` = "org.tpolecat" %% "doobie-core-cats" % "0.4.4"
-  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari-cats" % "0.4.4"
+  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.1"
+  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.1"
 
   // https://jdbc.postgresql.org/
   // BSD
-  val postgres = "org.postgresql" % "postgresql" % "42.1.4"
+  val postgres = "org.postgresql" % "postgresql" % "42.2.2"
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0
@@ -51,9 +51,9 @@ object libs {
 
   // https://github.com/circe/circe
   // ASL 2.0
-  val `circe-core` = "io.circe" %% "circe-core" % "0.8.0"
-  val `circe-generic` = "io.circe" %% "circe-generic" % "0.8.0"
-  val `circe-parser` = "io.circe" %% "circe-parser" % "0.8.0"
+  val `circe-core` = "io.circe" %% "circe-core" % "0.9.2"
+  val `circe-generic` = "io.circe" %% "circe-generic" % "0.9.2"
+  val `circe-parser` = "io.circe" %% "circe-parser" % "0.9.2"
 
   // http://tika.apache.org
   // ASL 2.0
@@ -104,7 +104,7 @@ object libs {
 
   // https://github.com/eikek/bitpeace
   // MIT
-  val `bitpeace-core` = "com.github.eikek" %% "bitpeace-core" % "0.1.0"
+  val `bitpeace-core` = "com.github.eikek" %% "bitpeace-core" % "0.2.0"
 
   // https://github.com/scopt/scopt
   // MIT

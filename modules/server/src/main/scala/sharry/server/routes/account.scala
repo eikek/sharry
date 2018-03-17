@@ -2,7 +2,8 @@ package sharry.server.routes
 
 import cats.data.{Validated, ValidatedNel}
 import cats.implicits._
-import fs2.{Stream, Task}
+import fs2.Stream
+import cats.effect.IO
 import com.github.t3hnar.bcrypt._
 import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
@@ -26,7 +27,7 @@ object account {
       , updatePassword(authCfg, store)
       , getAccount(auth, store))
 
-  def createAccount(auth: Authenticate, store: AccountStore): Route[Task] =
+  def createAccount(auth: Authenticate, store: AccountStore): Route[IO] =
     Put >> paths.accounts.matcher >> authz.admin(auth) >> jsonBody[Account] map { (a: Account) =>
       val acc = a.copy(
         password = a.password.map(_.bcrypt),
@@ -52,7 +53,7 @@ object account {
       map(_.leftMap(_.getMessage))
 
     Validated.
-      fromEither(parsed.unsafeRun).
+      fromEither(parsed.unsafeRunSync).
       toValidatedNel
   }
 
@@ -66,7 +67,7 @@ object account {
     (v1 |+| v2).map(_ => a)
   }
 
-  def modifyAccount(auth: Authenticate, store: AccountStore): Route[Task] =
+  def modifyAccount(auth: Authenticate, store: AccountStore): Route[IO] =
     Post >> paths.accounts.matcher >> authz.admin(auth) >> jsonBody[Account] map {
       (account: Account) =>
         validateAccount(account) match {
@@ -87,7 +88,7 @@ object account {
         }
     }
 
-  def updateEmail(cfg: AuthConfig, store: AccountStore): Route[Task] =
+  def updateEmail(cfg: AuthConfig, store: AccountStore): Route[IO] =
     Post >> paths.profileEmail.matcher >> authz.user(cfg) :: jsonBody[Account] map {
       case login :: account :: HNil =>
         validateAccount(account) match {
@@ -102,7 +103,7 @@ object account {
         }
     }
 
-  def updatePassword(cfg: AuthConfig, store: AccountStore): Route[Task] =
+  def updatePassword(cfg: AuthConfig, store: AccountStore): Route[IO] =
     Post >> paths.profilePassword.matcher >> authz.user(cfg) :: jsonBody[Account] map {
       case login :: account :: HNil =>
         validateAccount(account) match {
@@ -117,13 +118,13 @@ object account {
         }
     }
 
-  def listLogins(auth: Authenticate, store: AccountStore): Route[Task] =
+  def listLogins(auth: Authenticate, store: AccountStore): Route[IO] =
     Get >> paths.accounts.matcher/empty >> authz.admin(auth) / param[String]("q").? map { (q: Option[String]) =>
-      Stream.eval(store.listLogins(q.getOrElse(""), None).runLog).
+      Stream.eval(store.listLogins(q.getOrElse(""), None).compile.toVector).
         map(Ok.body(_))
     }
 
-  def getAccount(auth: Authenticate, store: AccountStore): Route[Task] =
+  def getAccount(auth: Authenticate, store: AccountStore): Route[IO] =
     Get >> paths.accounts.matcher / as[String] </ authz.admin(auth) map { login =>
       Account.validateLogin(login) match {
         case Validated.Invalid(errs) =>

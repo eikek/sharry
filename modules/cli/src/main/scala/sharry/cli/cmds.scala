@@ -2,7 +2,8 @@ package sharry.cli
 
 import java.nio.file.Path
 
-import fs2.{async, concurrent, text, time, Pipe, Strategy, Scheduler, Stream, Task}
+import fs2.{async, text, Pipe, Scheduler, Stream}
+import cats.effect.IO
 import fs2.io.file
 import fs2.async.mutable.Signal
 import spinoco.fs2.http.HttpClient
@@ -12,6 +13,7 @@ import spinoco.protocol.http.HttpStatusCode
 import io.circe.parser._
 import org.log4s._
 import yamusca.implicits._
+import scala.concurrent.ExecutionContext
 
 import sharry.common.data._
 import sharry.common.file._
@@ -32,7 +34,7 @@ object cmds extends requestlog {
   def checkResumeFile: Cmd = Cmd { (_, _) => ctx =>
     val msg = "There is an uncompleted upload. Either use `resume --abort' to remove it or run `resume --continue' to resume the upload."
     logger.debug(s"Checking non-existence of resume file: ${ctx.config.resumeFile}")
-    if (ctx.config.resumeFile.exists) Stream.fail(ClientError(msg))
+    if (ctx.config.resumeFile.exists) Stream.raiseError(ClientError(msg))
     else Stream(ctx)
   }
 
@@ -51,15 +53,15 @@ object cmds extends requestlog {
 
   def loadResumeFile: Cmd = Cmd { (_, _) => ctx =>
     logger.debug(s"Loading context from resume file: ${ctx.config.resumeFile}")
-    if (!ctx.config.resumeFile.exists) Stream.fail(ClientError("There is no upload to resume or abort."))
+    if (!ctx.config.resumeFile.exists) Stream.raiseError(ClientError("There is no upload to resume or abort."))
     else ctx.config.resumeFile.readAll(8192.bytes).
       through(text.utf8Decode).
       through(text.lines).
       fold1(_ + _).
-      evalMap(str => Task.delay(decode[Context](str))).
+      evalMap(str => IO(decode[Context](str))).
       flatMap {
         case Right(a) => Stream(a)
-        case Left(err) => Stream.fail(ClientError(err.toString))
+        case Left(err) => Stream.raiseError(ClientError(err.toString))
       }.
       map(fileCtx => ctx.copy(upload = fileCtx.upload).copy(config = fileCtx.config))
   }
@@ -75,19 +77,19 @@ object cmds extends requestlog {
 
   def validateContext: Cmd = Cmd { (_, _) => ctx =>
     logger.debug("Validating user input against server settings")
-    Stream.eval(Task.delay(Context.validate(ctx).fold(fail => throw ClientError(fail), identity)))
+    Stream.eval(IO(Context.validate(ctx).fold(fail => throw ClientError(fail), identity)))
   }
 
   def checkVersions: Cmd = Cmd { (_, progress) => ctx =>
     logger.debug("Checking cli and server versions")
     val vm = Progress.VersionMismatch(ctx.remoteConfig.version)
-    val check = if (vm.isMismatch) progress.info(vm) else Stream.empty
+    val check: Stream[IO, Nothing] = if (vm.isMismatch) progress.info(vm) else Stream.empty
     check ++ Stream(ctx)
   }
 
   def login: Cmd = new Cmd {
-    def apply(client: HttpClient[Task], progress: Signal[Task, Progress])
-      (implicit S: Strategy, SCH: Scheduler): Pipe[Task, Context, Context] =
+    def apply(client: HttpClient[IO], progress: Signal[IO, Progress])
+      (implicit S: ExecutionContext, SCH: Scheduler): Pipe[IO, Context, Context] =
       _.flatMap { ctx =>
         ctx.config.auth match {
           case a@AuthMethod.UserLogin(login, _, _) =>
@@ -99,10 +101,10 @@ object cmds extends requestlog {
                     if (resp.header.status == HttpStatusCode.Ok) {
                       resp.header.firstHeader[`Set-Cookie`].
                         map(_.value).
-                        map(c => Stream.eval(async.signalOf[Task, HttpCookie](c)).map(s => ctx.copy(cookie = Some(s)))).
+                        map(c => Stream.eval(async.signalOf[IO, HttpCookie](c)).map(s => ctx.copy(cookie = Some(s)))).
                         getOrElse(Stream(ctx))
                     } else {
-                      Stream.fail(ClientError("Authentication failed!"))
+                      Stream.raiseError(ClientError("Authentication failed!"))
                     }
                   }
               }
@@ -114,14 +116,14 @@ object cmds extends requestlog {
   }
 
   def refreshCookie: Cmd = new Cmd {
-    def apply(client: HttpClient[Task], progress: Signal[Task, Progress])
-      (implicit S: Strategy, SCH: Scheduler): Pipe[Task, Context, Context] =
+    def apply(client: HttpClient[IO], progress: Signal[IO, Progress])
+      (implicit S: ExecutionContext, SCH: Scheduler): Pipe[IO, Context, Context] =
       _.flatMap { ctx =>
         ctx.cookie match {
           case Some(s) =>
             val interval = math.max(2000, ctx.remoteConfig.cookieAge - 1000).millis.asScala
-            val setter: Stream[Task, Unit] = for {
-              _ <- time.awakeEvery[Task](interval)
+            val setter: Stream[IO, Unit] = for {
+              _ <- SCH.awakeEvery[IO](interval)
               _ <- log(_.debug("Awake for refreshing cookie"))
               cookie <- Stream.eval(s.get)
               _ <- log(_.debug("Refreshing cookie now"))
@@ -129,10 +131,10 @@ object cmds extends requestlog {
               _ <- resp.header.firstHeader[`Set-Cookie`].
                      filter(_ => resp.header.status == HttpStatusCode.Ok).
                      map(nc => Stream.eval(s.set(nc.value))).
-                     getOrElse(Stream(()))
+                     getOrElse(Stream.emit(()).covary[IO])
             } yield ()
             logger.debug(s"Scheduling cookie refresh every ${interval}")
-            Stream.eval(Task.start(setter.run)).drain ++ Stream(ctx)
+            Stream.eval(async.start(setter.compile.drain)).drain ++ Stream(ctx)
           case None =>
             Stream(ctx)
         }
@@ -159,16 +161,16 @@ object cmds extends requestlog {
       s"${file.length}-${normalize(file.name)}"
   }
 
-  def uploadFile(client: HttpClient[Task])(path: Path, progress: Signal[Task, Progress], fileId: FileId, ctx: Context): Stream[Task, ChunkResult] = {
+  def uploadFile(client: HttpClient[IO])(path: Path, progress: Signal[IO, Progress], fileId: FileId, ctx: Context): Stream[IO, ChunkResult] = {
     val chunkSize = ctx.remoteConfig.chunkSize.toInt
     val fileName = path.name
     val fileSize = path.length
     val totalChunks = fileSize / chunkSize + (if (fileSize % chunkSize == 0) 0 else 1)
-    file.readAll[Task](path, chunkSize).
+    file.readAll[IO](path, chunkSize).
       chunks.
       zipWithIndex.
       flatMap { case (chunk, i) =>
-        val info = ChunkInfo(ctx.upload.id, i+1, chunkSize, chunk.size, fileSize, fileId(path), fileName, totalChunks.toInt)
+        val info = ChunkInfo(ctx.upload.id, i.toInt+1, chunkSize, chunk.size, fileSize, fileId(path), fileName, totalChunks.toInt)
         val progressUpdate = progress.update {
           case Progress.Uploaded(current, total) =>
             Progress.Uploaded(current + info.currentChunkSize.bytes, total)
@@ -191,16 +193,16 @@ object cmds extends requestlog {
   }
 
   def uploadAllFiles(fileId: FileId): Cmd = new Cmd {
-    def apply(client: HttpClient[Task], progress: Signal[Task, Progress])
-      (implicit S: Strategy, SCH: Scheduler): Pipe[Task, Context, Context] =
+    def apply(client: HttpClient[IO], progress: Signal[IO, Progress])
+      (implicit S: ExecutionContext, SCH: Scheduler): Pipe[IO, Context, Context] =
       _.flatMap { ctx =>
         logger.info(s"Start uploading ${ctx.count} files")
         if (ctx.config.files.isEmpty) Stream(ctx)
         else {
-          val all = Stream.emits(ctx.config.files).covary[Task].
+          val all = Stream.emits(ctx.config.files).covary[IO].
             map(path => uploadFile(client)(path, progress, fileId, ctx))
 
-          concurrent.join(ctx.parallelUploads)(all).
+          all.join(ctx.parallelUploads).
             fold1((a,b) => a). // TODO handle errors in chunks
             map(_ => ctx)
         }
@@ -213,7 +215,7 @@ object cmds extends requestlog {
       flatMap(req => client.dorequest(req)).
       through(ClientError.onSuccess).
       map(_ => ctx).
-      onError { ex =>
+      handleErrorWith { ex =>
         progress.info(Progress.Error(ex)) ++ Stream(ctx)
       }
   }
@@ -235,7 +237,7 @@ object cmds extends requestlog {
   def processMarkdown(fileId: FileId): Cmd = Cmd { (_, progress) => ctx =>
     logger.debug(s"Processing markdown file: ${ctx.config.files.headOption}")
     progress.info(Progress.ProcessingMarkdown) ++ ctx.readSingleFile.
-      evalMap(str => Task.delay(Document.parse(str))).
+      evalMap(str => IO(Document.parse(str))).
       map { doc =>
         val files = collection.mutable.ListBuffer[Path]()
         val p = doc.mapLinks { link =>
@@ -253,13 +255,13 @@ object cmds extends requestlog {
   }
 
   def manual(html: Boolean): Cmd = Cmd { (_, progress) => ctx =>
-    val reference = Task.delay(scala.io.Source.fromURL(getClass.getResource("/reference.conf")).getLines.mkString("\n"))
+    val reference = IO(scala.io.Source.fromURL(getClass.getResource("/reference.conf")).getLines.mkString("\n"))
     val helpStr = parser.optionParser.renderUsage(parser.optionParser.renderingMode)
-    val md = Task.delay(scala.io.Source.fromURL(getClass.getResource("/cli.md")).getLines.mkString("\n")).
+    val md = IO(scala.io.Source.fromURL(getClass.getResource("/cli.md")).getLines.mkString("\n")).
       flatMap { str => reference.flatMap { ref =>
-        Task.delay(Map("cli-help" -> helpStr, "default-cli-config" -> ref).unsafeRender(str))
+        IO(Map("cli-help" -> helpStr, "default-cli-config" -> ref).unsafeRender(str))
       }}
-    val toHtml: String => Task[String] = mdText => Task.delay {
+    val toHtml: String => IO[String] = mdText => IO {
       if (html) Document.parse(mdText).renderHtml else mdText
     }
 

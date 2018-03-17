@@ -104,7 +104,7 @@ object duration {
     }
 
     implicit val order: Order[Duration] =
-      Order[Long].on(_.millis)
+      Order.by(_.millis)
   }
 
   trait DurationFormat {

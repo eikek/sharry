@@ -3,8 +3,9 @@ package sharry.server
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
 import scala.collection.JavaConverters._
-import fs2.Task
+import cats.effect.IO
 import bitpeace._
+import scala.concurrent.ExecutionContext
 
 import sharry.common.version
 import sharry.docs.route
@@ -17,14 +18,14 @@ import sharry.common.data._
 import sharry.server.routes.{account, login, upload, download, alias, mail, settings}
 
 /** Instantiate the app from a given configuration */
-final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, S: fs2.Strategy, SCH: fs2.Scheduler) {
+final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, SCH: fs2.Scheduler, EC: ExecutionContext) {
   if (cfg.logConfig.exists) {
     setupLogging(cfg.logConfig.config)
   }
 
-  val jdbc = cfg.jdbc.transactor.unsafeRun
+  val jdbc = cfg.jdbc.transactor.unsafeRunSync
 
-  val bitpeaceConfig: BitpeaceConfig[Task] = BitpeaceConfig.defaultTika[Task]
+  val bitpeaceConfig: BitpeaceConfig[IO] = BitpeaceConfig.defaultTika[IO]
   val accountStore: AccountStore = new SqlAccountStore(jdbc)
   val uploadStore: UploadStore = new SqlUploadStore(jdbc, bitpeaceConfig)
 

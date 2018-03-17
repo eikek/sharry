@@ -2,7 +2,8 @@ package sharry.server.authc
 
 import java.time.Instant
 import org.log4s._
-import fs2.{Stream, Task, Pipe}
+import fs2.{Stream, Pipe}
+import cats.effect.IO
 import com.github.t3hnar.bcrypt._
 import sharry.common.streams
 import sharry.common.data.Account
@@ -12,7 +13,7 @@ import sharry.server.config.AuthConfig
 final class Authenticate(store: AccountStore, authConfig: AuthConfig, ext: ExternAuthc) {
   implicit private[this] val logger = getLogger
 
-  def authc(login: String, pass: String): Stream[Task,AuthResult] = {
+  def authc(login: String, pass: String): Stream[IO,AuthResult] = {
     if (authConfig.enable) {
       store.getAccount(login).
         through(streams.logEmpty(_.debug(s"No account found for login: $login"))).
@@ -30,7 +31,7 @@ final class Authenticate(store: AccountStore, authConfig: AuthConfig, ext: Exter
     }
   }
 
-  def logResult(login: String): Pipe[Task, AuthResult, AuthResult] =
+  def logResult(login: String): Pipe[IO, AuthResult, AuthResult] =
     streams.logEach { (ar, logger) =>
       ar match {
         case Left(err) => logger.warn(s"Authentication failed for $login: $err")
@@ -40,8 +41,8 @@ final class Authenticate(store: AccountStore, authConfig: AuthConfig, ext: Exter
 
   /** Authenticates a {{Token}} that is generated from an account. Thus
     * it fails if the account doesn't exist. */
-  def authc(token: Token, now: Instant): Stream[Task, AuthResult] = {
-    val fail = Stream.emit(AuthResult.failed).through(logResult(token.login))
+  def authc(token: Token, now: Instant): Stream[IO, AuthResult] = {
+    val fail = Stream.emit(AuthResult.failed).covary[IO].through(logResult(token.login))
     if (!token.verify(now, authConfig.appKey)) fail
     else store.getAccount(token.login).
       through(checkEnabled).
@@ -56,7 +57,7 @@ final class Authenticate(store: AccountStore, authConfig: AuthConfig, ext: Exter
     }
 
   // if present, verify password internally or externally
-  def verifyPresent(login: String, givenPass: String, ext: ExternAuthc): Pipe[Task, AuthResult, AuthResult] =
+  def verifyPresent(login: String, givenPass: String, ext: ExternAuthc): Pipe[IO, AuthResult, AuthResult] =
     _.flatMap {
       case Right(a @ Account.Internal(_, pass)) =>
         if (pass.exists(p => givenPass.isBcrypted(p))) Stream.emit(Right(a))
@@ -70,8 +71,8 @@ final class Authenticate(store: AccountStore, authConfig: AuthConfig, ext: Exter
     }
 
   // if absent, verify via ext. if ok, create account; fail otherwise
-  def verifyNewAccount(login: String, pass: String, ext: ExternAuthc): Pipe[Task, AuthResult, AuthResult] = {
-    val create: Stream[Task,AuthResult] = streams.slogT(_.debug(s"Verify $login externally")) ++
+  def verifyNewAccount(login: String, pass: String, ext: ExternAuthc): Pipe[IO, AuthResult, AuthResult] = {
+    val create: Stream[IO,AuthResult] = streams.slogT(_.debug(s"Verify $login externally")) ++
       ext.verify(login, pass).flatMap {
         case Some(acc) =>
           streams.slogT(_.debug(s"Create new external account $acc")) ++

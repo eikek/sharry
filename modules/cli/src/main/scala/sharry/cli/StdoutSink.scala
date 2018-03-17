@@ -3,7 +3,8 @@ package sharry.cli
 import java.util.concurrent.atomic.AtomicLong
 
 import cats.data.NonEmptyList
-import fs2.{Sink, Stream, Task}
+import fs2.{Sink, Stream}
+import cats.effect.IO
 import Console._
 import StdoutSink._
 
@@ -13,11 +14,11 @@ import sharry.common.data.Upload
 import sharry.cli.config._
 import sharry.cli.Progress._
 
-final class StdoutSink(cfg: Config, latch: java.util.concurrent.CountDownLatch) extends Sink[Task, Progress] {
+final class StdoutSink(cfg: Config, latch: java.util.concurrent.CountDownLatch) extends Sink[IO, Progress] {
 
   private final val start: AtomicLong = new AtomicLong(0)
 
-  def apply(in: Stream[Task, Progress]): Stream[Task, Unit] = in.map {
+  def apply(in: Stream[IO, Progress]): Stream[IO, Unit] = in.map {
     case Init =>
 
     case Prepare(cfg) =>

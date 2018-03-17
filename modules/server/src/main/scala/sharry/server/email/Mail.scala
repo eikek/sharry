@@ -1,6 +1,8 @@
 package sharry.server.email
 
-import fs2.Task
+import cats.effect.IO
+import cats._
+import cats.implicits._
 
 import Header._
 
@@ -34,14 +36,14 @@ case class Mail(header: List[Header], body: Body) {
 
 object Mail {
 
-  def apply(to: String, subject: String, text: String): Task[Mail] =
+  def apply(to: String, subject: String, text: String): IO[Mail] =
     for {
       t <- Address.parse(to)
     } yield Mail(List(To(t), Subject(subject)), text)
 
-  def apply(to: List[String], subject: String, text: String): Task[Mail] =
+  def apply(to: List[String], subject: String, text: String): IO[Mail] =
     for {
-      t <- Task.traverse(to)(Address.parse)
+      t <- Traverse[List].traverse(to)(Address.parse)
     } yield Mail(Subject(subject) :: t.map(To.apply).toList, text)
 
 }

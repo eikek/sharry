@@ -4,7 +4,8 @@ import java.nio.file.Path
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import scodec.bits.ByteVector
-import fs2.{Pipe, Task}
+import fs2.Pipe
+import cats.effect.IO
 
 import file._
 import sizes._
@@ -22,10 +23,10 @@ object sha {
     hex(digest.digest())
   }
 
-  def apply(path: Path): Task[String] =
+  def apply(path: Path): IO[String] =
     path.readAll(64.kbytes)
       .through(makeShaArray)
-      .runLog
+      .compile.toVector
       .map(_.head)
 
   def apply(bytes: ByteVector): String = {

@@ -1,8 +1,10 @@
 package sharry.server
 
 import java.time.Instant
-import fs2.{time, Strategy, Scheduler, Stream, Task}
+import fs2.{async, Scheduler, Stream}
+import cats.effect.IO
 import yamusca.implicits._
+import scala.concurrent.ExecutionContext
 
 import sharry.store.upload.UploadStore
 import sharry.store.account.AccountStore
@@ -15,25 +17,25 @@ import sharry.server.email._
 
 object notification {
 
-  type Notifier = (String, Alias, Duration) => Stream[Task,Unit]
+  type Notifier = (String, Alias, Duration) => Stream[IO,Unit]
 
   def scheduleNotify(smtp: GetSetting
     , webCfg: WebConfig
     , mailCfg: WebmailConfig
     , store: UploadStore
     , accounts: AccountStore)
-    (implicit S: Strategy, SCH: Scheduler): Notifier = { (id, alias, time) =>
+    (implicit SCH: Scheduler, EC: ExecutionContext): Notifier = { (id, alias, time) =>
 
     val send = client.send_(smtp)_
     val workTask = findRecipient(id, alias, store, accounts).
       evalMap(makeNotifyMail(webCfg, mailCfg)).
       flatMap(send).
-      run
+      compile.drain
 
     checkAliasAccess(id, alias, time, store).flatMap {
       case true =>
         findRecipient(id, alias, store, accounts).
-          evalMap(_ => Task.start(schedule(workTask, time))).
+          evalMap(_ => async.start(schedule(workTask, time))).
           map(_ => ())
 
       case false =>
@@ -41,10 +43,10 @@ object notification {
     }
   }
 
-  private def schedule[A](task: Task[A], delay: Duration)
-    (implicit S: Strategy, SCH: Scheduler): Task[Unit] = {
+  private def schedule[A](task: IO[A], delay: Duration)
+    (implicit SCH: Scheduler, EC: ExecutionContext): IO[Unit] = {
 
-    time.sleep[Task](delay.asScala).evalMap(_ => task).run
+    SCH.sleep[IO](delay.asScala).evalMap(_ => task).compile.drain
   }
 
   def checkAliasAccess(id: String
@@ -64,7 +66,7 @@ object notification {
 
 
   def makeNotifyMail(webCfg: WebConfig, mailCfg: WebmailConfig)
-    (data: (Upload, String)): Task[Mail] = {
+    (data: (Upload, String)): IO[Mail] = {
     val (upload, recipient) = data
     val templ = mailCfg.notifyTemplates(mailCfg.defaultLanguage)
     val ctx = Map(
@@ -84,7 +86,7 @@ object notification {
   def findRecipient(uploadId: String
     , alias: Alias
     , store: UploadStore
-    , accounts: AccountStore): Stream[Task,(Upload,String)] =
+    , accounts: AccountStore): Stream[IO,(Upload,String)] =
     for {
       info <- {
         store.getUpload(uploadId, alias.login).

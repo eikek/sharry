@@ -2,7 +2,8 @@ package sharry.server.routes
 
 import java.time.{Instant, ZoneId}
 import cats.data.Ior
-import fs2.{Pipe, Task, Stream}
+import fs2.{Pipe, Stream}
+import cats.effect.IO
 import spinoco.fs2.http._
 import spinoco.fs2.http.body.{BodyEncoder,StreamBodyEncoder}
 import spinoco.fs2.http.routing._
@@ -48,7 +49,7 @@ object syntax {
     def go(m: Matcher[F,A], next: Seq[Matcher[F, A]]): Matcher[F, A] = {
       next.headOption match {
         case None => m
-        case Some(nm) => m.flatMapR[F, F, A] {
+        case Some(nm) => m.flatMapR {
           case MatchResult.Success(a) => Matcher.success(a)
           case f: MatchResult.Failed[F] if stop contains f.response.header.status => Matcher.respond(f.response)
           case f: MatchResult.Failed[F] => go(nm, next.tail)
@@ -62,19 +63,19 @@ object syntax {
     choiceUntil[F,A](Set(Unauthorized, Forbidden))(matcher, matchers: _*)
 
   implicit final class ResponseBuilder(val status: HttpStatusCode) extends AnyVal {
-    def noBody: HttpResponse[Task] = emptyResponse[Task](status)
+    def noBody: HttpResponse[IO] = emptyResponse[IO](status)
 
-    def body[A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[Task] =
-      emptyResponse[Task](status).withBody(body)
+    def body[A](body: A)(implicit enc: BodyEncoder[A]): HttpResponse[IO] =
+      emptyResponse[IO](status).withBody(body)
 
-    def streamBody[A](body: Stream[Task,A])(implicit enc: StreamBodyEncoder[Task,A]): HttpResponse[Task] =
+    def streamBody[A](body: Stream[IO,A])(implicit enc: StreamBodyEncoder[IO,A]): HttpResponse[IO] =
       noBody.withStreamBody(body)(enc)
 
     def message(msg: String) = body(Message(msg))
     def message(err: Throwable) = body(Message(err))
 
-    def whenEmpty:Pipe[Task,HttpResponse[Task],HttpResponse[Task]] =
-      _.through(streams.ifEmpty(Stream.emit(emptyResponse(status))))
+    def whenEmpty:Pipe[IO,HttpResponse[IO],HttpResponse[IO]] =
+      _.through(streams.ifEmpty(Stream.emit(emptyResponse[IO](status)).covary[IO]))
   }
 
 

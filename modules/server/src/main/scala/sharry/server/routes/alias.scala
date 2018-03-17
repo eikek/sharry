@@ -1,7 +1,8 @@
 package sharry.server.routes
 
 import shapeless.{::, HNil}
-import fs2.{Stream, Task}
+import fs2.Stream
+import cats.effect.IO
 import cats.Order
 import spinoco.fs2.http.routing._
 
@@ -23,7 +24,7 @@ object alias {
       , listAliases(auth, store)
       , deleteAlias(auth, store))
 
-  def updateAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
+  def updateAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[IO] =
     Post >> paths.aliases.matcher / as[String] :: authz.user(authCfg) :: jsonBody[AliasUpdate] map {
       case aliasId :: login :: alias :: HNil =>
         val a = Alias.generate(login, alias.name, Duration.zero).
@@ -42,27 +43,27 @@ object alias {
           valueOr(msg => Stream.emit(BadRequest.message(msg)))
     }
 
-  def createAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
+  def createAlias(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[IO] =
     Post >> paths.aliases.matcher >> authz.user(authCfg) map { (login: String) =>
       val alias = Alias.generate(login, "New alias", Order[Duration].min(5.days, cfg.maxValidity))
       store.createAlias(alias).
         map(_ => Ok.body(alias))
     }
 
-  def listAliases(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def listAliases(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Get >> paths.aliases.matcher >> authz.user(authCfg) map { (login: String) =>
-      Stream.eval(store.listAliases(login).runLog).
+      Stream.eval(store.listAliases(login).compile.toVector).
         map(Ok.body(_))
     }
 
-  def getAlias(store: UploadStore): Route[Task] =
+  def getAlias(store: UploadStore): Route[IO] =
     Get >> paths.aliases.matcher / as[String] map { (id: String) =>
       store.getActiveAlias(id).
         map(Ok.body(_)).
         through(NotFound.whenEmpty)
     }
 
-  def deleteAlias(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def deleteAlias(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Delete >> paths.aliases.matcher / as[String] :: authz.user(authCfg) map {
       case id :: login :: HNil =>
         store.deleteAlias(id, login).

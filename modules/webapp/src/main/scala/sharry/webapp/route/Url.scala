@@ -3,7 +3,8 @@ package sharry.webapp.route
 import java.net.URL
 import java.nio.file.{Path, Paths}
 import cats.syntax.either._
-import fs2.{io, Stream, Task}
+import fs2.{io, Stream}
+import cats.effect.IO
 
 case class Url(jurl: URL) {
   require(jurl != null, "url argument must not be null")
@@ -17,8 +18,8 @@ case class Url(jurl: URL) {
   def fileName: Option[String] =
     path.map(_.getFileName.toString)
 
-  def readAll(chunkSize: Int): Stream[Task, Byte] =
-    io.readInputStream(Task.delay(jurl.openStream), chunkSize)
+  def readAll(chunkSize: Int): Stream[IO, Byte] =
+    io.readInputStream(IO(jurl.openStream), chunkSize)
 
   def toJava = jurl
 }

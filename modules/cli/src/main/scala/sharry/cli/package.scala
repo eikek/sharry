@@ -1,6 +1,6 @@
 package sharry
 
-import fs2.Task
+import cats.effect.IO
 import spinoco.fs2.http.body.{BodyDecoder, BodyEncoder}
 import spinoco.fs2.http.routing.{body => rbody}
 import spinoco.protocol.mime._
@@ -36,7 +36,7 @@ package object cli {
       ByteVector.encodeUtf8(a.asJson.spaces2).attempt
     }
 
-  def jsonBody[A](implicit d: BodyDecoder[A]) = rbody[Task].as[A]
+  def jsonBody[A](implicit d: BodyDecoder[A]) = rbody[IO].as[A]
 
   implicit final class EitherAttempt[A, B](e: Either[A,B]) {
     def attempt: Attempt[B] = Attempt.fromEither(e.left.map(a => Err(a.toString)))

@@ -1,6 +1,7 @@
 package sharry.server.routes
 
-import fs2.{Stream, Task}
+import fs2.Stream
+import cats.effect.IO
 import shapeless.{::,HNil}
 import scala.util.Try
 import spinoco.fs2.http.routing._
@@ -36,7 +37,7 @@ object upload {
       , deleteUpload(auth, uploadCfg, store)
       , notifyOnUpload(uploadCfg, store, notifier))
 
-  def createUpload(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
+  def createUpload(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[IO] =
     Post >> paths.uploads.matcher >> authz.userId(authCfg, store) :: jsonBody[UploadCreate] map {
       case account :: meta :: HNil  =>
         checkValidity(meta, account.alias, cfg.maxValidity) match {
@@ -78,7 +79,7 @@ object upload {
       map(n => Ok.body(Map("filesRemoved" -> n))).
       through(NotFound.whenEmpty)
 
-  def deleteUpload(authCfg: AuthConfig, uploadCfg: UploadConfig, store: UploadStore): Route[Task] =
+  def deleteUpload(authCfg: AuthConfig, uploadCfg: UploadConfig, store: UploadStore): Route[IO] =
     Delete >> paths.uploads.matcher / uploadId :: authz.userId(authCfg, store) map {
       case id :: user :: HNil =>
         if (id.isEmpty) Stream.emit(BadRequest.message("id is empty"))
@@ -97,14 +98,14 @@ object upload {
         }
     }
 
-  def getAllUploads(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def getAllUploads(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Get >> paths.uploads.matcher >> authz.user(authCfg) map { user =>
       // add paging or cope with chunk responses in elm
-      Stream.eval(store.listUploads(user).runLog).
+      Stream.eval(store.listUploads(user).compile.toVector).
         map(Ok.body(_))
     }
 
-  def getUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def getUpload(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Get >> paths.uploads.matcher / uploadId :: authz.user(authCfg) map {
       case id :: user :: HNil =>
         store.getUpload(id, user).
@@ -113,7 +114,7 @@ object upload {
           through(NotFound.whenEmpty)
     }
 
-  def getPublishedUpload(store: UploadStore): Route[Task] =
+  def getPublishedUpload(store: UploadStore): Route[IO] =
     Get >> paths.uploadPublish.matcher / uploadId map { id =>
       store.getPublishedUpload(id).
         map(processDescription(paths.downloadPublished)).
@@ -160,7 +161,7 @@ object upload {
     u.copy(upload = u.upload.copy(description = desc))
   }
 
-  def publishUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def publishUpload(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Post >> paths.uploadPublish.matcher / uploadId :: authz.user(authCfg) map {
       case id :: user :: HNil =>
         store.publishUpload(id, user).flatMap {
@@ -169,7 +170,7 @@ object upload {
         }
     }
 
-  def unpublishUpload(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def unpublishUpload(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Post >> paths.uploadUnpublish.matcher / uploadId :: authz.user(authCfg) map {
       case id :: login :: HNil =>
         store.unpublishUpload(id, login).flatMap {
@@ -178,7 +179,7 @@ object upload {
         }
     }
 
-  def notifyOnUpload(cfg: UploadConfig, store: UploadStore, notifier: Notifier): Route[Task] =
+  def notifyOnUpload(cfg: UploadConfig, store: UploadStore, notifier: Notifier): Route[IO] =
     Post >> paths.uploadNotify.matcher / uploadId :: authz.alias(store) map {
       case id :: alias :: HNil =>
         if (cfg.enableUploadNotification) {
@@ -189,7 +190,7 @@ object upload {
         }
     }
 
-  def testUploadChunk(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def testUploadChunk(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Get >> paths.uploadData.matcher >> authz.userId(authCfg, store) >> chunkInfo map { (info: ChunkInfo) =>
       val fileId = makeFileId(info)
       store.chunkExists(info.token, fileId, info.chunkNumber, info.currentChunkSize.bytes).map {
@@ -200,8 +201,8 @@ object upload {
       }
     }
 
-  def uploadChunks(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[Task] =
-    Post >> paths.uploadData.matcher >> authz.userId(authCfg, store) :: chunkInfo :: body[Task].bytes map {
+  def uploadChunks(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[IO] =
+    Post >> paths.uploadData.matcher >> authz.userId(authCfg, store) :: chunkInfo :: body[IO].bytes map {
       case user :: info :: bytes :: HNil  =>
         // check totalChunks against totalLength/chunksize
         // think about using reported totalLength for size-check, but it should not be possible to trick uploading too much
@@ -209,19 +210,19 @@ object upload {
         val fileId = makeFileId(info)
         val chunk = bytes.take(info.currentChunkSize.toLong).
           through(streams.append).
-          map(data => FileChunk(fileId, info.chunkNumber -1, data))
+          map(data => FileChunk(fileId, info.chunkNumber -1L, data))
 
         val saveChunk = for {
           ch <- chunk
           out <- store.addChunk(info.token, ch, info.chunkSize, info.totalChunks, MimetypeHint.filename(info.filename))
-          _ <- if (out.length.notZero) store.createUploadFile(info.token, fileId, info.filename, info.fileIdentifier) else Stream.empty
+          _ <- if (out.length.notZero) store.createUploadFile(info.token, fileId, info.filename, info.fileIdentifier) else Stream.emit(()).covary[IO]
         } yield ()
 
         val sizeCheck = store.getUploadSize(info.token).
           map({ case us@UploadSize(n, len) =>
             (us, n <= cfg.maxFiles && (len + info.currentChunkSize.bytes) <= cfg.maxFileSize)
           }).
-          evalMap({ case (UploadSize(n, len), result) => Task.delay {
+          evalMap({ case (UploadSize(n, len), result) => IO {
             if (!result) {
               logger.info(s"Current upload chunk (${info.currentChunkSize.bytes.asString}) exceeds max size: size=${len + info.currentChunkSize.bytes} and count=$n")
             }
@@ -240,7 +241,7 @@ object upload {
     }
 
 
-  private def uploadId: Matcher[Task, String] =
+  private def uploadId: Matcher[IO, String] =
     as[String].flatMap { s =>
       if (s.isEmpty) Matcher.respond(BadRequest.message("The upload token must not be empty!"))
       else Matcher.success(s)
@@ -249,13 +250,13 @@ object upload {
   private def makeFileId(info: ChunkInfo): String =
     sha(info.token + info.fileIdentifier)
 
-  private def chunkInfo: Matcher[Task, ChunkInfo] =
+  private def chunkInfo: Matcher[IO, ChunkInfo] =
     param[String]("token") :: param[Int]("resumableChunkNumber") ::
     param[Int]("resumableChunkSize") :: param[Int]("resumableCurrentChunkSize") ::
     param[Long]("resumableTotalSize") :: param[String]("resumableIdentifier") ::
     param[String]("resumableFilename") :: param[Int]("resumableTotalChunks") flatMap {
       case token :: num :: size :: currentSize :: totalSize :: ident :: file :: total :: HNil =>
-        if (token.isEmpty) Matcher.respond[Task](BadRequest.message("Token is empty"))
+        if (token.isEmpty) Matcher.respond[IO](BadRequest.message("Token is empty"))
         else Matcher.success(ChunkInfo(token, num, size, currentSize, totalSize, ident, file, total))
   }
 }

@@ -4,7 +4,8 @@ import java.time.Instant
 
 import scodec.bits.ByteVector
 import cats.syntax.either._
-import fs2.{Stream, Task}
+import fs2.Stream
+import cats.effect.IO
 import spinoco.protocol.http.header.value.HttpCookie
 import spinoco.protocol.http.header.`Set-Cookie`
 import spinoco.fs2.http.routing._
@@ -24,33 +25,33 @@ object login {
     choice(doLogin(byPass(auth), domain, authCfg), doLogin(byCookie(auth), domain, authCfg), removeCookie(domain))
   }
 
-  def byPass(auth: Authenticate): Matcher[Task, Stream[Task, AuthResult]] =
+  def byPass(auth: Authenticate): Matcher[IO, Stream[IO, AuthResult]] =
     paths.authLogin >> jsonBody[UserPass] map { (up: UserPass) =>
       auth.authc(up.login, up.pass)
     }
 
-  def byCookie(auth: Authenticate): Matcher[Task, Stream[Task, AuthResult]] =
+  def byCookie(auth: Authenticate): Matcher[IO, Stream[IO, AuthResult]] =
     paths.authCookie >> sharryCookie map { (token: Token) =>
       auth.authc(token, Instant.now)
     }
 
-  def sharryCookie: Matcher[Task, Token] =
+  def sharryCookie: Matcher[IO, Token] =
     cookie(cookieName).map { (c: HttpCookie) =>
       Token.parse(c.content)
     }
 
 
-  def doLogin(e: Matcher[Task, Stream[Task,AuthResult]], domain: String, cfg: AuthConfig): Route[Task] = {
-    def makeResponse(ar: AuthResult): HttpResponse[Task] = ar.
+  def doLogin(e: Matcher[IO, Stream[IO,AuthResult]], domain: String, cfg: AuthConfig): Route[IO] = {
+    def makeResponse(ar: AuthResult): HttpResponse[IO] = ar.
       map(acc => Ok.body(acc.noPass).withHeader(`Set-Cookie`(makeCookie(acc, domain, cfg.maxCookieLifetime, cfg.appKey)))).
       valueOr(err => Unauthorized.message(err))
 
-    Post >> e map { (s: Stream[Task,AuthResult]) =>
+    Post >> e map { (s: Stream[IO,AuthResult]) =>
       s.map(makeResponse)
     }
   }
 
-  def removeCookie(domain: String): Route[Task] =
+  def removeCookie(domain: String): Route[IO] =
     Get >> paths.logout.matcher map { _ =>
       val c = makeCookie(Token.invalid, domain).copy(maxAge = Some(0.seconds.asScala))
       Stream.emit(Ok.noBody.withHeader(`Set-Cookie`(c)))

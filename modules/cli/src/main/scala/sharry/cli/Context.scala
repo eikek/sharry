@@ -2,7 +2,8 @@ package sharry.cli
 
 import cats.implicits._
 import cats.data.{Validated, ValidatedNel}
-import fs2.{text, Chunk, Stream, Task}
+import fs2.{text, Chunk, Stream}
+import cats.effect.IO
 import fs2.io.file
 import fs2.async.mutable.Signal
 import sharry.cli.config._
@@ -21,7 +22,7 @@ import io.circe._, io.circe.generic.semiauto._
 case class Context(
   config: Config
     , remoteConfig: RemoteConfig
-    , cookie: Option[Signal[Task,HttpCookie]] = None
+    , cookie: Option[Signal[IO,HttpCookie]] = None
     , upload: Upload = Upload.empty
 ) {
 
@@ -36,26 +37,26 @@ case class Context(
     config.endpoint / Uri.Path.fromUtf8String(remoteConfig.urls(key))
   }
 
-  def serverSettingReq: HttpRequest[Task] =
+  def serverSettingReq: HttpRequest[IO] =
     HttpRequest.get(config.endpoint/"api"/"v1"/"settings")
 
-  def loginReq(up: UserPass): HttpRequest[Task] =
+  def loginReq(up: UserPass): HttpRequest[IO] =
     HttpRequest.post(uri("authLogin"), up)
 
-  def loginRefreshReq(cookie: HttpCookie): HttpRequest[Task] =
+  def loginRefreshReq(cookie: HttpCookie): HttpRequest[IO] =
     HttpRequest.post(uri("authCookie"), "").
       appendHeader(Cookie(cookie))
 
 
-  def readSingleFile: Stream[Task, String] =
-    file.readAll[Task](config.files.head, 8192).
+  def readSingleFile: Stream[IO, String] =
+    file.readAll[IO](config.files.head, 8192).
       through(text.utf8Decode).
       fold1(_ + _)
 
-  def newUpload: Stream[Task, UploadCreate] = {
-    val descr = config.descriptionFile match {
+  def newUpload: Stream[IO, UploadCreate] = {
+    val descr: Stream[IO, String] = config.descriptionFile match {
       case Some(f) =>
-        file.readAll[Task](f, 8192).
+        file.readAll[IO](f, 8192).
           through(text.utf8Decode).
           fold1(_ + _)
       case None =>
@@ -71,30 +72,30 @@ case class Context(
     }
   }
 
-  def createUploadReq(up: UploadCreate): Stream[Task, HttpRequest[Task]] =
+  def createUploadReq(up: UploadCreate): Stream[IO, HttpRequest[IO]] =
     authRequest(HttpRequest.post(uri("uploads"), up))
 
-  def getUploadReq(id: String): Stream[Task, HttpRequest[Task]] =
+  def getUploadReq(id: String): Stream[IO, HttpRequest[IO]] =
     authRequest(HttpRequest.get(uri("uploads")/id))
 
-  def deleteUploadReq(id: String): Stream[Task, HttpRequest[Task]] = {
+  def deleteUploadReq(id: String): Stream[IO, HttpRequest[IO]] = {
     authRequest(HttpRequest.delete(uri("uploads") / id))
   }
 
-  def publishUploadReq: Stream[Task, HttpRequest[Task]] = {
+  def publishUploadReq: Stream[IO, HttpRequest[IO]] = {
     authRequest(HttpRequest.post(uri("uploadPublish") / upload.id, ""))
   }
 
-  def checkChunkReq(info: ChunkInfo): Stream[Task, HttpRequest[Task]] =
+  def checkChunkReq(info: ChunkInfo): Stream[IO, HttpRequest[IO]] =
     authRequest(HttpRequest.get(uri("uploadData")).
       withQuery(queryParams(info)))
 
-  def uploadChunkReq(info: ChunkInfo, data: Chunk[Byte]): Stream[Task, HttpRequest[Task]] =
+  def uploadChunkReq(info: ChunkInfo, data: Chunk[Byte]): Stream[IO, HttpRequest[IO]] =
     authRequest(HttpRequest.get(uri("uploadData")).
       withMethod(HttpMethod.POST).
       appendHeader(`Content-Length`(info.currentChunkSize.toLong)).
       withQuery(queryParams(info)).
-      withStreamBody(Stream.chunk(data))(StreamBodyEncoder.byteEncoder))
+      withStreamBody(Stream.chunk(data).covary[IO])(StreamBodyEncoder.byteEncoder))
 
   private def queryParams(info: ChunkInfo): Uri.Query =
     Uri.Query.empty :+ ("token", info.token) :+
@@ -106,7 +107,7 @@ case class Context(
       ("resumableFilename", info.filename) :+
       ("resumableTotalChunks", info.totalChunks.toString)
 
-  private def authRequest(req: HttpRequest[Task]): Stream[Task, HttpRequest[Task]] =
+  private def authRequest(req: HttpRequest[IO]): Stream[IO, HttpRequest[IO]] =
     config.auth match {
       case AuthMethod.AliasHeader(alias) =>
         Stream(req.appendHeader(GenericHeader(remoteConfig.aliasHeaderName, alias)))
@@ -117,7 +118,7 @@ case class Context(
               req.appendHeader(Cookie(c))
             }
           case None =>
-            Stream.fail(ClientError("No cookie to authenticate"))
+            Stream.raiseError(ClientError("No cookie to authenticate"))
         }
       case AuthMethod.NoAuth =>
         Stream(req)
@@ -156,8 +157,8 @@ object Context {
     }
   }
 
-  implicit val _signalDecoder: Decoder[Option[Signal[Task,HttpCookie]]] = Decoder.decodeString.map(_ => None)
-  implicit val _signalEncoder: Encoder[Option[Signal[Task,HttpCookie]]] = Encoder.encodeString.contramap(_ => "")
+  implicit val _signalDecoder: Decoder[Option[Signal[IO,HttpCookie]]] = Decoder.decodeString.map(_ => None)
+  implicit val _signalEncoder: Encoder[Option[Signal[IO,HttpCookie]]] = Encoder.encodeString.contramap(_ => "")
 
   implicit val jsonDecoder: Decoder[Context] = deriveDecoder[Context]
   implicit val jsonEncoder: Encoder[Context] = deriveEncoder[Context]
