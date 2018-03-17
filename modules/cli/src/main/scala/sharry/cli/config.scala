@@ -146,7 +146,7 @@ object config {
     ))
 
     implicit def modeConvert: ConfigReader[Mode] =
-      ConfigReader.fromString[Mode](s => loc => s match {
+      ConfigReader.fromString[Mode](s => s match {
         case Mode.UploadFiles.name => Right(Mode.UploadFiles)
         case Mode.PublishFiles.name => Right(Mode.PublishFiles)
         case Mode.MdUpload.name => Right(Mode.MdUpload)

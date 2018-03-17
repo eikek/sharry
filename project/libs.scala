@@ -9,7 +9,7 @@ object libs {
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0
-  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.8.0"
+  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.9.0"
 
   // https://github.com/typelevel/cats
   // MIT http://opensource.org/licenses/mit-license.php
@@ -26,7 +26,7 @@ object libs {
 
   // https://github.com/scalatest/scalatest
   // ASL 2.0
-  val scalatest = "org.scalatest" %% "scalatest" % "3.0.4"
+  val scalatest = "org.scalatest" %% "scalatest" % "3.0.5"
 
   // https://github.com/rickynils/scalacheck
   // unmodified 3-clause BSD
@@ -57,11 +57,11 @@ object libs {
 
   // http://tika.apache.org
   // ASL 2.0
-  val tika = "org.apache.tika" % "tika-core" % "1.16"
+  val tika = "org.apache.tika" % "tika-core" % "1.17"
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.4.0"
+  val log4s = "org.log4s" %% "log4s" % "1.6.0"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
@@ -83,7 +83,7 @@ object libs {
 
   // https://github.com/jquery/jquery
   // MIT
-  val jquery = webjar("jquery", "3.2.1")
+  val jquery = webjar("jquery", "3.3.1")
 
   // https://highlightjs.org/
   // BSD
@@ -91,8 +91,8 @@ object libs {
 
   // https://java.net/projects/javamail/pages/Home
   // CDDL 1.0, GPL 2.0
-  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.6.0"
-  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.6.0"
+  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.6.1"
+  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.6.1"
 
   // http://dnsjava.org/
   // BSD
@@ -112,10 +112,10 @@ object libs {
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.28.32"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.28.32"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.28.32"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.28.32"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.16"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.16"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.16"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.16"
 
   // https://github.com/jhy/jsoup
   // MIT
