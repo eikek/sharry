@@ -1,6 +1,7 @@
 package sharry.store.account
 
-import fs2.{Stream, Task}
+import fs2.Stream
+import cats.effect.IO
 import sharry.common.data.Account
 import sharry.store.Limit
 
@@ -13,22 +14,22 @@ import sharry.store.Limit
   */
 trait AccountStore {
 
-  def accountExists(login: String): Stream[Task,Boolean]
+  def accountExists(login: String): Stream[IO,Boolean]
 
-  def getAccount(login: String): Stream[Task,Account]
+  def getAccount(login: String): Stream[IO,Account]
 
-  def createAccount(account: Account): Stream[Task,Unit]
+  def createAccount(account: Account): Stream[IO,Unit]
 
-  def updateAccount(account: Account): Stream[Task,Boolean]
+  def updateAccount(account: Account): Stream[IO,Boolean]
 
-  def setAccountEnabled(login: String, flag: Boolean): Stream[Task,Boolean]
+  def setAccountEnabled(login: String, flag: Boolean): Stream[IO,Boolean]
 
-  def updatePassword(login: String, password: Option[String]): Stream[Task,Boolean]
+  def updatePassword(login: String, password: Option[String]): Stream[IO,Boolean]
 
-  def updateEmail(login: String, email: Option[String]): Stream[Task,Boolean]
+  def updateEmail(login: String, email: Option[String]): Stream[IO,Boolean]
 
-  def deleteAccount(login: String): Stream[Task,Boolean]
+  def deleteAccount(login: String): Stream[IO,Boolean]
 
-  def listLogins(q: String, limit: Option[Limit]): Stream[Task,String]
+  def listLogins(q: String, limit: Option[Limit]): Stream[IO,String]
 
 }

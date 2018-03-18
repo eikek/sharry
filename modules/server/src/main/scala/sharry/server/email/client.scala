@@ -5,29 +5,32 @@ import org.log4s._
 import shapeless.syntax.std.tuple._
 import cats.data.ValidatedNel
 import cats.data.Validated.{Valid,Invalid}
-import fs2.{Stream, Task}
-import fs2.util.Attempt
+import cats.implicits._
+import cats.effect.IO
+import fs2.Stream
 
 import Header._
 
 object client {
   private[this] val logger = getLogger
 
-  def send_(setting: GetSetting)(mail: Mail): Stream[Task, Attempt[Mail]] = {
+  type Attempt[A] = Either[Throwable, A]
+
+  def send_(setting: GetSetting)(mail: Mail): Stream[IO, Attempt[Mail]] = {
     splitMail(mail).
       evalMap(send1(setting))
   }
 
-  def send(setting: GetSetting)(mail: Task[Mail]): Stream[Task, Attempt[Mail]] =
+  def send(setting: GetSetting)(mail: IO[Mail]): Stream[IO, Attempt[Mail]] =
     Stream.eval(mail).flatMap(send_(setting))
 
-  private def send1(setting: GetSetting)(mail: Mail): Task[Attempt[Mail]] = {
+  private def send1(setting: GetSetting)(mail: Mail): IO[Attempt[Mail]] = {
     val mimeMsg = extract1(mail).flatMap {
       case (to, subject, body, moreHeaders) =>
         for {
           smtp <- setting(to)
           sess <- makeSession(smtp)
-          msg <- Task.delay {
+          msg <- IO {
             val msg = new internet.MimeMessage(sess)
             msg.setFrom(smtp.from)
             msg.setRecipient(Message.RecipientType.TO, to.mail)
@@ -49,14 +52,14 @@ object client {
 
     mimeMsg.map(Transport.send).
       map(_ => mail).
-      handleWith({ case ex =>
+      handleErrorWith({ case ex =>
         logger.error(ex)(s"Error sending mail: $mail")
-        Task.fail(new Exception(mail.singleRecipient + ": "+ ex.getMessage))
+        IO.raiseError(new Exception(mail.singleRecipient + ": "+ ex.getMessage))
       }).
       attempt
   }
 
-  private def extract1(mail: Mail): Task[(Address, String, String, List[GenericHeader])] = {
+  private def extract1(mail: Mail): IO[(Address, String, String, List[GenericHeader])] = {
     def validate[A](l: List[A], msg: String): ValidatedNel[String, A] = l match {
       case a :: Nil => Valid(a).toValidatedNel
       case Nil => Invalid(s"There is no $msg.").toValidatedNel
@@ -69,12 +72,12 @@ object client {
     val generic = mail.header.collect({case h: GenericHeader => h})
 
     tos.product(subjects).product(text) match {
-      case Valid((t1, t)) => Task.now(t1 :+ t :+ generic)
-      case Invalid(msgs) => Task.fail(new Exception(msgs.toList.mkString(", ")))
+      case Valid((t1, t)) => IO.pure(t1 :+ t :+ generic)
+      case Invalid(msgs) => IO.raiseError(new Exception(msgs.toList.mkString(", ")))
     }
   }
 
-  private def makeSession(setting: SmtpSetting): Task[Session] = {
+  private def makeSession(setting: SmtpSetting): IO[Session] = {
     val props = System.getProperties()
     logger.debug(s"Make mail session from ${setting.hidePass}")
     props.setProperty("mail.transport.protocol", "smtp");
@@ -97,7 +100,7 @@ object client {
       }
     }
     if (Option(props.getProperty("mail.smtp.host")).exists(_.nonEmpty))
-      Task.now {
+      IO.pure {
         if (setting.user.nonEmpty) {
           Session.getInstance(props, new Authenticator() {
             override def getPasswordAuthentication() = {
@@ -110,10 +113,10 @@ object client {
         }
       }
     else
-      Task.fail(new Exception("no smtp host provided"))
+      IO.raiseError(new Exception("no smtp host provided"))
   }
 
-  private def splitMail(m: Mail): Stream[Task, Mail] = {
+  private def splitMail(m: Mail): Stream[IO, Mail] = {
     Stream.emits(m.header.filter(_.name == To.name).
       map(to => m.withHeader(to)))
   }

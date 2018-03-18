@@ -2,8 +2,9 @@ package sharry.common
 
 import java.io.InputStream
 import scodec.bits.ByteVector
-import fs2.{io, Chunk, Handle, Pipe, Pull, Stream, Task}
-import fs2.util.Suspendable
+import fs2.{io, Chunk, Pipe, Stream}
+import cats.effect.IO
+import cats.effect.Sync
 import org.log4s._
 
 import sizes._
@@ -21,21 +22,8 @@ object streams {
   def unchunk[F[_]]: Pipe[F, ByteVector, Byte] =
     _.flatMap(bv => Stream.chunk(Chunk.bytes(bv.toArray)))
 
-  // def toInputStream[F[_]](implicit F: Async[F]): Pipe[F, ByteVector, InputStream] =
-  //   _.through(toByteArray).through(io.toInputStream)
-
-  def readIs[F[_]](is: F[InputStream], size: Size)(implicit F: Suspendable[F]): Stream[F, Byte] =
-    io.readInputStream(is, size.bytes, true).rechunkN(size.bytes, true)
-
-  def toBase64[F[_]]: Pipe[F, Byte, ByteVector] =
-    _.vectorChunkN(3456)
-      .map(v => ByteVector(v))
-      .map(base64.basic.encode)
-
-  def toBase64String[F[_]]: Pipe[F, Byte, String] =
-    _.through(toBase64)
-      .map(_.decodeAscii.right.get)
-      .fold("")(_ + _)
+  def readIs[F[_]](is: F[InputStream], size: Size)(implicit F: Sync[F]): Stream[F, Byte] =
+    io.readInputStream(is, size.bytes, true) //.rechunk(size.bytes, true)
 
   def noWeirdChars[F[_]]: Pipe[F, Byte, Byte] = {
     val valid: Byte => Boolean =
@@ -43,58 +31,33 @@ object streams {
     _.filter(valid)
   }
 
-  /** Apply `f` to the last element */
-  def mapLast[F[_], I](f: I => I): Pipe[F, I, I] = {
-    def go(last: Chunk[I]): Handle[F,I] => Pull[F,I,Unit] = {
-      _.receiveOption {
-        case Some((chunk, h)) => Pull.output(last) >> go(chunk)(h)
-        case None =>
-          val k = f(last(last.size-1))
-          val init = last.take(last.size-1).toVector
-          Pull.output(Chunk.indexedSeq(init :+ k))
-      }
-    }
-    _.pull { _.receiveOption {
-      case Some((c, h)) => go(c)(h)
-      case None => Pull.done
-    }}
-  }
-
-  def headOption[F[_], I]: Pipe[F, I, Option[I]] =
-    _.pull {
-      _.receive1Option {
-        case Some((e, h)) => Pull.output1(Some(e)) >> Pull.done
-        case None => Pull.output1(None) >> Pull.done
-      }
-    }
-
   def optionToEmpty[F[_], I]: Pipe[F, Option[I], I] =
     _.flatMap {
       case Some(i) => Stream.emit(i)
       case None => Stream.empty
     }
 
-  def ifEmpty[F[_], I](s: Stream[F, I]): Pipe[F, I, I] =
-    _.pull { h =>
-      h.receiveOption {
-        case Some((c, h)) => Pull.output(c) >> h.echo
-        case None => Pull.outputs(s) >> Pull.done
-      }
+  def ifEmpty[F[_],A](s: Stream[F,A]): Pipe[F,A,A] = in => {
+    val sn = in.noneTerminate
+    sn.head.flatMap {
+      case Some(a) => Stream.emit(a) ++ sn.tail.unNoneTerminate
+      case None => s
     }
+  }
 
-  def log[F[_], A](f: Logger => Unit)(implicit l: Logger, F: Suspendable[F]): Pipe[F, A, A] =
+  def log[F[_], A](f: Logger => Unit)(implicit l: Logger, F: Sync[F]): Pipe[F, A, A] =
     s => s ++ slog(f)
 
-  def logEach[F[_], A](f: (A, Logger) => Unit)(implicit l: Logger, F: Suspendable[F]): Pipe[F,A,A] =
+  def logEach[F[_], A](f: (A, Logger) => Unit)(implicit l: Logger, F: Sync[F]): Pipe[F,A,A] =
     _.flatMap(a => slog(f.curried(a)) ++ Stream.emit(a))
 
-  def logEmpty[F[_], A](f: Logger => Unit)(implicit l: Logger, F: Suspendable[F]): Pipe[F,A,A] =
+  def logEmpty[F[_], A](f: Logger => Unit)(implicit l: Logger, F: Sync[F]): Pipe[F,A,A] =
     ifEmpty(slog(f))
 
-  def slog[F[_]](f: Logger => Unit)(implicit l: Logger, F: Suspendable[F]): Stream[F, Nothing] = {
+  def slog[F[_]](f: Logger => Unit)(implicit l: Logger, F: Sync[F]): Stream[F, Nothing] = {
     Stream.eval(F.delay{ f(l) }).drain
   }
 
-  def slogT(f: Logger => Unit)(implicit l: Logger): Stream[Task, Nothing] =
-    slog[Task](f)
+  def slogT(f: Logger => Unit)(implicit l: Logger): Stream[IO, Nothing] =
+    slog[IO](f)
 }

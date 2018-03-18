@@ -1,7 +1,7 @@
 package sharry.server.email
 
 import javax.mail.internet.InternetAddress
-import fs2.Task
+import cats.effect.IO
 import io.circe._
 
 case class Address(mail: InternetAddress) {
@@ -16,7 +16,7 @@ case class Address(mail: InternetAddress) {
 }
 
 object Address {
-  def parse(mail: String): Task[Address] = Task.delay {
+  def parse(mail: String): IO[Address] = IO {
     val a = new InternetAddress(mail)
     a.validate
     Address(a)

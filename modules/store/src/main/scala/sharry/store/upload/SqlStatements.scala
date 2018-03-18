@@ -3,8 +3,8 @@ package sharry.store.upload
 import java.time.Instant
 import cats.data.NonEmptyList
 import cats.implicits._
-import fs2.Task
-import doobie.imports._
+import cats.effect.IO
+import doobie._, doobie.implicits._
 import org.log4s._
 import bitpeace.sql.Statements
 
@@ -15,7 +15,7 @@ import sharry.common.data._
 import sharry.store.columns._
 import sharry.store.data._
 
-trait SqlStatements extends Statements[Task] {
+trait SqlStatements extends Statements[IO] {
 
   private[this] val logger = getLogger
   private implicit val logHandler = logSql(logger)
@@ -87,7 +87,7 @@ trait SqlStatements extends Statements[Task] {
           FROM Upload as up LEFT OUTER JOIN Alias as al ON up.alias = al.id
           WHERE up.login = $login ORDER BY created DESC""".
       query[Upload].
-      process
+      stream
 
   def sqlGetUpload(id: String, login: String) =
     sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name
@@ -131,7 +131,7 @@ trait SqlStatements extends Statements[Task] {
           INNER JOIN Upload AS up ON up.id = uf.uploadId
           WHERE uf.uploadId = $id AND up.login = $login""".
       query[UploadInfo.File].
-      list
+      to[List]
 
   def sqlGetUploadInfo(id: String, login: String) =
     for {
@@ -160,7 +160,7 @@ trait SqlStatements extends Statements[Task] {
   def sqlSelectFileIds(uploadId: String) =
     sql"""SELECT fileId FROM UploadFile WHERE uploadId = $uploadId""".
       query[String].
-      list
+      to[List]
 
   def sqlDeleteFileChunks(ids: NonEmptyList[String]) =
     (sql"""DELETE FROM FileChunk WHERE """ ++ Fragments.in(fr"fileId", ids)).update
@@ -194,7 +194,7 @@ trait SqlStatements extends Statements[Task] {
   def sqlListInvalidSince(since: Instant) =
     sql"""SELECT id,publishUntil FROM Upload WHERE publishUntil < $since""".
       query[(String, Instant)].
-      process
+      stream
 
   def sqlInsertAlias(alias: Alias) =
     sql"""INSERT INTO Alias VALUES (${alias.id}, ${alias.login}, ${alias.name}, ${alias.validity}, ${alias.created}, ${alias.enable})""".
@@ -205,7 +205,7 @@ trait SqlStatements extends Statements[Task] {
           FROM Alias WHERE login = $login
           ORDER BY created DESC""".
       query[Alias].
-      process
+      stream
 
   def sqlGetAlias(id: String) =
     sql"""SELECT id,login,name,validity,created,enable

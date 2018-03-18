@@ -7,7 +7,7 @@ import scodec.bits.ByteVector
 import sharry.common.mime.MimeType
 import sharry.common.sizes._
 import sharry.common.duration._
-import doobie.imports._
+import doobie._
 import doobie.util.log.{Success, ProcessingFailure, ExecFailure}
 
 object columns {

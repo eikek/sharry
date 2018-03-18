@@ -1,6 +1,7 @@
 package sharry.server.routes
 
-import fs2.{Stream, Task}
+import fs2.Stream
+import cats.effect.IO
 import shapeless.{::,HNil}
 import spinoco.fs2.http.routing._
 import yamusca.imports._
@@ -15,34 +16,34 @@ import sharry.server.routes.syntax._
 
 object mail {
 
-  def endpoint(auth: AuthConfig, smtp: GetSetting, mailCfg: WebmailConfig, store: AccountStore): Route[Task] =
+  def endpoint(auth: AuthConfig, smtp: GetSetting, mailCfg: WebmailConfig, store: AccountStore): Route[IO] =
     choice2(checkMailAddress(auth)
       , sendMail(auth, mailCfg, smtp, store)
       , getDownloadTemplate(auth, mailCfg)
       , getAliasTemplate(auth, mailCfg))
 
 
-  def checkMailAddress(authCfg: AuthConfig): Route[Task] =
+  def checkMailAddress(authCfg: AuthConfig): Route[IO] =
     Get >> paths.mailCheck.matcher >> authz.user(authCfg) >> param[String]("mail") map {
       (mail: String) =>
 
       Stream.eval(Address.parse(mail)).
         map(_ => Ok.message("Address is valid")).
-        onError(ex => Stream.emit(BadRequest.message(ex)))
+        handleErrorWith(ex => Stream.emit(BadRequest.message(ex)))
     }
 
 
-  def sendMail(authCfg: AuthConfig, cfg: WebmailConfig, smtp: GetSetting, store: AccountStore): Route[Task] =
+  def sendMail(authCfg: AuthConfig, cfg: WebmailConfig, smtp: GetSetting, store: AccountStore): Route[IO] =
     Post >> paths.mailSend.matcher >> authz.user(authCfg) :: jsonBody[SimpleMail] map {
       case user :: mail :: HNil =>
         if (!cfg.enable) Stream.emit(BadRequest.message("Sending mails is disabled."))
         else {
           val msg = for {
             msg   <- mail.parse
-            acc   <- store.getAccount(user).runLast
+            acc   <- store.getAccount(user).compile.last
             reply <- acc.flatMap(_.email) match {
               case Some(em) => Address.parse(em).map(Some.apply)
-              case None => Task.now(None)
+              case None => IO.pure(None)
             }
           } yield reply.map(r => msg.withHeader(Header.GenericHeader("Reply-To", r.mail.toString))).getOrElse(msg)
           client.send(smtp)(msg).
@@ -58,13 +59,13 @@ object mail {
     }
 
 
-  def getDownloadTemplate(authCfg: AuthConfig, cfg: WebmailConfig): Route[Task] =
+  def getDownloadTemplate(authCfg: AuthConfig, cfg: WebmailConfig): Route[IO] =
     Get >> paths.mailDownloadTemplate.matcher >> getTemplate(cfg.findDownloadTemplate, authCfg, cfg)
 
-  def getAliasTemplate(authCfg: AuthConfig, cfg: WebmailConfig): Route[Task] =
+  def getAliasTemplate(authCfg: AuthConfig, cfg: WebmailConfig): Route[IO] =
     Get >> paths.mailAliasTemplate.matcher >> getTemplate(cfg.findAliasTemplate, authCfg, cfg)
 
-  private def getTemplate(f: String => Option[(String, Template)], authCfg: AuthConfig, cfg: WebmailConfig): Route[Task] =
+  private def getTemplate(f: String => Option[(String, Template)], authCfg: AuthConfig, cfg: WebmailConfig): Route[IO] =
     param[String]("url") :: param[String]("lang").? :: param[Boolean]("pass").? :: authz.user(authCfg) map {
       case url :: optLang :: pass :: login :: HNil =>
         val (lang, template) = optLang.
@@ -83,7 +84,7 @@ object mail {
 
 
   case class SimpleMail(to: List[String], subject: String, text: String) {
-    def parse: Task[Mail] = Mail(to, subject, text)
+    def parse: IO[Mail] = Mail(to, subject, text)
   }
 
   object SimpleMail {

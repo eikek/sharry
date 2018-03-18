@@ -1,16 +1,17 @@
 package sharry.store
 
 import org.log4s._
-import fs2.{Pure, Stream, Task}
-import doobie.imports._
-import fs2.interop.cats._
+import fs2.{Pure, Stream}
+import cats.effect.IO
+import cats.implicits._
+import doobie._, doobie.implicits._
 import sharry.common.streams
 
 object evolution {
 
   implicit private[this] val logger = getLogger
 
-  type Change = Transactor[Task] => Stream[Task, Unit]
+  type Change = Transactor[IO] => Stream[IO, Unit]
 
   object Change {
     def apply(update: Update0): Change =
@@ -59,29 +60,29 @@ object evolution {
     private val changes = changesFor(dbms)
 
     /** Run all changes not yet applied */
-    def runChanges(xa: Transactor[Task]): Task[Unit] = {
+    def runChanges(xa: Transactor[IO]): IO[Unit] = {
       Stream.eval(getState(xa)).flatMap { version =>
         changes.zipWithIndex.drop(version.toLong).flatMap {
           case (change, idx) =>
             change(xa) ++ Stream.eval(updateState(idx+1)(xa))
         }
-      }.run
+      }.compile.drain
     }
 
     /** get the current state of the database */
-    def getState(xa: Transactor[Task]): Task[Int] = {
+    def getState(xa: Transactor[IO]): IO[Int] = {
       val version = sql"""SELECT max(version) FROM dbversion"""
         .query[Int]
         .unique
         .transact(xa)
-      version or Task.now(0)
+      version.handleError(_ => 0)
     }
 
-    def dropDatabase(xa: Transactor[Task]): Task[Unit] = {
+    def dropDatabase(xa: Transactor[IO]): IO[Unit] = {
       dbms.dropDatabase(db).update.run.transact(xa).map(_ => ())
     }
 
-    private def updateState(version: Int)(xa: Transactor[Task]): Task[Unit] = {
+    private def updateState(version: Long)(xa: Transactor[IO]): IO[Unit] = {
       sql"""INSERT INTO dbversion (version) VALUES ($version)""".update
         .run.transact(xa).map(_ => ())
     }
@@ -187,5 +188,5 @@ object evolution {
        ALTER TABLE FileMeta ALTER COLUMN checksum set not null;
       """.update),
     Change(sql"""UPDATE FileChunk SET chunkNr = chunkNr - 1""".update)
-  ).pure
+  )
 }

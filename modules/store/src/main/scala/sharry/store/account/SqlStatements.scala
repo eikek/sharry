@@ -1,7 +1,7 @@
 package sharry.store.account
 
 import org.log4s._
-import doobie.imports._
+import doobie.implicits._
 import sharry.common.data.Account
 import sharry.store.Limit
 import sharry.store.columns._

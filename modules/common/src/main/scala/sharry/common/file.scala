@@ -1,7 +1,8 @@
 package sharry.common
 
 import java.nio.file.{Files, Path, Paths, StandardOpenOption}
-import fs2.{io, Stream, Task}
+import fs2.{io, Stream}
+import cats.effect.IO
 import scala.collection.JavaConverters._
 import _root_.io.circe.Encoder, _root_.io.circe.syntax._
 
@@ -30,29 +31,29 @@ object file {
     def list: Iterator[Path] =
       Files.list(path).iterator.asScala
 
-    def mkdirs(): Task[Path] = Task.delay {
+    def mkdirs(): IO[Path] = IO {
       Files.createDirectories(path)
       path
     }
 
-    def moveTo(target: Path): Task[Path] = Task.delay {
+    def moveTo(target: Path): IO[Path] = IO {
       val file = if (isDirectory) target/name else target
       Files.move(path, file)
       file
     }
 
-    def copyTo(target: Path): Task[Path] = Task.delay {
+    def copyTo(target: Path): IO[Path] = IO {
       val file = if (isDirectory) target/name else target
       Files.copy(absolute, file)
       file
     }
 
-    def delete: Task[Unit] = Task.delay {
+    def delete: IO[Unit] = IO {
       Files.delete(path)
     }
 
-    def readAll(chunkSize: Size): Stream[Task,Byte] =
-      io.file.readAll[Task](path, chunkSize.bytes)
+    def readAll(chunkSize: Size): Stream[IO,Byte] =
+      io.file.readAll[IO](path, chunkSize.bytes)
 
     def write(str: String): Path =
       Files.write(path, str.getBytes("UTF-8"), StandardOpenOption.CREATE_NEW)

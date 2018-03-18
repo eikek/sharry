@@ -1,12 +1,13 @@
 package sharry.store.upload
 
 import java.time.Instant
-import fs2.{Pipe, Strategy, Stream, Task}
-import doobie.imports._
+import fs2.{Pipe, Stream}
+import cats.effect.IO
+import doobie._, doobie.implicits._
 import cats.implicits._
 import org.log4s._
-import fs2.interop.cats._
 import bitpeace.{Bitpeace, BitpeaceConfig, MimetypeHint, FileChunk, RangeDef}
+import scala.concurrent.ExecutionContext
 
 import sharry.common.mime._
 import sharry.common.rng._
@@ -16,15 +17,15 @@ import sharry.common.zip
 import sharry.common.data._
 import sharry.store.data._
 
-class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) extends UploadStore with SqlStatements {
+class SqlUploadStore(xa: Transactor[IO], val config: BitpeaceConfig[IO]) extends UploadStore with SqlStatements {
   private[this] val logger = getLogger
 
-  private val binaryStore: Bitpeace[Task] = Bitpeace(config, xa)
+  private val binaryStore: Bitpeace[IO] = Bitpeace(config, xa)
 
-  def createUpload(up: Upload): Stream[Task, Unit] =
+  def createUpload(up: Upload): Stream[IO, Unit] =
     Stream.eval(insertUploadConfig(up).run.transact(xa)).map(_ => ())
 
-  def deleteUpload(id: String, login: String): Stream[Task, Int] = {
+  def deleteUpload(id: String, login: String): Stream[IO, Int] = {
     for {
       fileIds <- Stream.eval(sqlSelectFileIds(id).transact(xa))
       _ <- getUpload(id, login)
@@ -32,29 +33,29 @@ class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) ext
     } yield n
   }
 
-  def createUploadFile(uploadId: String, fileId: String, filename: String, clientFileId: String): Stream[Task, UploadFile] =
+  def createUploadFile(uploadId: String, fileId: String, filename: String, clientFileId: String): Stream[IO, UploadFile] =
     Stream.eval(insertUploadFile(uploadId, fileId, filename, 0, None, clientFileId).transact(xa))
 
-  def updateMime(fileId: String, mimeType: MimeType): Stream[Task, Int] =
+  def updateMime(fileId: String, mimeType: MimeType): Stream[IO, Int] =
     Stream.eval(setFileMetaMimeType(fileId, mimeType).run.transact(xa))
 
-  def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[Task, Int] =
+  def updateTimestamp(uploadId: String, fileId: String, time: Instant): Stream[IO, Int] =
     Stream.eval(sqlSetUploadTimestamp(uploadId, fileId, time).transact(xa))
 
-  def addChunk(uploadId: String, fc: FileChunk, chunksize: Int, totalChunks: Int, hint: MimetypeHint): Stream[Task, FileMeta] =
+  def addChunk(uploadId: String, fc: FileChunk, chunksize: Int, totalChunks: Int, hint: MimetypeHint): Stream[IO, FileMeta] =
     binaryStore.addChunk(fc, chunksize, totalChunks, hint).map(_.result.asSharry)
 
-  def chunkExists(uploadId: String, fileId: String, chunkNr: Int, chunkLength: Size): Stream[Task, Boolean] =
+  def chunkExists(uploadId: String, fileId: String, chunkNr: Int, chunkLength: Size): Stream[IO, Boolean] =
     Stream.eval(sqlChunkExists(uploadId, fileId, chunkNr, chunkLength).transact(xa))
 
-  def listUploads(login: String): Stream[Task, Upload] =
+  def listUploads(login: String): Stream[IO, Upload] =
     sqlListUploads(login).transact(xa)
 
-  def getUpload(id: String, login: String): Stream[Task, UploadInfo] =
+  def getUpload(id: String, login: String): Stream[IO, UploadInfo] =
     Stream.eval(sqlGetUploadInfo(id, login).transact(xa)).
       through(streams.optionToEmpty)
 
-  def getPublishedUpload(id: String):  Stream[Task, UploadInfo] = {
+  def getPublishedUpload(id: String):  Stream[IO, UploadInfo] = {
     val update = sqlUpdateDownloadStats(id, 1, Instant.now).run
     val get = for {
       up <- sqlGetPublishedUpload(id)
@@ -73,10 +74,10 @@ class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) ext
     resp.through(streams.optionToEmpty)
   }
 
-  def getUploadSize(id: String): Stream[Task, UploadSize] =
+  def getUploadSize(id: String): Stream[IO, UploadSize] =
     Stream.eval(sqlGetUploadSizeFromChunks(id).transact(xa))
 
-  def publishUpload(id: String, login: String): Stream[Task, Either[String, String]] = {
+  def publishUpload(id: String, login: String): Stream[IO, Either[String, String]] = {
     Stream.eval(sqlGetUpload(id, login).transact(xa)).
       through(streams.optionToEmpty).
       flatMap { up =>
@@ -94,7 +95,7 @@ class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) ext
       }
   }
 
-  def unpublishUpload(id: String, login: String): Stream[Task,Either[String,Unit]] =
+  def unpublishUpload(id: String, login: String): Stream[IO,Either[String,Unit]] =
     Stream.eval(sqlGetUpload(id, login).transact(xa)).
       through(streams.optionToEmpty).
       flatMap { up =>
@@ -109,27 +110,27 @@ class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) ext
         }
       }
 
-  def getUploadByFileId(fileId: String, login: String): Stream[Task, (Upload, UploadInfo.File)] =
+  def getUploadByFileId(fileId: String, login: String): Stream[IO, (Upload, UploadInfo.File)] =
     Stream.eval(sqlGetUploadByFileId(fileId, login).transact(xa)).
       through(streams.optionToEmpty)
 
-  def getPublishedUploadByFileId(fileId: String): Stream[Task, (Upload, UploadInfo.File)] =
+  def getPublishedUploadByFileId(fileId: String): Stream[IO, (Upload, UploadInfo.File)] =
     Stream.eval(sqlGetPublishedUploadByFileId(fileId).transact(xa)).
       through(streams.optionToEmpty)
 
-  def fetchData(range: RangeDef): Pipe[Task, UploadInfo.File, Byte] =
+  def fetchData(range: RangeDef): Pipe[IO, UploadInfo.File, Byte] =
     _.map(_.meta.asBitpeace).through(binaryStore.fetchData(range))
 
-  def fetchData2(range: RangeDef): Pipe[Task, UploadInfo.File, Byte] =
+  def fetchData2(range: RangeDef): Pipe[IO, UploadInfo.File, Byte] =
     _.map(_.meta.asBitpeace).through(binaryStore.fetchData2(range))
 
-  def zipAll(chunkSize: Int)(implicit S: Strategy): Pipe[Task, UploadInfo, Byte] =
+  def zipAll(chunkSize: Int)(implicit EC: ExecutionContext): Pipe[IO, UploadInfo, Byte] =
     _.flatMap(info => Stream.emits(info.files)).
-      map(f => f.filename -> Stream.emit(f).through(fetchData2(RangeDef.all))).
+      map(f => f.filename -> Stream.emit(f).covary[IO].through(fetchData2(RangeDef.all))).
       through(zip.zip(chunkSize))
 
 
-  def cleanup(invalidSince: Instant): Stream[Task,Int] = {
+  def cleanup(invalidSince: Instant): Stream[IO,Int] = {
     sqlListInvalidSince(invalidSince).transact(xa).flatMap { case (id, validUntil) =>
       logger.info(s"Cleanup invalid since $invalidSince removes upload $id (validUntil $validUntil")
       for {
@@ -139,24 +140,24 @@ class SqlUploadStore(xa: Transactor[Task], val config: BitpeaceConfig[Task]) ext
     }
   }
 
-  def createAlias(alias: Alias): Stream[Task, Unit] =
+  def createAlias(alias: Alias): Stream[IO, Unit] =
     Stream.eval(sqlInsertAlias(alias).run.map(_ => ()).transact(xa))
 
-  def listAliases(login: String): Stream[Task, Alias] =
+  def listAliases(login: String): Stream[IO, Alias] =
     sqlListAliases(login).transact(xa)
 
-  def getAlias(id: String): Stream[Task, Alias] =
+  def getAlias(id: String): Stream[IO, Alias] =
     Stream.eval(sqlGetAlias(id).transact(xa)).
       through(streams.optionToEmpty)
 
-  def getActiveAlias(id: String): Stream[Task, Alias] =
+  def getActiveAlias(id: String): Stream[IO, Alias] =
     Stream.eval(sqlGetActiveAlias(id).transact(xa)).
       through(streams.optionToEmpty)
 
-  def deleteAlias(id: String, login: String): Stream[Task, Int] =
+  def deleteAlias(id: String, login: String): Stream[IO, Int] =
     Stream.eval(sqlDeleteAlias(id, login).run.transact(xa))
 
-  def updateAlias(alias: Alias, id: String): Stream[Task, Int] =
+  def updateAlias(alias: Alias, id: String): Stream[IO, Int] =
     Stream.eval(sqlUpdateAlias(alias, id).run.transact(xa))
 
 }

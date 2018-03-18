@@ -2,7 +2,8 @@ package sharry.webapp.route
 
 import java.time.{Instant, ZoneId}
 import io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
-import fs2.{text, pipe, Stream, Task}
+import fs2.{text, Stream}
+import cats.effect.IO
 import shapeless.{HNil, ::}
 import scodec.bits.BitVector
 import spinoco.fs2.http.routing._
@@ -17,9 +18,9 @@ import yamusca.imports._
 import sharry.common.data._
 
 object webjar {
-  val webjarToc: Webjars.Toc = readWebjarToc.unsafeRun
+  val webjarToc: Webjars.Toc = readWebjarToc.unsafeRunSync
 
-  private def readWebjarToc: Task[Webjars.Toc] = {
+  private def readWebjarToc: IO[Webjars.Toc] = {
     def parseToc(json: String): Webjars.Toc =
     decode[Webjars.Toc](json) match {
       case Right(toc) => toc
@@ -31,30 +32,30 @@ object webjar {
       through(text.utf8Decode).
       fold1(_ + _).
       map(parseToc).
-      runLast.
+      compile.last.
       map(_.get)
   }
 
-  def endpoint(config: RemoteConfig): Route[Task] =
+  def endpoint(config: RemoteConfig): Route[IO] =
     choice(resourceGet, index(config))
 
 
-  def ifModifiedSince: Matcher[Task, Option[Instant]] =
+  def ifModifiedSince: Matcher[IO, Option[Instant]] =
     header[`If-Modified-Since`].? map { _.map {
       v => v.value.atZone(ZoneId.of("UTC")).toInstant
     }}
 
-  def ifNoneMatch: Matcher[Task, Option[String]] =
+  def ifNoneMatch: Matcher[IO, Option[String]] =
     header[`If-None-Match`].? map {
       case Some(`If-None-Match`(EntityTagRange.Range(List(EntityTag(tag, false))))) => Some(tag)
       case _ => None
     }
 
-  def restPath: Matcher[Task, Seq[String]] =
+  def restPath: Matcher[IO, Seq[String]] =
     path.map(p => p.segments)
 
 
-  def resourceGet: Route[Task] =
+  def resourceGet: Route[IO] =
     Get >> ifModifiedSince :: ifNoneMatch :: "static" / as[String] :/: restPath map {
       case modSince :: noneMatch :: name :: rest :: HNil =>
         Stream.emit {
@@ -68,12 +69,12 @@ object webjar {
     }
 
 
-  def index(config: RemoteConfig): Route[Task] = {
-    val indexHtml = html.render(config).runLog.unsafeRun
+  def index(config: RemoteConfig): Route[IO] = {
+    val indexHtml = html.render(config).compile.toVector.unsafeRunSync
     Get >> choice(empty, "index.html") >> ifModifiedSince :: ifNoneMatch map {
       case modSince :: noneMatch :: HNil =>
         val index = Seq("index.html")
-        Stream.emit {
+        Stream[HttpResponse[IO]] {
           resource.lookup("sharry-webapp", index, modSince, noneMatch) match {
             case res @ Find.Found((wj, _)) =>
               makeResponse(res, index, Some(indexHtml.size.toLong)).copy(body = Stream.emits(indexHtml))
@@ -85,11 +86,11 @@ object webjar {
     }
   }
 
-  private def makeResponse(find: Find[(Webjars.ModuleId, Url)], path: Seq[String], len: Option[Long] = None): HttpResponse[Task] = {
+  private def makeResponse(find: Find[(Webjars.ModuleId, Url)], path: Seq[String], len: Option[Long] = None): HttpResponse[IO] = {
     def parseContentType(s: String): ContentType =
       ContentType.codec.decodeValue(BitVector.view(s.getBytes("UTF-8"))).require
 
-    def make(wj: Webjars.ModuleId, status: HttpStatusCode): HttpResponse[Task] = {
+    def make(wj: Webjars.ModuleId, status: HttpStatusCode): HttpResponse[IO] = {
       val p = path.mkString("/")
       HttpResponse(
         HttpResponseHeader(
@@ -183,7 +184,7 @@ object webjar {
         ValueConverter.deriveConverter[Data]
     }
 
-    def render(config: RemoteConfig): Stream[Task, Byte] = {
+    def render(config: RemoteConfig): Stream[IO, Byte] = {
       resource.lookup("sharry-webapp", Seq("index.html")) match {
         case Find.Found((wj, url)) =>
           val data = Data(config.asJson.spaces4, config.highlightjsTheme)
@@ -192,7 +193,7 @@ object webjar {
             fold1(_ + _).
             map(mustache.parse).
             map(_.left.map(err => new Exception(s"${err._2} at ${err._1.pos}"))).
-            through(pipe.rethrow).
+            rethrow.
             map(data.render).
             through(text.utf8Encode)
 

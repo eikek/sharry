@@ -1,7 +1,8 @@
 package sharry.server.email
 
 import org.xbill.DNS._
-import fs2.Task
+import cats.effect.IO
+import cats.implicits._
 
 case class SmtpSetting(
   host: String,
@@ -18,15 +19,15 @@ case class SmtpSetting(
 
 
 object SmtpSetting {
-  def fromAddress(m: Address): Task[Option[SmtpSetting]] =
-    findMx(m.domain).or(Task.now(Nil)).
+  def fromAddress(m: Address): IO[Option[SmtpSetting]] =
+    findMx(m.domain).handleError(_ => Nil).
       map(_.headOption).
       map(_.map(fromMx))
 
   def fromMx(host: String): SmtpSetting =
     SmtpSetting(host, 0, "", "", "", false, false)
 
-  private def findMx(domain: String): Task[List[String]] = Task.delay {
+  private def findMx(domain: String): IO[List[String]] = IO {
     val records = new Lookup(domain, Type.MX).run()
       .map(_.asInstanceOf[MXRecord]).toList.sortBy(_.getPriority)
 

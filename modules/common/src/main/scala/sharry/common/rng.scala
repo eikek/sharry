@@ -48,7 +48,7 @@ object rng {
     def chars(alphabet: IndexedSeq[Char], min: Int, max: Int): Gen[List[Char]] =
       for {
         len  <- boundedInt(min, max)
-        ints <- Monad[Gen].sequence(List.fill(len)(boundedInt(0, alphabet.length)))
+        ints <- Traverse[List].sequence(List.fill(len)(boundedInt(0, alphabet.length)))
       } yield ints.map(alphabet)
 
     def string(alphabet: IndexedSeq[Char], min: Int, max: Int): Gen[String] =

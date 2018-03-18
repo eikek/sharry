@@ -1,7 +1,8 @@
 package sharry.docs.md
 
 import java.net.URL
-import fs2.{io, text, pipe, Stream, Task}
+import fs2.{io, text, Stream}
+import cats.effect.IO
 import scodec.bits.ByteVector
 import yamusca.imports._
 import yamusca.converter.syntax._
@@ -15,22 +16,22 @@ case class ManualPage(
     , url: URL) {
 
 
-  def readAll(chunkSize: Int): Stream[Task, Byte] =
-    io.readInputStream(Task.delay(url.openStream), chunkSize)
+  def readAll(chunkSize: Int): Stream[IO, Byte] =
+    io.readInputStream(IO(url.openStream), chunkSize)
 
-  def read(ctx: ManualContext, pathPrefix: String, linkPrefix: String): Stream[Task, ByteVector] = {
+  def read(ctx: ManualContext, pathPrefix: String, linkPrefix: String): Stream[IO, ByteVector] = {
     if (name.endsWith(".md")) {
       readAll(16384).
         through(text.utf8Decode).
         fold1(_ + _).
         map(mustache.parse).
         map(_.left.map(err => new Exception(s"${err._2} at ${err._1.pos}"))).
-        through(pipe.rethrow).
+        rethrow.
         map(ctx.render).
         map(replaceLinks(pathPrefix, linkPrefix)).
         through(text.utf8Encode).
-        rechunkN(16384, true).
-        chunks.map(c => ByteVector.view(c.toArray))
+        segmentN(16384, true).
+        map(seg => ByteVector.view(seg.force.toArray))
     } else {
       readAll(16384).
         chunks.map(c => ByteVector.view(c.toArray))

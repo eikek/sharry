@@ -3,9 +3,8 @@ package sharry.server
 import java.nio.file.Path
 import java.util.UUID
 import scodec.bits.ByteVector
-import fs2.Task
-import fs2.interop.cats._
-import doobie.hikari.hikaritransactor._
+import cats.effect.IO
+import doobie.hikari._
 import pureconfig._
 import pureconfig.error._
 import pureconfig.ConvertHelpers._
@@ -19,8 +18,8 @@ import sharry.server.email._
 object config {
 
   case class Jdbc(driver: String, url: String, user: String, password: String) {
-    def transactor: Task[HikariTransactor[Task]] =
-      HikariTransactor[Task](driver, url, user, password)
+    def transactor: IO[HikariTransactor[IO]] =
+      HikariTransactor.newHikariTransactor[IO](driver, url, user, password)
   }
 
   case class AuthConfig(enable: Boolean, defaultUser: String, maxCookieLifetime: Duration, appKey: ByteVector)

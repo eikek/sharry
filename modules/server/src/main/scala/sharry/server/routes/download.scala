@@ -2,7 +2,8 @@ package sharry.server.routes
 
 import java.time.Instant
 import cats.data.Ior
-import fs2.{Pipe, Strategy, Stream, Task}
+import fs2.{Pipe, Stream}
+import cats.effect.IO
 import shapeless.{::,HNil}
 import scodec.bits.{BitVector, ByteVector}
 import spinoco.protocol.mime.ContentType
@@ -10,6 +11,7 @@ import spinoco.fs2.http.body.StreamBodyEncoder
 import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._
 import bitpeace.RangeDef
+import scala.concurrent.ExecutionContext
 
 import sharry.common.data._
 import sharry.common.mime._
@@ -21,10 +23,9 @@ import sharry.server.routes.syntax._
 
 object download {
 
-  type ResponseOr[A] = Either[HttpResponse[Task], A]
-  private implicit val zipPool = Strategy.fromFixedDaemonPool(10, "sharry-zip")
+  type ResponseOr[A] = Either[HttpResponse[IO], A]
 
-  def endpoint(auth: AuthConfig, webCfg: WebConfig, store: UploadStore) =
+  def endpoint(auth: AuthConfig, webCfg: WebConfig, store: UploadStore)(implicit EC: ExecutionContext) =
     choice2(downloadZip(auth, store)
       , download(auth, store)
       , downloadPublishedZip(store)
@@ -34,7 +35,7 @@ object download {
       , checkPassword(webCfg, store))
 
 
-  def download(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def download(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Get >> paths.download.matcher / as[String] :: range :: ifNoneMatch :: authz.user(authCfg) map {
       case id :: bytes :: noneMatch :: user :: HNil =>
         // get file if owned by user
@@ -45,7 +46,7 @@ object download {
           through(NotFound.whenEmpty)
     }
 
-  def downloadZip(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def downloadZip(authCfg: AuthConfig, store: UploadStore)(implicit EC: ExecutionContext): Route[IO] =
     Get >> paths.downloadZip.matcher / as[String] :: ifNoneMatch :: authz.user(authCfg) map {
       case id :: noneMatch :: user :: HNil =>
         store.getUpload(id, user).
@@ -55,7 +56,7 @@ object download {
           through(NotFound.whenEmpty)
     }
 
-  def downloadHead(authCfg: AuthConfig, store: UploadStore): Route[Task] =
+  def downloadHead(authCfg: AuthConfig, store: UploadStore): Route[IO] =
     Head >> paths.download.matcher / as[String] :: authz.user(authCfg) map {
       case id :: user :: HNil =>
         store.getUploadByFileId(id, user).
@@ -65,7 +66,7 @@ object download {
           through(NotFound.whenEmpty)
     }
 
-  def downloadPublished(webCfg: WebConfig, store: UploadStore): Route[Task] =
+  def downloadPublished(webCfg: WebConfig, store: UploadStore): Route[IO] =
     Get >> paths.downloadPublished.matcher / as[String] :: range ::  ifNoneMatch :: sharryPass map {
       case id :: bytes :: noneMatch :: pass :: HNil =>
         store.getPublishedUploadByFileId(id).
@@ -75,7 +76,7 @@ object download {
           through(NotFound.whenEmpty)
     }
 
-  def downloadPublishedZip(store: UploadStore): Route[Task] =
+  def downloadPublishedZip(store: UploadStore)(implicit EC: ExecutionContext): Route[IO] =
     Get >> paths.downloadPublishedZip.matcher / as[String] :: ifNoneMatch :: sharryPass map {
       case id :: noneMatch :: pass :: HNil =>
         store.getPublishedUpload(id).
@@ -85,7 +86,7 @@ object download {
           through(NotFound.whenEmpty)
     }
 
-  def downloadPublishedHead(store: UploadStore): Route[Task] =
+  def downloadPublishedHead(store: UploadStore): Route[IO] =
     Head >> paths.downloadPublished.matcher / as[String] :: sharryPass map {
       case id ::  pass :: HNil =>
         store.getPublishedUploadByFileId(id).
@@ -96,11 +97,11 @@ object download {
     }
 
 
-  def checkPassword(cfg: WebConfig, store: UploadStore): Route[Task] =
+  def checkPassword(cfg: WebConfig, store: UploadStore): Route[IO] =
     Post >> paths.checkPassword.matcher / as[String] :: jsonBody[Pass].? map {
       case id :: pass :: HNil =>
 
-        val makeCookie = withCookie[Task](cfg.domain, paths.downloadPublished.path)(
+        val makeCookie = withCookie[IO](cfg.domain, paths.downloadPublished.path)(
           "sharry_dlpassword", pass.map(_.password).getOrElse(""))
 
         store.getPublishedUpload(id).map({ info =>
@@ -119,7 +120,7 @@ object download {
     cookie("sharry_dlpassword").map(_.content).?
 
 
-  private def deliverPartial(store: UploadStore)(bytes: Ior[Int, Int]): Pipe[Task, ResponseOr[UploadInfo.File], HttpResponse[Task]] =
+  private def deliverPartial(store: UploadStore)(bytes: Ior[Int, Int]): Pipe[IO, ResponseOr[UploadInfo.File], HttpResponse[IO]] =
     _.map({
       case Right(file) =>
         val data = store.fetchData(RangeDef.byteRange(bytes))(Stream.emit(file)).
@@ -134,7 +135,7 @@ object download {
       case Left(r) => r
     })
 
-  private def deliver(store: UploadStore): Pipe[Task, ResponseOr[UploadInfo.File], HttpResponse[Task]] =
+  private def deliver(store: UploadStore): Pipe[IO, ResponseOr[UploadInfo.File], HttpResponse[IO]] =
     _.map({
       case Right(file) =>
         val data = store.fetchData(RangeDef.all)(Stream.emit(file)).
@@ -145,10 +146,10 @@ object download {
       case Left(r) => r
     })
 
-  private def zipUpload(store: UploadStore, modify: UploadInfo => ResponseUpdate[Task]): Pipe[Task, ResponseOr[UploadInfo], HttpResponse[Task]] =
+  private def zipUpload(store: UploadStore, modify: UploadInfo => ResponseUpdate[IO])(implicit EC: ExecutionContext): Pipe[IO, ResponseOr[UploadInfo], HttpResponse[IO]] =
     _.map {
       case Right(info) =>
-        val data = Stream.emit(info).
+        val data = Stream.emit(info).covary[IO].
           through(store.zipAll(8192 * 2)).
           through(streams.toByteChunks)
         Ok.streamBody(data)(encoder(MimeType.`application/zip`)) ++
@@ -160,7 +161,7 @@ object download {
 
   private def unmodifiedWhen[A](tagOpt: Option[String]
     , id: A => String
-    , modify: A => ResponseUpdate[Task]): Pipe[Task, ResponseOr[A], ResponseOr[A]] =
+    , modify: A => ResponseUpdate[IO]): Pipe[IO, ResponseOr[A], ResponseOr[A]] =
     tagOpt match {
       case None => identity
       case Some(tag) =>
@@ -170,7 +171,7 @@ object download {
         })
     }
 
-  private def checkDownload1[A](pass: Option[String]): Pipe[Task, (Upload, A), ResponseOr[(Upload, A)]] =
+  private def checkDownload1[A](pass: Option[String]): Pipe[IO, (Upload, A), ResponseOr[(Upload, A)]] =
     _.map { case (upload, a) =>
       Upload.checkUpload(upload, Instant.now, upload.downloads, pass).
         leftMap(err => BadRequest.body(err.toList)).
@@ -178,32 +179,32 @@ object download {
         toEither
     }
 
-  private def checkDownloadFile(pass: Option[String]): Pipe[Task, (Upload, UploadInfo.File), ResponseOr[UploadInfo.File]] =
+  private def checkDownloadFile(pass: Option[String]): Pipe[IO, (Upload, UploadInfo.File), ResponseOr[UploadInfo.File]] =
     _.through(checkDownload1(pass)).
       map(_.map(_._2))
 
-  private def checkDownload[A](pass: Option[String]): Pipe[Task, UploadInfo, ResponseOr[UploadInfo]] =
+  private def checkDownload[A](pass: Option[String]): Pipe[IO, UploadInfo, ResponseOr[UploadInfo]] =
     _.map(u => (u.upload, u)).
       through(checkDownload1(pass)).
       map(_.map(_._2))
 
-  private def encoder(mt: MimeType): StreamBodyEncoder[Task, ByteVector] =
+  private def encoder(mt: MimeType): StreamBodyEncoder[IO, ByteVector] =
     StreamBodyEncoder.byteVectorEncoder.withContentType(asContentType(mt))
 
   private def asContentType(mt: MimeType): ContentType =
     // TODO getOrElse octet-stream
     ContentType.codec.decodeValue(BitVector(mt.asString.getBytes)).require
 
-  private def standardHeaders(file: UploadInfo.File): ResponseUpdate[Task] =
+  private def standardHeaders(file: UploadInfo.File): ResponseUpdate[IO] =
     _ ++ withContentLength(file.meta.length.toBytes) ++
       withAcceptRanges ++
       withETag(file.meta.id) ++
       withLastModified(file.meta.timestamp) ++
       withDisposition("inline", file.filename)
 
-  private def standardHeaders(info: UploadInfo): ResponseUpdate[Task] = {
+  private def standardHeaders(info: UploadInfo): ResponseUpdate[IO] = {
     _ ++ withLastModified(info.upload.created) ++
-      info.upload.publishId.map(withETag[Task]).getOrElse(ResponseUpdate.identity[Task])
+      info.upload.publishId.map(withETag[IO]).getOrElse(ResponseUpdate.identity[IO])
   }
 
 }

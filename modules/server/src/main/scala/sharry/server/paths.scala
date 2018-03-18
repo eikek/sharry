@@ -1,7 +1,6 @@
 package sharry.server
 
-import fs2.Task
-import fs2.util.Lub1
+import cats.effect.IO
 import spinoco.fs2.http.routing._
 
 /** Collection of paths used by the rest api and that is transferred
@@ -60,13 +59,13 @@ object paths {
   def settings = mounts("settings")
 
   case class Path(segments: List[String]) {
-    def matcherF[F[_],Lub[_]](implicit L: Lub1[F,F,Lub]): Matcher[Lub, String] = segments match {
+    def matcherF[F[_]]: Matcher[F, String] = segments match {
       case Nil => empty.map(_ => "")
       case a :: Nil => a
       case a :: b :: Nil => a / b
       case a :: b :: rest => rest.foldLeft(a / b)(_ / _)
     }
-    def matcher = matcherF[Task,Task]
+    def matcher = matcherF[IO]
     def path = segments.mkString("/", "/", "")
 
     def /(next: String) = Path(segments :+ next)

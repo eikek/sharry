@@ -5,7 +5,7 @@ import java.nio.file.{Path, Paths, Files}
 import com.typesafe.config.{ConfigValueFactory, ConfigFactory}
 
 import cats.syntax.either._
-import fs2.Task
+import cats.effect.IO
 import pureconfig._
 import pureconfig.ConvertHelpers._
 import pureconfig.error._
@@ -53,8 +53,8 @@ object config {
   object AuthMethod {
     case class AliasHeader(alias: String) extends AuthMethod
     case class UserLogin(login: String, password: String, passwordCommand: String) extends AuthMethod {
-      def readPassword: Task[String] =
-        if (passwordCommand.trim.isEmpty) Task.now(password)
+      def readPassword: IO[String] =
+        if (passwordCommand.trim.isEmpty) IO.pure(password)
         else OS.command(passwordCommand).
           flatMap(_.runFirstLine)
     }
@@ -121,7 +121,7 @@ object config {
       }
     }
 
-    def loadDefaultConfig(source: Option[Path]): Task[Config] = Task.delay {
+    def loadDefaultConfig(source: Option[Path]): IO[Config] = IO {
       fromDefaultConfig(source) match {
         case Right(c) => c
         case Left(errs) => throw new ConfigReaderException(errs)
@@ -146,7 +146,7 @@ object config {
     ))
 
     implicit def modeConvert: ConfigReader[Mode] =
-      ConfigReader.fromString[Mode](s => loc => s match {
+      ConfigReader.fromString[Mode](s => s match {
         case Mode.UploadFiles.name => Right(Mode.UploadFiles)
         case Mode.PublishFiles.name => Right(Mode.PublishFiles)
         case Mode.MdUpload.name => Right(Mode.MdUpload)
