@@ -2,14 +2,14 @@ import sbt._
 
 object libs {
 
-  val `scala-version` = "2.12.4"
+  val `scala-version` = "2.12.5"
 
   def webjar(name: String, version: String): ModuleID =
     "org.webjars" % name % version
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0
-  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.9.0"
+  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.9.1"
 
   // https://github.com/typelevel/cats
   // MIT http://opensource.org/licenses/mit-license.php
@@ -17,8 +17,8 @@ object libs {
 
   // https://github.com/functional-streams-for-scala/fs2
   // MIT
-  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.10.2"
-  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.10.2"
+  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.10.3"
+  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.10.3"
 
   // https://github.com/Spinoco/fs2-http
   // MIT
@@ -47,7 +47,7 @@ object libs {
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0
-  val h2 = "com.h2database" % "h2" % "1.4.196"
+  val h2 = "com.h2database" % "h2" % "1.4.197"
 
   // https://github.com/circe/circe
   // ASL 2.0
@@ -61,7 +61,7 @@ object libs {
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.6.0"
+  val log4s = "org.log4s" %% "log4s" % "1.6.1"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
@@ -112,10 +112,10 @@ object libs {
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.16"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.16"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.16"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.16"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.18"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.18"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.18"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.18"
 
   // https://github.com/jhy/jsoup
   // MIT
