@@ -38,8 +38,8 @@ object libs {
 
   // https://github.com/tpolecat/doobie
   // MIT
-  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.1"
-  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.1"
+  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.2"
+  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.2"
 
   // https://jdbc.postgresql.org/
   // BSD
@@ -51,9 +51,9 @@ object libs {
 
   // https://github.com/circe/circe
   // ASL 2.0
-  val `circe-core` = "io.circe" %% "circe-core" % "0.9.2"
-  val `circe-generic` = "io.circe" %% "circe-generic" % "0.9.2"
-  val `circe-parser` = "io.circe" %% "circe-parser" % "0.9.2"
+  val `circe-core` = "io.circe" %% "circe-core" % "0.9.3"
+  val `circe-generic` = "io.circe" %% "circe-generic" % "0.9.3"
+  val `circe-parser` = "io.circe" %% "circe-parser" % "0.9.3"
 
   // http://tika.apache.org
   // ASL 2.0
@@ -75,7 +75,7 @@ object libs {
 
   // https://github.com/Semantic-Org/Semantic-UI
   // MIT
-  val `semantic-ui` = webjar("Semantic-UI", "2.2.10")
+  val `semantic-ui` = webjar("Semantic-UI", "2.3.1")
 
   // https://github.com/23/resumable.js
   // MIT
@@ -112,12 +112,12 @@ object libs {
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.18"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.18"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.18"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.18"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.20"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.20"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.20"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.20"
 
   // https://github.com/jhy/jsoup
   // MIT
-  val jsoup = "org.jsoup" % "jsoup" % "1.11.2"
+  val jsoup = "org.jsoup" % "jsoup" % "1.11.3"
 }

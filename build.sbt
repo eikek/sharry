@@ -184,6 +184,7 @@ lazy val server = project.in(file("modules/server")).
       "-Dsharry.db.url=jdbc:h2:./target/sharry-db.h2",
       "-Dsharry.optionalConfig=" + ((baseDirectory in LocalRootProject).value / "dev.conf")
     ),
+    javaOptions in reStart := (javaOptions in run).value  ++ Seq("-Dsharry.console=false"),
     resourceGenerators in Compile += Def.task {
       val cliRef = (sourceDirectory in (cli, Compile)).value/"resources"/"reference.conf"
       val target = (resourceManaged in Compile).value/"reference-cli.conf"
@@ -229,7 +230,6 @@ lazy val root = project.in(file(".")).
   settings(sharedSettings).
   aggregate(common, mdutil, store, server, webapp, cli)
 
-addCommandAlias("run-sharry", ";project server;run")
 addCommandAlias("make-server", ";project server ;set elmMinify in (webapp, Compile) := true ;assembly")
 addCommandAlias("make-cli", ";project cli ;assembly")
 addCommandAlias("make", ";make-server ;make-cli")
