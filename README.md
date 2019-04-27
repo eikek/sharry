@@ -70,9 +70,9 @@ Features
 Try it
 ------
 
-There is a demo installation at <https://sharrydemo.eknet.org>. You can
+~~There is a demo installation at <https://sharrydemo.eknet.org>. You can
 use the account `sharry` and no password to log in. The mail feature is
-not enabled and uploads are restricted to 1.5M.
+not enabled and uploads are restricted to 1.5M.~~ Sorry, I had to shut down this service.
 
 Or, clone this project and use sbt (see below for prerequisites) to
 compile and run:
@@ -91,7 +91,6 @@ page](https://github.com/eikek/sharry/releases).
 Documentation
 -------------
 
-There is a user manual in the [docs](./docs/index.md) folder (sources).
 These pages are shown in each sharry instance, for example
 [here](https://sharrydemo.eknet.org/#manual/index.md). The documentation
 to the command line client is included.
