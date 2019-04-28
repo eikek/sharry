@@ -13,6 +13,8 @@ import sharry.store.data._
 
 trait UploadStore {
 
+  def updateUpload(id: String, up: UploadUpdate): Stream[IO, Unit]
+
   def createUpload(up: Upload): Stream[IO, Unit]
 
   def createUploadFile(uploadId: String, fileId: String, filename: String, clientFileId: String): Stream[IO, UploadFile]

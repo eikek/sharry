@@ -33,7 +33,7 @@ trait SqlStatements extends Statements[IO] {
     sql"""INSERT INTO Upload VALUES (
             ${uc.id}, ${uc.login}, ${uc.alias}, ${uc.description}, ${uc.validity},
             ${uc.maxDownloads}, ${uc.password}, ${uc.created},
-            ${uc.downloads}, ${uc.lastDownload}, ${uc.publishId}, ${uc.publishDate}, ${until})""".update
+            ${uc.downloads}, ${uc.lastDownload}, ${uc.publishId}, ${uc.publishDate}, ${until}, ${uc.name})""".update
   }
 
   def sqlSetUploadTimestamp(uploadId: String, fileId: String, time: Instant) =
@@ -41,6 +41,9 @@ trait SqlStatements extends Statements[IO] {
       a <- sql"""UPDATE FileMeta SET timestamp = $time WHERE id = $fileId""".update.run
       b <- sql"""UPDATE Upload SET created = $time WHERE id = $uploadId""".update.run
     } yield a + b
+
+  def sqlSetUploadName(uploadId: String, name: Option[String]) =
+    sql"""UPDATE Upload SET name = $name WHERE id = $uploadId""".update
 
   def setFileMetaMimeType(fileId: String, mimetype: MimeType) =
     sql"""UPDATE FileMeta SET mimetype = ${mimetype.asString} WHERE id = $fileId""".update
@@ -83,28 +86,28 @@ trait SqlStatements extends Statements[IO] {
   }
 
   def sqlListUploads(login: String) =
-    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name
+    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,up.name
           FROM Upload as up LEFT OUTER JOIN Alias as al ON up.alias = al.id
           WHERE up.login = $login ORDER BY created DESC""".
       query[Upload].
       stream
 
   def sqlGetUpload(id: String, login: String) =
-    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name
+    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,up.name
           FROM Upload as up LEFT OUTER JOIN Alias as al ON up.alias = al.id
           WHERE up.id = $id AND up.login = $login""".
       query[Upload].
       option
 
   def sqlGetPublishedUpload(id: String) =
-    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name
+    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,up.name
           FROM Upload as up LEFT OUTER JOIN Alias as al ON up.alias = al.id
           WHERE up.publishId = $id""".
       query[Upload].
       option
 
   def sqlGetPublishedUploadByFileId(fileId: String) =
-    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,
+    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,up.name,
                  fm.id,fm.timestamp,fm.mimetype,fm.length,fm.checksum,fm.chunks,fm.chunksize, uf.filename, uf.clientFileId
           FROM Upload AS up
           INNER JOIN UploadFile AS uf ON uf.uploadId = up.id AND uf.fileId = $fileId
@@ -115,7 +118,7 @@ trait SqlStatements extends Statements[IO] {
       option
 
   def sqlGetUploadByFileId(fileId: String, login: String) =
-    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,
+    sql"""SELECT up.id,up.login,up.validity,up.maxdownloads,up.alias,up.description,up.password,up.created,up.downloads,up.lastDownload,up.publishId,up.publishDate,al.name,up.name,
                  fm.id,fm.timestamp,fm.mimetype,fm.length,fm.checksum,fm.chunks,fm.chunksize, uf.filename, uf.clientFileId
           FROM Upload AS up
           INNER JOIN UploadFile AS uf ON uf.uploadId = up.id AND uf.fileId = $fileId

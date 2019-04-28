@@ -115,6 +115,7 @@ type alias Upload =
     ,publishId: Maybe String
     ,publishDate: Maybe String
     ,validUntil: Maybe String
+    ,name: Maybe String
     }
 
 isValidUpload: Upload -> Bool
@@ -160,6 +161,7 @@ decodeUpload =
         |> JP.required "publishId" (Decode.maybe Decode.string)
         |> JP.required "publishDate" (Decode.maybe Decode.string)
         |> JP.required "validUntil" (Decode.maybe Decode.string)
+        |> JP.required "name" (Decode.maybe Decode.string)
 
 decodeUploadInfo: Decode.Decoder UploadInfo
 decodeUploadInfo =
@@ -427,3 +429,13 @@ markdownHtml str =
         markedOptions = {defaultOpts | sanitize = True, smartypants = True, githubFlavored = Just { tables = True, breaks = False}}
     in
         Markdown.toHtmlWith markedOptions [] str
+
+type alias UploadUpdate =
+    { name: String
+    }
+
+uploadUpdateEncoder: UploadUpdate -> Encode.Value
+uploadUpdateEncoder up =
+    Encode.object
+        [ ("name", Encode.string up.name)
+        ]

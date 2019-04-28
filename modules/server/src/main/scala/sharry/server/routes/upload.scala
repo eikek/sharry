@@ -35,7 +35,15 @@ object upload {
       , getUpload(auth, store)
       , getAllUploads(auth, store)
       , deleteUpload(auth, uploadCfg, store)
-      , notifyOnUpload(uploadCfg, store, notifier))
+      , notifyOnUpload(uploadCfg, store, notifier)
+      , editUpload(auth, uploadCfg, store))
+
+  def editUpload(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[IO] =
+    Post >> paths.uploads.matcher / uploadId :: authz.user(authCfg) :: jsonBody[UploadUpdate] map {
+      case id :: user :: up :: HNil =>
+        store.updateUpload(id, up).map(_ => Ok.message("Upload updated"))
+    }
+
 
   def createUpload(authCfg: AuthConfig, cfg: UploadConfig, store: UploadStore): Route[IO] =
     Post >> paths.uploads.matcher >> authz.userId(authCfg, store) :: jsonBody[UploadCreate] map {

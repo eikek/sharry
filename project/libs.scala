@@ -75,7 +75,7 @@ object libs {
 
   // https://github.com/Semantic-Org/Semantic-UI
   // MIT
-  val `semantic-ui` = webjar("Semantic-UI", "2.3.3")
+  val `semantic-ui` = webjar("Semantic-UI", "2.4.1")
 
   // https://github.com/23/resumable.js
   // MIT
