@@ -66,7 +66,7 @@ view model =
                      [
                       a [href (PL.manualPageHref "index.md")]
                           [
-                           i [class "help circle outline icon"][]
+                           i [class "question circle outline icon"][]
                           ,text "Manual"
                           ]
                      ]

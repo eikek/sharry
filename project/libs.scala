@@ -2,14 +2,14 @@ import sbt._
 
 object libs {
 
-  val `scala-version` = "2.12.5"
+  val `scala-version` = "2.12.8"
 
   def webjar(name: String, version: String): ModuleID =
     "org.webjars" % name % version
 
   // https://github.com/melrief/pureconfig
   // MPL 2.0
-  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.9.1"
+  val pureconfig = "com.github.pureconfig" %% "pureconfig" % "0.9.2"
 
   // https://github.com/typelevel/cats
   // MIT http://opensource.org/licenses/mit-license.php
@@ -17,8 +17,8 @@ object libs {
 
   // https://github.com/functional-streams-for-scala/fs2
   // MIT
-  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.10.3"
-  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.10.3"
+  val `fs2-core` = "co.fs2" %% "fs2-core" % "0.10.7"
+  val `fs2-io` = "co.fs2" %% "fs2-io" % "0.10.7"
 
   // https://github.com/Spinoco/fs2-http
   // MIT
@@ -34,34 +34,34 @@ object libs {
 
   // https://github.com/scodec/scodec-bits
   // 3-clause BSD
-  val `scodec-bits` = "org.scodec" %% "scodec-bits" % "1.1.5"
+  val `scodec-bits` = "org.scodec" %% "scodec-bits" % "1.1.10"
 
   // https://github.com/tpolecat/doobie
   // MIT
-  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.1"
-  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.1"
+  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.2"
+  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.2"
 
   // https://jdbc.postgresql.org/
   // BSD
-  val postgres = "org.postgresql" % "postgresql" % "42.2.2"
+  val postgres = "org.postgresql" % "postgresql" % "42.2.5"
 
   // https://github.com/h2database/h2database
   // MPL 2.0 or EPL 1.0
-  val h2 = "com.h2database" % "h2" % "1.4.197"
+  val h2 = "com.h2database" % "h2" % "1.4.199"
 
   // https://github.com/circe/circe
   // ASL 2.0
-  val `circe-core` = "io.circe" %% "circe-core" % "0.9.2"
-  val `circe-generic` = "io.circe" %% "circe-generic" % "0.9.2"
-  val `circe-parser` = "io.circe" %% "circe-parser" % "0.9.2"
+  val `circe-core` = "io.circe" %% "circe-core" % "0.9.3"
+  val `circe-generic` = "io.circe" %% "circe-generic" % "0.9.3"
+  val `circe-parser` = "io.circe" %% "circe-parser" % "0.9.3"
 
   // http://tika.apache.org
   // ASL 2.0
-  val tika = "org.apache.tika" % "tika-core" % "1.17"
+  val tika = "org.apache.tika" % "tika-core" % "1.20"
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.6.1"
+  val log4s = "org.log4s" %% "log4s" % "1.7.0"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
@@ -75,7 +75,7 @@ object libs {
 
   // https://github.com/Semantic-Org/Semantic-UI
   // MIT
-  val `semantic-ui` = webjar("Semantic-UI", "2.2.10")
+  val `semantic-ui` = webjar("Semantic-UI", "2.3.3")
 
   // https://github.com/23/resumable.js
   // MIT
@@ -91,8 +91,8 @@ object libs {
 
   // https://java.net/projects/javamail/pages/Home
   // CDDL 1.0, GPL 2.0
-  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.6.1"
-  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.6.1"
+  val `javax-mail-api` = "javax.mail" % "javax.mail-api" % "1.6.2"
+  val `javax-mail` = "com.sun.mail" % "javax.mail" % "1.6.2"
 
   // http://dnsjava.org/
   // BSD
@@ -100,7 +100,7 @@ object libs {
 
   // https://github.com/eikek/yamusca
   // MIT
-  val yamusca = "com.github.eikek" %% "yamusca-core" % "0.4.0"
+  val yamusca = "com.github.eikek" %% "yamusca-core" % "0.5.1"
 
   // https://github.com/eikek/bitpeace
   // MIT
@@ -108,16 +108,16 @@ object libs {
 
   // https://github.com/scopt/scopt
   // MIT
-  val scopt = "com.github.scopt" %% "scopt" % "3.7.0"
+  val scopt = "com.github.scopt" %% "scopt" % "3.7.1"
 
   // https://github.com/vsch/flexmark-java
   // BSD 2-Clause
-  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.18"
-  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.18"
-  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.18"
-  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.18"
+  val `flexmark-core` = "com.vladsch.flexmark" % "flexmark" % "0.32.20"
+  val `flexmark-gfm-tables` = "com.vladsch.flexmark" % "flexmark-ext-gfm-tables" % "0.32.20"
+  val `flexmark-gfm-strikethrough` = "com.vladsch.flexmark" % "flexmark-ext-gfm-strikethrough" % "0.32.20"
+  val `flexmark-formatter` = "com.vladsch.flexmark" % "flexmark-formatter" % "0.32.20"
 
   // https://github.com/jhy/jsoup
   // MIT
-  val jsoup = "org.jsoup" % "jsoup" % "1.11.2"
+  val jsoup = "org.jsoup" % "jsoup" % "1.11.3"
 }

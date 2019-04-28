@@ -19,7 +19,7 @@ install:
   - nvm use node
   - node --version
   - npm --version
-  - npm install -g elm elm-test
+  - npm install -g elm@0.18.0
 
 before_script:
   - export TZ=Europe/Berlin

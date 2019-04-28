@@ -30,8 +30,8 @@ object HttpHeaderCodec {
 
   def emptyHeader(name: String): Codec[HttpHeader] =
     recover(emptyString).exmap(
-      b => if (b) Attempt.successful(GenericHeader(name, "")) else Attempt.failure(Err(s"Invalid header value for $name"))
-        , _ => Attempt.successful(true))
+      _ => Attempt.successful(GenericHeader(name, "")),
+      _ => Attempt.successful(true))
 
   val allCodecs = SpinocoCodec.allHeaderCodecs.
     map { case (name, codec) => name -> choice(codec, emptyHeader(name)) }
