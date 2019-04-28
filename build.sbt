@@ -233,5 +233,5 @@ lazy val root = project.in(file(".")).
 addCommandAlias("make-server", ";project server ;set elmMinify in (webapp, Compile) := true ;assembly")
 addCommandAlias("make-cli", ";project cli ;assembly")
 addCommandAlias("make", ";make-server ;make-cli")
-addCommandAlias("run-all-tests", ";test ;elmTest")
+addCommandAlias("run-all-tests", ";test")
 addCommandAlias("cli", ";project cli ;run")
