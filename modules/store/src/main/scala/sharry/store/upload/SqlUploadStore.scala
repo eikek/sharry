@@ -22,6 +22,9 @@ class SqlUploadStore(xa: Transactor[IO], val config: BitpeaceConfig[IO]) extends
 
   private val binaryStore: Bitpeace[IO] = Bitpeace(config, xa)
 
+  def updateUpload(id: String, up: UploadUpdate): Stream[IO, Unit] =
+    Stream.eval(sqlSetUploadName(id, Option(up.name).map(_.trim).filter(_.nonEmpty)).run.transact(xa).map(_ => ()))
+
   def createUpload(up: Upload): Stream[IO, Unit] =
     Stream.eval(insertUploadConfig(up).run.transact(xa)).map(_ => ())
 

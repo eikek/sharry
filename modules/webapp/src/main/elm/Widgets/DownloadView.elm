@@ -18,6 +18,7 @@ type alias Model =
     ,validPassword: Bool
     ,errorMessage: List String
     ,mailForm: Maybe MailForm.Model
+    ,editName: Maybe String
     }
 
 type Msg
@@ -32,10 +33,15 @@ type Msg
     | OpenMailForm
     | MailFormCancel
     | MailFormMsg MailForm.Msg
+    | EditName
+    | CancelEditName
+    | SaveEditName
+    | SetName String
+    | UploadUpdateResult (Result Http.Error ())
 
 makeModel: UploadInfo -> RemoteConfig -> Maybe Account -> Model
 makeModel info cfg account =
-    Model info cfg (Maybe.map (\a -> a.login) account) Nothing False [] Nothing
+    Model info cfg (Maybe.map (\a -> a.login) account) Nothing False [] Nothing Nothing
 
 
 isOwner: Model -> Bool
@@ -107,6 +113,28 @@ update msg model =
                 Nothing ->
                     model ! []
 
+        EditName ->
+            ({model|editName = Data.maybeOrElse model.info.upload.name (Just "")}, Cmd.none)
+        CancelEditName ->
+            ({model|editName = Nothing}, Cmd.none)
+        SaveEditName ->
+            case model.editName of
+                Just name ->
+                    (model, httpSetName model name)
+                Nothing ->
+                    ({model|editName = Nothing}, Cmd.none)
+        SetName name ->
+            ({model|editName = Just name}, Cmd.none)
+        UploadUpdateResult (Ok _) ->
+            let
+                info = model.info
+                up = info.upload
+                nup = {up|name = model.editName}
+                ninfo = {info|upload = nup}
+            in
+            ({model|editName = Nothing, info = ninfo}, Cmd.none)
+        UploadUpdateResult (Err _) ->
+            (model, Cmd.none)
 
 view: Model -> List (Html Msg)
 view model =
@@ -147,6 +175,7 @@ viewPage model =
                   (downloadInfoItems model))
             ,(True, div [HA.class "two wide column"]
                   [actionButtons model])
+            ,(True, setNameInput model)
             ,(isValid model && isOwner model, infoMessage model)
             ,(model.info.upload.requiresPassword && isOwner model,
                   div [HA.class "sixteen wide column"]
@@ -168,6 +197,27 @@ viewPage model =
                           (List.map (renderFile model) model.info.files))
                   ])
             ]
+
+setNameInput: Model -> Html Msg
+setNameInput model =
+    case model.editName of
+        Just name ->
+            div [HA.class "ui right aligned container"]
+                [Html.div [HA.class "ui action input"]
+                     [Html.input [HA.type_ "text"
+                                 ,HA.value name
+                                 ,HE.onInput SetName
+                                 ][]
+                     ,Html.button [HA.class "ui primary button", HE.onClick SaveEditName]
+                         [text "Save"
+                         ]
+                     ,Html.button [HA.class "ui secodary button", HE.onClick CancelEditName]
+                         [text "Cancel"
+                         ]
+                     ]
+                ]
+        Nothing ->
+            Html.span [][]
 
 infoMessage: Model -> Html msg
 infoMessage model =
@@ -199,8 +249,18 @@ uploadInfoItems: Model -> List (Html msg)
 uploadInfoItems model =
     [
      div [HA.class "ui list"]
-         [
-          div [HA.class "item"]
+         [div [HA.class "item"]
+              [Html.i [HA.class "comment outline icon"][]
+              ,div [HA.class "content"]
+                  [
+                   div [HA.class "header"]
+                       [text "Name"]
+                  ,div [HA.class "content"]
+                      [text (Maybe.withDefault "-" model.info.upload.name)]
+                  ]
+              ]
+
+         ,div [HA.class "item"]
               [Html.i [HA.class "calendar outline icon"][]
               ,div [HA.class "content"]
                   [
@@ -475,6 +535,12 @@ actionButtons model =
                   zipDownloadButton model)
             ,(isOwner model && isValid model && model.cfg.mailEnabled,
                   Html.button [HA.class "ui button", HE.onClick OpenMailForm][text "Send email"])
+            ,(True
+             , case model.editName of
+                   Just name ->
+                       Html.span [][]
+                   Nothing ->
+                       Html.button [HA.class "ui button", HE.onClick EditName][text "Edit Name"])
             ]
 
 zipDownloadButton: Model -> Html msg
@@ -550,3 +616,11 @@ httpGetTemplate model =
                 Cmd.map MailFormMsg cmd
         Nothing ->
             Cmd.none
+
+httpSetName: Model -> String -> Cmd Msg
+httpSetName model name =
+    Http.post
+        (model.cfg.urls.uploads ++ "/" ++ model.info.upload.id)
+        (Http.jsonBody (Data.uploadUpdateEncoder (Data.UploadUpdate name)))
+        (Decode.succeed ()) |> Http.send UploadUpdateResult
+        

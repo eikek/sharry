@@ -187,6 +187,7 @@ object evolution {
        UPDATE FileMeta SET checksum = id WHERE checksum is null;
        ALTER TABLE FileMeta ALTER COLUMN checksum set not null;
       """.update),
-    Change(sql"""UPDATE FileChunk SET chunkNr = chunkNr - 1""".update)
+    Change(sql"""UPDATE FileChunk SET chunkNr = chunkNr - 1""".update),
+    Change(sql"""ALTER TABLE Upload ADD COLUMN name varchar(254);""".update)
   )
 }

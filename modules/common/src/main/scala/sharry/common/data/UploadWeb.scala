@@ -23,6 +23,7 @@ case class UploadWeb(
     , publishId: Option[String] = None
     , publishDate: Option[Instant] = None
     , validUntil: Option[Instant] = None
+    , name: Option[String] = None
 )
 
 object UploadWeb {

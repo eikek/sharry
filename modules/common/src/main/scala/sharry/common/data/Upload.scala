@@ -23,6 +23,7 @@ case class Upload (
     , publishId: Option[String] = None
     , publishDate: Option[Instant] = None
     , aliasName: Option[String] = None
+    , name: Option[String] = None
 ) {
 
   lazy val validUntil = publishDate.map(pd => pd.plus(validity.asJava))
@@ -87,6 +88,7 @@ object Upload {
       , up.publishId
       , up.publishDate
       , up.validUntil
+      , up.name
     )
 
 }

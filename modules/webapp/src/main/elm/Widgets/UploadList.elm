@@ -1,7 +1,7 @@
 module Widgets.UploadList exposing (..)
 
 import Http
-import Html exposing (Html, div, table, th, tr, thead, td, tbody, a, i, text, select, option, input)
+import Html exposing (Html, div, table, th, tr, thead, td, tbody, a, i, text, select, option, input, button)
 import Html.Attributes exposing (class, href, colspan, value, type_)
 import Html.Events exposing (onClick, onInput)
 import Json.Decode as Decode
@@ -82,8 +82,7 @@ view model =
                        ]
                   ]
              ,tr []
-                  [
-                   th[][text "Upload"]
+                  [th[][text "Upload"]
                   ,th[][text "Created"]
                   ,th[][text "Password"]
                   ,th[][text "Published"]
@@ -95,7 +94,7 @@ view model =
         ,tbody[]
             (model.uploads
                 |> List.filter (makeFilter model)
-                |> List.map createRow)
+                |> List.map (createRow model))
         ]
 
 makeFilter: Model -> Upload -> Bool
@@ -109,36 +108,35 @@ makeFilter model upload =
             _ -> True
 
 
-createRow: Upload -> Html Msg
-createRow upload =
+createRow: Model -> Upload -> Html Msg
+createRow model upload =
     let
         no = "brown minus square outline icon"
         yes = "brown checkmark box icon"
     in
     tr[]
-        [
-         td []
-             [
-              a [href (PL.downloadPageHref (Uid upload.id))][text upload.id]
-             ]
-        ,td [class "center aligned"][Data.formatDate upload.created |> text]
-        ,td [class "center aligned"]
+        [td []
+            [a [href (PL.downloadPageHref (Uid upload.id))]
+               [Maybe.withDefault upload.id upload.name |> text]
+            ]
+        ,td [class "center aligned collapsing"][Data.formatDate upload.created |> text]
+        ,td [class "center aligned collapsing"]
             [
              i [class (if upload.requiresPassword then yes else no)][]
             ]
-        ,td [class "center aligned"]
+        ,td [class "center aligned collapsing"]
             [
              case upload.publishId of
                  Just _ -> i [class yes][]
                  Nothing -> i [class no][]
             ]
-        ,td [class "center aligned"]
+        ,td [class "center aligned collapsing"]
             [
              i [class (if Data.isValidUpload upload then yes else no)][]
             ]
         ,td []
             [upload.aliasName |> Maybe.withDefault "" |> text]
-        ,td [class "center aligned"]
+        ,td [class "center aligned collapsing"]
             [
              a [class "mini ui basic button", onClick (DeleteUpload upload.id)]
                  [
@@ -157,3 +155,7 @@ httpGetUploads: Model -> Cmd Msg
 httpGetUploads model =
     Http.get model.urls.uploads (Decode.list Data.decodeUpload)
         |> Http.send UploadData
+
+httpSetName: Model -> String -> String -> Cmd Msg
+httpSetName model id name =
+    Cmd.none
