@@ -20,9 +20,7 @@ object paths {
     "uploadPublish" -> api1/"upload-publish",
     "uploadUnpublish" -> api1/"upload-unpublish",
     "download" -> api1/"dl"/"file",
-    "downloadZip" -> api1/"dl"/"zip",
     "downloadPublished" -> Path("dlp")/"file",
-    "downloadPublishedZip" -> Path("dlp")/"zip",
     "checkPassword" -> api1/"check-password",
     "aliases" -> api1/"aliases",
     "mailCheck" -> api1/"mail"/"check",
@@ -45,9 +43,7 @@ object paths {
   def uploadPublish = mounts("uploadPublish")
   def uploadUnpublish = mounts("uploadUnpublish")
   def download = mounts("download")
-  def downloadZip = mounts("downloadZip")
   def downloadPublished = mounts("downloadPublished")
-  def downloadPublishedZip = mounts("downloadPublishedZip")
   def checkPassword = mounts("checkPassword")
   def aliases = mounts("aliases")
   def mailCheck = mounts("mailCheck")

@@ -531,8 +531,6 @@ actionButtons model =
                   Html.button [HA.class "ui button", HE.onClick UnpublishDownload][text "Unpublish"])
             ,(isOwner model,
                   Html.button [HA.class "negative ui button", HE.onClick DeleteDownload][text "Delete"])
-            ,(List.length model.info.files > 1,
-                  zipDownloadButton model)
             ,(isOwner model && isValid model && model.cfg.mailEnabled,
                   Html.button [HA.class "ui button", HE.onClick OpenMailForm][text "Send email"])
             ,(True
@@ -542,19 +540,6 @@ actionButtons model =
                    Nothing ->
                        Html.button [HA.class "ui button", HE.onClick EditName][text "Edit Name"])
             ]
-
-zipDownloadButton: Model -> Html msg
-zipDownloadButton model =
-    let
-        url = if isOwner model then
-                  model.cfg.urls.downloadZip ++ "/" ++ model.info.upload.id
-              else if isValid model then
-                  model.cfg.urls.downloadPublishedZip ++ "/" ++ (Maybe.withDefault "" model.info.upload.publishId)
-              else
-                  "#"
-    in
-        Html.a [HA.class "ui button", HA.href url]
-            [text "Download as Zip"]
 
 fileSummary: Model -> String
 fileSummary model =

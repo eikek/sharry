@@ -11,7 +11,6 @@ import spinoco.fs2.http.body.StreamBodyEncoder
 import spinoco.fs2.http.HttpResponse
 import spinoco.fs2.http.routing._
 import bitpeace.RangeDef
-import scala.concurrent.ExecutionContext
 
 import sharry.common.data._
 import sharry.common.mime._
@@ -25,10 +24,8 @@ object download {
 
   type ResponseOr[A] = Either[HttpResponse[IO], A]
 
-  def endpoint(auth: AuthConfig, webCfg: WebConfig, store: UploadStore)(implicit EC: ExecutionContext) =
-    choice2(downloadZip(auth, store)
-      , download(auth, store)
-      , downloadPublishedZip(store)
+  def endpoint(auth: AuthConfig, webCfg: WebConfig, store: UploadStore) =
+    choice2(download(auth, store)
       , downloadPublished(webCfg, store)
       , downloadHead(auth, store)
       , downloadPublishedHead(store)
@@ -43,16 +40,6 @@ object download {
           map({ case (_, f) => Right(f) }).
           through(unmodifiedWhen(noneMatch, f => f.meta.id, standardHeaders)).
           through(bytes.map(deliverPartial(store)).getOrElse(deliver(store))).
-          through(NotFound.whenEmpty)
-    }
-
-  def downloadZip(authCfg: AuthConfig, store: UploadStore)(implicit EC: ExecutionContext): Route[IO] =
-    Get >> paths.downloadZip.matcher / as[String] :: ifNoneMatch :: authz.user(authCfg) map {
-      case id :: noneMatch :: user :: HNil =>
-        store.getUpload(id, user).
-          map(Right(_)).
-          through(unmodifiedWhen(noneMatch, info => info.upload.publishId.getOrElse(""), standardHeaders)).
-          through(zipUpload(store, standardHeaders)).
           through(NotFound.whenEmpty)
     }
 
@@ -73,16 +60,6 @@ object download {
           through(checkDownloadFile(pass)).
           through(unmodifiedWhen(noneMatch, f => f.meta.id, standardHeaders)).
           through(bytes.map(deliverPartial(store)).getOrElse(deliver(store))).
-          through(NotFound.whenEmpty)
-    }
-
-  def downloadPublishedZip(store: UploadStore)(implicit EC: ExecutionContext): Route[IO] =
-    Get >> paths.downloadPublishedZip.matcher / as[String] :: ifNoneMatch :: sharryPass map {
-      case id :: noneMatch :: pass :: HNil =>
-        store.getPublishedUpload(id).
-          through(checkDownload(pass)).
-          through(unmodifiedWhen(noneMatch, _ => id, standardHeaders)).
-          through(zipUpload(store, standardHeaders)).
           through(NotFound.whenEmpty)
     }
 
@@ -146,19 +123,6 @@ object download {
       case Left(r) => r
     })
 
-  private def zipUpload(store: UploadStore, modify: UploadInfo => ResponseUpdate[IO])(implicit EC: ExecutionContext): Pipe[IO, ResponseOr[UploadInfo], HttpResponse[IO]] =
-    _.map {
-      case Right(info) =>
-        val data = Stream.emit(info).covary[IO].
-          through(store.zipAll(8192 * 2)).
-          through(streams.toByteChunks)
-        Ok.streamBody(data)(encoder(MimeType.`application/zip`)) ++
-          withDisposition("attachment", info.upload.id+".zip") ++
-          modify(info)
-      case Left(r) =>
-        r
-    }
-
   private def unmodifiedWhen[A](tagOpt: Option[String]
     , id: A => String
     , modify: A => ResponseUpdate[IO]): Pipe[IO, ResponseOr[A], ResponseOr[A]] =
@@ -183,10 +147,10 @@ object download {
     _.through(checkDownload1(pass)).
       map(_.map(_._2))
 
-  private def checkDownload[A](pass: Option[String]): Pipe[IO, UploadInfo, ResponseOr[UploadInfo]] =
-    _.map(u => (u.upload, u)).
-      through(checkDownload1(pass)).
-      map(_.map(_._2))
+  // private def checkDownload[A](pass: Option[String]): Pipe[IO, UploadInfo, ResponseOr[UploadInfo]] =
+  //   _.map(u => (u.upload, u)).
+  //     through(checkDownload1(pass)).
+  //     map(_.map(_._2))
 
   private def encoder(mt: MimeType): StreamBodyEncoder[IO, ByteVector] =
     StreamBodyEncoder.byteVectorEncoder.withContentType(asContentType(mt))
@@ -202,9 +166,9 @@ object download {
       withLastModified(file.meta.timestamp) ++
       withDisposition("inline", file.filename)
 
-  private def standardHeaders(info: UploadInfo): ResponseUpdate[IO] = {
-    _ ++ withLastModified(info.upload.created) ++
-      info.upload.publishId.map(withETag[IO]).getOrElse(ResponseUpdate.identity[IO])
-  }
+  // private def standardHeaders(info: UploadInfo): ResponseUpdate[IO] = {
+  //   _ ++ withLastModified(info.upload.created) ++
+  //     info.upload.publishId.map(withETag[IO]).getOrElse(ResponseUpdate.identity[IO])
+  // }
 
 }

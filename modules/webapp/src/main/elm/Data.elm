@@ -196,9 +196,7 @@ type alias RemoteUrls =
     ,uploadPublish: String
     ,uploadUnpublish: String
     ,download: String
-    ,downloadZip: String
     ,downloadPublished: String
-    ,downloadPublishedZip: String
     ,profileEmail: String
     ,profilePassword: String
     ,checkPassword: String

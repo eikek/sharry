@@ -38,8 +38,8 @@ object libs {
 
   // https://github.com/tpolecat/doobie
   // MIT
-  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.2"
-  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.2"
+  val `doobie-core` = "org.tpolecat" %% "doobie-core" % "0.5.4"
+  val `doobie-hikari` = "org.tpolecat" %% "doobie-hikari" % "0.5.4"
 
   // https://jdbc.postgresql.org/
   // BSD
@@ -61,7 +61,7 @@ object libs {
 
   // https://github.com/Log4s/log4s
   // ASL 2.0
-  val log4s = "org.log4s" %% "log4s" % "1.7.0"
+  val log4s = "org.log4s" %% "log4s" % "1.8.2"
 
   // http://logback.qos.ch/
   // EPL1.0 or LGPL 2.1
@@ -96,7 +96,7 @@ object libs {
 
   // http://dnsjava.org/
   // BSD
-  val dnsjava = "dnsjava" % "dnsjava" % "2.1.8" intransitive()
+  val dnsjava = "dnsjava" % "dnsjava" % "2.1.9" intransitive()
 
   // https://github.com/eikek/yamusca
   // MIT
@@ -104,7 +104,7 @@ object libs {
 
   // https://github.com/eikek/bitpeace
   // MIT
-  val `bitpeace-core` = "com.github.eikek" %% "bitpeace-core" % "0.2.0"
+  val `bitpeace-core` = "com.github.eikek" %% "bitpeace-core" % "0.2.1"
 
   // https://github.com/scopt/scopt
   // MIT
