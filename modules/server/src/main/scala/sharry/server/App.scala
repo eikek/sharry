@@ -1,12 +1,14 @@
 package sharry.server
 
+import java.net.URL
 import java.nio.file.Path
 import java.nio.channels.AsynchronousChannelGroup
+
 import scala.collection.JavaConverters._
 import cats.effect.IO
 import bitpeace._
-import scala.concurrent.ExecutionContext
 
+import scala.concurrent.ExecutionContext
 import sharry.common.version
 import sharry.docs.route
 import sharry.docs.md.ManualContext
@@ -15,7 +17,9 @@ import sharry.store.upload._
 import sharry.server.authc._
 import sharry.webapp.route.webjar
 import sharry.common.data._
-import sharry.server.routes.{account, login, upload, download, alias, mail, settings}
+import sharry.server.routes.{account, alias, download, login, mail, settings, upload}
+
+import scala.io.Codec
 
 /** Instantiate the app from a given configuration */
 final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, SCH: fs2.Scheduler, EC: ExecutionContext) {
@@ -52,7 +56,7 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
   )
 
   val notifier: notification.Notifier = notification.scheduleNotify(
-    cfg.smtpSetting, cfg.webConfig, cfg.webmailConfig, uploadStore, accountStore)_
+    cfg.smtpSetting, cfg.webConfig, cfg.webmailConfig, uploadStore, accountStore)
 
 
   def endpoints = {
@@ -73,20 +77,18 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
     getClass.getClassLoader.getResources("reference.conf").
       asScala.toList.
       filter(_.toString contains "sharry-server").
-      map(scala.io.Source.fromURL(_).getLines.mkString("\n")).
+      map(urlToLines).
       headOption.getOrElse("")
   }
 
   private lazy val defaultCliConfig = {
     Option(getClass.getResource("/reference-cli.conf")).
-      map(scala.io.Source.fromURL(_).getLines.mkString("\n")).
-      headOption.getOrElse("")
+      map(urlToLines).getOrElse("")
   }
 
   private lazy val cliHelp = {
     Option(getClass.getResource("/cli-help.txt")).
-      map(scala.io.Source.fromURL(_).getLines.mkString("\n")).
-      headOption.getOrElse("")
+      map(urlToLines).getOrElse("")
   }
 
   def setupLogging(logFile: Path): Unit = {
@@ -102,5 +104,14 @@ final class App(val cfg: config.Config)(implicit ACG: AsynchronousChannelGroup, 
       config.doConfigure(logFile.toString)
     }
     StatusPrinter.printInCaseOfErrorsOrWarnings(context)
+  }
+
+  private def urlToLines(url: URL): String = {
+    val source = scala.io.Source.fromURL(url)(Codec.UTF8)
+    try {
+      source.getLines.mkString("\n")
+    } finally {
+      source.close()
+    }
   }
 }
