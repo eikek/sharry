@@ -1,6 +1,5 @@
-dev.conf
+_site/
 target/
-
-# ensime
-.ensime_cache/
-.ensime
+local/
+elm-stuff/
+result

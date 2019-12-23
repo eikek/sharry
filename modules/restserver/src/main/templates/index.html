@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <title>{{ flags.appName }}</title>
+        {{# cssUrls }}
+        <link rel="stylesheet" href="{{.}}"/>
+        {{/ cssUrls }}
+        {{# jsUrls }}
+        <script type="application/javascript" src="{{.}}"></script>
+        {{/ jsUrls}}
+
+        <link rel="apple-touch-icon" sizes="180x180" href="{{{faviconBase}}}/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{{faviconBase}}}/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{{faviconBase}}}/favicon-16x16.png">
+        <link rel="manifest" href="{{{faviconBase}}}/manifest.json">
+        <link rel="mask-icon" href="{{{faviconBase}}}/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+
+    </head>
+
+    <body>
+        <div id="sharry-app">
+        </div>
+
+        <script type="application/javascript">
+         var storedAccount = localStorage.getItem('account');
+         var account = storedAccount ? JSON.parse(storedAccount) : null;
+         var sharryFlags = {{{flagsJson}}};
+         var elmFlags = {
+             "account": account,
+             "config": sharryFlags
+         };
+        </script>
+        <script type="application/javascript" src="{{appExtraJs}}"></script>
+    </body>
+
+</html>

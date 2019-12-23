@@ -1,0 +1,30 @@
+options:
+  - title: Introduction
+    url: doc/
+    section: index
+
+  - title: Quickstart
+    url: doc/quickstart
+
+  - title: Installation
+    url: doc/install
+
+    nested_options:
+      - title: Migration
+        url: doc/migration
+
+  - title: Configuring
+    url: doc/configure
+
+  - title: Webapp
+    url: doc/webapp
+
+    nested_options:
+      - title: Screenshots
+        url: doc/screenshots
+
+  - title: REST Api
+    url: doc/rest
+
+  - title: Development
+    url: doc/dev

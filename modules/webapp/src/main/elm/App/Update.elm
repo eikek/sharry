@@ -1,246 +1,395 @@
-module App.Update exposing (..)
+module App.Update exposing (initPage, update)
 
-import Http
+import Api
+import App.Data exposing (..)
+import Browser exposing (UrlRequest(..))
+import Browser.Navigation as Nav
+import Data.Flags
+import Page exposing (Page(..))
+import Page.Account.Data
+import Page.Account.Update
+import Page.Alias.Data
+import Page.Alias.Update
+import Page.Detail.Data
+import Page.Detail.Update
+import Page.Home.Data
+import Page.Home.Update
+import Page.Info.Data
+import Page.Info.Update
+import Page.Login.Data
+import Page.Login.Update
+import Page.NewInvite.Data
+import Page.NewInvite.Update
+import Page.OpenDetail.Data
+import Page.OpenDetail.Update
+import Page.OpenShare.Data
+import Page.OpenShare.Update
+import Page.Register.Data
+import Page.Register.Update
+import Page.Settings.Data
+import Page.Settings.Update
+import Page.Share.Data
+import Page.Share.Update
+import Page.Upload.Data
+import Page.Upload.Update
+import Ports
+import Url
+import Util.Update
 
-import Resumable
-import Data exposing (accountDecoder)
-import App.Model exposing (..)
-import Ports exposing (..)
-import PageLocation as PL
 
-import App.Pages as Pages
-import Pages.Login.Update as LoginUpdate
-import Pages.AccountEdit.Update as AccountEditUpdate
-import Pages.Upload.Model as UploadModel
-import Pages.Upload.Update as UploadUpdate
-import Pages.Download.Model as DownloadModel
-import Pages.Download.Update as DownloadUpdate
-import Pages.UploadList.Model as UploadListModel
-import Pages.UploadList.Update as UploadListUpdate
-import Pages.Profile.Model as ProfileModel
-import Pages.Profile.Update as ProfileUpdate
-import Pages.AliasList.Model as AliasListModel
-import Pages.AliasList.Update as AliasListUpdate
-import Pages.AliasUpload.Model as AliasUploadModel
-import Pages.AliasUpload.Update as AliasUploadUpdate
-import Pages.Manual.Model as ManualModel
-import Pages.Error.Model as ErrorModel
-
-update: Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        UrlChange loc ->
+        HomeMsg lm ->
+            updateHome lm model
+
+        LoginMsg lm ->
+            updateLogin lm model
+
+        RegisterMsg lm ->
+            updateRegister lm model
+
+        NewInviteMsg lm ->
+            updateNewInvite lm model
+
+        InfoMsg lm ->
+            updateInfo lm model
+
+        AccountMsg lm ->
+            updateAccount lm model
+
+        AliasMsg lm ->
+            updateAlias lm model
+
+        UploadMsg lm ->
+            updateUpload lm model
+
+        ShareMsg lm ->
+            updateShare lm model
+
+        OpenShareMsg lm ->
+            updateOpenShare lm model
+
+        SettingsMsg lm ->
+            updateSettings lm model
+
+        DetailMsg lm ->
+            updateDetail lm model
+
+        OpenDetailMsg lm ->
+            updateOpenDetail lm model
+
+        SetPage p ->
+            ( { model | page = p }
+            , Cmd.none
+            )
+
+        ToggleNavMenu ->
+            ( { model | navMenuOpen = not model.navMenuOpen }
+            , Cmd.none
+            )
+
+        UploadStateMsg (Ok lmsg) ->
+            Util.Update.andThen1
+                [ updateShare (Page.Share.Data.Uploading lmsg)
+                , updateOpenShare (Page.OpenShare.Data.Uploading lmsg)
+                , updateDetail (Page.Detail.Data.Uploading lmsg)
+                ]
+                model
+
+        UploadStoppedMsg err ->
+            Util.Update.andThen1
+                [ updateShare (Page.Share.Data.UploadStopped err)
+                , updateOpenShare (Page.OpenShare.Data.UploadStopped err)
+                , updateDetail (Page.Detail.Data.UploadStopped err)
+                ]
+                model
+
+        UploadStateMsg (Err str) ->
             let
-                (model_, cmd) = Pages.withLocation {model | location = loc}
+                _ =
+                    Debug.log "upload err" str
             in
-                case model.user of
-                    Just _ ->
-                        -- unfortunately, the upload pages still needs some
-                        -- more: setup of resumable.js event handlers. This is
-                        -- tricky because the command must execute _after_ the
-                        -- dom elements are present.
-                        --
-                        -- putting the below in `findNewSharePage` function
-                        -- resulted in an uncaugh-type runtime error from
-                        -- within elm, that I couldn't resolve.
-                        --
-                        -- So now these special cases are handled here. In
-                        -- order to route the response back to the correct
-                        -- part of the model, we add a page attribute.
-                        if model_.page == NewSharePage then
-                            let
-                                cfg = Resumable.makeStandardConfig model_.serverConfig
-                                msgs = List.map UploadMsg (UploadModel.resumableMsg (Resumable.Initialize {cfg | page = "newshare"}))
-                                (model__, cmd_) = List.foldl combineResults (model_, Cmd.none) msgs
-                            in
-                                model__ ! [cmd, cmd_]
-                        else
-                            (model_, cmd)
+            ( model, Cmd.none )
 
-                    Nothing ->
-                        if isPublicPage model_ then
-                            (model_, cmd)
-                        else
-                            model_ ! [PL.loginPage loc]
+        VersionResp (Ok info) ->
+            ( { model | version = info }, Cmd.none )
 
-        SetPage cmd ->
-            model ! [cmd]
-
-        DeferredTick time ->
-            {model|deferred = []} ! model.deferred
-
-        LoginMsg msg ->
-            let
-                (val, cmd, user) = LoginUpdate.update msg model.login
-                redirect = PL.loginPageRedirect model.location
-            in
-                case user of
-                    Just n ->
-                        {model | login = val, page = IndexPage, user = Just n } ! [setAccount n, redirect]
-                    _ ->
-                        ({model | login = val}, Cmd.map LoginMsg cmd)
-
-        AccountEditMsg msg ->
-            let
-                (val, cmd) = AccountEditUpdate.update msg model.accountEdit
-            in
-                ({model | accountEdit = val}, Cmd.map AccountEditMsg cmd)
-
-        UploadMsg msg ->
-            let
-                (val, cmd, cmdd) = UploadUpdate.update msg model.upload
-            in
-                ({model| upload = val, deferred = (Cmd.map UploadMsg cmdd) :: model.deferred}, Cmd.map UploadMsg cmd)
-
-        DownloadMsg msg ->
-            let
-                (val, cmd) = DownloadUpdate.update msg model.download
-            in
-                {model | download = val} ! [Cmd.map DownloadMsg cmd]
+        VersionResp (Err _) ->
+            ( model, Cmd.none )
 
         Logout ->
-            case model.user of
-                Just acc ->
-                    initModel model.serverConfig Nothing model.location ! [removeAccount acc, PL.indexPage]
-                Nothing ->
-                    (model, Cmd.none)
+            ( model
+            , Cmd.batch
+                [ Api.logout model.flags LogoutResp
+                , Ports.removeAccount ()
+                ]
+            )
 
-        LoginRefresh time ->
-            case model.user of
-                Just acc ->
-                    (model, refreshCookie model)
-                Nothing ->
-                    (model, Cmd.none)
+        LogoutResp _ ->
+            ( { model | loginModel = Page.Login.Data.empty }, Page.goto (LoginPage ( Nothing, False )) )
 
-        LoginRefreshDone acc ->
-            (model, Cmd.none)
-
-        RandomString s ->
-            update (UploadMsg (UploadModel.randomPasswordMsg s)) model
-
-        ResumableMsg page rmsg ->
-            -- we have to decide here which pages receive the resumable events
-            let
-                (model_, cmd_) =
-                    if page == "newshare" then
-                        let
-                            msgs = List.map UploadMsg (UploadModel.resumableMsg rmsg)
-                        in
-                            List.foldl combineResults (model, Cmd.none) msgs
-                    else if page == "aliasupload" then
-                        let
-                            msgs = List.map AliasUploadMsg (AliasUploadModel.makeResumableMsg rmsg)
-                        in
-                            List.foldl combineResults (model, Cmd.none) msgs
-                    else
-                        model ! []
-            in
-                model_ ! [cmd_]
-
-        UploadData (Ok data) ->
-            let
-                dlmodel = DownloadModel.makeModel data model.serverConfig model.user
-                defcmd = (Ports.initAccordionAndTabs ()) :: (Ports.initEmbeds ()) :: model.deferred
-            in
-                {model | download = dlmodel, page = DownloadPage, deferred = defcmd} ! []
-
-        UploadData (Err error) ->
-            let
-                msg = Debug.log "Error getting published download " (Data.errorMessage error)
-            in
-                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
-
-        LoadUploadsResult (Ok uploads) ->
-            {model | uploadList = UploadListModel.makeModel model.serverConfig.urls uploads, page = UploadListPage} ! []
-
-        LoadUploadsResult (Err error) ->
-            let
-                msg = Debug.log "Error getting list of uploads " (Data.errorMessage error)
-            in
-                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
-
-        LoadAliasesResult (Ok aliases) ->
-            {model | aliases = AliasListModel.makeModel model.serverConfig aliases, page = AliasListPage} ! []
-
-        LoadAliasesResult (Err error) ->
-            let
-                msg = Debug.log "Error getting list of aliases " (Data.errorMessage error)
-            in
-                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
-
-        LoadAliasResult (Ok alia) ->
-            let
-                cfg = Resumable.makeAliasConfig model.serverConfig alia.id
-                msgs = List.map AliasUploadMsg (AliasUploadModel.makeResumableMsg (Resumable.Initialize {cfg | page = "aliasupload"}))
-                (model_, cmd_) = List.foldl combineResults (model, Cmd.none) msgs
-            in
-                {model_ | aliasUpload = AliasUploadModel.makeModel model.serverConfig model.user alia, page = AliasUploadPage} ! [cmd_]
-
-        LoadAliasResult (Err error) ->
-            let
-                msg = Debug.log "Error getting alias " (Data.errorMessage error)
-            in
-                --empty/invalid alias is handled at the page
-                if Data.isNotFound error then
-                    model ! [PL.timeoutCmd error]
-                else
-                    {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! [PL.timeoutCmd error]
-
-        UploadListMsg msg ->
-            let
-                (ulm, ulc) = UploadListUpdate.update msg model.uploadList
-            in
-                {model | uploadList = ulm} ! [Cmd.map UploadListMsg ulc]
-
-        ProfileMsg msg ->
-            case model.profile of
-                Just um ->
+        SessionCheckResp res ->
+            case res of
+                Ok lr ->
                     let
-                        (m, c) = ProfileUpdate.update msg um
+                        newFlags =
+                            if lr.success then
+                                Data.Flags.withAccount model.flags lr
+
+                            else
+                                Data.Flags.withoutAccount model.flags
+
+                        command =
+                            if lr.success then
+                                Api.refreshSession newFlags SessionCheckResp
+
+                            else
+                                Cmd.batch [ Ports.removeAccount (), Page.goto (Page.loginPage model.page) ]
                     in
-                        {model | profile = Just m} ! [Cmd.map ProfileMsg c]
-                Nothing ->
-                    model ! []
+                    ( { model | flags = newFlags }, command )
 
-        AliasListMsg msg ->
+                Err _ ->
+                    ( model, Cmd.batch [ Ports.removeAccount (), Page.goto (Page.loginPage model.page) ] )
+
+        NavRequest req ->
+            case req of
+                Internal url ->
+                    let
+                        urlStr =
+                            Url.toString url
+
+                        extern =
+                            not <|
+                                String.startsWith
+                                    (model.flags.config.baseUrl ++ "/app")
+                                    urlStr
+
+                        isCurrent =
+                            Page.fromUrl url
+                                |> Maybe.map (\p -> p == model.page)
+                                |> Maybe.withDefault True
+                    in
+                    ( model
+                    , if extern then
+                        Nav.load urlStr
+
+                      else if isCurrent then
+                        Cmd.none
+
+                      else
+                        Nav.pushUrl model.key (Url.toString url)
+                    )
+
+                External url ->
+                    ( model
+                    , Nav.load url
+                    )
+
+        NavChange url ->
             let
-                (m, c) = AliasListUpdate.update msg model.aliases
+                page =
+                    Page.fromUrl url |> Maybe.withDefault HomePage
+
+                ( m, c ) =
+                    initPage model page
             in
-                {model | aliases = m} ! [Cmd.map AliasListMsg c]
-
-        AliasUploadMsg msg ->
-            let
-                (val, cmd, cmdd) = AliasUploadUpdate.update msg model.aliasUpload
-            in
-                ({model| aliasUpload = val, deferred = (Cmd.map AliasUploadMsg cmdd) :: model.deferred}, Cmd.map AliasUploadMsg cmd)
-
-        ManualPageContent (Ok cnt) ->
-            let
-                (mm, cmd) = ManualModel.update (ManualModel.Content cnt) model.manualModel
-            in
-                {model | manualModel = mm} ! [Cmd.map ManualMsg cmd]
-
-        ManualPageContent (Err error) ->
-            let
-                msg = Debug.log "Error loading manual page " (Data.errorMessage error)
-            in
-                {model| page = ErrorPage, errorModel = ErrorModel.initModel msg} ! []
-
-        ManualMsg msg ->
-            let
-                (mm, cmd) = ManualModel.update msg model.manualModel
-            in
-                {model | manualModel = mm} ! [Cmd.map ManualMsg cmd]
+            ( { m | page = page }, c )
 
 
-combineResults: Msg -> (Model, Cmd Msg) -> (Model, Cmd Msg)
-combineResults msg (model, cmd) =
+updateOpenDetail : Page.OpenDetail.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateOpenDetail lmsg model =
     let
-        (m_, c_) = update msg model
+        ( lm, lc ) =
+            Page.OpenDetail.Update.update model.flags lmsg model.openDetailModel
     in
-        (m_, Cmd.batch [cmd, c_])
+    ( { model | openDetailModel = lm }
+    , Cmd.map OpenDetailMsg lc
+    )
 
-refreshCookie: Model -> Cmd Msg
-refreshCookie model =
-    Http.post (model.serverConfig.urls.authCookie) Http.emptyBody accountDecoder
-        |> Http.send LoginRefreshDone
+
+updateDetail : Page.Detail.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateDetail lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Detail.Update.update model.flags lmsg model.detailModel
+    in
+    ( { model | detailModel = lm }
+    , Cmd.map DetailMsg lc
+    )
+
+
+updateSettings : Page.Settings.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateSettings lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Settings.Update.update model.flags lmsg model.settingsModel
+    in
+    ( { model | settingsModel = lm }
+    , Cmd.map SettingsMsg lc
+    )
+
+
+updateAlias : Page.Alias.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateAlias lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Alias.Update.update model.key model.flags lmsg model.aliasModel
+    in
+    ( { model | aliasModel = lm }
+    , Cmd.map AliasMsg lc
+    )
+
+
+updateUpload : Page.Upload.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateUpload lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Upload.Update.update model.key model.flags lmsg model.uploadModel
+    in
+    ( { model | uploadModel = lm }
+    , Cmd.map UploadMsg lc
+    )
+
+
+updateOpenShare : Page.OpenShare.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateOpenShare lmsg model =
+    let
+        aliasId =
+            case model.page of
+                OpenSharePage id ->
+                    id
+
+                _ ->
+                    ""
+
+        ( lm, lc ) =
+            Page.OpenShare.Update.update aliasId model.flags lmsg model.openShareModel
+    in
+    ( { model | openShareModel = lm }
+    , Cmd.map OpenShareMsg lc
+    )
+
+
+updateShare : Page.Share.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateShare lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Share.Update.update model.flags lmsg model.shareModel
+    in
+    ( { model | shareModel = lm }
+    , Cmd.map ShareMsg lc
+    )
+
+
+updateAccount : Page.Account.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateAccount lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Account.Update.update model.key model.flags lmsg model.accountModel
+    in
+    ( { model | accountModel = lm }
+    , Cmd.map AccountMsg lc
+    )
+
+
+updateRegister : Page.Register.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateRegister lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Register.Update.update model.flags lmsg model.registerModel
+    in
+    ( { model | registerModel = lm }
+    , Cmd.map RegisterMsg lc
+    )
+
+
+updateNewInvite : Page.NewInvite.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateNewInvite lmsg model =
+    let
+        ( lm, lc ) =
+            Page.NewInvite.Update.update model.flags lmsg model.newInviteModel
+    in
+    ( { model | newInviteModel = lm }
+    , Cmd.map NewInviteMsg lc
+    )
+
+
+updateLogin : Page.Login.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateLogin lmsg model =
+    let
+        ( lm, lc, ar ) =
+            Page.Login.Update.update (Page.loginPageReferrer model.page) model.flags lmsg model.loginModel
+
+        newFlags =
+            Maybe.map (Data.Flags.withAccount model.flags) ar
+                |> Maybe.withDefault model.flags
+    in
+    ( { model | loginModel = lm, flags = newFlags }
+    , Cmd.map LoginMsg lc
+    )
+
+
+updateHome : Page.Home.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateHome lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Home.Update.update model.flags lmsg model.homeModel
+    in
+    ( { model | homeModel = lm }
+    , Cmd.map HomeMsg lc
+    )
+
+
+updateInfo : Page.Info.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateInfo lmsg model =
+    let
+        ( lm, lc ) =
+            Page.Info.Update.update model.flags lmsg model.infoModel
+    in
+    ( { model | infoModel = lm }
+    , Cmd.map InfoMsg lc
+    )
+
+
+initPage : Model -> Page -> ( Model, Cmd Msg )
+initPage model page =
+    case page of
+        HomePage ->
+            ( model, Cmd.none )
+
+        LoginPage _ ->
+            updateLogin Page.Login.Data.Init model
+
+        RegisterPage ->
+            ( model, Cmd.none )
+
+        NewInvitePage ->
+            ( model, Cmd.none )
+
+        InfoPage _ ->
+            ( model, Cmd.none )
+
+        AccountPage aid ->
+            updateAccount (Page.Account.Data.Init aid) model
+
+        AliasPage aid ->
+            updateAlias (Page.Alias.Data.Init aid) model
+
+        UploadPage ->
+            updateUpload Page.Upload.Data.Init model
+
+        SharePage ->
+            ( model, Cmd.none )
+
+        OpenSharePage _ ->
+            ( model, Cmd.none )
+
+        SettingsPage ->
+            updateSettings Page.Settings.Data.Init model
+
+        DetailPage id ->
+            updateDetail (Page.Detail.Data.Init id) model
+
+        OpenDetailPage id ->
+            updateOpenDetail (Page.OpenDetail.Data.Init id) model

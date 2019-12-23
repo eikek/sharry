@@ -1,88 +1,109 @@
 module Main exposing (..)
 
-import AnimationFrame
-import Time exposing (Time, millisecond)
-import App.Model exposing (..)
-import App.Update
-import App.View
-import Data exposing (Account, RemoteConfig)
-import Pages.Login.Model as LoginModel
-import Pages.Login.Commands as LoginCmd
-import Pages.Upload.Model as UploadModel
-import Resumable
+import Api
+import App.Data exposing (..)
+import App.Update exposing (..)
+import App.View exposing (..)
+import Browser exposing (Document)
+import Browser.Navigation exposing (Key)
+import Data.Flags exposing (Flags)
+import Data.UploadState exposing (UploadState)
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Page exposing (Page(..))
 import Ports
-import Navigation
+import Url exposing (Url)
 
-type alias Flags =
-    { account: Maybe Account
-    , remoteConfig: RemoteConfig
+
+
+-- MAIN
+
+
+main : Program Flags Model Msg
+main =
+    Browser.application
+        { init = init
+        , view = viewDoc
+        , update = update
+        , subscriptions = subscriptions
+        , onUrlRequest = NavRequest
+        , onUrlChange = NavChange
+        }
+
+
+
+-- MODEL
+
+
+init : Flags -> Url -> Key -> ( Model, Cmd Msg )
+init flags url key =
+    let
+        im =
+            App.Data.init key url flags
+
+        page =
+            checkPage flags im.page
+
+        ( m, cmd ) =
+            if im.page == page then
+                App.Update.initPage im page
+
+            else
+                ( im, Page.goto page )
+
+        sessionCheck =
+            case m.flags.account of
+                Just _ ->
+                    Api.loginSession flags SessionCheckResp
+
+                Nothing ->
+                    Cmd.none
+    in
+    ( m, Cmd.batch [ cmd, Api.versionInfo flags VersionResp, sessionCheck ] )
+
+
+viewDoc : Model -> Document Msg
+viewDoc model =
+    { title = model.flags.config.appName
+    , body = [ view model ]
     }
 
-init: Flags -> Navigation.Location -> (Model, Cmd Msg)
-init flags location =
-    let
-        hasAccount = Maybe.map (\a -> True) flags.account |> Maybe.withDefault False
-        model = initModel flags.remoteConfig flags.account location
-        (model_, cmd_) = App.Update.update (UrlChange location) model
-        cmd = Cmd.batch
-              [
-               if flags.remoteConfig.authEnabled || hasAccount then
-                   Cmd.none
-               else
-                   Cmd.map LoginMsg (LoginCmd.authenticate (LoginModel.sharryModel flags.remoteConfig.urls flags.remoteConfig.welcomeMessage))
-              ,cmd_
-              ]
-    in
-        (model_, cmd)
 
 
-fileAddedMsg: (String, Resumable.File) -> Msg
-fileAddedMsg (page, f) =
-    ResumableMsg page (Resumable.FileAdded f)
+-- SUBSCRIPTIONS
 
-fileProgressMsg: (String, Float) -> Msg
-fileProgressMsg (page, percent) =
-    ResumableMsg page (Resumable.Progress percent)
 
-fileErrorMsg: (String, String,  Resumable.File) -> Msg
-fileErrorMsg (page, msg, file) =
-    ResumableMsg page (Resumable.FileError file msg)
+uploadStateSub : Sub Msg
+uploadStateSub =
+    Ports.uploadState (Data.UploadState.decode >> UploadStateMsg)
 
-fileSuccessMsg: (String, Resumable.File) -> Msg
-fileSuccessMsg (page, file) =
-    ResumableMsg page (Resumable.FileSuccess file)
 
-fileMaxSizeError: (String, Resumable.File) -> Msg
-fileMaxSizeError (page, file) =
-    ResumableMsg page (Resumable.FileError file "The maximum size limit is exceeded!")
+uploadStopped : Sub Msg
+uploadStopped =
+    Ports.uploadStopped UploadStoppedMsg
 
-fileMaxCountError: (String, Resumable.File) -> Msg
-fileMaxCountError (page, file) =
-    ResumableMsg page (Resumable.FileError file "The maximum file count limit is exceeded!")
 
-subscriptions: Model -> Sub Msg
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Time.every (model.serverConfig.cookieAge * millisecond * 0.9) LoginRefresh
-        , if model.deferred == [] then Sub.none else AnimationFrame.times DeferredTick
-        , Ports.randomString RandomString
-        , Ports.resumableHandle (\(page, h) -> ResumableMsg page (Resumable.SetHandle h))
-        , Ports.resumableFileAdded fileAddedMsg
-        , Ports.resumableProgress fileProgressMsg
-        , Ports.resumableError fileErrorMsg
-        , Ports.resumableFileSuccess fileSuccessMsg
-        , Ports.resumableComplete (\h -> ResumableMsg h Resumable.UploadComplete)
-        , Ports.resumableStarted (\h -> ResumableMsg h Resumable.UploadStarted)
-        , Ports.resumablePaused (\h -> ResumableMsg h Resumable.UploadPaused)
-        , Ports.resumableMaxFilesError fileMaxCountError
-        , Ports.resumableMaxFileSizeError fileMaxSizeError
-        ]
+    case model.page of
+        SharePage ->
+            Sub.batch
+                [ uploadStateSub
+                , uploadStopped
+                ]
 
+        OpenSharePage _ ->
+            Sub.batch
+                [ uploadStateSub
+                , uploadStopped
+                ]
 
-main =
-    Navigation.programWithFlags UrlChange
-        { init = init
-        , view = App.View.view
-        , update = App.Update.update
-        , subscriptions = subscriptions
-        }
+        DetailPage _ ->
+            Sub.batch
+                [ uploadStateSub
+                , uploadStopped
+                ]
+
+        _ ->
+            Sub.none
