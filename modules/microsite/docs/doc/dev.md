@@ -9,18 +9,23 @@ permalink: doc/dev
 ## Building
 
 [Sbt](https://scala-sbt.org) is used to build the application. Clone
-the sources and run:
+the sources, start `sbt` in the source root and run inside the sbt
+shell:
 
 - `make` to compile all sources (Elm + Scala)
 - `restserver/universal:packageBin` to create zip packages
 - `restserver/debian:packageBin` to create debian packages
 
-The zip files can be found afterwards in:
+The zip file can be found afterwards in:
 
 ```
-modules/restserver/target/universal
+modules/restserver/target/universal/
 ```
 
+The `deb` file is in
+```
+modules/restserver/target/
+```
 
 ## Starting Servers with `reStart`
 

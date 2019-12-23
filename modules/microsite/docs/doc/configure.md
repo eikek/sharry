@@ -166,7 +166,8 @@ The `server-secret` is used to sign the token. If multiple REST
 servers are deployed, all must share the same server secret. Otherwise
 tokens from one instance are not valid on another instance. The secret
 can be given as Base64 encoded string or in hex form. Use the prefix
-`hex:` and `b64:`, respectively.
+`hex:` and `b64:`, respectively. If these prefixes are missing, the
+string's utf8 bytes are used.
 
 The `session-valid` deterimens how long a token is valid. This can be
 just some minutes, the web application obtains new ones

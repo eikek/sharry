@@ -25,7 +25,7 @@ object Implicits {
       if (str.startsWith("hex:")) ByteVector.fromHex(str.drop(4)).toRight("Invalid hex value.")
       else if (str.startsWith("b64:"))
         ByteVector.fromBase64(str.drop(4)).toRight("Invalid Base64 string.")
-      else ByteVector.fromHex(str).toRight("Invalid hex value.")
+      else ByteVector.encodeUtf8(str).left.map(_.getMessage())
     }))
 
   implicit val byteSizeReader: ConfigReader[ByteSize] =

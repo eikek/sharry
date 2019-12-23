@@ -1242,27 +1242,55 @@ components:
         id:
           type: string
           format: ident
+          description: |
+            The (private) id of the share.
         name:
           type: string
+          description: |
+            An optional name.
         aliasId:
           type: string
           format: ident
+          description: |
+            If the share was created via an alias page and that alias
+            still exists, its id is given.
         aliasName:
           type: string
+          description: |
+            If the share was created via an alias page, this is the
+            name of that alias. Even if the alias doesn't exist
+            anymore, the name is kept.
         validity:
           type: integer
           format: duration
+          description: |
+            The validity duration in milliseconds.
         maxViews:
           type: integer
+          description: |
+            How many times public shares can be viewed until they are
+            closed.
         password:
           type: boolean
+          description: |
+            An optional password for protecting the share with a
+            second secret (the publish-id being the first).
         descriptionRaw:
           type: string
+          description: |
+            The *raw* description as given by the user. Descriptions
+            are processed by the server as mustache templates. This
+            contains the template as is.
         description:
           type: string
+          description: |
+            The description rendered as mustache template. The
+            mustache template may refer to the attached files.
         created:
           type: integer
           format: date-time
+          description: |
+            When the share has been created.
         publishInfo:
           $ref: "#/components/schemas/SharePublish"
         files:
@@ -1283,22 +1311,42 @@ components:
         id:
           type: string
           format: ident
+          description: |
+            The public id of the share.
         enabled:
           type: boolean
+          description: |
+            Whether the public share is enabled. If a share is
+            unpublished, this data is still there, but the `enabled`
+            flag is set to false. This allows to re-publish it using
+            the same id thus keeping published links stable.
         views:
           type: integer
           format: int32
+          description: |
+            How many times the public share was accessed.
         publishDate:
           type: integer
           format: date-time
+          description: |
+            When the share was published.
         publishUntil:
           type: integer
           format: date-time
+          description: |
+            End date of the public share. After this point in time the
+            public share will not be available anymore.
         expired:
           type: boolean
+          description: |
+            Whether this share is expired. That is, `publishUntil` is
+            before *now*. This is kind of redundant, but saves clients
+            from syncing clocks with the server.
         lastAccess:
           type: integer
           format: date-time
+          description: |
+            The last time the public share has been accessed.
     ShareFile:
       description: |
         Details about a file belonging to a share.
@@ -1313,18 +1361,33 @@ components:
         id:
           type: string
           format: ident
+          description: |
+            The identifier of that file.
         filename:
           type: string
+          description: |
+            An optional filename.
         size:
           type: integer
           format: size
+          description: |
+            The size of the file as advertised when the upload is
+            initiated.
         mimetype:
           type: string
+          description: |
+            The mimetype as detected by Sharry.
         checksum:
           type: string
+          description: |
+            The (sha256) checksum of the file's contents.
         storedSize:
           type: integer
           format: size
+          description: |
+            This indicates the size of bytes that have really been
+            written to the store. If this differs to the `size`
+            property, then the file is only partially uploaded.
     ShareList:
       description: |
         A list of shares
