@@ -70,7 +70,12 @@ view flags model =
                       else
                         renderOAuthButtons flags model
                     , resultMessage model
-                    , div [ class "ui very basic right aligned segment" ]
+                    , div
+                        [ classList
+                            [ ( "ui very basic right aligned segment", True )
+                            , ( "invisible hidden", flags.config.signupMode == "closed" )
+                            ]
+                        ]
                         [ text "No account? "
                         , a [ class "ui icon link", Page.href RegisterPage ]
                             [ i [ class "edit icon" ] []
