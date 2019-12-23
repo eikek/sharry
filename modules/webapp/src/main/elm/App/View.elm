@@ -297,10 +297,10 @@ footer model =
     div [ class "ui footer" ]
         [ a [ href "https://eikek.github.io/sharry" ]
             [ i [ class "ui github icon" ] []
+            , text "Sharry "
             ]
         , span []
-            [ text "Sharry "
-            , text model.version.version
+            [ text model.version.version
             , text " (#"
             , String.left 8 model.version.gitCommit |> text
             , text ")"

@@ -106,10 +106,6 @@ update msg model =
                 model
 
         UploadStateMsg (Err str) ->
-            let
-                _ =
-                    Debug.log "upload err" str
-            in
             ( model, Cmd.none )
 
         VersionResp (Ok info) ->

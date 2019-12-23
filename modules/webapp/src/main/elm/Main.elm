@@ -86,24 +86,22 @@ uploadStopped =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+    let
+        uploadSubs =
+            Sub.batch
+                [ uploadStateSub
+                , uploadStopped
+                ]
+    in
     case model.page of
         SharePage ->
-            Sub.batch
-                [ uploadStateSub
-                , uploadStopped
-                ]
+            uploadSubs
 
         OpenSharePage _ ->
-            Sub.batch
-                [ uploadStateSub
-                , uploadStopped
-                ]
+            uploadSubs
 
         DetailPage _ ->
-            Sub.batch
-                [ uploadStateSub
-                , uploadStopped
-                ]
+            uploadSubs
 
         _ ->
             Sub.none
