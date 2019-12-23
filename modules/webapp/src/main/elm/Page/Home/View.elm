@@ -30,4 +30,14 @@ view model =
                     ]
                 ]
             ]
+        , div [ class "documentation-link" ]
+            [ a
+                [ class "link"
+                , href "https://eikek.github.io/sharry/doc/webapp"
+                , target "_blank"
+                ]
+                [ i [ class "external alternate icon" ] []
+                , text "Documentation"
+                ]
+            ]
         ]

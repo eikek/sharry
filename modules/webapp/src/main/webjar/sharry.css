@@ -46,6 +46,11 @@
     height: 100%;
 }
 
+.default-layout .documentation-link {
+    text-align: center;
+    font-size: smaller;
+}
+
 .login-layout, .register-layout, .newinvite-layout {
     background: #aaa;
     height: 101vh;
