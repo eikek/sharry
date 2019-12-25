@@ -1,42 +1,55 @@
 port module Ports exposing (..)
 
-import Data exposing (..)
-import Resumable
+import Api.Model.AuthResult exposing (AuthResult)
+import Json.Decode as D
 
--- Ports
 
-port setAccount : Account -> Cmd msg
-port removeAccount : Account -> Cmd msg
+port setAccount : AuthResult -> Cmd msg
 
-port makeRandomString: String -> Cmd msg
-port randomString: (String -> msg) -> Sub msg
 
-port setProgress: (String, Float, Bool) -> Cmd msg
+port removeAccount : () -> Cmd msg
 
-port initAccordionAndTabs: () -> Cmd msg
-port initEmbeds: () -> Cmd msg
 
-port makeResumable: Resumable.Config -> Cmd msg
-port resetResumable: Resumable.Handle -> Cmd msg
-port resumableHandle: ((String, Resumable.Handle) -> msg) -> Sub msg
+port submitFiles : D.Value -> Cmd msg
 
-port resumableRebind: Resumable.Handle -> Cmd msg
 
-port resumableStart: Resumable.Handle -> Cmd msg
-port resumablePause: Resumable.Handle -> Cmd msg
-port resumableCancel: Resumable.Handle -> Cmd msg
-port resumableRetry: (Resumable.Handle, List String) -> Cmd msg
-port resumableSetComplete: (Resumable.Handle, String) -> Cmd msg
+{-| Information from JS about an upload that is currently in progress
+or completed.
 
-port resumableFileAdded: ((String, Resumable.File) -> msg) -> Sub msg
-port resumableFileSuccess: ((String, Resumable.File) -> msg) -> Sub msg
-port resumableStarted: (String -> msg) -> Sub msg
-port resumablePaused: (String -> msg) -> Sub msg
-port resumableProgress: ((String, Float) -> msg) -> Sub msg
-port resumableComplete: (String -> msg) -> Sub msg
-port resumableError: ((String, String, Resumable.File) -> msg) -> Sub msg
+The JSON data is read into a [UploadState](#Data.UploadState) data
+type.
 
-port resumableMaxFileSizeError: ((String, Resumable.File) -> msg) -> Sub msg
-port resumableMaxFilesError: ((String, Resumable.File) -> msg) -> Sub msg
+-}
+port uploadState : (D.Value -> msg) -> Sub msg
 
-port reloadPage: () -> Cmd msg
+
+{-| Run JS code to set the progress of a Semantic-UI progress div to
+some value.
+
+The string in the tuple is the element id, the second part the value
+in percent from 0 to 100.
+
+-}
+port setProgress : List ( String, Int ) -> Cmd msg
+
+
+{-| Requests to stop the current upload.
+-}
+port stopUpload : String -> Cmd msg
+
+
+port startUpload : String -> Cmd msg
+
+
+{-| Callback from the JS side to tell when a call to `stopUpload` has
+completed.
+-}
+port uploadStopped : (Maybe String -> msg) -> Sub msg
+
+
+{-| Scroll to the top
+-}
+port scrollTop : () -> Cmd msg
+
+
+port scrollToElem : String -> Cmd msg

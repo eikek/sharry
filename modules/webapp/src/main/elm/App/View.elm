@@ -1,202 +1,308 @@
-module App.View exposing (..)
+module App.View exposing (view)
 
-import Html exposing (Html, Attribute, button, div, text, span, h1, a, i, p)
-import Html.Attributes exposing (class, classList, href)
+import Api.Model.AuthResult exposing (AuthResult)
+import App.Data exposing (..)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import List
-import Color exposing (Color)
+import Page exposing (Page(..))
+import Page.Account.View
+import Page.Alias.View
+import Page.Detail.View
+import Page.Home.View
+import Page.Info.View
+import Page.Login.View
+import Page.NewInvite.View
+import Page.OpenDetail.View
+import Page.OpenShare.View
+import Page.Register.View
+import Page.Settings.View
+import Page.Share.View
+import Page.Upload.View
 
-import App.Update exposing (..)
-import App.Model exposing (..)
-import App.Pages exposing (..)
 
-import Data exposing (Account)
-import PageLocation as PL
-import Pages.Login.View as LoginView
-import Pages.AccountEdit.View as AccountEditView
-import Pages.Upload.View as UploadView
-import Pages.Download.View as DownloadView
-import Pages.UploadList.View as UploadListView
-import Pages.Profile.View as ProfileView
-import Pages.AliasList.View as AliasListView
-import Pages.AliasUpload.View as AliasUploadView
-import Pages.Timeout.View as TimeoutView
-import Pages.Manual.View as ManualView
-import Pages.Error.View as ErrorView
-
-view: Model -> Html Msg
+view : Model -> Html Msg
 view model =
-    case model.user of
-        Nothing ->
-            case model.page of
-                DownloadPage ->
-                    div [class "ui container"]
-                        [Html.map DownloadMsg (DownloadView.view model.download)
-                        ,(footer model)
+    case model.page of
+        LoginPage _ ->
+            loginLayout model
+
+        RegisterPage ->
+            registerLayout model
+
+        _ ->
+            defaultLayout model
+
+
+loginLayout : Model -> Html Msg
+loginLayout model =
+    div [ class "login-layout" ]
+        [ viewLogin model
+        , footer model
+        ]
+
+
+registerLayout : Model -> Html Msg
+registerLayout model =
+    div [ class "register-layout" ]
+        [ viewRegister model
+        , footer model
+        ]
+
+
+defaultLayout : Model -> Html Msg
+defaultLayout model =
+    div [ class "default-layout" ]
+        [ div [ class "ui fixed top sticky attached large menu black-bg" ]
+            [ div [ class "ui fluid container" ]
+                [ a
+                    [ class "header item narrow-item"
+                    , case model.flags.account of
+                        Just _ ->
+                            Page.href HomePage
+
+                        Nothing ->
+                            href "#"
+                    ]
+                    [ img
+                        [ src <| model.flags.config.assetsPath ++ "/img/icon.svg"
+                        , class "ui image logo-icon"
                         ]
+                        []
+                    , text model.flags.config.appName
+                    ]
+                , loginInfo model
+                ]
+            ]
+        , div [ class "main-content" ]
+            [ case model.page of
+                HomePage ->
+                    viewHome model
 
-                AliasUploadPage ->
-                    div [class "ui container"]
-                        [(Html.map AliasUploadMsg (AliasUploadView.view model.aliasUpload))
-                        ,(footer model)]
+                LoginPage _ ->
+                    viewLogin model
 
-                TimeoutPage ->
-                    div [class "ui container"]
-                        [TimeoutView.view]
+                RegisterPage ->
+                    viewRegister model
 
-                ManualPage ->
-                    div [class "ui container"]
-                        [ManualView.view model.manualModel]
+                NewInvitePage ->
+                    viewNewInvite model
 
-                ErrorPage ->
-                    div [class "ui container"]
-                        [ErrorView.view model.errorModel]
+                InfoPage n ->
+                    viewInfo n model
 
-                _ ->
-                    Html.map LoginMsg (LoginView.view model.login)
+                AccountPage id ->
+                    viewAccount id model
 
-        Just acc ->
-            case model.page of
-                LoginPage ->
-                    Html.map LoginMsg (LoginView.view model.login)
+                AliasPage id ->
+                    viewAlias id model
 
-                IndexPage ->
-                    div [class "ui container"]
-                        [
-                         (navbar acc model)
-                        ,(indexView model)
-                        ,(footer model)
-                        ]
+                UploadPage ->
+                    viewUpload model
 
-                NewSharePage ->
-                    div [class "ui container"]
-                        [
-                         (navbar acc model)
-                        , Html.map UploadMsg (UploadView.view model.upload)
-                        ,(footer model)
-                        ]
-                AccountEditPage ->
-                    div [class "ui container"]
-                        [ (navbar acc model)
-                        , Html.map AccountEditMsg (AccountEditView.view model.accountEdit)
-                        ,(footer model)
-                        ]
+                SharePage ->
+                    viewShare model
 
-                DownloadPage ->
-                    div [class "ui container"]
-                        [ (navbar acc model)
-                        , Html.map DownloadMsg (DownloadView.view model.download)
-                        ,(footer model)
-                        ]
+                OpenSharePage id ->
+                    viewOpenShare id model
 
-                UploadListPage ->
-                    div [class "ui container"]
-                        [ (navbar acc model)
-                        ,(Html.map UploadListMsg (UploadListView.view model.uploadList))
-                        ,(footer model)
-                        ]
+                SettingsPage ->
+                    viewSettings model
 
-                ProfilePage ->
-                    div [class "ui container"]
-                        [(navbar acc model)
-                        ,model.profile
-                        |> Maybe.map ProfileView.view
-                        |> Maybe.map (Html.map ProfileMsg)
-                        |> Maybe.withDefault (div[][])
-                        ,(footer model)
-                        ]
+                DetailPage id ->
+                    viewDetail id model
 
-                AliasListPage ->
-                    div [class "ui container"]
-                        [(navbar acc model)
-                        ,(Html.map AliasListMsg (AliasListView.view model.aliases))
-                        ,(footer model)
-                        ]
-
-                AliasUploadPage ->
-                    div [class "ui container"]
-                        [(navbar acc model)
-                        ,(Html.map AliasUploadMsg (AliasUploadView.view model.aliasUpload))
-                        ,(footer model)]
-
-                TimeoutPage ->
-                    div [class "ui container"]
-                        [(navbar acc model)
-                        ,TimeoutView.view
-                        ,(footer model)
-                        ]
-
-                ManualPage ->
-                    div [class "ui container"]
-                        [(navbar acc model)
-                        ,ManualView.view model.manualModel
-                        ,(footer model)
-                        ]
-
-                ErrorPage ->
-                    div [class "ui container"]
-                        [(navbar acc model)
-                        ,ErrorView.view model.errorModel
-                        ,(footer model)
-                        ]
+                OpenDetailPage id ->
+                    viewOpenDetail id model
+            ]
+        , footer model
+        ]
 
 
-adminHtml: Account -> Html Msg -> Html Msg
-adminHtml account html =
-    if account.admin then html else span[][]
-
-nonAdminHtml: Account -> Html Msg -> Html Msg
-nonAdminHtml account html =
-    if not account.admin then html else span[][]
+viewOpenDetail : String -> Model -> Html Msg
+viewOpenDetail id model =
+    Html.map OpenDetailMsg (Page.OpenDetail.View.view model.flags model.openDetailModel)
 
 
-navbar: Account -> Model -> Html Msg
-navbar account model =
-    div [class "ui fixed compact menu"]
-        [
-         a [href PL.indexPageHref, class "header item"] [text model.serverConfig.appName]
-        ,a [href PL.uploadsPageHref, class "item"] [text "My Uploads"]
-        ,a [href PL.aliasListPageHref, class "item"][text "Aliases"]
-        ,div [class "right menu"]
-            [
-             a [href PL.accountEditPageHref, class "item"] [text "Edit Accounts"] |> adminHtml account
-            ,a [href PL.profilePageHref, class "item"][text "Profile"] |> nonAdminHtml account
-            ,a [href (PL.manualPageHref "index.md"), class "item"][text "Manual"]
-            ,a [onClick (Logout), class "item"][text "Logout"]
+viewDetail : String -> Model -> Html Msg
+viewDetail id model =
+    Html.map DetailMsg (Page.Detail.View.view model.flags model.detailModel)
+
+
+viewSettings : Model -> Html Msg
+viewSettings model =
+    Html.map SettingsMsg (Page.Settings.View.view model.settingsModel)
+
+
+viewAlias : Maybe String -> Model -> Html Msg
+viewAlias id model =
+    Html.map AliasMsg (Page.Alias.View.view model.flags id model.aliasModel)
+
+
+viewUpload : Model -> Html Msg
+viewUpload model =
+    Html.map UploadMsg (Page.Upload.View.view model.uploadModel)
+
+
+viewOpenShare : String -> Model -> Html Msg
+viewOpenShare id model =
+    Html.map OpenShareMsg (Page.OpenShare.View.view model.flags id model.openShareModel)
+
+
+viewShare : Model -> Html Msg
+viewShare model =
+    Html.map ShareMsg (Page.Share.View.view model.flags model.shareModel)
+
+
+viewAccount : Maybe String -> Model -> Html Msg
+viewAccount id model =
+    Html.map AccountMsg (Page.Account.View.view id model.accountModel)
+
+
+viewInfo : Int -> Model -> Html Msg
+viewInfo msgnum model =
+    Html.map InfoMsg (Page.Info.View.view msgnum model.infoModel)
+
+
+viewNewInvite : Model -> Html Msg
+viewNewInvite model =
+    Html.map NewInviteMsg (Page.NewInvite.View.view model.flags model.newInviteModel)
+
+
+viewRegister : Model -> Html Msg
+viewRegister model =
+    Html.map RegisterMsg (Page.Register.View.view model.flags model.registerModel)
+
+
+viewLogin : Model -> Html Msg
+viewLogin model =
+    Html.map LoginMsg (Page.Login.View.view model.flags model.loginModel)
+
+
+viewHome : Model -> Html Msg
+viewHome model =
+    Html.map HomeMsg (Page.Home.View.view model.homeModel)
+
+
+loginInfo : Model -> Html Msg
+loginInfo model =
+    div [ class "right menu" ]
+        (case model.flags.account of
+            Just acc ->
+                [ userMenu model acc
+                ]
+
+            Nothing ->
+                [ a
+                    [ class "item"
+                    , Page.href (Page.loginPage model.page)
+                    ]
+                    [ text "Login"
+                    ]
+                , a
+                    [ class "item"
+                    , Page.href RegisterPage
+                    ]
+                    [ text "Register"
+                    ]
+                ]
+        )
+
+
+userMenu : Model -> AuthResult -> Html Msg
+userMenu model acc =
+    div
+        [ class "ui dropdown icon link item"
+        , onClick ToggleNavMenu
+        ]
+        [ i [ class "ui bars icon" ] []
+        , div
+            [ classList
+                [ ( "left menu", True )
+                , ( "transition visible", model.navMenuOpen )
+                ]
+            ]
+            [ menuEntry model
+                HomePage
+                [ img
+                    [ class "image icon logo-icon"
+                    , src (model.flags.config.assetsPath ++ "/img/icon.svg")
+                    ]
+                    []
+                , text "Home"
+                ]
+            , div [ class "divider" ] []
+            , menuEntry model
+                UploadPage
+                [ i [ class "ui upload icon" ] []
+                , text "Shares"
+                ]
+            , menuEntry model
+                (AliasPage Nothing)
+                [ i [ class "ui dot circle outline icon" ] []
+                , text "Aliases"
+                ]
+            , if acc.admin then
+                menuEntry model
+                    (AccountPage Nothing)
+                    [ i [ class "ui users icon" ] []
+                    , text "Accounts"
+                    ]
+
+              else
+                span [] []
+            , menuEntry model
+                SettingsPage
+                [ i [ class "ui cog icon" ] []
+                , text "Settings"
+                ]
+            , if acc.admin && model.flags.config.signupMode == "invite" then
+                menuEntry model
+                    NewInvitePage
+                    [ i [ class "ui key icon" ] []
+                    , text "New Invites"
+                    ]
+
+              else
+                span [] []
+            , div [ class "divider" ] []
+            , a
+                [ class "icon item"
+                , href ""
+                , onClick Logout
+                ]
+                [ i [ class "sign-out icon" ] []
+                , text "Logout ("
+                , text acc.user
+                , text ")"
+                ]
             ]
         ]
 
 
-indexView: Model -> Html Msg
-indexView model =
-    div [class "main ui grid container"]
-        [
-         div [class "sixteen wide column"]
-             [
-              div [class "ui padded brown center aligned segment"]
-                  [
-                   h1 [class "ui header"][text model.serverConfig.appName]
-                  ,p [][text "Allows to easily share files with others! Click below to upload files and share the URL."]
-                  ,a [class "ui big basic primary button", onClick (SetPage PL.newSharePage)]
-                      [
-                       i [class "upload icon"][]
-                      ,text "New Share …"
-                      ]
-                  ]
-             ]
+menuEntry : Model -> Page -> List (Html Msg) -> Html Msg
+menuEntry model page children =
+    a
+        [ classList
+            [ ( "icon item", True )
+            , ( "active", model.page == page )
+            ]
+        , Page.href page
         ]
+        children
 
-footer: Model -> Html msg
+
+footer : Model -> Html Msg
 footer model =
-    Html.footer [class "ui center aligned sharry-footer container"]
-        [
-         div []
-             [
-              text "You are using "
-             ,a [href "https://github.com/eikek/sharry"]
-                 [
-                  i [class "disabled github icon"][]
-                 ,text model.serverConfig.projectName
-                 ]
-             ]
+    div [ class "ui footer" ]
+        [ a [ href "https://eikek.github.io/sharry" ]
+            [ i [ class "ui github icon" ] []
+            , text "Sharry "
+            ]
+        , span []
+            [ text model.version.version
+            , text " (#"
+            , String.left 8 model.version.gitCommit |> text
+            , text ")"
+            ]
         ]

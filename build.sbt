@@ -1,237 +1,332 @@
-import libs._
-import Path.relativeTo
-import java.nio.file.{Files, StandardCopyOption}
-import org.apache.tika.Tika
+import com.github.eikek.sbt.openapi._
+import scala.sys.process._
 import com.typesafe.sbt.SbtGit.GitKeys._
 
-lazy val sharedSettings = Seq(
-  name := "sharry",
-  scalaVersion := `scala-version`,
+
+val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
+
+val sharedSettings = Seq(
+  organization := "com.github.eikek",
+  scalaVersion := "2.13.1",
   scalacOptions ++= Seq(
-    "-encoding", "UTF-8",
-    "-Xfatal-warnings", // fail when there are warnings
     "-deprecation",
-    "-feature",
-    "-unchecked",
+    "-encoding", "UTF-8",
     "-language:higherKinds",
+    "-language:postfixOps",
+    "-feature",
+    "-Xfatal-warnings", // fail when there are warnings
+    "-unchecked",
     "-Xlint",
-    "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-    "-Ywarn-unused-import"
+    "-Ywarn-value-discard"
   ),
-  scalacOptions in (Compile, console) ~= (_ filterNot (Set("-Xfatal-warnings", "-Ywarn-unused-import").contains)),
-  scalacOptions in (Test) := (scalacOptions in (Compile, console)).value
+  scalacOptions in (Compile, console) := Seq()
 )
 
-lazy val coreDeps = Seq(`cats-core`, `fs2-core`, `fs2-io`, log4s, `scodec-bits`)
-lazy val testDeps = Seq(scalatest, `logback-classic`).map(_ % "test")
+val testSettings = Seq(
+  testFrameworks += new TestFramework("minitest.runner.Framework"),
+  libraryDependencies ++= Dependencies.miniTest
+)
 
-lazy val common = project.in(file("modules/common")).
-  enablePlugins(BuildInfoPlugin).
-  disablePlugins(AssemblyPlugin).
-  settings(sharedSettings).
-  settings(Seq(
-    name := "sharry-common",
-    description := "Some common utility code",
-    libraryDependencies ++= coreDeps ++ testDeps,
-    libraryDependencies ++= Seq(`circe-core`, `circe-generic`, `circe-parser`, `scala-bcrypt`),
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, gitHeadCommit, gitHeadCommitDate, gitUncommittedChanges, gitDescribedVersion),
-    buildInfoPackage := "sharry.common",
-    buildInfoOptions += BuildInfoOption.ToJson,
-    buildInfoOptions += BuildInfoOption.BuildTime
-  ))
+val elmSettings = Seq(
+  elmCompileMode := ElmCompileMode.Debug,
+  Compile/resourceGenerators += (Def.task {
+    compileElm(streams.value.log
+      , (Compile/baseDirectory).value
+      , (Compile/resourceManaged).value
+      , name.value
+      , version.value
+      , elmCompileMode.value)
+  }).taskValue,
+  watchSources += Watched.WatchSource(
+    (Compile/sourceDirectory).value/"elm"
+      , FileFilter.globFilter("*.elm")
+      , HiddenFileFilter
+  )
+)
 
-lazy val mdutil = project.in(file("modules/mdutil")).
+val webjarSettings = Seq(
+  Compile/resourceGenerators += (Def.task {
+    copyWebjarResources(Seq((sourceDirectory in Compile).value/"webjar")
+      , (Compile/resourceManaged).value
+      , name.value
+      , version.value
+      , streams.value.log
+    )
+  }).taskValue,
+  watchSources += Watched.WatchSource(
+    (Compile / sourceDirectory).value/"webjar"
+      , FileFilter.globFilter("*.js") || FileFilter.globFilter("*.css")
+      , HiddenFileFilter
+  )
+)
+
+val debianSettings = Seq(
+  maintainer := "Eike Kettner <eike.kettner@posteo.de>",
+  packageSummary := description.value,
+  packageDescription := description.value,
+  mappings in Universal += {
+    val conf = (Compile / resourceDirectory).value / "reference.conf"
+    if (!conf.exists) {
+      sys.error(s"File $conf not found")
+    }
+    conf -> "conf/sharry.conf"
+  },
+  bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/sharry.conf""""
+)
+
+val buildInfoSettings = Seq(
+  buildInfoKeys := Seq[BuildInfoKey](name
+    , version
+    , scalaVersion
+    , sbtVersion
+    , gitHeadCommit
+    , gitHeadCommitDate
+    , gitUncommittedChanges
+    , gitDescribedVersion),
+  buildInfoOptions += BuildInfoOption.ToJson,
+  buildInfoOptions += BuildInfoOption.BuildTime
+)
+
+
+
+val common = project.in(file("modules/common")).
   settings(sharedSettings).
+  settings(testSettings).
   settings(
-    name := "sharry-mdutil",
-    description := "Markdown utility for sharry based on flexmark-java",
-    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `flexmark-core`,  `flexmark-gfm-tables`,  `flexmark-gfm-strikethrough`,
-      `flexmark-formatter`, jsoup
-    ))
+    name := "sharry-common",
+    libraryDependencies ++=
+      Dependencies.loggingApi ++
+      Dependencies.fs2 ++
+      Dependencies.fs2io ++
+      Dependencies.circe ++
+      Dependencies.pureconfig
+  )
 
-lazy val store = project.in(file("modules/store")).
-  disablePlugins(AssemblyPlugin).
+val store = project.in(file("modules/store")).
   settings(sharedSettings).
-  settings(Seq(
+  settings(testSettings).
+  settings(
     name := "sharry-store",
-    description := "Storage for files and account data",
-    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `doobie-core`, `bitpeace-core`, h2, postgres, tika, `scodec-bits`
-    ))).
-  dependsOn(common % "compile->compile;test->test")
-
-
-// resumable.js is too old as webjar, so download it from github
-lazy val fetchResumableJs = Def.task {
-  val dir = (target in Compile).value
-  val url = new java.net.URL("https://raw.githubusercontent.com/23/resumable.js/feb33c8f8d5d614d3d476fc2b3e82372c7b6408a/resumable.js")
-  val outFile = dir / "resumable.js"
-  val logger = streams.value.log
-  if (!outFile.exists) {
-    logger.info(s"Downloading $url -> ${outFile.getName} …")
-    val conn = url.openConnection()
-    conn.connect()
-    val inStream = conn.getInputStream
-    IO.createDirectories(Seq(outFile.getParentFile))
-    Files.copy(inStream, outFile.toPath, StandardCopyOption.REPLACE_EXISTING)
-    inStream.close
-  }
-
-  Seq(outFile -> outFile.getName)
-}
-
-lazy val webapp = project.in(file("modules/webapp")).
-  enablePlugins(WebjarPlugin, ElmPlugin).
-  disablePlugins(AssemblyPlugin).
-  settings(sharedSettings).
-  settings(Seq(
-    name := "sharry-webapp",
-    description := "A web frontend for sharry",
-    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `semantic-ui`, jquery, highlightjs, `logback-classic`, yamusca,
-      `fs2-http`
-    ),
-    // elm stuff
-    elmVersion := "0.18.0 <= v < 0.19.0",
-    elmDependencies in Compile ++= Seq(
-      "elm-lang/core" -> "5.0.0 <= v < 6.0.0",
-      "elm-lang/html" -> "2.0.0 <= v < 3.0.0",
-      "elm-lang/http" -> "1.0.0 <= v < 2.0.0",
-      "elm-lang/animation-frame" -> "1.0.0 <= v < 2.0.0",
-      "elm-lang/navigation" -> "2.0.0 <= v < 3.0.0",
-      "evancz/elm-markdown" -> "3.0.0 <= v < 4.0.0",
-      "NoRedInk/elm-decode-pipeline" -> "3.0.0 <= v < 4.0.0"
-    ),
-    elmDependencies in Test ++= Seq(
-      "elm-community/elm-test" -> "4.0.0 <= v < 5.0.0"
-    ),
-    // webjar stuff
-    resourceGenerators in Compile += (elmMake in Compile).taskValue,
-    webjarPackage in (Compile, webjarSource) := "sharry.webapp.route",
-    sourceGenerators in Compile += (webjarSource in Compile).taskValue,
-    resourceGenerators in Compile += (webjarContents in Compile).taskValue,
-    webjarWebPackages in Compile += Def.task({
-      val elmFiles = (elmMake in Compile).value pair relativeTo((elmMakeOutputPath in Compile).value)
-      val src = (sourceDirectory in Compile).value
-      val htmlFiles = (src/"html" ** "*").get.filter(_.isFile).toSeq pair relativeTo(src/"html")
-      val cssFiles = IO.listFiles(src/"css").toSeq pair relativeTo(src/"css")
-      val jsFiles = IO.listFiles(src/"js").toSeq pair relativeTo(src/"js")
-      val resumable = fetchResumableJs.value
-      WebPackage("org.webjars", name.value, version.value, elmFiles ++ htmlFiles ++ cssFiles ++ jsFiles ++ resumable)
-    }).taskValue,
-    resourceGenerators in Compile += (webjarWebPackageResources in Compile).taskValue)).
+    libraryDependencies ++=
+      Dependencies.doobie ++
+      Dependencies.bitpeace ++
+      Dependencies.tika ++
+      Dependencies.fs2 ++
+      Dependencies.databases ++
+      Dependencies.flyway ++
+      Dependencies.loggingApi
+  ).
   dependsOn(common)
 
-lazy val docs = project.in(file("modules/docs")).
+val restapi = project.in(file("modules/restapi")).
+  enablePlugins(OpenApiSchema).
   settings(sharedSettings).
+  settings(testSettings).
   settings(
-    name := "sharry-docs",
-    libraryDependencies ++= coreDeps ++ Seq(yamusca, `fs2-http`),
-    sourceGenerators in Compile += (Def.task {
-      val docdir = (baseDirectory in LocalRootProject).value/"docs"
-      val tika = new Tika()
-      val list = sbt.Path.allSubpaths(docdir).toList.map {
-        case (file, path) =>
-          val checksum = Hash.toHex(Hash(file))
-          (path, checksum, tika.detect(file), file.length)
-      }
+    name := "sharry-restapi",
+    libraryDependencies ++=
+      Dependencies.circe,
+    openapiTargetLanguage := Language.Scala,
+    openapiPackage := Pkg("sharry.restapi.model"),
+    openapiSpec := (Compile/resourceDirectory).value/"sharry-openapi.yml",
+    openapiScalaConfig := ScalaConfig().withJson(ScalaJson.circeSemiauto).
+      addMapping(CustomMapping.forType({
+        case TypeDef("LocalDateTime", _)  =>
+          TypeDef("Timestamp", Imports("sharry.common.Timestamp"))
+      })).
+      addMapping(CustomMapping.forFormatType({
+        case "ident" => field =>
+          field.copy(typeDef = TypeDef("Ident", Imports("sharry.common.Ident")))
+        case "accountstate" => field =>
+          field.copy(typeDef = TypeDef("AccountState", Imports("sharry.common.AccountState")))
+        case "accountsource" => field =>
+          field.copy(typeDef = TypeDef("AccountSource", Imports("sharry.common.AccountSource")))
+        case "password" => field =>
+          field.copy(typeDef = TypeDef("Password", Imports("sharry.common.Password")))
+        case "signupmode" => field =>
+          field.copy(typeDef = TypeDef("SignupMode", Imports("sharry.common.SignupMode")))
+        case "uri" => field =>
+          field.copy(typeDef = TypeDef("LenientUri", Imports("sharry.common.LenientUri")))
+        case "duration" => field =>
+          field.copy(typeDef = TypeDef("Duration", Imports("sharry.common.Duration")))
+        case "size" => field =>
+          field.copy(typeDef = TypeDef("ByteSize", Imports("sharry.common.ByteSize")))
+      }))).
+  dependsOn(common)
 
-      val code = s"""package sharry.docs.md
-           |object toc extends TocAccess {
-           | val contents: List[(String, String, String, Long)] = ${list.map(t => "(\""+t._1+"\",\""+ t._2+"\", \""+t._3+"\", "+t._4+")")}
-           |}""".stripMargin
-
-      val tocFile = (sourceManaged in Compile).value/"toc.scala"
-      IO.write(tocFile, code)
-      Seq(tocFile)
-    }).taskValue,
-    resourceGenerators in Compile += (Def.task {
-      val docdir = (baseDirectory in LocalRootProject).value/"docs"
-      val target = (resourceManaged in Compile).value/"sharry"/"docs"/"md"
-      sbt.Path.allSubpaths(docdir).toSeq.map {
-        case (file, path) =>
-          val targetFile = target/path
-          IO.copy(Seq((file, targetFile)))
-          targetFile
-      }
-    }).taskValue
-  ).
-  dependsOn(mdutil)
-
-lazy val server = project.in(file("modules/server")).
+val backend = project.in(file("modules/backend")).
   settings(sharedSettings).
+  settings(testSettings).
   settings(
-    name := "sharry-server",
-    description := "The sharry application as a rest server",
-    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      `logback-classic`, pureconfig, `scala-bcrypt`, `fs2-http`,
-      `doobie-hikari`, `javax-mail`, `javax-mail-api`, dnsjava, yamusca
-    ),
-    assemblyJarName in assembly := s"sharry-server-${version.value}.jar.sh",
-    assemblyOption in assembly := (assemblyOption in assembly).value.copy(
-      prependShellScript = Some(
-        Seq("#!/usr/bin/env sh", """exec java -jar -XX:+UseG1GC $SHARRY_JAVA_OPTS "$0" "$@"""" + "\n")
-      )
-    ),
-    fork in run := true,
-    connectInput in run := true,
-    javaOptions in run ++= Seq(
-      "-Dsharry.console=true",
-      "-Dsharry.authc.extern.admin.enable=true",
-      "-Dsharry.db.url=jdbc:h2:./target/sharry-db.h2",
-      "-Dsharry.optionalConfig=" + ((baseDirectory in LocalRootProject).value / "dev.conf")
-    ),
-    javaOptions in reStart := (javaOptions in run).value  ++ Seq("-Dsharry.console=false"),
-    resourceGenerators in Compile += Def.task {
-      val cliRef = (sourceDirectory in (cli, Compile)).value/"resources"/"reference.conf"
-      val target = (resourceManaged in Compile).value/"reference-cli.conf"
-      IO.copy(Seq(cliRef -> target))
-      Seq(target)
+    name := "sharry-backend",
+    libraryDependencies ++=
+      Dependencies.loggingApi ++
+      Dependencies.fs2 ++
+      Dependencies.bcrypt ++
+      Dependencies.yamusca ++
+      Dependencies.emil
+  ).dependsOn(common, store)
+
+val webapp = project.in(file("modules/webapp")).
+  enablePlugins(OpenApiSchema).
+  settings(sharedSettings).
+  settings(elmSettings).
+  settings(webjarSettings).
+  settings(
+    name := "sharry-webapp",
+    openapiTargetLanguage := Language.Elm,
+    openapiPackage := Pkg("Api.Model"),
+    openapiSpec := (restapi/Compile/resourceDirectory).value/"sharry-openapi.yml",
+    openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
+  )
+
+val restserver = project.in(file("modules/restserver")).
+  enablePlugins(BuildInfoPlugin
+    , JavaServerAppPackaging
+    , DebianPlugin
+    , SystemdPlugin).
+  settings(sharedSettings).
+  settings(testSettings).
+  settings(debianSettings).
+  settings(buildInfoSettings).
+  settings(
+    name := "sharry-restserver",
+    libraryDependencies ++=
+      Dependencies.http4s ++
+      Dependencies.http4sclient ++
+      Dependencies.circe ++
+      Dependencies.pureconfig ++
+      Dependencies.yamusca ++
+      Dependencies.webjars ++
+      Dependencies.loggingApi ++
+      Dependencies.logging,
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    addCompilerPlugin(Dependencies.betterMonadicFor),
+    buildInfoPackage := "sharry.restserver",
+    javaOptions in reStart ++=
+      Seq(s"-Dconfig.file=${(LocalRootProject/baseDirectory).value/"local"/"dev.conf"}",
+        "-Dsharry.migrate-old-dbschema=false",
+        "-Xmx512M"),
+    Compile/resourceGenerators += Def.task {
+      copyWebjarResources(Seq((restapi/Compile/resourceDirectory).value/"sharry-openapi.yml")
+        , (Compile/resourceManaged).value
+        , name.value
+        , version.value
+        , streams.value.log)
     }.taskValue,
-    resourceGenerators in Compile += Def.task {
-      import scala.sys.process._
-      val jar = (assembly in (cli, Compile)).value
-      val help = (s"java -jar ${jar.getAbsoluteFile.toString} --help").!!
-      val target = (resourceManaged in Compile).value/"cli-help.txt"
-      IO.write(target, help)
-      Seq(target)
-    }.taskValue
-  ).
-  dependsOn(common % "compile->compile;test->test", store, webapp, docs)
+    Compile/sourceGenerators += (Def.task {
+      createWebjarSource(Dependencies.webjars, (Compile/sourceManaged).value)
+    }).taskValue,
+    Compile/unmanagedResourceDirectories ++= Seq((Compile/resourceDirectory).value.getParentFile/"templates")
+  ).dependsOn(restapi, backend, webapp)
 
-lazy val cli = project.in(file("modules/cli")).
+lazy val microsite = project.in(file("modules/microsite")).
+  enablePlugins(MicrositesPlugin).
+  disablePlugins(ReleasePlugin).
   settings(sharedSettings).
   settings(
-    name := "sharry-cli",
-    description := "A CLI interface to sharry",
-    libraryDependencies ++= testDeps ++ coreDeps ++ Seq(
-      scopt, `logback-classic`, pureconfig, `fs2-http`, yamusca
+    name := "sharry-microsite",
+    publishArtifact := false,
+    skip in publish := true,
+    micrositeFooterText := Some(
+      """
+        |<p>&copy; 2019 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
+        |""".stripMargin
     ),
-    assemblyJarName in assembly := s"sharry-cli-${version.value}.jar.sh",
-    assemblyOption in assembly := (assemblyOption in assembly).value.copy(
-      prependShellScript = Some(
-        Seq("#!/usr/bin/env sh", """exec java -jar -XX:+UseG1GC $SHARRYCLI_JAVA_OPTS "$0" "$@"""" + "\n")
-      )
+    micrositeName := "Sharry",
+    micrositeDescription := "Sharry – Share files conveniently",
+    micrositeDocumentationUrl := "/sharry/doc/index.html",
+    micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon-32x32.png", "32x32")),
+    micrositeBaseUrl := "/sharry",
+    micrositeAuthor := "eikek",
+    micrositeGithubOwner := "eikek",
+    micrositeGithubRepo := "sharry",
+    micrositeGitterChannel := false,
+    micrositeShareOnSocial := false,
+    micrositePalette := Map(
+        "brand-primary"         -> "#7a1800",
+        "brand-secondary"       -> "#009ADA",
+        "white-color"           -> "#FFFFFF"),
+    fork in run := true,
+    micrositeCompilingDocsTool := WithMdoc,
+    mdocVariables := Map(
+      "VERSION" -> version.value
     ),
-    resourceGenerators in Compile += Def.task {
-      val src = (baseDirectory in LocalRootProject).value/"docs"/"cli.md"
-      val target = (resourceManaged in Compile).value/"cli.md"
-      IO.copy(Seq(src -> target))
+    Compile / resourceGenerators += Def.task {
+      val conf1 = (resourceDirectory in (restserver, Compile)).value / "reference.conf"
+      val out1 = resourceManaged.value/"main"/"jekyll"/"_includes"/"server.conf"
+      streams.value.log.info(s"Copying reference.conf: $conf1 -> $out1")
+      IO.write(out1, "{% raw %}\n")
+      IO.append(out1, IO.readBytes(conf1))
+      IO.write(out1, "\n{% endraw %}", append = true)
+      val oa1 = (resourceDirectory in (restapi, Compile)).value/"sharry-openapi.yml"
+      val oaout = resourceManaged.value/"main"/"jekyll"/"openapi"/"sharry-openapi.yml"
+      IO.copy(Seq(oa1 -> oaout))
+      Seq(out1, oaout)
+    }.taskValue,
+    Compile / resourceGenerators += Def.task {
+      val staticDoc = (restapi/Compile/openapiStaticDoc).value
+      val target = resourceManaged.value/"main"/"jekyll"/"openapi"/"sharry-openapi.html"
+      streams.value.log.info(s"Copy $staticDoc -> $target")
+      IO.copy(Seq(staticDoc -> target))
       Seq(target)
     }.taskValue
-  ).
-  dependsOn(common % "compile->compile;test->test", mdutil)
+  )
 
-lazy val root = project.in(file(".")).
-  disablePlugins(AssemblyPlugin).
+
+val root = project.in(file(".")).
   settings(sharedSettings).
-  aggregate(common, mdutil, store, server, webapp, cli)
+  settings(
+    name := "sharry-root"
+  ).
+  aggregate(common, store, backend, webapp, restapi, restserver)
 
-addCommandAlias("make-server", ";project server ;set elmMinify in (webapp, Compile) := true ;assembly")
-addCommandAlias("make-cli", ";project cli ;assembly")
-addCommandAlias("make", ";make-server ;make-cli")
-addCommandAlias("run-all-tests", ";test")
-addCommandAlias("cli", ";project cli ;run")
+
+def copyWebjarResources(src: Seq[File], base: File, artifact: String, version: String, logger: Logger): Seq[File] = {
+  val targetDir = base/"META-INF"/"resources"/"webjars"/artifact/version
+  src.flatMap { dir =>
+    if (dir.isDirectory) {
+      val files = (dir ** "*").filter(_.isFile).get pair Path.relativeTo(dir)
+      files.map { case (f, name) =>
+        val target = targetDir/name
+        logger.info(s"Copy $f -> $target")
+        IO.createDirectories(Seq(target.getParentFile))
+        IO.copy(Seq(f -> target))
+        target
+      }
+    } else {
+      val target = targetDir/dir.name
+      logger.info(s"Copy $dir -> $target")
+      IO.createDirectories(Seq(target.getParentFile))
+      IO.copy(Seq(dir -> target))
+      Seq(target)
+    }
+  }
+}
+
+def compileElm(logger: Logger, wd: File, outBase: File, artifact: String, version: String, mode: ElmCompileMode): Seq[File] = {
+  logger.info("Compile elm files ...")
+  val target = outBase/"META-INF"/"resources"/"webjars"/artifact/version/"sharry-app.js"
+  val cmd = Seq("elm", "make") ++ mode.flags ++ Seq("--output", target.toString)
+  val proc = Process(cmd ++ Seq(wd/"src"/"main"/"elm"/"Main.elm").map(_.toString), Some(wd))
+  val out = proc.!!
+  logger.info(out)
+  Seq(target)
+}
+
+def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
+  val target = out/"Webjars.scala"
+  val fields = wj.map(m => s"""val ${m.name.toLowerCase.filter(_ != '-')} = "/${m.name}/${m.revision}" """).mkString("\n\n")
+  val content = s"""package sharry.restserver.webapp
+    |object Webjars {
+    |$fields
+    |}
+    |""".stripMargin
+
+  IO.write(target, content)
+  Seq(target)
+}
+
+addCommandAlias("make", ";root/openapiCodegen ;root/test:compile")
