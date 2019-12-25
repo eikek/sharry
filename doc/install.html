@@ -1,0 +1,135 @@
+<html><head><title>Sharry: Installation</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Sharry – Share files conveniently" /><meta name="og:image" content="/sharry/img/poster.png" /><meta name="image" property="og:image" content="/sharry/img/poster.png" /><meta name="og:title" content="Sharry: Installation" /><meta name="title" property="og:title" content="Sharry: Installation" /><meta name="og:site_name" content="Sharry" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Sharry – Share files conveniently" /><link rel="icon" type="image/png" href="/sharry/img/favicon.png" /><meta name="twitter:title" content="Sharry: Installation" /><meta name="twitter:image" content="/sharry/img/poster.png" /><meta name="twitter:description" content="Sharry – Share files conveniently" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="32x32" href="/sharry/img/favicon-32x32.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/sharry/highlight/styles/vs.css" /><link rel="stylesheet" href="/sharry/css/light-style.css" /><link rel="stylesheet" href="/sharry/css/styles.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/sharry/" class="brand"><div class="brand-wrapper"></div><span>Sharry</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/sharry/doc/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/quickstart" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item active open"><a href="/sharry/doc/install" title="Installation" class="drop-nested">Installation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/migration" title="Migration" class="">Migration</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/configure" title="Configuring" class="">Configuring</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/webapp" title="Webapp" class="drop-nested">Webapp</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/screenshots" title="Screenshots" class="">Screenshots</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/rest" title="REST Api" class="">REST Api</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/dev" title="Development" class="">Development</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="sharry"><div class="content-wrapper"><section><h1 id="installation">Installation</h1>
+
+<p>This page contains detailed installation instructions. For a quick
+start, refer to <a href="quickstart">this page</a>.</p>
+
+<p>Sharry is a <em>REST Server</em> that also provides the web application. The
+web application runs in the browser and talks to the server using the
+<a href="rest">REST Api</a>.</p>
+
+<p>The <a href="https://github.com/eikek/sharry/releases">download page</a>
+provides pre-compiled packages and the <a href="dev.html">development page</a>
+contains build instructions.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<h3 id="java">Java</h3>
+
+<p>Very often, Java is already installed. You can check this by opening a
+terminal and typing <code class="highlighter-rouge">java -version</code>. Otherwise install Java using your
+package manager or see <a href="https://adoptopenjdk.net/">this site</a> for
+other options.</p>
+
+<p>It is enough to install the JRE. The JDK is required, if you want to
+build sharry from source.</p>
+
+<p>Sharry has been tested with Java version 1.8 (or sometimes referred
+to as JRE 8 and JDK 8, respectively). The pre-build packages are also
+build using JDK 8. But a later version of Java should work as well.</p>
+
+<h2 id="database">Database</h2>
+
+<p>Sharry stores all its information (files, accounts etc) in a database.
+The following products are supported:</p>
+
+<ul>
+  <li>PostreSQL</li>
+  <li>MariaDB</li>
+  <li>H2</li>
+</ul>
+
+<p>The H2 database is an interesting option for personal and mid-size
+setups, as it requires no additional work (i.e. no separate db
+server). It is integrated into sharry and works really well. It is
+also configured as the default database.</p>
+
+<p>For large installations, PostgreSQL or MariaDB is recommended. Create
+a database and a user with enough privileges (read, write, create
+table) to that database.</p>
+
+<p>When using H2, make sure to add the options
+<code class="highlighter-rouge">;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE</code> at the end of the url. See
+the <a href="configure.html">default config</a> for an example.</p>
+
+<h2 id="installing-from-zip-files">Installing from ZIP files</h2>
+
+<p>After extracting the zip files, you’ll find a start script in the
+<code class="highlighter-rouge">bin/</code> folder.</p>
+
+<h2 id="installing-from-deb-packages">Installing from DEB packages</h2>
+
+<p>The DEB packages can be installed on Debian, or Debian based Distros:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>dpkg <span class="nt">-i</span> sharry<span class="k">*</span>.deb
+</code></pre></div></div>
+
+<p>Then the start scripts are in your <code class="highlighter-rouge">$PATH</code>. Run <code class="highlighter-rouge">sharry-restserver</code>
+from a terminal window.</p>
+
+<p>The packages come with a systemd unit file that will be installed to
+autostart the services.</p>
+
+<h2 id="running">Running</h2>
+
+<p>Run the start script (in the corresponding <code class="highlighter-rouge">bin/</code> directory when using
+the zip files):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./sharry-restserver*/bin/sharry-restserver
+</code></pre></div></div>
+
+<p>This will startup using the default configuration. The configuration
+should be adopted to your needs. For example, the database connection
+is configured to use a H2 database that is created in the <code class="highlighter-rouge">/tmp</code>
+directory. Please refer to the <a href="configure">configuration page</a>
+for how to create a custom config file. Once you have your config
+file, simply pass it as argument to the command:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./sharry-restserver*/bin/sharry-restserver /path/to/server-config.conf
+</code></pre></div></div>
+
+<p>After starting the rest server, you can reach the web application at
+path <code class="highlighter-rouge">/app</code>, so using default values it would be
+<code class="highlighter-rouge">http://localhost:9090/app</code>.</p>
+
+<p>You should be able to create a new account and sign in.</p>
+
+<h3 id="options">Options</h3>
+
+<p>The start scripts support some options to configure the JVM. One often
+used setting is the maximum heap size of the JVM. By default, java
+determines it based on properties of the current machine. You can
+specify it by given java startup options to the command:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./sharry-restserver*/bin/sharry-restserver -J-Xmx1G -- /path/to/server-config.conf
+</code></pre></div></div>
+
+<p>This would limit the maximum heap to 1GB. The double slash separates
+internal options and the arguments to the program. Another frequently
+used option is to change the default temp directory. Usually it is
+<code class="highlighter-rouge">/tmp</code>, but it may be desired to have a dedicated temp directory,
+which can be configured:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./sharry-restserver*/bin/sharry-restserver -J-Xmx1G -Djava.io.tmpdir=/path/to/othertemp -- /path/to/server-config.conf
+</code></pre></div></div>
+
+<p>The command:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./sharry-restserver*/bin/sharry-restserver -h
+</code></pre></div></div>
+
+<p>gives an overview of supported options.</p>
+
+<h3 id="system-properties">System properties</h3>
+
+<p>All options that are given with <code class="highlighter-rouge">-D</code> are called system properties.
+These can be used to overwrite certain configuration values. System
+properties always take precedence over values defined in config files.</p>
+
+<p>This can be handy to temporarily change some configuration, for
+example, enable the fixed admin account like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$  ./sharry-restserver*/bin/sharry-restserver -Dsharry.restserver.backend.auth.fixed.enabled=true -- /path/to/server-config.conf
+</code></pre></div></div>
+</section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script>hljs.configure({languages:['scala','java','bash']});
+hljs.initHighlightingOnLoad();
+              </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/sharry/js/docs.js"></script></body></html>

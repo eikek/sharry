@@ -1,0 +1,176 @@
+<html><head><title>Sharry: Webapplication</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Sharry – Share files conveniently" /><meta name="og:image" content="/sharry/img/poster.png" /><meta name="image" property="og:image" content="/sharry/img/poster.png" /><meta name="og:title" content="Sharry: Webapplication" /><meta name="title" property="og:title" content="Sharry: Webapplication" /><meta name="og:site_name" content="Sharry" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Sharry – Share files conveniently" /><link rel="icon" type="image/png" href="/sharry/img/favicon.png" /><meta name="twitter:title" content="Sharry: Webapplication" /><meta name="twitter:image" content="/sharry/img/poster.png" /><meta name="twitter:description" content="Sharry – Share files conveniently" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="32x32" href="/sharry/img/favicon-32x32.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/sharry/highlight/styles/vs.css" /><link rel="stylesheet" href="/sharry/css/light-style.css" /><link rel="stylesheet" href="/sharry/css/styles.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/sharry/" class="brand"><div class="brand-wrapper"></div><span>Sharry</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/sharry/doc/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/quickstart" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/install" title="Installation" class="drop-nested">Installation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/migration" title="Migration" class="">Migration</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/configure" title="Configuring" class="">Configuring</a></div> <div class="sidebar-nav-item active open"><a href="/sharry/doc/webapp" title="Webapp" class="drop-nested">Webapp</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/screenshots" title="Screenshots" class="">Screenshots</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/rest" title="REST Api" class="">REST Api</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/dev" title="Development" class="">Development</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li id="gh-eyes-item" class="hidden-xs"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="sharry"><div class="content-wrapper"><section><h1 id="webapplication">Webapplication</h1>
+
+<p>The web client is written in <a href="https://elm-lang.org">Elm</a>, an awesome
+programming language for the web :-). The <a href="https://github.com/tus/tus-js-client">tus javascript client
+library</a> is used to realize the
+resumable uploads. All the css is provided by
+<a href="https://semantic-ui.com/">Semantic-UI</a>.</p>
+
+<h2 id="creating-a-new-share">Creating a new share</h2>
+
+<p>After logging in, you can create new shares:</p>
+
+<p><img src="../screenshots/20191217-210812.jpg" class="rounded screenshot" /></p>
+
+<p>The details are all optional and can also be changed afterwards. It is
+required to specfiy a description, some files or both. Otherwise
+submitting won’t work.</p>
+
+<p>The detail options are explained below.</p>
+
+<h3 id="name">Name</h3>
+
+<p>A share may have a name. This name is only for the owner and helps to
+find shares easier in the list view. The name will also be used as the
+head line, if the description doesn’t contain a markdown headline (a
+line starting with <code class="highlighter-rouge">#</code>).</p>
+
+<h3 id="description">Description</h3>
+
+<p>You can add some text to a share which will be displayed at the
+download page. The description can be
+<a href="http://daring-fireball.net">markdown</a> and is converted to HTML when
+being displayed.</p>
+
+<p>Furthermore, the description text is processed as a
+<a href="http://mustache.github.io/mustache.5.html">mustache</a> template and
+allows to refer to the attached files. You can access the following
+properties of any uploaded file:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">id</code></li>
+  <li><code class="highlighter-rouge">filename</code></li>
+  <li><code class="highlighter-rouge">url</code></li>
+  <li><code class="highlighter-rouge">mimetype</code></li>
+  <li><code class="highlighter-rouge">size</code></li>
+  <li><code class="highlighter-rouge">length</code></li>
+  <li><code class="highlighter-rouge">checksum</code></li>
+</ul>
+
+<p>The <code class="highlighter-rouge">size</code> is the file size as a human readable string, while <code class="highlighter-rouge">length</code>
+is the number in bytes. You can refer to files using their name or
+index in the list. When using the file name, all dots in there must be
+removed.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{#file.0}}{{url}}{{/file.0}}
+</code></pre></div></div>
+
+<p>or</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{filename.dsc0100JPG.url}}
+</code></pre></div></div>
+
+<p>This makes it possible to embed files in the description, for example
+to display an image file, you could write the following description:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![an image]({{filename.DSCF0343JPG.url}})
+</code></pre></div></div>
+
+<p>There is also a <code class="highlighter-rouge">files</code> property that can be used to iterate through
+all uploaded files. So this would render the id and url of all files:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{#files}}
+- {{id}}: {{url}}
+{{/files}}
+</code></pre></div></div>
+
+<h3 id="validity-time">Validity Time</h3>
+
+<p>Every upload has a validity time after which the uploaded files are
+“expired”. Then the public download page is not visible anymore and
+the files can’t be downloaded from non-protected urls.</p>
+
+<p>The files are there and the user that owns them still has access. They
+are eventually removed by a cleanup job.</p>
+
+<h3 id="password">Password</h3>
+
+<p>The files can be further protected by a password. The download page
+requires this password in order to download the files.</p>
+
+<p>The idea is that this password is a second secret, next to the url.
+You can share the URL using one channel (maybe e-mail) and the
+password using another channel. A person must have both things in
+order to see the files.</p>
+
+<h3 id="maximum-views">Maximum Views</h3>
+
+<p>This setting restricts the number of accesses to the download page. If
+the download page is accessed more than this number, it will not work
+anymore.</p>
+
+<h2 id="publish--unpublish--republish">Publish / Unpublish / Republish</h2>
+
+<p>A share that has not been published can only be accessed by its owner.
+In order to create a link for everyone else, click the <code class="highlighter-rouge">Publish</code>
+button in the top right of the detail view of a share.</p>
+
+<p><img src="../screenshots/publish_empty.jpg" class="roundend screenshot" /></p>
+
+<p>Once a share is published that circle is green.</p>
+
+<p><img src="../screenshots/publish_done.jpg" class="roundend screenshot" /></p>
+
+<p>The expiry time is calculated from the validity time added to the
+point in time the share is publshed. You’ll see it in the details
+pane.</p>
+
+<p>If the share is published you can get the link clicking on the <em>Share
+Link</em> pane. You can copy&amp;paste it, scan the QR code or send it via
+e-Mail (if sharry is configured for that, it can be sent directly in
+the webapp).</p>
+
+<p>You can unpublish a share at any time. The public link will
+immediately stop working and the circle will be empty. Then there are
+two options for publishing it again: one will generate a new random
+link, the other option reuses the current public link. If you hit the
+<em>Publish</em> button in the top right corner again, the share will be
+published anew – meaning the current validity time is added to the
+current point in time, but the public link will <em>not</em> change. All
+people that you have shared it with earlier can immediately open the
+site again.</p>
+
+<p>If you rather like to publish it to a new URL, click the black publish
+button at the bottom of the <em>Detail</em> pane (see the screenshot below).</p>
+
+<h2 id="edit-details">Edit Details</h2>
+
+<p>The share properties can be changed in the detail view of a share. The
+detail view consists of a top menu, then follows the description, then
+the file list menu and finally the list of files.</p>
+
+<p>Open the <em>Detail</em> tab in the top menu to see all properties.</p>
+
+<p><img src="../screenshots/edit.png" class="roundend screenshot" /></p>
+
+<p>Properties that have the little blue edit icon in front of their names
+can be changed by clicking that icon.</p>
+
+<p>The description can be edited by clicking the edit icon next to the
+<code class="highlighter-rouge">Publish</code> button in the top right corner.</p>
+
+<p>It is also possible to add or remove files of that share. Click the
+right menu item of the file list menu and the upload form appears.</p>
+
+<h2 id="alias-pages">Alias Pages</h2>
+
+<p>The alias page is a way to let other users upload files for you. The
+idea is the same as with shared downloads: there is a cryptic URL you
+can share with others. This url allows to upload files that will be
+associated to the owner of that alias page.</p>
+
+<p>Click in the top right menu that opens a drop down menu and choose
+<em>Aliases</em>. There you can create, edit and remove alias pages.</p>
+
+<p>Alias pages are also convenient for quickly uploading files for
+yourself, as they don’t require any authentication. For example, using
+curl you could do:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -H'Sharry-Alias: E5EohHtJHxN' -F file=@test.jpg -F file=@logo.jpg http://localhost:9090/api/v2/alias/upload
+{"success":true,"message":"Share created.","id":"FDQvHK2LVGe-SjkDjQxMiSo-8fPyBqKX3AY-nmWWnDsrRX3"}
+</code></pre></div></div>
+
+<p>See the <a href="rest">REST page</a> for more details on the various routes.</p>
+</section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script>hljs.configure({languages:['scala','java','bash']});
+hljs.initHighlightingOnLoad();
+              </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/sharry/js/docs.js"></script></body></html>
