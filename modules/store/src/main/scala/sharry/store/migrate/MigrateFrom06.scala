@@ -81,12 +81,12 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       sql"SELECT ROW_NUMBER() OVER() AS rn,t.* FROM alias t"
 
     logger.finfo[F]("Copying aliases...") *>
-    loadChunks[OldAlias](next)(-1)
-      .evalMap(_.toRAlias)
-      .evalTap(a => logger.finfo[F](s"Inserting alias: $a"))
-      .evalMap(a => result(store.transact(RAlias.insert(a)), "Error inserting alias"))
-      .compile
-      .foldMonoid
+      loadChunks[OldAlias](next)(-1)
+        .evalMap(_.toRAlias)
+        .evalTap(a => logger.finfo[F](s"Inserting alias: $a"))
+        .evalMap(a => result(store.transact(RAlias.insert(a)), "Error inserting alias"))
+        .compile
+        .foldMonoid
   }
 
   def copyShare: F[Int] = {
@@ -94,9 +94,8 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       sql"SELECT ROW_NUMBER() OVER() AS rn, t.* FROM upload t"
 
     logger.finfo[F]("Copying shares...") *>
-    loadChunks[Upload](next)(-1)
-      .evalMap(
-        u =>
+      loadChunks[Upload](next)(-1)
+        .evalMap(u =>
           for {
             share <- u.toShare
             psha  <- u.toPublish.value
@@ -104,9 +103,9 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
             n     <- result(store.transact(RShare.insert(share)), "Error inserting share")
             _     <- psha.map(p => store.transact(RPublishShare.insert(p))).getOrElse(0.pure[F])
           } yield n
-      )
-      .compile
-      .foldMonoid
+        )
+        .compile
+        .foldMonoid
   }
 
   def copyFiles: F[Int] = {
@@ -114,12 +113,12 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       sql"SELECT ROW_NUMBER() OVER() AS rn,t.* FROM uploadfile t"
 
     logger.finfo[F]("Copying files...") *>
-    loadChunks[UploadFile](q)(-1)
-      .evalMap(_.toRShareFile)
-      .evalTap(f => logger.finfo[F](s"Insert file: $f"))
-      .evalMap(f => result(store.transact(RShareFile.insert(f)), "Error inserting file"))
-      .compile
-      .foldMonoid
+      loadChunks[UploadFile](q)(-1)
+        .evalMap(_.toRShareFile)
+        .evalTap(f => logger.finfo[F](s"Insert file: $f"))
+        .evalMap(f => result(store.transact(RShareFile.insert(f)), "Error inserting file"))
+        .compile
+        .foldMonoid
   }
 
   def copyAccounts: F[Int] = {
@@ -127,12 +126,12 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       sql"SELECT ROW_NUMBER() OVER() AS rn,t.* FROM account t"
 
     logger.finfo[F]("Copying accounts...") *>
-    loadChunks[OldAccount](next)(-1)
-      .evalMap(_.toAccount)
-      .evalTap(a => logger.finfo[F](s"Insert account: $a"))
-      .evalMap(a => result(store.transact(RAccount.insert(a)), "Error inserting account"))
-      .compile
-      .foldMonoid
+      loadChunks[OldAccount](next)(-1)
+        .evalMap(_.toAccount)
+        .evalTap(a => logger.finfo[F](s"Insert account: $a"))
+        .evalMap(a => result(store.transact(RAccount.insert(a)), "Error inserting account"))
+        .compile
+        .foldMonoid
   }
 
   def loadChunks[A <: RowNum: Read](q: Fragment)(start: Long): Stream[F, A] = {
@@ -143,7 +142,6 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       else Stream.emits(v) ++ loadChunks(q)(v.last.rownum)
     }
   }
-
 
   def result[A](fu: F[A], errmsg: => String): F[Int] =
     fu.attempt.flatMap {
@@ -195,13 +193,13 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
   }
 
   case class UploadFile(
-    rownum: Long,
-    id: Ident,
+      rownum: Long,
+      id: Ident,
       fileId: Ident,
       filename: Option[String],
       donwloads: Int,
       lastDownload: Option[Timestamp]
-  ) extends RowNum{
+  ) extends RowNum {
 
     def toRShareFile: F[RShareFile] =
       for {

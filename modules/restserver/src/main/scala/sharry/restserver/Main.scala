@@ -52,15 +52,15 @@ object Main extends IOApp {
     )
     logger.info(s"\n${banner.render("***>")}")
     if ("true" == System.getProperty("sharry.migrate-old-dbschema")) {
-      MigrateFrom06[IO](cfg.backend.jdbc, connectEC, blocker).
-        use(mig => mig.migrate).
-        as(ExitCode.Success)
+      MigrateFrom06[IO](cfg.backend.jdbc, connectEC, blocker)
+        .use(mig => mig.migrate)
+        .as(ExitCode.Success)
     } else {
-    RestServer
-      .stream[IO](cfg, ExecutionContext.global, connectEC, blocker)
-      .compile
-      .drain
-      .as(ExitCode.Success)
+      RestServer
+        .stream[IO](cfg, ExecutionContext.global, connectEC, blocker)
+        .compile
+        .drain
+        .as(ExitCode.Success)
     }
   }
 }

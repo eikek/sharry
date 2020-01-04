@@ -90,19 +90,18 @@ object RAccount {
     Sql.updateRow(table, id.is(aid), password.setTo(pw)).update.run
 
   def updateStatsById(accId: Ident): ConnectionIO[Int] =
-    Sql.currentTime.flatMap(
-      t =>
-        Sql
-          .updateRow(
-            table,
-            id.is(accId),
-            Sql.commas(
-              loginCount.increment(1),
-              lastLogin.setTo(t)
-            )
+    Sql.currentTime.flatMap(t =>
+      Sql
+        .updateRow(
+          table,
+          id.is(accId),
+          Sql.commas(
+            loginCount.increment(1),
+            lastLogin.setTo(t)
           )
-          .update
-          .run
+        )
+        .update
+        .run
     )
 
   def findByLogin(user: Ident): ConnectionIO[Option[RAccount]] =

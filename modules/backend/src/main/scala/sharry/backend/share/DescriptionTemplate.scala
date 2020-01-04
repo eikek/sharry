@@ -21,8 +21,8 @@ object DescriptionTemplate {
     new DescriptionTemplate(sd)
 
   case class ShareContext(
-    key: Ident,
-    openKey: Option[Ident],
+      key: Ident,
+      openKey: Option[Ident],
       files: Seq[FileInfo],
       filename: Map[String, FileInfo],
       file: Map[Int, FileInfo]
@@ -51,8 +51,8 @@ object DescriptionTemplate {
       mimetype: Mimetype,
       length: ByteSize,
       size: String,
-    checksum: String,
-    url: LenientUri
+      checksum: String,
+      url: LenientUri
   ) {
 
     def byName: Map[String, FileInfo] =
@@ -67,11 +67,18 @@ object DescriptionTemplate {
   object FileInfo extends YamuscaCommon {
 
     def apply(baseUri: LenientUri)(fd: FileData): FileInfo =
-      FileInfo(fd.id, fd.name, fd.mimetype, fd.length, fd.length.toHuman, fd.checksum, baseUri/fd.id.id)
+      FileInfo(
+        fd.id,
+        fd.name,
+        fd.mimetype,
+        fd.length,
+        fd.length.toHuman,
+        fd.checksum,
+        baseUri / fd.id.id
+      )
 
     implicit val fileInfoConverter: ValueConverter[FileInfo] =
       ValueConverter.deriveConverter[FileInfo]
   }
-
 
 }

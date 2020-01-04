@@ -20,8 +20,8 @@ trait DoobieMeta {
   })
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
-    Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(
-      a => e.apply(a).noSpaces
+    Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>
+      e.apply(a).noSpaces
     )
 
   implicit val metaUserState: Meta[AccountState] =

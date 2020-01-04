@@ -64,13 +64,12 @@ object RestServer {
 
     Stream
       .resource(app)
-      .flatMap(
-        httpApp =>
-          BlazeServerBuilder[F]
-            .bindHttp(cfg.bind.port, cfg.bind.address)
-            .withHttpApp(httpApp)
-            .withoutBanner
-            .serve
+      .flatMap(httpApp =>
+        BlazeServerBuilder[F]
+          .bindHttp(cfg.bind.port, cfg.bind.address)
+          .withHttpApp(httpApp)
+          .withoutBanner
+          .serve
       )
 
   }.drain
@@ -95,7 +94,7 @@ object RestServer {
       "auth"     -> LoginRoutes.session(restApp.backend.login, cfg),
       "settings" -> SettingRoutes(restApp.backend, token, cfg),
       "alias"    -> AliasRoutes(restApp.backend, token, cfg),
-      "share" -> ShareRoutes(restApp.backend, token, cfg),
+      "share"    -> ShareRoutes(restApp.backend, token, cfg),
       "upload" -> ShareUploadRoutes(
         restApp.backend,
         token,
@@ -120,17 +119,16 @@ object RestServer {
       "info"   -> InfoRoutes(cfg),
       "auth"   -> LoginRoutes.login(restApp.backend, client, cfg),
       "signup" -> RegisterRoutes(restApp.backend, cfg).signup,
-      "share" -> OpenShareRoutes(restApp.backend, cfg)
+      "share"  -> OpenShareRoutes(restApp.backend, cfg)
     )
 
   def notFound[F[_]: Effect](token: AuthToken): HttpRoutes[F] =
-    Kleisli(
-      req =>
-        OptionT.liftF(
-          logger
-            .finfo[F](s"Non-admin '${token.account}' calling admin routes")
-            .map(_ => Response.notFound[F])
-        )
+    Kleisli(req =>
+      OptionT.liftF(
+        logger
+          .finfo[F](s"Non-admin '${token.account}' calling admin routes")
+          .map(_ => Response.notFound[F])
+      )
     )
 
 }

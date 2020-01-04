@@ -15,7 +15,7 @@ import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.records.ModAccount
 import cats.data.OptionT
-import sharry.backend.account.{NewAccount, AccountItem}
+import sharry.backend.account.{AccountItem, NewAccount}
 
 object AccountRoutes {
   private[this] val logger = getLogger

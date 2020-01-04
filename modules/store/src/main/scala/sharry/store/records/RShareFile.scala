@@ -10,8 +10,8 @@ case class RShareFile(
     shareId: Ident,
     fileId: Ident,
     filename: Option[String],
-  created: Timestamp,
-  realSize: ByteSize
+    created: Timestamp,
+    realSize: ByteSize
 )
 
 object RShareFile {
@@ -32,7 +32,11 @@ object RShareFile {
 
   def insert(v: RShareFile): ConnectionIO[Int] =
     Sql
-      .insertRow(table, all, fr"${v.id},${v.shareId},${v.fileId},${v.filename},${v.created},${v.realSize}")
+      .insertRow(
+        table,
+        all,
+        fr"${v.id},${v.shareId},${v.fileId},${v.filename},${v.created},${v.realSize}"
+      )
       .update
       .run
 

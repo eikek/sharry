@@ -47,6 +47,8 @@ object Queries {
   }
 
   def getEmail(accId: Ident): ConnectionIO[Option[MailAddress]] =
-    Sql.selectSimple(Seq(RAccount.Columns.email), RAccount.table, RAccount.Columns.id.is(accId)).
-      query[MailAddress].option
+    Sql
+      .selectSimple(Seq(RAccount.Columns.email), RAccount.table, RAccount.Columns.id.is(accId))
+      .query[MailAddress]
+      .option
 }

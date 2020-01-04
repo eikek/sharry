@@ -22,8 +22,8 @@ object TusRoutes {
   def apply[F[_]: Effect](
       shareId: Ident,
       backend: BackendApp[F],
-    token: AuthToken,
-    cfg: Config,
+      token: AuthToken,
+      cfg: Config,
       rootUrl: LenientUri
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
@@ -46,8 +46,8 @@ object TusRoutes {
                 case UploadResult.ValidityExceeded(_) =>
                   BadRequest()
                 case UploadResult.SizeExceeded(_) =>
-                  PayloadTooLarge("max size exceeded").
-                    map(_.withHeaders(TusMaxSize(cfg.backend.share.maxSize)))
+                  PayloadTooLarge("max size exceeded")
+                    .map(_.withHeaders(TusMaxSize(cfg.backend.share.maxSize)))
               })
               .getOrElseF(NotFound())
 

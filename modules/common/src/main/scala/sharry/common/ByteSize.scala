@@ -7,19 +7,19 @@ final case class ByteSize(bytes: Long) {
   def toHuman: String =
     ByteSize.bytesToHuman(bytes)
 
-  def <= (other: ByteSize) =
+  def <=(other: ByteSize) =
     bytes <= other.bytes
 
-  def >= (other: ByteSize) =
+  def >=(other: ByteSize) =
     bytes >= other.bytes
 
-  def > (other: ByteSize) =
+  def >(other: ByteSize) =
     bytes > other.bytes
 
-  def - (other: ByteSize) =
+  def -(other: ByteSize) =
     ByteSize(bytes - other.bytes)
 
-  def + (other: ByteSize) =
+  def +(other: ByteSize) =
     ByteSize(bytes + other.bytes)
 }
 

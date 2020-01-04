@@ -27,9 +27,9 @@ object ShareResult {
     def toOption: Option[A] = Some(value)
 
     def fold[B](
-      f1: A => B,
-      f2: ShareResult.PasswordMismatch.type => B,
-      f3: ShareResult.PasswordMissing.type => B
+        f1: A => B,
+        f2: ShareResult.PasswordMismatch.type => B,
+        f3: ShareResult.PasswordMissing.type => B
     ): B = f1(value)
 
     def map[B](f: A => B): ShareResult[B] =
@@ -43,9 +43,9 @@ object ShareResult {
     def toOption: Option[Nothing] = None
 
     def fold[B](
-      f1: Nothing => B,
-      f2: ShareResult.PasswordMismatch.type => B,
-      f3: ShareResult.PasswordMissing.type => B
+        f1: Nothing => B,
+        f2: ShareResult.PasswordMismatch.type => B,
+        f3: ShareResult.PasswordMissing.type => B
     ): B = f2(this)
 
     def mapF[F[_]: Applicative, B](f: Nothing => F[B]): F[ShareResult[B]] =
@@ -60,9 +60,9 @@ object ShareResult {
     def toOption: Option[Nothing] = None
 
     def fold[B](
-      f1: Nothing => B,
-      f2: ShareResult.PasswordMismatch.type => B,
-      f3: ShareResult.PasswordMissing.type => B
+        f1: Nothing => B,
+        f2: ShareResult.PasswordMismatch.type => B,
+        f3: ShareResult.PasswordMissing.type => B
     ): B = f3(this)
 
     def mapF[F[_]: Applicative, B](f: Nothing => F[B]): F[ShareResult[B]] =

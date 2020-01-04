@@ -25,8 +25,8 @@ object Store {
   def create[F[_]: Effect: ContextShift](
       jdbc: JdbcConfig,
       connectEC: ExecutionContext,
-    blocker: Blocker,
-    runMigration: Boolean
+      blocker: Blocker,
+      runMigration: Boolean
   ): Resource[F, Store[F]] = {
 
     val hxa = HikariTransactor.newHikariTransactor[F](

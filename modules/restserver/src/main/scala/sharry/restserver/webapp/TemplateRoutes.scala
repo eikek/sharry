@@ -86,10 +86,10 @@ object TemplateRoutes {
   ): F[Template] =
     loadUrl[F](url, blocker)
       .flatMap(s => parseTemplate(s))
-      .map(t => {
+      .map { t =>
         logger.info(s"Compiled template $url")
         t
-      })
+      }
 
   case class DocData(swaggerRoot: String, openapiSpec: String)
   object DocData {
@@ -143,10 +143,10 @@ object TemplateRoutes {
       Option(ref.get) match {
         case Some(a) => a.pure[F]
         case None =>
-          fa.map(a => {
+          fa.map { a =>
             ref.set(a)
             a
-          })
+          }
       }
     }
   }
