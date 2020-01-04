@@ -329,4 +329,7 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
   Seq(target)
 }
 
-addCommandAlias("make", ";root/openapiCodegen ;root/test:compile")
+addCommandAlias("make", ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile")
+addCommandAlias("make-zip", ";restserver/universal:packageBin")
+addCommandAlias("make-deb", ";restserver/debian:packageBin")
+addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb")

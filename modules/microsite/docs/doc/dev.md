@@ -13,8 +13,9 @@ the sources, start `sbt` in the source root and run inside the sbt
 shell:
 
 - `make` to compile all sources (Elm + Scala)
-- `restserver/universal:packageBin` to create zip packages
-- `restserver/debian:packageBin` to create debian packages
+- `make-zip` to create zip packages
+- `make-deb` to create debian packages
+- `make-pkg` to run a clean compile and create both packages
 
 The zip file can be found afterwards in:
 
