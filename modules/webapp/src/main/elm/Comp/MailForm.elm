@@ -105,7 +105,8 @@ view model =
             ]
         , div [ class "field" ]
             [ label [] [ text "Body" ]
-            , textarea [] [ text model.body ]
+            , textarea [ onInput SetBody ]
+                [ text model.body ]
             ]
         , button
             [ classList
