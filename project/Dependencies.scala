@@ -25,7 +25,7 @@ object Dependencies {
   val SqliteVersion           = "3.28.0"
   val SwaggerVersion          = "3.24.3"
   val TikaVersion             = "1.23"
-  val TusClientVersion        = "1.8.0-1"
+  val TusClientVersion        = "1.8.0-2"
   val YamuscaVersion          = "0.6.1"
 
   val fs2 = Seq(
