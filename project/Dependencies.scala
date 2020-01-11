@@ -7,8 +7,7 @@ object Dependencies {
   val BitpeaceVersion         = "0.4.2"
   val CirceVersion            = "0.12.3"
   val DoobieVersion           = "0.8.8"
-  val EmilVersion             = "0.1.1"
-  val FastparseVersion        = "2.1.3"
+  val EmilVersion             = "0.2.0"
   val FlywayVersion           = "6.1.4"
   val Fs2Version              = "2.1.0"
   val H2Version               = "1.4.200"
@@ -68,10 +67,6 @@ object Dependencies {
   // MPL 2.0
   val pureconfig = Seq(
     "com.github.pureconfig" %% "pureconfig" % PureConfigVersion
-  )
-
-  val fastparse = Seq(
-    "com.lihaoyi" %% "fastparse" % FastparseVersion
   )
 
   // https://github.com/h2database/h2database

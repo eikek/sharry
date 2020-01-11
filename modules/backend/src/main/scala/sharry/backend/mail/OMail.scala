@@ -4,14 +4,13 @@ import cats.effect._
 import cats.data.OptionT
 import cats.implicits._
 import emil.{MailConfig => _, _}
-import emil.javamail.syntax._
 import emil.builder._
+import emil.javamail.syntax._
 import yamusca.implicits._
 import org.log4s.getLogger
 
 import sharry.common._
 import sharry.store.Store
-import emil.javamail.internal.JavaMailConnection
 import sharry.backend.mail.MailConfig.MailTpl
 import cats.data.EitherT
 
@@ -32,7 +31,7 @@ object OMail {
   def apply[F[_]: Effect](
       store: Store[F],
       cfg: MailConfig,
-      emil: Emil[F, JavaMailConnection]
+      emil: Emil[F]
   ): Resource[F, OMail[F]] =
     Resource.pure(new OMail[F] {
 
@@ -52,7 +51,7 @@ object OMail {
 
         def send(rec: MailAddress, td: TemplateData): F[NotifyResult] =
           emil(cfg.toEmil).send(createMail(cfg.templates.uploadNotify, td, rec)).attempt.map {
-            case Right(()) => NotifyResult.SendSuccessful
+            case Right(_) => NotifyResult.SendSuccessful
             case Left(ex) =>
               logger.warn(ex)("Sending failed")
               NotifyResult.SendFailed(ex.getMessage)
