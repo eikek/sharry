@@ -50,13 +50,13 @@ The steps are roughly this:
 
 ### Dump
 
-The dump can be created using a tool provided by h2: `ScriptTool`
+The dump can be created using a tool provided by h2: `Script`
 ([doc](https://h2database.com/javadoc/org/h2/tools/Script.html)). It
 is in the jar file that is on your disk if you have sharry installed.
 So the dump can be created like this:
 
 ```
-java -cp sharry-restserver-@VERSION@/lib/com.h2database.h2-1.4.200.jar org.h2.tools.ScriptTool -url "jdbc:h2:///var/data/sharry/sharry-old-db" -user sa -password ""
+java -cp sharry-restserver-@VERSION@/lib/com.h2database.h2-1.4.200.jar org.h2.tools.Script -url "jdbc:h2:///var/data/sharry/sharry-old-db" -user sa -password ""
 ```
 
 This will create a `backup.sql` file in the current directory.
