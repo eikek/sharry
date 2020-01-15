@@ -101,7 +101,8 @@ $ ./sharry-restserver*/bin/sharry-restserver /path/to/server-config.conf
 
 After starting the rest server, you can reach the web application at
 path `/app`, so using default values it would be
-`http://localhost:9090/app`.
+`http://localhost:9090/app`. The root path, `http://localhost:9090/`,
+redirects to this url.
 
 You should be able to create a new account and sign in.
 

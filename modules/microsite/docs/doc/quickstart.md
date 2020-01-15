@@ -19,7 +19,7 @@ To quickly try out sharry, follow these steps:
    ```bash
    $ /path/to/extracted-zip/bin/sharry-restserver
    ```
-4. Goto <http://localhost:9090/app>, signup and login
+4. Goto <http://localhost:9090/>, signup and login
 
 If you want to know more, for example what can be
 [configured](configure), checkout these pages.
