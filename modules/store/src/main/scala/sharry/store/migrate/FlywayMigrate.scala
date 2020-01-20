@@ -38,12 +38,13 @@ object FlywayMigrate {
 
   def findLocations(jdbc: JdbcConfig) =
     jdbc.dbmsName match {
+      case Some("h2") =>
+        List("classpath:db/migration/common", s"classpath:db/migration/postgresql", "classpath:db/migration/h2")
       case Some(dbtype) =>
-        val name = if (dbtype == "h2") "postgresql" else dbtype
-        List("classpath:db/migration/common", s"classpath:db/migration/${name}")
+        List("classpath:db/migration/common", s"classpath:db/migration/${dbtype}")
       case None =>
         logger.warn(s"Cannot read database name from jdbc url: ${jdbc.url}. Go with H2")
-        List("classpath:db/migration/common", "classpath:db/h2")
+        List("classpath:db/migration/common", s"classpath:db/migration/postgresql", "classpath:db/migration/h2")
     }
 
 }
