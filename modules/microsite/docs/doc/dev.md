@@ -70,3 +70,51 @@ sharry.restserver {
   }
 }
 ```
+
+## Nix Expressions
+
+The directory `/nix` contains nix expressions to install sharry via
+the nix package manager and to integrate it into NixOS as a system
+service.
+
+### Testing NixOS Modules
+
+The modules can be build by building the `configuration-test.nix` file
+together with some nixpkgs version. For example:
+
+``` shell
+nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
+  -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
+```
+
+This will build all modules imported in `configuration-test.nix` and
+create a virtual machine containing the system, including sharry.
+After that completes, the system configuration can be found behind the
+`./result/system` symlink. So it is possible to look at the generated
+systemd config for example:
+
+``` shell
+cat result/system/etc/systemd/system/sharry.service
+```
+
+And with some more commands (there probably is an easier way…) the
+config file can be checked:
+
+``` shell
+cat result/system/etc/systemd/system/sharry.service | \
+  grep ExecStart | \
+  cut -d'=' -f2 | \
+  xargs cat | \
+  tail -n1 | \
+  awk '{print $NF}'| \
+  sed 's/.$//' | \
+  xargs cat | jq
+```
+
+To see the module in action, the vm can be started (the first line
+sets more memory for the vm):
+
+``` bash
+export QEMU_OPTS="-m 2048"
+./result/bin/run-sharrytest-vm
+```

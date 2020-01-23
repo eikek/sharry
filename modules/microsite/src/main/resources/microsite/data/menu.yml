@@ -13,6 +13,9 @@ options:
       - title: Migration
         url: doc/migration
 
+      - title: Nix/NixOS
+        url: doc/nix
+
   - title: Configuring
     url: doc/configure
 

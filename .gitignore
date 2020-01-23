@@ -3,3 +3,4 @@ target/
 local/
 elm-stuff/
 result
+*.qcow2
