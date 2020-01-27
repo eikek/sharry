@@ -8,11 +8,11 @@ stdenv.mkDerivation rec {
   buildPhase = "true";
 
   installPhase = ''
-    mkdir -p $out/{bin,program}
-    cp -R * $out/program/
+    mkdir -p $out/{bin,sharry-${cfg.version}}
+    cp -R * $out/sharry-${cfg.version}/
     cat > $out/bin/sharry-restserver <<-EOF
     #!${bash}/bin/bash
-    $out/program/bin/sharry-restserver -java-home ${jre8_headless} "\$@"
+    $out/sharry-${cfg.version}/bin/sharry-restserver -java-home ${jre8_headless} "\$@"
     EOF
     chmod 755 $out/bin/sharry-restserver
   '';
