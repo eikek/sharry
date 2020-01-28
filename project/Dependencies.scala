@@ -11,7 +11,7 @@ object Dependencies {
   val FlywayVersion           = "6.2.0"
   val Fs2Version              = "2.1.0"
   val H2Version               = "1.4.200"
-  val Http4sVersion           = "0.21.0-RC1"
+  val Http4sVersion           = "0.21.0-RC2"
   val JQueryVersion           = "3.4.1"
   val KindProjectorVersion    = "0.10.3"
   val Log4sVersion            = "1.8.2"
