@@ -19,7 +19,7 @@ object Dependencies {
   val MariaDbVersion          = "2.5.4"
   val MiniTestVersion         = "2.7.0"
   val PostgresVersion         = "42.2.10"
-  val PureConfigVersion       = "0.12.2"
+  val PureConfigVersion       = "0.12.3"
   val SemanticUIVersion       = "2.4.1"
   val SqliteVersion           = "3.30.1"
   val SwaggerVersion          = "3.25.0"
