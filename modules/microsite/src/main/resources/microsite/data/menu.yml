@@ -13,6 +13,9 @@ options:
       - title: Migration
         url: doc/migration
 
+      - title: Reverse Proxy
+        url: doc/reverseproxy
+
       - title: Nix/NixOS
         url: doc/nix
 
