@@ -5,6 +5,7 @@ import App.Data exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Markdown
 import Page exposing (Page(..))
 import Page.Account.View
 import Page.Alias.View
@@ -65,7 +66,7 @@ defaultLayout model =
                             href "#"
                     ]
                     [ img
-                        [ src <| model.flags.config.assetsPath ++ "/img/icon.svg"
+                        [ src <| model.flags.config.iconUrl
                         , class "ui image logo-icon"
                         ]
                         []
@@ -226,7 +227,7 @@ userMenu model acc =
                 HomePage
                 [ img
                     [ class "image icon logo-icon"
-                    , src (model.flags.config.assetsPath ++ "/img/icon.svg")
+                    , src model.flags.config.iconUrl
                     ]
                     []
                 , text "Home"
@@ -294,15 +295,33 @@ menuEntry model page children =
 
 footer : Model -> Html Msg
 footer model =
-    div [ class "ui footer" ]
-        [ a [ href "https://eikek.github.io/sharry" ]
-            [ i [ class "ui github icon" ] []
-            , text "Sharry "
-            ]
-        , span []
-            [ text model.version.version
-            , text " (#"
-            , String.left 8 model.version.gitCommit |> text
-            , text ")"
-            ]
-        ]
+    let
+        defaultFooter =
+            div [ class "ui footer" ]
+                [ a [ href "https://eikek.github.io/sharry" ]
+                    [ i [ class "ui github icon" ] []
+                    , text "Sharry "
+                    ]
+                , span []
+                    [ text model.version.version
+                    , text " (#"
+                    , String.left 8 model.version.gitCommit |> text
+                    , text ")"
+                    ]
+                ]
+
+        customFooter =
+            div [ class "ui footer" ]
+                [ Markdown.toHtml [] model.flags.config.footerText
+                ]
+    in
+    if model.flags.config.footerVisible then
+        case model.flags.config.footerText of
+            "" ->
+                defaultFooter
+
+            _ ->
+                customFooter
+
+    else
+        span [ class "invisible hidden" ] []

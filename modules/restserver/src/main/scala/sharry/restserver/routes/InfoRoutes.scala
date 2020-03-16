@@ -30,18 +30,30 @@ object InfoRoutes {
     }
   }
 
-  def appConfig(cfg: Config): AppConfig =
+  def appConfig(cfg: Config): AppConfig = {
+    val assetPath = s"/app/assets/sharry-webapp/${BuildInfo.version}"
+    val logoUrl =
+      if (cfg.webapp.appLogo.nonEmpty) cfg.webapp.appLogo
+      else s"$assetPath/img/logo.png"
+    val iconUrl =
+      if (cfg.webapp.appIcon.nonEmpty) cfg.webapp.appIcon
+      else s"$assetPath/img/icon.svg"
     AppConfig(
       cfg.webapp.appName,
       cfg.baseUrl,
-      s"/app/assets/sharry-webapp/${BuildInfo.version}",
+      logoUrl,
+      iconUrl,
+      cfg.webapp.appFooter,
+      cfg.webapp.appFooterVisible,
       cfg.backend.signup.mode,
       cfg.backend.auth.oauth.filter(_.enabled).map(oa => OAuthItem(oa.id, oa.name, oa.icon)).toList,
       cfg.webapp.chunkSize.bytes,
       cfg.webapp.retryDelays.map(_.millis).toList,
       cfg.backend.share.maxValidity,
       cfg.backend.share.maxSize,
-      cfg.backend.mail.enabled
+      cfg.backend.mail.enabled,
+      cfg.webapp.welcomeMessage
     )
+  }
 
 }

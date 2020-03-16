@@ -27,10 +27,11 @@ The detail options are explained below.
 
 ### Name
 
-A share may have a name. This name is only for the owner and helps to
-find shares easier in the list view. The name will also be used as the
-head line, if the description doesn't contain a markdown headline (a
-line starting with `#`).
+A share may have a name. This name is mainly meant for the owner to
+helps finding shares easier in the list view. The name will also be
+used as the head line, if the description doesn't contain a markdown
+headline (a line starting with `#`). In that case, users who access
+the published site, will see it.
 
 
 ### Description

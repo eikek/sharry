@@ -6,6 +6,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Markdown
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
@@ -19,7 +20,7 @@ view flags model =
                     [ h1 [ class "ui center aligned icon header" ]
                         [ img
                             [ class "ui logo image"
-                            , src (flags.config.assetsPath ++ "/img/logo.png")
+                            , src flags.config.logoUrl
                             ]
                             []
                         ]
@@ -84,8 +85,23 @@ view flags model =
                         ]
                     ]
                 ]
+            , renderWelcome flags
             ]
         ]
+
+
+renderWelcome : Flags -> Html Msg
+renderWelcome flags =
+    case flags.config.welcomeMessage of
+        "" ->
+            span [ class "hidden invisible" ] []
+
+        msg ->
+            div [ class "row" ]
+                [ div [ class "six wide column ui segment" ]
+                    [ Markdown.toHtml [] msg
+                    ]
+                ]
 
 
 renderOAuthButtons : Flags -> Model -> Html Msg

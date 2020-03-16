@@ -14,6 +14,15 @@ object Config {
 
   case class Bind(address: String, port: Int)
 
-  case class Webapp(appName: String, chunkSize: ByteSize, retryDelays: Seq[Duration])
+  case class Webapp(
+      appName: String,
+      appIcon: String,
+      appLogo: String,
+      appFooter: String,
+      appFooterVisible: Boolean,
+      chunkSize: ByteSize,
+      retryDelays: Seq[Duration],
+      welcomeMessage: String
+  )
 
 }

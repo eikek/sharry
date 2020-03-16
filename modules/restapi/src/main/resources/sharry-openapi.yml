@@ -1645,7 +1645,10 @@ components:
       required:
         - appName
         - baseUrl
-        - assetsPath
+        - logoUrl
+        - iconUrl
+        - footerText
+        - footerVisible
         - signupMode
         - oauthConfig
         - chunkSize
@@ -1653,14 +1656,21 @@ components:
         - maxValidity
         - maxSize
         - mailEnabled
+        - welcomeMessage
       properties:
         appName:
           type: string
         baseUrl:
           type: string
           format: uri
-        assetsPath:
+        logoUrl:
           type: string
+        iconUrl:
+          type: string
+        footerText:
+          type: string
+        footerVisible:
+          type: boolean
         signupMode:
           type: string
           format: signupmode
@@ -1684,6 +1694,8 @@ components:
           format: size
         mailEnabled:
           type: boolean
+        welcomeMessage:
+          type: string
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

@@ -20,6 +20,11 @@ let
       app-name = "Sharry";
       chunk-size = "100M";
       retry-delays = [0 3000 6000 12000 24000 48000];
+      app-icon = "";
+      app-logo = "";
+      app-footer = "";
+      app-footer-visible = true;
+      welcome-message = "";
     };
     backend = {
       auth = {
@@ -210,6 +215,45 @@ in {
               type = types.str;
               default = defaults.webapp.app-name;
               description = "This is shown in the top right corner of the web application";
+            };
+            app-logo = mkOption {
+              type = types.str;
+              default = defaults.webapp.app-logo;
+              description = ''
+                The login and register page displays a logo image, by default
+                the Sharry logo. This can be changed here. It needs to be an URL
+                to an image.
+              '';
+            };
+            app-icon = mkOption {
+              type = types.str;
+              default = defaults.webapp.app-icon;
+              description = "The icon next to the app-name. Needs to be an URL to a image.";
+            };
+            app-footer = mkOption {
+              type = types.str;
+              default = defaults.webapp.app-footer;
+              description = ''
+                This is markdown that is inserted as the footer on each page in
+                the ui. If left empty, a link to the project is rendered.
+              '';
+            };
+            app-footer-visible = mkOption {
+              type = types.bool;
+              default = defaults.webapp.app-footer-visible;
+              description = ''
+                Whether to display the footer on each page in the ui. Set it to
+                false to hide it.
+              '';
+            };
+
+            welcome-message = mkOption {
+              type = types.str;
+              default = defaults.webapp.welcome-message;
+              description = ''
+                The login page can display a welcome message that is readable by
+                everyone. The text is processed as markdown.
+              '';
             };
             chunk-size = mkOption {
               type = types.str;

@@ -17,7 +17,7 @@ view flags model =
                     [ h1 [ class "ui cener aligned icon header" ]
                         [ img
                             [ class "ui logo image"
-                            , src (flags.config.assetsPath ++ "/img/logo.png")
+                            , src flags.config.logoUrl
                             ]
                             []
                         , div [ class "content" ]
