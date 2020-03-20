@@ -23,7 +23,7 @@ object OSignup {
   case class RegisterData(login: Ident, password: Password, invite: Option[Ident])
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OSignup[F]] =
-    Resource.pure(new OSignup[F] {
+    Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult] =
         if (cfg.mode != SignupMode.Invite) {

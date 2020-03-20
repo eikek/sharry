@@ -43,7 +43,7 @@ object OAccount {
   private[this] val logger = getLogger
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OAccount[F]] =
-    Resource.pure(new OAccount[F] {
+    Resource.pure[F, OAccount[F]](new OAccount[F] {
 
       def changePassword(id: Ident, oldPw: Password, newPw: Password): F[AddResult] = {
         val update =

@@ -22,7 +22,7 @@ object Login {
   private[this] val logger = getLogger
 
   def apply[F[_]: Effect](oacc: OAccount[F]): Resource[F, Login[F]] =
-    Resource.pure(new Login[F] {
+    Resource.pure[F, Login[F]](new Login[F] {
 
       def loginSession(config: AuthConfig)(sessionKey: String): F[LoginResult] =
         AuthToken.fromString(sessionKey) match {

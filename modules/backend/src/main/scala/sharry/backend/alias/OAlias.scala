@@ -30,7 +30,7 @@ object OAlias {
   private[this] val logger = getLogger
 
   def apply[F[_]: Effect](store: Store[F]): Resource[F, OAlias[F]] =
-    Resource.pure(new OAlias[F] {
+    Resource.pure[F, OAlias[F]](new OAlias[F] {
       def create(alias: RAlias): F[AddResult] =
         store.add(RAlias.insert(alias), RAlias.existsById(alias.id))
 

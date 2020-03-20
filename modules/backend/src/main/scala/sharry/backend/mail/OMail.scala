@@ -33,7 +33,7 @@ object OMail {
       cfg: MailConfig,
       emil: Emil[F]
   ): Resource[F, OMail[F]] =
-    Resource.pure(new OMail[F] {
+    Resource.pure[F, OMail[F]](new OMail[F] {
 
       def notifyAliasUpload(
           aliasId: Ident,

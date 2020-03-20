@@ -138,7 +138,7 @@ object OShare {
   private[this] val logger = getLogger
 
   def apply[F[_]: ConcurrentEffect](store: Store[F], cfg: ShareConfig): Resource[F, OShare[F]] =
-    Resource.pure(new OShare[F] {
+    Resource.pure[F, OShare[F]](new OShare[F] {
 
       def create(data: ShareData[F], accId: AccountId): F[UploadResult[Ident]] = {
         val createShare = for {
