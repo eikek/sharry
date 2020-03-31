@@ -22,6 +22,30 @@ page</a>.
 
 <p>If you want to know more, for example what can be
 <a href="configure">configured</a>, checkout these pages.</p>
+
+<h1 id="quickstart-with-docker">Quickstart with Docker</h1>
+
+<p>There is a <a href="https://docs.docker.com/compose/">docker-compose</a> setup
+available in the <code class="highlighter-rouge">/docker</code> folder.</p>
+
+<ol>
+  <li>Clone the github repository
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git clone https://github.com/eikek/sharry
+</code></pre></div>    </div>
+  </li>
+  <li>Change into the <code class="highlighter-rouge">docker</code> directory:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd </span>sharry/docker
+</code></pre></div>    </div>
+  </li>
+  <li>Run <code class="highlighter-rouge">docker-compose up</code>:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>docker-compose up
+</code></pre></div>    </div>
+  </li>
+  <li>Goto <a href="http://localhost:9090/">http://localhost:9090/</a>, signup and login</li>
+</ol>
+
+<p>The directory contains a file <code class="highlighter-rouge">sharry.conf</code> that you can
+<a href="configure">modify</a> as needed.</p>
 </section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script>
 // For all code blocks, copy the language from the containing div
 // to the inner code tag (where hljs expects it to be)
