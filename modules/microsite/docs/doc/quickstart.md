@@ -23,3 +23,26 @@ To quickly try out sharry, follow these steps:
 
 If you want to know more, for example what can be
 [configured](configure), checkout these pages.
+
+
+# Quickstart with Docker
+
+There is a [docker-compose](https://docs.docker.com/compose/) setup
+available in the `/docker` folder.
+
+1. Clone the github repository
+   ```bash
+   $ git clone https://github.com/eikek/sharry
+   ```
+2. Change into the `docker` directory:
+   ```bash
+   $ cd sharry/docker
+   ```
+3. Run `docker-compose up`:
+   ```bash
+   $ docker-compose up
+   ```
+4. Goto <http://localhost:9090/>, signup and login
+
+The directory contains a file `sharry.conf` that you can
+[modify](configure) as needed.
