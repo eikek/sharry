@@ -68,7 +68,7 @@ update current msg model =
             ( { model | hover = False }, Cmd.none, current )
 
         GotFiles list ->
-            ( { model | hover = False }, Cmd.none, list )
+            ( { model | hover = False }, Cmd.none, current ++ list )
 
         DeleteFile index ->
             ( model, Cmd.none, Util.List.remove index current )
