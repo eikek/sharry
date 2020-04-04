@@ -47,4 +47,7 @@ object RInvitation {
       _   <- delete(invite)
     } yield inv > 0
   }
+
+  def deleteOlderThan(minCreated: Timestamp): ConnectionIO[Int] =
+    Sql.deleteFrom(table, created.isLt(minCreated)).update.run
 }

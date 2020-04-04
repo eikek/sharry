@@ -31,8 +31,8 @@ trait BackendApp[F[_]] {
 object BackendApp {
 
   def create[F[_]: ConcurrentEffect: Timer: ContextShift](
-    cfg: Config,
-    blocker: Blocker,
+      cfg: Config,
+      blocker: Blocker,
       store: Store[F]
   ): Resource[F, BackendApp[F]] =
     for {
@@ -59,6 +59,6 @@ object BackendApp {
     for {
       store   <- Store.create(cfg.jdbc, connectEC, blocker, true)
       backend <- create(cfg, blocker, store)
-      _  <- PeriodicCleanup.resource(cfg.cleanup, store)
+      _       <- PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)
     } yield backend
 }

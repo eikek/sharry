@@ -132,6 +132,17 @@ trait OShare[F[_]] {
   def setMaxViews(accId: AccountId, share: Ident, value: Int): OptionT[F, Unit]
 
   def setPassword(accId: AccountId, share: Ident, value: Option[Password]): OptionT[F, Unit]
+
+  /** Deletes all shares (with all its data) that have been published
+    * but are expired now.
+    */
+  def cleanupExpired(invalidAge: Duration): F[Int]
+
+  /** Deletes files that have no reference to a share. This should
+    * actually never happen, but it might be possible due to bugs or
+    * manually modifying the database.
+    */
+  def deleteOrphanedFiles: F[Int]
 }
 
 object OShare {
@@ -156,14 +167,13 @@ object OShare {
         val storeFiles = (id: Ident) =>
           data.files
             .evalMap(createFile(store, id, cfg.chunkSize, cfg.maxSize))
-            .evalMap(
-              ur =>
-                ur.toOption match {
-                  case Some(t) =>
-                    logger.fdebug(s"Successfully stored file ${t._2.filename}")
-                  case None =>
-                    logger.fwarn(s"Unable to store file: $ur")
-                }
+            .evalMap(ur =>
+              ur.toOption match {
+                case Some(t) =>
+                  logger.fdebug(s"Successfully stored file ${t._2.filename}")
+                case None =>
+                  logger.fwarn(s"Unable to store file: $ur")
+              }
             )
             .compile
             .drain
@@ -191,14 +201,13 @@ object OShare {
         val storeFiles =
           files
             .evalMap(createFile(store, shareId, cfg.chunkSize, cfg.maxSize))
-            .evalMap(
-              ur =>
-                ur.toOption match {
-                  case Some(t) =>
-                    logger.fdebug(s"Successfully stored file ${t._2.filename}")
-                  case None =>
-                    logger.fwarn(s"Unable to store file: $ur")
-                }
+            .evalMap(ur =>
+              ur.toOption match {
+                case Some(t) =>
+                  logger.fdebug(s"Successfully stored file ${t._2.filename}")
+                case None =>
+                  logger.fwarn(s"Unable to store file: $ur")
+              }
             )
             .compile
             .drain
@@ -263,20 +272,19 @@ object OShare {
             .chunkN(cfg.chunkSize.bytes.toInt)
             .zipWithIndex
             .map(tc => FileChunk(fileMetaId.id, tc._2 + startChunk, tc._1.toByteVector))
-            .flatMap(
-              chunk =>
-                store.bitpeace
-                  .addChunkByLength(chunk, cfg.chunkSize.bytes.toInt, length.bytes, mimeHint)
-                  .map(_ => chunk.chunkData.size)
+            .flatMap(chunk =>
+              store.bitpeace
+                .addChunkByLength(chunk, cfg.chunkSize.bytes.toInt, length.bytes, mimeHint)
+                .map(_ => chunk.chunkData.size)
             )
             .fold1(_ + _)
             .compile
             .last
             .map(_.getOrElse(0L))
-            .flatMap(bytesSaved => {
+            .flatMap { bytesSaved =>
               val len = offset + ByteSize(bytesSaved)
               store.transact(RShareFile.setRealSize(fileId, len)).map(_ => len)
-            })
+            }
 
         val deleteFile = store
           .transact(RShareFile.delete(fileId))
@@ -291,22 +299,21 @@ object OShare {
                 )
           desc <- OptionT(store.transact(Queries.fileDesc(fileId)))
           next <- OptionT.liftF(
-                   res.mapF(
-                     rem =>
-                       storeChunk(
-                         desc.metaId,
-                         desc.length,
-                         MimetypeHint(desc.name, desc.mime.some),
-                         rem
-                       )
+                   res.mapF(rem =>
+                     storeChunk(
+                       desc.metaId,
+                       desc.length,
+                       MimetypeHint(desc.name, desc.mime.some),
+                       rem
+                     )
                    )
                  )
           // check again against db state, because of parallel uploads
           currentSize2 <- OptionT.liftF(store.transact(Queries.shareSize(shareId)))
-          ur <- OptionT.liftF(next.flatMapF({ _ =>
+          ur <- OptionT.liftF(next.flatMapF { _ =>
                  if (currentSize2 >= cfg.maxSize) deleteFile
                  else next.pure[F]
-               }))
+               })
 
         } yield next
       }
@@ -420,6 +427,32 @@ object OShare {
           _  <- OptionT.liftF(store.transact(Queries.setPassword(share, pw)))
         } yield ()
 
+      def cleanupExpired(invalidAge: Duration): F[Int] =
+        for {
+          now   <- Timestamp.current[F]
+          point = now.minus(invalidAge)
+          n <- store
+                .transact(Queries.findExpired(point))
+                .evalMap(id =>
+                  logger
+                    .fdebug(s"Delete expired share: ${id.id}") *> Queries.deleteShare(id, false)(
+                    store
+                  )
+                )
+                .compile
+                .fold(0)((n, _) => n + 1)
+        } yield n
+
+      def deleteOrphanedFiles: F[Int] =
+        for {
+          n <- store
+                .transact(Queries.findOrphanedFiles)
+                .evalMap(id =>
+                  logger.fdebug(s"Delete orphaned file '${id.id}'") *> Queries.deleteFile(store)(id)
+                )
+                .compile
+                .fold(0)((n, _) => n + 1)
+        } yield n
     })
 
 // --- utilities
@@ -474,26 +507,25 @@ object OShare {
         result <- checkShareSize[F](store, maxSize, shareId, ByteSize(file.length.getOrElse(0L)))
 
         // store file, at most max-size +1 bytes
-        urfm <- result.mapF(
-                 sizeLeft =>
-                   store.bitpeace
-                     .saveNew(
-                       file.data.take(sizeLeft.bytes + 1L),
-                       chunkSz.bytes.toInt,
-                       MimetypeHint(file.name, file.advertisedMime.map(_.asString)),
-                       None,
-                       now.value
-                     )
-                     .compile
-                     .lastOrError
+        urfm <- result.mapF(sizeLeft =>
+                 store.bitpeace
+                   .saveNew(
+                     file.data.take(sizeLeft.bytes + 1L),
+                     chunkSz.bytes.toInt,
+                     MimetypeHint(file.name, file.advertisedMime.map(_.asString)),
+                     None,
+                     now.value
+                   )
+                   .compile
+                   .lastOrError
                )
 
         // check again against db state, because of parallel uploads
         currentSize2 <- store.transact(Queries.shareSize(shareId))
-        ur <- urfm.flatMapF({ fm =>
+        ur <- urfm.flatMapF { fm =>
                if (currentSize2 >= maxSize) deleteFileMeta(fm)
                else urfm.pure[F]
-             })
+             }
       } yield ur
 
     def saveShareFile(fm: FileMeta, now: Timestamp) =

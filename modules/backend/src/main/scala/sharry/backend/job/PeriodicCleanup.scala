@@ -3,39 +3,43 @@ package sharry.backend.job
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-import sharry.store.Store
-import sharry.common._
 import sharry.common.syntax.all._
 import org.log4s.getLogger
-import sharry.backend.share.Queries
+import sharry.backend.share._
+import sharry.backend.signup._
 
 object PeriodicCleanup {
   private[this] val logger = getLogger
 
   def resource[F[_]: ConcurrentEffect: Timer: ContextShift](
-      cfg: CleanupConfig,
-      store: Store[F]
+      cleanupCfg: CleanupConfig,
+      signupCfg: SignupConfig,
+      shareOps: OShare[F],
+      signupOps: OSignup[F]
   ): Resource[F, Unit] =
-    if (!cfg.enabled)
+    if (!cleanupCfg.enabled)
       Resource.liftF(logger.finfo("Cleanup job not running, because it is disabled"))
     else {
-      val main = (logStarting ++ loop(cfg, store) ++ logStopped).compile.drain
+      val main =
+        (logStarting ++ loop(cleanupCfg, signupCfg, shareOps, signupOps) ++ logStopped).compile.drain
       Resource
-        .make(ConcurrentEffect[F].start(main))(
-          fiber => logger.fdebug("Periodic cleanup cancelled") *> fiber.cancel
+        .make(ConcurrentEffect[F].start(main))(fiber =>
+          logger.fdebug("Periodic cleanup cancelled") *> fiber.cancel
         )
         .map(_ => ())
     }
 
   def loop[F[_]: ConcurrentEffect: Timer: ContextShift](
-      cfg: CleanupConfig,
-      store: Store[F]
+      cleanupCfg: CleanupConfig,
+      signupCfg: SignupConfig,
+      shareOps: OShare[F],
+      signupOps: OSignup[F]
   ): Stream[F, Nothing] =
-    Stream.awakeEvery[F](cfg.interval.toScala).flatMap { _ =>
+    Stream.awakeEvery[F](cleanupCfg.interval.toScala).flatMap { _ =>
       Stream
         .eval(
           logger.finfo("Running periodic tasks") *>
-            doCleanup(cfg, store) *> deleteOrphanedFiles(store) *> logger
+            doCleanup(cleanupCfg, signupCfg, shareOps, signupOps) *> logger
             .finfo("Periodic tasks done.")
         )
         .drain
@@ -47,33 +51,22 @@ object PeriodicCleanup {
   private def logStopped[F[_]: Sync] =
     Stream.eval(logger.finfo("Periodic cleanup job stopped")).drain
 
-  def doCleanup[F[_]: ConcurrentEffect](cfg: CleanupConfig, store: Store[F]): F[Unit] =
+  def doCleanup[F[_]: ConcurrentEffect](
+      cleanupCfg: CleanupConfig,
+      signupCfg: SignupConfig,
+      shareOps: OShare[F],
+      signupOps: OSignup[F]
+  ): F[Unit] =
     for {
-      _     <- logger.finfo("Cleanup expired shares...")
-      now   <- Timestamp.current[F]
-      point = now.minus(cfg.invalidAge)
-      _ <- store
-            .transact(Queries.findExpired(point))
-            .evalMap(
-              id =>
-                logger.fdebug(s"Delete expired share: ${id.id}") *> Queries.deleteShare(id, false)(
-                  store
-                )
-            )
-            .compile
-            .drain
+      _      <- logger.fdebug("Cleanup expired shares...")
+      shareN <- shareOps.cleanupExpired(cleanupCfg.invalidAge)
+      _      <- logger.finfo(s"Cleaned up $shareN expired shares.")
+      _      <- logger.fdebug("Cleanup expired invites...")
+      invN   <- signupOps.cleanInvites(signupCfg)
+      _      <- logger.finfo(s"Removed $invN expired invitations.")
+      _      <- logger.fdebug("Deleting orphaned files ...")
+      orphN  <- shareOps.deleteOrphanedFiles
+      _      <- logger.finfo(s"Deleted $orphN orphaned files.")
     } yield ()
 
-  def deleteOrphanedFiles[F[_]: ConcurrentEffect](store: Store[F]): F[Unit] =
-    for {
-      _ <- logger.finfo("Checking for orphaned files...")
-      _ <- store
-            .transact(Queries.findOrphanedFiles)
-            .evalMap(
-              id =>
-                logger.fdebug(s"Delete orphaned file '${id.id}'") *> Queries.deleteFile(store)(id)
-            )
-            .compile
-            .drain
-    } yield ()
 }

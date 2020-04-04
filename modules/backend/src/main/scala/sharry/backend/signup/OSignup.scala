@@ -15,6 +15,10 @@ trait OSignup[F[_]] {
   def register(cfg: SignupConfig)(data: OSignup.RegisterData): F[SignupResult]
 
   def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult]
+
+  /** Removes unused and expired invites.
+    */
+  def cleanInvites(cfg: SignupConfig): F[Int]
 }
 
 object OSignup {
@@ -33,6 +37,13 @@ object OSignup {
         } else {
           store.transact(RInvitation.insertNew).map(ri => NewInviteResult.success(ri.id))
         }
+
+      def cleanInvites(cfg: SignupConfig): F[Int] =
+        for {
+          now  <- Timestamp.current[F]
+          date = now.minus(cfg.inviteTime)
+          n    <- store.transact(RInvitation.deleteOlderThan(date))
+        } yield n
 
       def register(cfg: SignupConfig)(data: RegisterData): F[SignupResult] =
         cfg.mode match {
