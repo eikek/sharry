@@ -3,7 +3,7 @@ module Page.Upload.View exposing (view)
 import Comp.ShareTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onInput)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (Model, Msg(..))
 
@@ -30,7 +30,7 @@ viewList model =
 
 
 searchArea : Model -> Html Msg
-searchArea model =
+searchArea _ =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]
             [ div [ class "fitted-item" ]

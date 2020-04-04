@@ -11,8 +11,6 @@ import Data.Flags exposing (Flags)
 import Data.UploadData exposing (UploadData)
 import Data.UploadDict
 import Data.UploadState exposing (UploadState)
-import Dict
-import File
 import Page.Share.Data exposing (Model, Msg(..), makeProps)
 import Ports
 import Util.Http

@@ -92,6 +92,7 @@ val buildInfoSettings = Seq(
 
 
 val common = project.in(file("modules/common")).
+  disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
@@ -105,6 +106,7 @@ val common = project.in(file("modules/common")).
   )
 
 val store = project.in(file("modules/store")).
+  disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
@@ -121,6 +123,7 @@ val store = project.in(file("modules/store")).
   dependsOn(common)
 
 val restapi = project.in(file("modules/restapi")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(OpenApiSchema).
   settings(sharedSettings).
   settings(testSettings).
@@ -157,6 +160,7 @@ val restapi = project.in(file("modules/restapi")).
   dependsOn(common)
 
 val backend = project.in(file("modules/backend")).
+  disablePlugins(RevolverPlugin).
   settings(sharedSettings).
   settings(testSettings).
   settings(
@@ -170,6 +174,7 @@ val backend = project.in(file("modules/backend")).
   ).dependsOn(common, store)
 
 val webapp = project.in(file("modules/webapp")).
+  disablePlugins(RevolverPlugin).
   enablePlugins(OpenApiSchema).
   settings(sharedSettings).
   settings(elmSettings).
@@ -224,7 +229,7 @@ val restserver = project.in(file("modules/restserver")).
 
 lazy val microsite = project.in(file("modules/microsite")).
   enablePlugins(MicrositesPlugin).
-  disablePlugins(ReleasePlugin).
+  disablePlugins(ReleasePlugin, RevolverPlugin).
   settings(sharedSettings).
   settings(
     name := "sharry-microsite",
