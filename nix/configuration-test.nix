@@ -28,7 +28,8 @@ in
 
   services.sharry = {
     enable = true;
-    base-url = "http://sharrytest:7878";
+    bind.address = "0.0.0.0";
+    base-url = "http://localhost:9090";
     backend = {
       auth = {
         oauth = [];
@@ -42,6 +43,7 @@ in
 
   networking = {
     hostName = "sharrytest";
+    firewall.allowedTCPPorts = [ 9090 ];
   };
 
   system.stateVersion = "19.09";
