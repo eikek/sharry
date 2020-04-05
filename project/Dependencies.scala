@@ -6,7 +6,7 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BitpeaceVersion         = "0.4.5"
   val CirceVersion            = "0.13.0"
-  val DoobieVersion           = "0.8.8"
+  val DoobieVersion           = "0.9.0"
   val EmilVersion             = "0.4.0"
   val FlywayVersion           = "6.3.2"
   val Fs2Version              = "2.3.0"
