@@ -2,6 +2,7 @@ port module Ports exposing (..)
 
 import Api.Model.AuthResult exposing (AuthResult)
 import Json.Decode as D
+import Messages exposing (Language)
 
 
 port setAccount : AuthResult -> Cmd msg
@@ -53,3 +54,14 @@ port scrollTop : () -> Cmd msg
 
 
 port scrollToElem : String -> Cmd msg
+
+
+port setLanguage : String -> Cmd msg
+
+
+setLang : Language -> Cmd msg
+setLang lang =
+    setLanguage (Messages.toIso2 lang)
+
+
+port receiveLanguage : (String -> msg) -> Sub msg

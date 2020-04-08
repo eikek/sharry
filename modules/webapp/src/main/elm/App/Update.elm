@@ -192,6 +192,18 @@ update msg model =
             in
             ( { m | page = page }, c )
 
+        ReceiveLanguage lang ->
+            let
+                flags =
+                    model.flags
+
+                nf =
+                    { flags | language = Just lang }
+            in
+            ( { model | flags = nf }
+            , Cmd.none
+            )
+
 
 updateOpenDetail : Page.OpenDetail.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateOpenDetail lmsg model =

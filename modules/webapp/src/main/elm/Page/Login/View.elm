@@ -7,12 +7,17 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Markdown
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
 
 view : Flags -> Model -> Html Msg
 view flags model =
+    let
+        texts =
+            Messages.fromFlags flags
+    in
     div [ class "login-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
@@ -30,14 +35,14 @@ view flags model =
                         , autocomplete False
                         ]
                         [ div [ class "field" ]
-                            [ label [] [ text "Username" ]
+                            [ label [] [ text texts.username ]
                             , div [ class "ui left icon input" ]
                                 [ input
                                     [ type_ "text"
                                     , autocomplete False
                                     , onInput SetUsername
                                     , value model.username
-                                    , placeholder "Login"
+                                    , placeholder texts.loginPlaceholder
                                     , autofocus True
                                     ]
                                     []
@@ -45,14 +50,14 @@ view flags model =
                                 ]
                             ]
                         , div [ class "field" ]
-                            [ label [] [ text "Password" ]
+                            [ label [] [ text texts.password ]
                             , div [ class "ui left icon input" ]
                                 [ input
                                     [ type_ "password"
                                     , autocomplete False
                                     , onInput SetPassword
                                     , value model.password
-                                    , placeholder "Password"
+                                    , placeholder texts.passwordPlaceholder
                                     ]
                                     []
                                 , i [ class "lock icon" ] []
@@ -62,7 +67,7 @@ view flags model =
                             [ class "ui primary fluid button"
                             , type_ "submit"
                             ]
-                            [ text "Login"
+                            [ text texts.loginButton
                             ]
                         ]
                     , if List.isEmpty flags.config.oauthConfig then
@@ -70,22 +75,47 @@ view flags model =
 
                       else
                         renderOAuthButtons flags model
-                    , resultMessage model
-                    , div
-                        [ classList
-                            [ ( "ui very basic right aligned segment", True )
-                            , ( "invisible hidden", flags.config.signupMode == "closed" )
-                            ]
-                        ]
-                        [ text "No account? "
-                        , a [ class "ui icon link", Page.href RegisterPage ]
-                            [ i [ class "edit icon" ] []
-                            , text "Sign up!"
-                            ]
-                        ]
+                    , resultMessage texts model
+                    , renderLangAndSignup flags model
                     ]
                 ]
             , renderWelcome flags
+            ]
+        ]
+
+
+renderLangAndSignup : Flags -> Model -> Html Msg
+renderLangAndSignup flags model =
+    let
+        texts =
+            Messages.fromFlags flags
+
+        renderFlag lang =
+            a
+                [ class "item"
+                , href "#"
+                , onClick (SetLanguage lang)
+                , title (Messages.get lang |> .label)
+                ]
+                [ i [ Messages.get lang |> .flagIcon |> class ] []
+                ]
+    in
+    div [ class "ui two column stackable grid basic segment" ]
+        [ div [ class "column" ]
+            [ div [ class "ui mini horizontal divided link list" ]
+                (List.map renderFlag Messages.allLanguages)
+            ]
+        , div
+            [ classList
+                [ ( "right aligned column", True )
+                , ( "invisible hidden", flags.config.signupMode == "closed" )
+                ]
+            ]
+            [ text (texts.noAccount ++ " ")
+            , a [ class "ui icon link", Page.href RegisterPage ]
+                [ i [ class "edit icon" ] []
+                , text texts.signupLink
+                ]
             ]
         ]
 
@@ -106,7 +136,7 @@ renderWelcome flags =
 
 renderOAuthButtons : Flags -> Model -> Html Msg
 renderOAuthButtons flags model =
-    div []
+    div [ class "ui very basic segment" ]
         [ div [ class "ui horizontal divider" ] [ text "Or" ]
         , div [ class "ui buttons" ]
             (List.map (renderOAuthButton flags) flags.config.oauthConfig)
@@ -116,6 +146,9 @@ renderOAuthButtons flags model =
 renderOAuthButton : Flags -> OAuthItem -> Html Msg
 renderOAuthButton flags item =
     let
+        texts =
+            Messages.fromFlags flags
+
         icon =
             "ui icon " ++ Maybe.withDefault "user outline" item.icon
 
@@ -127,18 +160,18 @@ renderOAuthButton flags item =
         , href url
         ]
         [ i [ class icon ] []
-        , text "via "
+        , text (texts.loginVia ++ " ")
         , text item.name
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+resultMessage : Messages -> Model -> Html Msg
+resultMessage texts model =
     case model.result of
         Just r ->
             if r.success then
                 div [ class "ui success message" ]
-                    [ text "Login successful."
+                    [ text texts.loginSuccessful
                     ]
 
             else

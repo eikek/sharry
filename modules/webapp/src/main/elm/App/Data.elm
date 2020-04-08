@@ -98,6 +98,7 @@ type Msg
     | ToggleNavMenu
     | UploadStateMsg (Result String UploadState)
     | UploadStoppedMsg (Maybe String)
+    | ReceiveLanguage String
 
 
 isSignedIn : Flags -> Bool

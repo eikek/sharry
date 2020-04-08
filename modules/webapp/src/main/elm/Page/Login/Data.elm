@@ -2,6 +2,7 @@ module Page.Login.Data exposing (..)
 
 import Api.Model.AuthResult exposing (AuthResult)
 import Http
+import Messages exposing (Language)
 
 
 type alias Model =
@@ -25,3 +26,4 @@ type Msg
     | Authenticate
     | AuthResp (Result Http.Error AuthResult)
     | Init
+    | SetLanguage Language

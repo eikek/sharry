@@ -5,13 +5,16 @@ var elmApp = Elm.Main.init({
     flags: elmFlags
 });
 
+elmApp.ports.setLanguage.subscribe(function(lang) {
+    localStorage.setItem("language", lang);
+    elmApp.ports.receiveLanguage.send(lang);
+});
+
 elmApp.ports.setAccount.subscribe(function(authResult) {
-    console.log("Add account from local storage");
     localStorage.setItem("account", JSON.stringify(authResult));
 });
 
 elmApp.ports.removeAccount.subscribe(function() {
-    console.log("Remove account from local storage");
     localStorage.removeItem("account");
 });
 

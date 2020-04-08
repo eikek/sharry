@@ -53,6 +53,9 @@ update ( referrer, oauth ) flags msg model =
             in
             ( { model | password = "", result = Just lr }, Ports.removeAccount (), Just empty )
 
+        SetLanguage lang ->
+            ( model, Ports.setLang lang, Nothing )
+
 
 loginSuccess : Maybe Page -> AuthResult -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
 loginSuccess referrer res model =

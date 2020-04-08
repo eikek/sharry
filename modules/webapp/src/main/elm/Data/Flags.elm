@@ -9,6 +9,7 @@ import Util.Size
 
 type alias Flags =
     { account : Maybe AuthResult
+    , language : Maybe String
     , config : AppConfig
     }
 
