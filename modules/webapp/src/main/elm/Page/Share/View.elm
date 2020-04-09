@@ -10,12 +10,12 @@ import Data.UploadDict exposing (countDone)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages exposing (Messages)
+import Messages
 import Page exposing (Page(..))
 import Page.Share.Data exposing (Model, Msg(..))
 
 
-view : Messages -> Flags -> Model -> Html Msg
+view : Messages.Share -> Flags -> Model -> Html Msg
 view texts flags model =
     let
         counts =
@@ -75,6 +75,7 @@ view texts flags model =
                             [ label [] [ text "Description" ]
                             , Html.map DescMsg
                                 (Comp.MarkdownInput.view
+                                    texts.markdownInput
                                     model.descField
                                     model.descModel
                                 )

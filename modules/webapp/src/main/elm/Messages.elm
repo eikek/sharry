@@ -1,10 +1,14 @@
 module Messages exposing
     ( Account
     , Alias
+    , Detail
     , Language(..)
     , Login
     , Messages
+    , OpenDetail
+    , OpenShare
     , Register
+    , Share
     , allLanguages
     , fromFlags
     , get
@@ -16,6 +20,10 @@ import Messages.AccountForm
 import Messages.AccountTable
 import Messages.AliasForm
 import Messages.AliasTable
+import Messages.MailSend
+import Messages.MarkdownInput
+import Messages.ShareFileList
+import Messages.YesNoDimmer
 
 
 type Language
@@ -161,6 +169,7 @@ type alias Alias =
     , sendEmail : String
     , aliasForm : Messages.AliasForm.AliasForm
     , aliasTable : Messages.AliasTable.AliasTable
+    , mailSend : Messages.MailSend.MailSend
     }
 
 
@@ -178,7 +187,155 @@ aliasGB =
     , sendEmail = "Send E-Mail"
     , aliasForm = Messages.AliasForm.gb
     , aliasTable = Messages.AliasTable.gb
+    , mailSend = Messages.MailSend.gb
     }
+
+
+
+-- Detail page texts
+
+
+type alias Detail =
+    { mailSend : Messages.MailSend.MailSend
+    , save : String
+    , markdownInput : Messages.MarkdownInput.MarkdownInput
+    , shareFileList : Messages.ShareFileList.ShareFileList
+    , yesNo : Messages.YesNoDimmer.YesNoDimmer
+    , sharePublished : String
+    , shareNotPublished : String
+    , shareLinkExpired : String
+    , errorQrCode : String
+    , sharePublicAvailableAt : String
+    , shareAsYouLike : String
+    , sendEmail : String
+    , name : String
+    , validity : String
+    , maxViews : String
+    , password : String
+    , passwordProtected : String
+    , passwordNone : String
+    , shareSize : String
+    , created : String
+    , aliasLabel : String
+    , publishedOn : String
+    , publishedUntil : String
+    , lastAccess : String
+    , views : String
+    , publishWithNewLink : String
+    , delete : String
+    , edit : String
+    , detailsMenu : String
+    , shareLinkMenu : String
+    , editDescription : String
+    , publish : String
+    , unpublish : String
+    , listView : String
+    , cardView : String
+    , submit : String
+    , clear : String
+    , resume : String
+    , pause : String
+    , uploadsGreaterThan : String -> String
+    , waitDeleteShare : String
+    , loadingData : String
+    }
+
+
+detailGB : Detail
+detailGB =
+    { mailSend = Messages.MailSend.gb
+    , save = "Save"
+    , markdownInput = Messages.MarkdownInput.gb
+    , shareFileList = Messages.ShareFileList.gb
+    , yesNo = Messages.YesNoDimmer.gb
+    , sharePublished =
+        "The share has been published, but its max-views has been reached. You can "
+            ++ "increase this property if you want to have this published for another while."
+    , shareNotPublished =
+        "In order to share this with others, you need to publish "
+            ++ "this share. Then everyone you'll send the generated link "
+            ++ "can access this data."
+    , shareLinkExpired =
+        "The share has been published, but it is now expired. You can "
+            ++ "first unpublish and then publish it again."
+    , errorQrCode = "Error while encoding to QRCode."
+    , sharePublicAvailableAt = "The share is publicly available at"
+    , shareAsYouLike = "You can share this link to all you'd like to access this data."
+    , sendEmail = "Send E-Mail"
+    , name = "Name"
+    , validity = "Validity Time"
+    , maxViews = "Max. Views"
+    , password = "Password"
+    , passwordProtected = "Password Protected"
+    , passwordNone = "None"
+    , shareSize = "#/Size"
+    , created = "Created"
+    , aliasLabel = "Alias"
+    , publishedOn = "Published on"
+    , publishedUntil = "Published until"
+    , lastAccess = "Last Access"
+    , views = "Views"
+    , publishWithNewLink = "Publish with new Link"
+    , delete = "Delete"
+    , edit = "Edit"
+    , detailsMenu = "Details"
+    , shareLinkMenu = "Share Link"
+    , editDescription = "Edit description"
+    , publish = "Publish"
+    , unpublish = "Unpublish"
+    , listView = "List View"
+    , cardView = "Card View"
+    , submit = "Submit"
+    , clear = "Clear"
+    , resume = "Resume"
+    , pause = "Pause"
+    , uploadsGreaterThan =
+        \size ->
+            "All uploads must not be greater than " ++ size ++ "."
+    , waitDeleteShare = "Deleting share. Please wait."
+    , loadingData = "Loading data..."
+    }
+
+
+
+-- OpenDetail page texts
+
+
+type alias OpenDetail =
+    Detail
+
+
+openDetailGB : OpenDetail
+openDetailGB =
+    detailGB
+
+
+
+-- Share page texts
+
+
+type alias Share =
+    { markdownInput : Messages.MarkdownInput.MarkdownInput
+    }
+
+
+shareGB : Share
+shareGB =
+    { markdownInput = Messages.MarkdownInput.gb
+    }
+
+
+
+-- OpenShare page texts
+
+
+type alias OpenShare =
+    Share
+
+
+openShareGB : OpenShare
+openShareGB =
+    shareGB
 
 
 
@@ -195,6 +352,10 @@ type alias Messages =
     , register : Register
     , account : Account
     , aliasPage : Alias
+    , detail : Detail
+    , openShare : OpenShare
+    , share : Share
+    , openDetail : OpenDetail
     }
 
 
@@ -221,4 +382,8 @@ gb =
     , register = registerGB
     , account = accountGB
     , aliasPage = aliasGB
+    , detail = detailGB
+    , openShare = openShareGB
+    , share = shareGB
+    , openDetail = openDetailGB
     }

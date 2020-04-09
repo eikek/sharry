@@ -20,7 +20,6 @@ import Page exposing (Page(..))
 import Page.Detail.Data
     exposing
         ( EditField(..)
-        , LoaderModel
         , Model
         , Msg(..)
         , PublishState(..)

@@ -4,6 +4,7 @@ module Messages.AliasForm exposing
     )
 
 import Html exposing (..)
+import Messages.YesNoDimmer exposing (YesNoDimmer)
 
 
 type alias AliasForm =
@@ -16,6 +17,7 @@ type alias AliasForm =
     , submit : String
     , back : String
     , delete : String
+    , yesNo : YesNoDimmer
     }
 
 
@@ -38,4 +40,5 @@ gb =
     , submit = "Submit"
     , back = "Back"
     , delete = "Delete"
+    , yesNo = Messages.YesNoDimmer.gb
     }

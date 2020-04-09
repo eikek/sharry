@@ -177,7 +177,7 @@ update msg model =
 view : T.AliasForm -> Model -> Html Msg
 view texts model =
     div []
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.yesNoModel)
+        [ Html.map YesNoMsg (Comp.YesNoDimmer.view texts.yesNo model.yesNoModel)
         , Html.form [ class "ui top attached form segment" ]
             [ div
                 [ classList

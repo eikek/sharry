@@ -127,12 +127,12 @@ defaultLayout texts model =
 
 viewOpenDetail : String -> Messages -> Model -> Html Msg
 viewOpenDetail id texts model =
-    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts model.flags model.openDetailModel)
+    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts.openDetail model.flags model.openDetailModel)
 
 
 viewDetail : String -> Messages -> Model -> Html Msg
 viewDetail id texts model =
-    Html.map DetailMsg (Page.Detail.View.view texts model.flags model.detailModel)
+    Html.map DetailMsg (Page.Detail.View.view texts.detail model.flags model.detailModel)
 
 
 viewSettings : Messages -> Model -> Html Msg
@@ -152,12 +152,12 @@ viewUpload texts model =
 
 viewOpenShare : String -> Messages -> Model -> Html Msg
 viewOpenShare id texts model =
-    Html.map OpenShareMsg (Page.OpenShare.View.view texts model.flags id model.openShareModel)
+    Html.map OpenShareMsg (Page.OpenShare.View.view texts.openShare model.flags id model.openShareModel)
 
 
 viewShare : Messages -> Model -> Html Msg
 viewShare texts model =
-    Html.map ShareMsg (Page.Share.View.view texts model.flags model.shareModel)
+    Html.map ShareMsg (Page.Share.View.view texts.share model.flags model.shareModel)
 
 
 viewAccount : Maybe String -> Messages -> Model -> Html Msg

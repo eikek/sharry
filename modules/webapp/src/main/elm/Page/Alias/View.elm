@@ -154,7 +154,12 @@ shareText texts flags model alias_ =
             ]
         , case model.mailForm of
             Just msm ->
-                Html.map MailFormMsg (Comp.MailSend.view [ ( "ui bottom attached segment", True ) ] msm)
+                Html.map MailFormMsg
+                    (Comp.MailSend.view
+                        texts.mailSend
+                        [ ( "ui bottom attached segment", True ) ]
+                        msm
+                    )
 
             Nothing ->
                 shareInfo texts flags model url

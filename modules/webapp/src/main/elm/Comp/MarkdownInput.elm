@@ -10,6 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
+import Messages.MarkdownInput as T
 
 
 type Display
@@ -46,8 +47,8 @@ update txt msg model =
             ( { model | display = dsp }, txt )
 
 
-view : String -> Model -> Html Msg
-view txt model =
+view : T.MarkdownInput -> String -> Model -> Html Msg
+view texts txt model =
     div []
         [ div [ class "ui top attached tabular mini menu" ]
             [ a
@@ -58,7 +59,7 @@ view txt model =
                 , onClick (SetDisplay Edit)
                 , href "#"
                 ]
-                [ text "Edit"
+                [ text texts.edit
                 ]
             , a
                 [ classList
@@ -68,7 +69,7 @@ view txt model =
                 , onClick (SetDisplay Preview)
                 , href "#"
                 ]
-                [ text "Preview"
+                [ text texts.preview
                 ]
             , a
                 [ classList
@@ -78,7 +79,7 @@ view txt model =
                 , onClick (SetDisplay Split)
                 , href "#"
                 ]
-                [ text "Split"
+                [ text texts.split
                 ]
             , a
                 [ class "ui right floated help-link link item"
@@ -86,7 +87,7 @@ view txt model =
                 , href model.cheatSheetUrl
                 ]
                 [ i [ class "ui help icon" ] []
-                , text "Supports Markdown"
+                , text texts.supportsMarkdown
                 ]
             ]
         , div [ class "ui bottom attached segment" ]

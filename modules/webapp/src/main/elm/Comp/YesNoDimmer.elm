@@ -14,6 +14,7 @@ module Comp.YesNoDimmer exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.YesNoDimmer as T
 
 
 type alias Model =
@@ -43,13 +44,13 @@ type alias Settings =
     }
 
 
-defaultSettings : Settings
-defaultSettings =
-    { message = "Delete this item permanently?"
+defaultSettings : T.YesNoDimmer -> Settings
+defaultSettings texts =
+    { message = texts.message
     , headerIcon = "exclamation icon"
     , headerClass = "ui inverted icon header"
-    , confirmButton = "Yes, do it!"
-    , cancelButton = "No"
+    , confirmButton = texts.confirmButton
+    , cancelButton = texts.cancelButton
     , invertedDimmer = False
     }
 
@@ -79,9 +80,9 @@ update msg model =
             ( { model | active = False }, True )
 
 
-view : Model -> Html Msg
-view model =
-    view2 True defaultSettings model
+view : T.YesNoDimmer -> Model -> Html Msg
+view texts model =
+    view2 True (defaultSettings texts) model
 
 
 view2 : Bool -> Settings -> Model -> Html Msg

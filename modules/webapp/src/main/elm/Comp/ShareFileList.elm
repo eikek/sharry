@@ -16,6 +16,7 @@ import Comp.YesNoDimmer
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.ShareFileList as T
 import Set exposing (Set)
 import Util.Size
 
@@ -53,9 +54,9 @@ init =
     }
 
 
-dimmerSettings : Comp.YesNoDimmer.Settings
-dimmerSettings =
-    Comp.YesNoDimmer.defaultSettings
+dimmerSettings : T.ShareFileList -> Comp.YesNoDimmer.Settings
+dimmerSettings texts =
+    Comp.YesNoDimmer.defaultSettings texts.yesNo
 
 
 reset : Model -> Model
@@ -115,33 +116,33 @@ update msg model =
             ( { model | yesNoModel = ym }, action )
 
 
-view : Settings -> List ShareFile -> Model -> Html Msg
-view settings files model =
+view : T.ShareFileList -> Settings -> List ShareFile -> Model -> Html Msg
+view texts settings files model =
     case settings.viewMode of
         ViewList ->
-            fileTable settings model files
+            fileTable texts settings model files
 
         ViewCard ->
-            fileCards settings model files
+            fileCards texts settings model files
 
 
-fileCards : Settings -> Model -> List ShareFile -> Html Msg
-fileCards settings model files =
+fileCards : T.ShareFileList -> Settings -> Model -> List ShareFile -> Html Msg
+fileCards texts settings model files =
     div [ class "ui centered cards" ] <|
-        List.map (fileCard settings model) files
+        List.map (fileCard texts settings model) files
 
 
-fileCard : Settings -> Model -> ShareFile -> Html Msg
-fileCard settings model file =
+fileCard : T.ShareFileList -> Settings -> Model -> ShareFile -> Html Msg
+fileCard texts settings model file =
     div [ class "ui card", id file.id ]
         [ Html.map YesNoMsg
             (Comp.YesNoDimmer.view2
                 (model.requestDelete == Just file)
-                dimmerSettings
+                (dimmerSettings texts)
                 model.yesNoModel
             )
         , div [ class "image" ]
-            [ fileEmbed settings model file
+            [ fileEmbed texts settings model file
             ]
         , div [ class "content" ]
             [ text file.filename
@@ -152,7 +153,7 @@ fileCard settings model file =
         , div [ class "extra content" ]
             [ a
                 [ class "ui basic icon button"
-                , title "Download to disk"
+                , title texts.downloadToDisk
                 , download file.filename
                 , href (settings.baseUrl ++ file.id)
                 ]
@@ -163,19 +164,19 @@ fileCard settings model file =
                     [ ( "ui basic icon button", True )
                     , ( "invisible", not <| previewPossible file.mimetype )
                     ]
-                , title "View in browser"
+                , title texts.viewInBrowser
                 , href "#"
                 , onClick (Select file)
                 ]
                 [ i [ class "eye icon" ] []
                 ]
-            , incompleteLabel file
+            , incompleteLabel texts file
             , a
                 [ classList
                     [ ( "ui right floated basic red icon button", True )
                     , ( "invisible", not settings.delete )
                     ]
-                , title "Delete the file."
+                , title texts.deleteFile
                 , href "#"
                 , onClick (ReqDelete file)
                 ]
@@ -185,8 +186,8 @@ fileCard settings model file =
         ]
 
 
-incompleteLabel : ShareFile -> Html msg
-incompleteLabel file =
+incompleteLabel : T.ShareFileList -> ShareFile -> Html msg
+incompleteLabel texts file =
     let
         perc =
             (toFloat file.storedSize / toFloat file.size * 100) |> round
@@ -198,9 +199,9 @@ incompleteLabel file =
             ]
         ]
         [ i [ class "red bolt icon" ] []
-        , text "The file is incomplete ("
+        , text texts.fileIsIncomplete
         , String.fromInt perc |> text
-        , text "%). Try uploading again."
+        , text texts.tryUploadAgain
         ]
 
 
@@ -224,8 +225,8 @@ previewPossible mime =
     previewFor (previewDeferred ++ previewDirect ++ [ "image/" ]) mime
 
 
-fileEmbed : Settings -> Model -> ShareFile -> Html Msg
-fileEmbed settings model file =
+fileEmbed : T.ShareFileList -> Settings -> Model -> ShareFile -> Html Msg
+fileEmbed texts settings model file =
     let
         mime =
             file.mimetype
@@ -258,13 +259,13 @@ fileEmbed settings model file =
         div [ class "ui placeholder segment preview-image" ]
             [ div [ class "ui icon header" ]
                 [ i [ class (fileIcon file) ] []
-                , text "Preview not supported"
+                , text texts.previewNotSupported
                 ]
             ]
 
 
-fileTable : Settings -> Model -> List ShareFile -> Html Msg
-fileTable settings model files =
+fileTable : T.ShareFileList -> Settings -> Model -> List ShareFile -> Html Msg
+fileTable texts settings model files =
     let
         yesNo =
             case model.requestDelete of
@@ -272,7 +273,7 @@ fileTable settings model files =
                     Html.map YesNoMsg
                         (Comp.YesNoDimmer.view2
                             True
-                            dimmerSettings
+                            (dimmerSettings texts)
                             model.yesNoModel
                         )
 
@@ -283,13 +284,13 @@ fileTable settings model files =
         [ yesNo
         , table [ class "ui very basic table" ]
             [ tbody [] <|
-                List.map (fileRow settings model) files
+                List.map (fileRow texts settings model) files
             ]
         ]
 
 
-fileRow : Settings -> Model -> ShareFile -> Html Msg
-fileRow { baseUrl, delete } model file =
+fileRow : T.ShareFileList -> Settings -> Model -> ShareFile -> Html Msg
+fileRow texts { baseUrl, delete } model file =
     tr [ id file.id ]
         [ td [ class "collapsing" ]
             [ i [ class ("large " ++ fileIcon file) ] []
@@ -299,12 +300,12 @@ fileRow { baseUrl, delete } model file =
             , text " ("
             , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
             , text ") "
-            , incompleteLabel file
+            , incompleteLabel texts file
             ]
         , td []
             [ a
                 [ class "ui mini right floated basic icon button"
-                , title "Download to disk"
+                , title texts.downloadToDisk
                 , href "#"
                 , download file.filename
                 , href (baseUrl ++ file.id)
@@ -316,7 +317,7 @@ fileRow { baseUrl, delete } model file =
                     [ ( "ui mini right floated basic icon button", True )
                     , ( "invisible", not <| previewPossible file.mimetype )
                     ]
-                , title "View in browser"
+                , title texts.viewInBrowser
                 , href "#"
                 , onClick (Select file)
                 ]
@@ -327,7 +328,7 @@ fileRow { baseUrl, delete } model file =
                     [ ( "ui mini red right floated basic icon button", True )
                     , ( "invisible", not delete )
                     ]
-                , title "Delete file"
+                , title texts.deleteFile
                 , href "#"
                 , onClick (ReqDelete file)
                 ]

@@ -9,13 +9,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
-import Messages exposing (Messages)
+import Messages
 import Page.OpenDetail.Data exposing (Model, Msg(..))
 import Util.Html
 import Util.Share
 
 
-view : Messages -> Flags -> Model -> Html Msg
+view : Messages.OpenDetail -> Flags -> Model -> Html Msg
 view texts flags model =
     div [ class "ui grid container detail-page" ]
         [ zoomView flags model
@@ -25,7 +25,7 @@ view texts flags model =
                 [ descriptionView model
                 , messageDiv model
                 , middleMenu model
-                , fileList flags model
+                , fileList texts flags model
                 ]
             ]
         ]
@@ -124,8 +124,8 @@ middleMenu model =
         ]
 
 
-fileList : Flags -> Model -> Html Msg
-fileList flags model =
+fileList : Messages.OpenDetail -> Flags -> Model -> Html Msg
+fileList texts flags model =
     let
         sett =
             Comp.ShareFileList.Settings
@@ -134,7 +134,10 @@ fileList flags model =
                 False
     in
     Html.map FileListMsg <|
-        Comp.ShareFileList.view sett model.share.files model.fileListModel
+        Comp.ShareFileList.view texts.shareFileList
+            sett
+            model.share.files
+            model.fileListModel
 
 
 shareId : Model -> String
