@@ -162,7 +162,7 @@ viewShare texts model =
 
 viewAccount : Maybe String -> Messages -> Model -> Html Msg
 viewAccount id texts model =
-    Html.map AccountMsg (Page.Account.View.view id texts model.accountModel)
+    Html.map AccountMsg (Page.Account.View.view id texts.account model.accountModel)
 
 
 viewInfo : Int -> Messages -> Model -> Html Msg
@@ -177,12 +177,12 @@ viewNewInvite texts model =
 
 viewRegister : Messages -> Model -> Html Msg
 viewRegister texts model =
-    Html.map RegisterMsg (Page.Register.View.view model.flags model.registerModel)
+    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.registerModel)
 
 
 viewLogin : Messages -> Model -> Html Msg
 viewLogin texts model =
-    Html.map LoginMsg (Page.Login.View.view texts model.flags model.loginModel)
+    Html.map LoginMsg (Page.Login.View.view texts.login model.flags model.loginModel)
 
 
 viewHome : Model -> Html Msg

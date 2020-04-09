@@ -1,6 +1,9 @@
 module Messages exposing
-    ( Language(..)
+    ( Account
+    , Language(..)
+    , Login
     , Messages
+    , Register
     , allLanguages
     , fromFlags
     , get
@@ -8,18 +11,17 @@ module Messages exposing
     )
 
 import Data.Flags exposing (Flags)
-import Html exposing (Html, div)
+import Messages.AccountForm
+import Messages.AccountTable
 
 
 type Language
     = English
-    | German
 
 
 allLanguages : List Language
 allLanguages =
     [ English
-    , German
     ]
 
 
@@ -52,21 +54,106 @@ fromIso2 iso =
         |> Maybe.withDefault English
 
 
+
+-- Login page texts
+
+
+type alias Login =
+    { username : String
+    , password : String
+    , loginPlaceholder : String
+    , passwordPlaceholder : String
+    , loginButton : String
+    , via : String
+    , loginSuccessful : String
+    , noAccount : String
+    , signupLink : String
+    }
+
+
+loginGB : Login
+loginGB =
+    { username = "Username"
+    , password = "Password"
+    , loginPlaceholder = "Login"
+    , passwordPlaceholder = "Password"
+    , loginButton = "Login"
+    , via = "via"
+    , loginSuccessful = "Login successful"
+    , noAccount = "No account?"
+    , signupLink = "Sign up!"
+    }
+
+
+
+-- Register page texts
+
+
+type alias Register =
+    { signup : String
+    , userLogin : String
+    , password : String
+    , passwordRepeat : String
+    , invitationKey : String
+    , submitButton : String
+    , alreadySignedUp : String
+    , signin : String
+    , registrationSuccessful : String
+    }
+
+
+registerGB : Register
+registerGB =
+    { signup = "Sign up"
+    , userLogin = "User Login"
+    , password = "Password"
+    , passwordRepeat = "Password (repeat)"
+    , invitationKey = "Invitation Key"
+    , submitButton = "Submit"
+    , alreadySignedUp = "Already signed up?"
+    , signin = "Sign in"
+    , registrationSuccessful = "Registration successful."
+    }
+
+
+
+-- Account page texts
+
+
+type alias Account =
+    { createAccountTitle : String
+    , accounts : String
+    , searchPlaceholder : String
+    , newAccount : String
+    , accountForm : Messages.AccountForm.AccountForm
+    , accountTable : Messages.AccountTable.AccountTable
+    }
+
+
+accountGB : Account
+accountGB =
+    { createAccountTitle = "Create a new internal account"
+    , accounts = "Accounts"
+    , searchPlaceholder = "Search…"
+    , newAccount = "New Account"
+    , accountForm = Messages.AccountForm.gb
+    , accountTable = Messages.AccountTable.gb
+    }
+
+
+
+-- Messages
+
+
 {-| The messages record contains all strings used in the application.
 -}
 type alias Messages =
     { iso2 : String
     , label : String
     , flagIcon : String
-    , username : String
-    , password : String
-    , loginPlaceholder : String
-    , passwordPlaceholder : String
-    , loginButton : String
-    , loginVia : String
-    , loginSuccessful : String
-    , noAccount : String
-    , signupLink : String
+    , login : Login
+    , register : Register
+    , account : Account
     }
 
 
@@ -76,9 +163,6 @@ get lang =
         English ->
             gb
 
-        German ->
-            de
-
 
 fromFlags : Flags -> Messages
 fromFlags flags =
@@ -87,39 +171,12 @@ fromFlags flags =
         |> get
 
 
-
-{- for icons, see https://semantic-ui.com/elements/flag.html -}
-
-
 gb : Messages
 gb =
     { iso2 = "gb"
     , label = "English"
     , flagIcon = "gb uk flag"
-    , username = "Username"
-    , password = "Password"
-    , loginPlaceholder = "Login"
-    , passwordPlaceholder = "Password"
-    , loginButton = "Login"
-    , loginVia = "via"
-    , loginSuccessful = "Login successful"
-    , noAccount = "No account?"
-    , signupLink = "Sign up!"
-    }
-
-
-de : Messages
-de =
-    { iso2 = "de"
-    , label = "Deutsch"
-    , flagIcon = "de flag"
-    , username = "Benutzer"
-    , password = "Passwort"
-    , loginPlaceholder = "Login"
-    , passwordPlaceholder = "Passwort"
-    , loginButton = "Anmelden"
-    , loginVia = "via"
-    , loginSuccessful = "Erfolgreich angemeldet"
-    , noAccount = "Kein Konto?"
-    , signupLink = "Hier registrieren!"
+    , login = loginGB
+    , register = registerGB
+    , account = accountGB
     }

@@ -5,12 +5,13 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Messages
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Messages.Register -> Flags -> Model -> Html Msg
+view texts flags model =
     div [ class "register-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
@@ -22,7 +23,7 @@ view flags model =
                             ]
                             []
                         , div [ class "content" ]
-                            [ text "Sign up"
+                            [ text texts.signup
                             ]
                         ]
                     , Html.form
@@ -31,7 +32,7 @@ view flags model =
                         , autocomplete False
                         ]
                         [ div [ class "required field" ]
-                            [ label [] [ text "User Login" ]
+                            [ label [] [ text texts.userLogin ]
                             , div [ class "ui left icon input" ]
                                 [ input
                                     [ type_ "text"
@@ -46,7 +47,7 @@ view flags model =
                         , div
                             [ class "required field"
                             ]
-                            [ label [] [ text "Password" ]
+                            [ label [] [ text texts.password ]
                             , div [ class "ui left icon action input" ]
                                 [ input
                                     [ type_ <|
@@ -69,7 +70,7 @@ view flags model =
                         , div
                             [ class "required field"
                             ]
-                            [ label [] [ text "Password (repeat)" ]
+                            [ label [] [ text texts.passwordRepeat ]
                             , div [ class "ui left icon action input" ]
                                 [ input
                                     [ type_ <|
@@ -95,7 +96,7 @@ view flags model =
                                 , ( "invisible", flags.config.signupMode /= "invite" )
                                 ]
                             ]
-                            [ label [] [ text "Invitation Key" ]
+                            [ label [] [ text texts.invitationKey ]
                             , div [ class "ui left icon input" ]
                                 [ input
                                     [ type_ "text"
@@ -111,40 +112,40 @@ view flags model =
                             [ class "ui primary button"
                             , type_ "submit"
                             ]
-                            [ text "Submit"
+                            [ text texts.submitButton
                             ]
                         ]
-                    , resultMessage model
-                    , renderLanguageAndSignin
+                    , resultMessage texts model
+                    , renderLanguageAndSignin texts
                     ]
                 ]
             ]
         ]
 
 
-renderLanguageAndSignin : Html Msg
-renderLanguageAndSignin =
+renderLanguageAndSignin : Messages.Register -> Html Msg
+renderLanguageAndSignin texts =
     div [ class "ui two column stackable grid basic segment" ]
         [ div [ class "column" ]
             [ Comp.LanguageChoose.linkList SetLanguage
             ]
         , div [ class "right aligned column" ]
-            [ text "Already signed up? "
+            [ text (texts.alreadySignedUp ++ " ")
             , a [ class "ui link", Page.href (LoginPage ( Nothing, False )) ]
                 [ i [ class "sign-in icon" ] []
-                , text "Sign in"
+                , text texts.signin
                 ]
             ]
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+resultMessage : Messages.Register -> Model -> Html Msg
+resultMessage texts model =
     case model.result of
         Just r ->
             if r.success then
                 div [ class "ui success message" ]
-                    [ text "Registration successful."
+                    [ text texts.registrationSuccessful
                     ]
 
             else

@@ -13,7 +13,7 @@ import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
 
-view : Messages -> Flags -> Model -> Html Msg
+view : Messages.Login -> Flags -> Model -> Html Msg
 view texts flags model =
     div [ class "login-page" ]
         [ div [ class "ui centered grid" ]
@@ -71,7 +71,7 @@ view texts flags model =
                         div [] []
 
                       else
-                        renderOAuthButtons flags model
+                        renderOAuthButtons texts flags model
                     , resultMessage texts model
                     , renderLangAndSignup texts flags model
                     ]
@@ -81,7 +81,7 @@ view texts flags model =
         ]
 
 
-renderLangAndSignup : Messages -> Flags -> Model -> Html Msg
+renderLangAndSignup : Messages.Login -> Flags -> Model -> Html Msg
 renderLangAndSignup texts flags model =
     div [ class "ui two column stackable grid basic segment" ]
         [ div [ class "column" ]
@@ -116,21 +116,18 @@ renderWelcome flags =
                 ]
 
 
-renderOAuthButtons : Flags -> Model -> Html Msg
-renderOAuthButtons flags model =
+renderOAuthButtons : Messages.Login -> Flags -> Model -> Html Msg
+renderOAuthButtons texts flags model =
     div [ class "ui very basic segment" ]
         [ div [ class "ui horizontal divider" ] [ text "Or" ]
         , div [ class "ui buttons" ]
-            (List.map (renderOAuthButton flags) flags.config.oauthConfig)
+            (List.map (renderOAuthButton texts flags) flags.config.oauthConfig)
         ]
 
 
-renderOAuthButton : Flags -> OAuthItem -> Html Msg
-renderOAuthButton flags item =
+renderOAuthButton : Messages.Login -> Flags -> OAuthItem -> Html Msg
+renderOAuthButton texts flags item =
     let
-        texts =
-            Messages.fromFlags flags
-
         icon =
             "ui icon " ++ Maybe.withDefault "user outline" item.icon
 
@@ -142,12 +139,12 @@ renderOAuthButton flags item =
         , href url
         ]
         [ i [ class icon ] []
-        , text (texts.loginVia ++ " ")
+        , text (texts.via ++ " ")
         , text item.name
         ]
 
 
-resultMessage : Messages -> Model -> Html Msg
+resultMessage : Messages.Login -> Model -> Html Msg
 resultMessage texts model =
     case model.result of
         Just r ->
