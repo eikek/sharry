@@ -1,5 +1,6 @@
 module Messages exposing
     ( Account
+    , Alias
     , Language(..)
     , Login
     , Messages
@@ -13,6 +14,8 @@ module Messages exposing
 import Data.Flags exposing (Flags)
 import Messages.AccountForm
 import Messages.AccountTable
+import Messages.AliasForm
+import Messages.AliasTable
 
 
 type Language
@@ -142,6 +145,43 @@ accountGB =
 
 
 
+-- Alias page texts
+
+
+type alias Alias =
+    { createNew : String
+    , aliasPage : String
+    , aliasPages : String
+    , newAliasPage : String
+    , searchPlaceholder : String
+    , errorQrCode : String
+    , shareThisLink : String
+    , aliasPageNowAt : String
+    , shareThisUrl : String
+    , sendEmail : String
+    , aliasForm : Messages.AliasForm.AliasForm
+    , aliasTable : Messages.AliasTable.AliasTable
+    }
+
+
+aliasGB : Alias
+aliasGB =
+    { createNew = "Create New Alias Page"
+    , aliasPage = "Alias Page: "
+    , aliasPages = "Alias Pages"
+    , newAliasPage = "New Alias Page"
+    , searchPlaceholder = "Search…"
+    , errorQrCode = "Error while encoding to QRCode."
+    , shareThisLink = "Share this link"
+    , aliasPageNowAt = "The alias page is now at: "
+    , shareThisUrl = "You can share this URL with others to receive files from them."
+    , sendEmail = "Send E-Mail"
+    , aliasForm = Messages.AliasForm.gb
+    , aliasTable = Messages.AliasTable.gb
+    }
+
+
+
 -- Messages
 
 
@@ -154,6 +194,7 @@ type alias Messages =
     , login : Login
     , register : Register
     , account : Account
+    , aliasPage : Alias
     }
 
 
@@ -179,4 +220,5 @@ gb =
     , login = loginGB
     , register = registerGB
     , account = accountGB
+    , aliasPage = aliasGB
     }

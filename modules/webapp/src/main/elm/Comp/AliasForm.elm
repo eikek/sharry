@@ -13,12 +13,12 @@ import Api.Model.AliasChange exposing (AliasChange)
 import Api.Model.AliasDetail exposing (AliasDetail)
 import Comp.ValidityField
 import Comp.YesNoDimmer
-import Data.AccountState exposing (AccountState)
 import Data.Flags exposing (Flags)
 import Data.ValidityValue exposing (ValidityValue(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Messages.AliasForm as T
 import Util.Maybe
 
 
@@ -174,8 +174,8 @@ update msg model =
                         ( model, FormCreated ac )
 
 
-view : Model -> Html Msg
-view model =
+view : T.AliasForm -> Model -> Html Msg
+view texts model =
     div []
         [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.yesNoModel)
         , Html.form [ class "ui top attached form segment" ]
@@ -185,7 +185,7 @@ view model =
                     , ( "invisible", isCreate model )
                     ]
                 ]
-                [ label [] [ text "Id" ]
+                [ label [] [ text texts.id ]
                 , input
                     [ type_ "text"
                     , Maybe.withDefault "" model.idField
@@ -200,16 +200,9 @@ view model =
                         ]
                     ]
                     [ div [ class "header" ]
-                        [ text "Note to Ids"
+                        [ text texts.noteToIdsHead
                         ]
-                    , p []
-                        [ text "This ID is part of the url where "
-                        , em [] [ text "everyone" ]
-                        , text " can upload files. It is recommended to use"
-                        , text " something random. The id can be changed to "
-                        , text "any value, but if it is left empty, a random "
-                        , text "one will be generated."
-                        ]
+                    , Html.map (\_ -> Cancel) texts.noteToIds
                     ]
                 ]
             , div
@@ -218,7 +211,7 @@ view model =
                     , ( "error", String.isEmpty model.nameField )
                     ]
                 ]
-                [ label [] [ text "Name" ]
+                [ label [] [ text texts.name ]
                 , input
                     [ type_ "text"
                     , value model.nameField
@@ -227,7 +220,7 @@ view model =
                     []
                 ]
             , div [ class "required field" ]
-                [ label [] [ text "Validity" ]
+                [ label [] [ text texts.validity ]
                 , Html.map ValidityMsg
                     (Comp.ValidityField.view
                         model.validityField
@@ -242,7 +235,7 @@ view model =
                         , checked model.enabledField
                         ]
                         []
-                    , label [] [ text "Enabled" ]
+                    , label [] [ text texts.enabled ]
                     ]
                 ]
             ]
@@ -252,21 +245,21 @@ view model =
                 , class "ui primary button"
                 , onClick Submit
                 ]
-                [ text "Submit"
+                [ text texts.submit
                 ]
             , button
                 [ class "ui button"
                 , type_ "button"
                 , onClick Cancel
                 ]
-                [ text "Back"
+                [ text texts.back
                 ]
             , button
                 [ class "ui right floated red button"
                 , type_ "button"
                 , onClick RequestDelete
                 ]
-                [ text "Delete"
+                [ text texts.delete
                 ]
             ]
         ]

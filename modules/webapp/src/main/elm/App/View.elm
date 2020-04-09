@@ -142,7 +142,7 @@ viewSettings texts model =
 
 viewAlias : Maybe String -> Messages -> Model -> Html Msg
 viewAlias id texts model =
-    Html.map AliasMsg (Page.Alias.View.view texts model.flags id model.aliasModel)
+    Html.map AliasMsg (Page.Alias.View.view texts.aliasPage model.flags id model.aliasModel)
 
 
 viewUpload : Messages -> Model -> Html Msg

@@ -8,14 +8,14 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages exposing (Messages)
+import Messages
 import Page exposing (Page(..))
 import Page.Alias.Data exposing (Model, Msg(..))
 import QRCode
 import Util.Html
 
 
-view : Messages -> Flags -> Maybe String -> Model -> Html Msg
+view : Messages.Alias -> Flags -> Maybe String -> Model -> Html Msg
 view texts flags id model =
     div
         [ classList
@@ -27,63 +27,76 @@ view texts flags id model =
     <|
         case model.selected of
             Just alias_ ->
-                viewModify flags model alias_
+                viewModify texts flags model alias_
 
             Nothing ->
                 if id == Just "new" then
-                    viewCreate model
+                    viewCreate texts model
 
                 else
-                    viewList model
+                    viewList texts model
 
 
-viewCreate : Model -> List (Html Msg)
-viewCreate model =
+viewCreate : Messages.Alias -> Model -> List (Html Msg)
+viewCreate texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui upload icon" ] []
-        , text "Create New Alias Page"
+        , text texts.createNew
         ]
-    , Html.map AliasFormMsg (Comp.AliasForm.view model.formModel)
+    , Html.map AliasFormMsg
+        (Comp.AliasForm.view
+            texts.aliasForm
+            model.formModel
+        )
     , Maybe.map Util.Html.resultMsg model.saveResult
         |> Maybe.withDefault Util.Html.noElement
     ]
 
 
-viewModify : Flags -> Model -> AliasDetail -> List (Html Msg)
-viewModify flags model alias_ =
+viewModify : Messages.Alias -> Flags -> Model -> AliasDetail -> List (Html Msg)
+viewModify texts flags model alias_ =
     [ div [ class "row" ]
         [ div [ class "column" ]
             [ h1 [ class "ui dividing header" ]
                 [ i [ class "ui upload icon" ] []
-                , text "Alias Page: "
+                , text texts.aliasPage
                 , text alias_.name
                 ]
-            , Html.map AliasFormMsg (Comp.AliasForm.view model.formModel)
+            , Html.map AliasFormMsg
+                (Comp.AliasForm.view
+                    texts.aliasForm
+                    model.formModel
+                )
             , Maybe.map Util.Html.resultMsg model.saveResult
                 |> Maybe.withDefault Util.Html.noElement
             ]
         ]
     , div [ class "row" ]
         [ div [ class "column" ]
-            [ shareText flags model alias_
+            [ shareText texts flags model alias_
             ]
         ]
     ]
 
 
-viewList : Model -> List (Html Msg)
-viewList model =
+viewList : Messages.Alias -> Model -> List (Html Msg)
+viewList texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui users icon" ] []
-        , text "Alias Pages"
+        , text texts.aliasPages
         ]
-    , searchArea model
-    , Html.map AliasTableMsg (Comp.AliasTable.view model.searchResult model.tableModel)
+    , searchArea texts model
+    , Html.map AliasTableMsg
+        (Comp.AliasTable.view
+            texts.aliasTable
+            model.searchResult
+            model.tableModel
+        )
     ]
 
 
-searchArea : Model -> Html Msg
-searchArea model =
+searchArea : Messages.Alias -> Model -> Html Msg
+searchArea texts model =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]
             [ div [ class "fitted-item" ]
@@ -91,7 +104,7 @@ searchArea model =
                     [ input
                         [ type_ "text"
                         , onInput SetQuery
-                        , placeholder "Search…"
+                        , placeholder texts.searchPlaceholder
                         ]
                         []
                     , i [ class "ui search icon" ]
@@ -104,7 +117,7 @@ searchArea model =
                         [ class "ui primary button"
                         , Page.href (AliasPage (Just "new"))
                         ]
-                        [ text "New Alias Page"
+                        [ text texts.newAliasPage
                         ]
                     ]
                 ]
@@ -112,50 +125,50 @@ searchArea model =
         ]
 
 
-qrCodeView : String -> Html msg
-qrCodeView message =
+qrCodeView : Messages.Alias -> String -> Html msg
+qrCodeView texts message =
     QRCode.encode message
         |> Result.map QRCode.toSvg
         |> Result.withDefault
-            (Html.text "Error while encoding to QRCode.")
+            (Html.text texts.errorQrCode)
 
 
-shareText : Flags -> Model -> AliasDetail -> Html Msg
-shareText flags model alias_ =
+shareText : Messages.Alias -> Flags -> Model -> AliasDetail -> Html Msg
+shareText texts flags model alias_ =
     let
         url =
             flags.config.baseUrl ++ Page.pageToString (OpenSharePage alias_.id)
     in
     div [ class "segments" ]
         [ div [ class "ui top attached header segment" ]
-            [ text "Share this link"
+            [ text texts.shareThisLink
             ]
         , div [ class "ui attached message segment" ]
-            [ text "The alias page is now at: "
+            [ text texts.aliasPageNowAt
             , pre [ class "url" ]
                 [ code []
                     [ text url
                     ]
                 ]
-            , text "You can share this URL with others to receive files from them."
+            , text texts.shareThisUrl
             ]
         , case model.mailForm of
             Just msm ->
                 Html.map MailFormMsg (Comp.MailSend.view [ ( "ui bottom attached segment", True ) ] msm)
 
             Nothing ->
-                shareInfo flags model url
+                shareInfo texts flags model url
         ]
 
 
-shareInfo : Flags -> Model -> String -> Html Msg
-shareInfo flags model url =
+shareInfo : Messages.Alias -> Flags -> Model -> String -> Html Msg
+shareInfo texts flags model url =
     div [ class "ui bottom attached segment" ]
         [ div [ class "ui two column stackable center aligned grid" ]
             [ div [ class "ui vertical divider" ] [ text "Or" ]
             , div [ class "middle aligned row" ]
                 [ div [ class "column" ]
-                    [ qrCodeView url
+                    [ qrCodeView texts url
                     ]
                 , div [ class "column" ]
                     [ a
@@ -166,7 +179,7 @@ shareInfo flags model url =
                         , onClick InitMail
                         , href "#"
                         ]
-                        [ text "Send E-Mail"
+                        [ text texts.sendEmail
                         ]
                     ]
                 ]
