@@ -1,5 +1,6 @@
 module Page.Register.View exposing (view)
 
+import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -114,14 +115,24 @@ view flags model =
                             ]
                         ]
                     , resultMessage model
-                    , div [ class "ui very basic right aligned segment" ]
-                        [ text "Already signed up? "
-                        , a [ class "ui link", Page.href (LoginPage ( Nothing, False )) ]
-                            [ i [ class "sign-in icon" ] []
-                            , text "Sign in"
-                            ]
-                        ]
+                    , renderLanguageAndSignin
                     ]
+                ]
+            ]
+        ]
+
+
+renderLanguageAndSignin : Html Msg
+renderLanguageAndSignin =
+    div [ class "ui two column stackable grid basic segment" ]
+        [ div [ class "column" ]
+            [ Comp.LanguageChoose.linkList SetLanguage
+            ]
+        , div [ class "right aligned column" ]
+            [ text "Already signed up? "
+            , a [ class "ui link", Page.href (LoginPage ( Nothing, False )) ]
+                [ i [ class "sign-in icon" ] []
+                , text "Sign in"
                 ]
             ]
         ]

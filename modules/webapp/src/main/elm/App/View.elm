@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Account.View
 import Page.Alias.View
@@ -24,35 +25,39 @@ import Page.Upload.View
 
 view : Model -> Html Msg
 view model =
+    let
+        texts =
+            Messages.fromFlags model.flags
+    in
     case model.page of
         LoginPage _ ->
-            loginLayout model
+            loginLayout texts model
 
         RegisterPage ->
-            registerLayout model
+            registerLayout texts model
 
         _ ->
-            defaultLayout model
+            defaultLayout texts model
 
 
-loginLayout : Model -> Html Msg
-loginLayout model =
+loginLayout : Messages -> Model -> Html Msg
+loginLayout texts model =
     div [ class "login-layout" ]
-        [ viewLogin model
+        [ viewLogin texts model
         , footer model
         ]
 
 
-registerLayout : Model -> Html Msg
-registerLayout model =
+registerLayout : Messages -> Model -> Html Msg
+registerLayout texts model =
     div [ class "register-layout" ]
-        [ viewRegister model
+        [ viewRegister texts model
         , footer model
         ]
 
 
-defaultLayout : Model -> Html Msg
-defaultLayout model =
+defaultLayout : Messages -> Model -> Html Msg
+defaultLayout texts model =
     div [ class "default-layout" ]
         [ div [ class "ui fixed top sticky attached large menu black-bg" ]
             [ div [ class "ui fluid container" ]
@@ -81,103 +86,103 @@ defaultLayout model =
                     viewHome model
 
                 LoginPage _ ->
-                    viewLogin model
+                    viewLogin texts model
 
                 RegisterPage ->
-                    viewRegister model
+                    viewRegister texts model
 
                 NewInvitePage ->
-                    viewNewInvite model
+                    viewNewInvite texts model
 
                 InfoPage n ->
-                    viewInfo n model
+                    viewInfo n texts model
 
                 AccountPage id ->
-                    viewAccount id model
+                    viewAccount id texts model
 
                 AliasPage id ->
-                    viewAlias id model
+                    viewAlias id texts model
 
                 UploadPage ->
-                    viewUpload model
+                    viewUpload texts model
 
                 SharePage ->
-                    viewShare model
+                    viewShare texts model
 
                 OpenSharePage id ->
-                    viewOpenShare id model
+                    viewOpenShare id texts model
 
                 SettingsPage ->
-                    viewSettings model
+                    viewSettings texts model
 
                 DetailPage id ->
-                    viewDetail id model
+                    viewDetail id texts model
 
                 OpenDetailPage id ->
-                    viewOpenDetail id model
+                    viewOpenDetail id texts model
             ]
         , footer model
         ]
 
 
-viewOpenDetail : String -> Model -> Html Msg
-viewOpenDetail id model =
-    Html.map OpenDetailMsg (Page.OpenDetail.View.view model.flags model.openDetailModel)
+viewOpenDetail : String -> Messages -> Model -> Html Msg
+viewOpenDetail id texts model =
+    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts model.flags model.openDetailModel)
 
 
-viewDetail : String -> Model -> Html Msg
-viewDetail id model =
-    Html.map DetailMsg (Page.Detail.View.view model.flags model.detailModel)
+viewDetail : String -> Messages -> Model -> Html Msg
+viewDetail id texts model =
+    Html.map DetailMsg (Page.Detail.View.view texts model.flags model.detailModel)
 
 
-viewSettings : Model -> Html Msg
-viewSettings model =
-    Html.map SettingsMsg (Page.Settings.View.view model.settingsModel)
+viewSettings : Messages -> Model -> Html Msg
+viewSettings texts model =
+    Html.map SettingsMsg (Page.Settings.View.view texts model.settingsModel)
 
 
-viewAlias : Maybe String -> Model -> Html Msg
-viewAlias id model =
-    Html.map AliasMsg (Page.Alias.View.view model.flags id model.aliasModel)
+viewAlias : Maybe String -> Messages -> Model -> Html Msg
+viewAlias id texts model =
+    Html.map AliasMsg (Page.Alias.View.view texts model.flags id model.aliasModel)
 
 
-viewUpload : Model -> Html Msg
-viewUpload model =
-    Html.map UploadMsg (Page.Upload.View.view model.uploadModel)
+viewUpload : Messages -> Model -> Html Msg
+viewUpload texts model =
+    Html.map UploadMsg (Page.Upload.View.view texts model.uploadModel)
 
 
-viewOpenShare : String -> Model -> Html Msg
-viewOpenShare id model =
-    Html.map OpenShareMsg (Page.OpenShare.View.view model.flags id model.openShareModel)
+viewOpenShare : String -> Messages -> Model -> Html Msg
+viewOpenShare id texts model =
+    Html.map OpenShareMsg (Page.OpenShare.View.view texts model.flags id model.openShareModel)
 
 
-viewShare : Model -> Html Msg
-viewShare model =
-    Html.map ShareMsg (Page.Share.View.view model.flags model.shareModel)
+viewShare : Messages -> Model -> Html Msg
+viewShare texts model =
+    Html.map ShareMsg (Page.Share.View.view texts model.flags model.shareModel)
 
 
-viewAccount : Maybe String -> Model -> Html Msg
-viewAccount id model =
-    Html.map AccountMsg (Page.Account.View.view id model.accountModel)
+viewAccount : Maybe String -> Messages -> Model -> Html Msg
+viewAccount id texts model =
+    Html.map AccountMsg (Page.Account.View.view id texts model.accountModel)
 
 
-viewInfo : Int -> Model -> Html Msg
-viewInfo msgnum model =
-    Html.map InfoMsg (Page.Info.View.view msgnum model.infoModel)
+viewInfo : Int -> Messages -> Model -> Html Msg
+viewInfo msgnum texts model =
+    Html.map InfoMsg (Page.Info.View.view msgnum texts model.infoModel)
 
 
-viewNewInvite : Model -> Html Msg
-viewNewInvite model =
-    Html.map NewInviteMsg (Page.NewInvite.View.view model.flags model.newInviteModel)
+viewNewInvite : Messages -> Model -> Html Msg
+viewNewInvite texts model =
+    Html.map NewInviteMsg (Page.NewInvite.View.view texts model.flags model.newInviteModel)
 
 
-viewRegister : Model -> Html Msg
-viewRegister model =
+viewRegister : Messages -> Model -> Html Msg
+viewRegister texts model =
     Html.map RegisterMsg (Page.Register.View.view model.flags model.registerModel)
 
 
-viewLogin : Model -> Html Msg
-viewLogin model =
-    Html.map LoginMsg (Page.Login.View.view model.flags model.loginModel)
+viewLogin : Messages -> Model -> Html Msg
+viewLogin texts model =
+    Html.map LoginMsg (Page.Login.View.view texts model.flags model.loginModel)
 
 
 viewHome : Model -> Html Msg

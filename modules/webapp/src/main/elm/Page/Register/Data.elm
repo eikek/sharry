@@ -2,6 +2,7 @@ module Page.Register.Data exposing (..)
 
 import Api.Model.BasicResult exposing (BasicResult)
 import Http
+import Messages exposing (Language)
 
 
 type alias Model =
@@ -42,3 +43,4 @@ type Msg
     | ToggleShowPass1
     | ToggleShowPass2
     | SubmitResp (Result Http.Error BasicResult)
+    | SetLanguage Language

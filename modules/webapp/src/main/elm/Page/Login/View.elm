@@ -2,6 +2,7 @@ module Page.Login.View exposing (view)
 
 import Api
 import Api.Model.OAuthItem exposing (OAuthItem)
+import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -12,12 +13,8 @@ import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
-    let
-        texts =
-            Messages.fromFlags flags
-    in
+view : Messages -> Flags -> Model -> Html Msg
+view texts flags model =
     div [ class "login-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
@@ -76,7 +73,7 @@ view flags model =
                       else
                         renderOAuthButtons flags model
                     , resultMessage texts model
-                    , renderLangAndSignup flags model
+                    , renderLangAndSignup texts flags model
                     ]
                 ]
             , renderWelcome flags
@@ -84,26 +81,11 @@ view flags model =
         ]
 
 
-renderLangAndSignup : Flags -> Model -> Html Msg
-renderLangAndSignup flags model =
-    let
-        texts =
-            Messages.fromFlags flags
-
-        renderFlag lang =
-            a
-                [ class "item"
-                , href "#"
-                , onClick (SetLanguage lang)
-                , title (Messages.get lang |> .label)
-                ]
-                [ i [ Messages.get lang |> .flagIcon |> class ] []
-                ]
-    in
+renderLangAndSignup : Messages -> Flags -> Model -> Html Msg
+renderLangAndSignup texts flags model =
     div [ class "ui two column stackable grid basic segment" ]
         [ div [ class "column" ]
-            [ div [ class "ui mini horizontal divided link list" ]
-                (List.map renderFlag Messages.allLanguages)
+            [ Comp.LanguageChoose.linkList SetLanguage
             ]
         , div
             [ classList

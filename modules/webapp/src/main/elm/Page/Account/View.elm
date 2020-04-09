@@ -7,13 +7,14 @@ import Comp.AccountTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Account.Data exposing (Model, Msg(..))
 import Util.Html
 
 
-view : Maybe String -> Model -> Html Msg
-view id model =
+view : Maybe String -> Messages -> Model -> Html Msg
+view id texts model =
     div
         [ classList
             [ ( "ui container account-page", True )

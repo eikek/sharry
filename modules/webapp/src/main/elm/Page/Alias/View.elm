@@ -8,14 +8,15 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Alias.Data exposing (Model, Msg(..))
 import QRCode
 import Util.Html
 
 
-view : Flags -> Maybe String -> Model -> Html Msg
-view flags id model =
+view : Messages -> Flags -> Maybe String -> Model -> Html Msg
+view texts flags id model =
     div
         [ classList
             [ ( "ui container alias-page", True )

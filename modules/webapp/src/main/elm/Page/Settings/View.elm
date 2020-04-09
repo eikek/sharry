@@ -4,11 +4,12 @@ import Comp.PasswordInput
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Messages exposing (Messages)
 import Page.Settings.Data exposing (Model, Msg(..))
 
 
-view : Model -> Html Msg
-view model =
+view : Messages -> Model -> Html Msg
+view texts model =
     div [ class "ui text container account-page" ]
         [ h1 [ class "ui dividing header" ]
             [ i [ class "ui cog icon" ] []

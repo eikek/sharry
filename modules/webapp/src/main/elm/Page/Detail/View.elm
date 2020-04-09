@@ -17,6 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Detail.Data
     exposing
@@ -36,8 +37,8 @@ import Util.Size
 import Util.Time
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Messages -> Flags -> Model -> Html Msg
+view texts flags model =
     let
         ( head, desc ) =
             Util.Share.splitDescription model.share

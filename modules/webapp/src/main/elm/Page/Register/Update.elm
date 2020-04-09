@@ -5,6 +5,7 @@ import Api.Model.Registration exposing (Registration)
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
+import Ports
 
 
 update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
@@ -98,6 +99,9 @@ update flags msg model =
 
         SubmitResp (Err err) ->
             ( model, Cmd.none )
+
+        SetLanguage lang ->
+            ( model, Ports.setLang lang )
 
 
 validateForm : Model -> List String

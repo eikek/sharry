@@ -9,13 +9,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
+import Messages exposing (Messages)
 import Page.OpenDetail.Data exposing (Model, Msg(..))
 import Util.Html
 import Util.Share
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Messages -> Flags -> Model -> Html Msg
+view texts flags model =
     div [ class "ui grid container detail-page" ]
         [ zoomView flags model
         , passwordDialog model

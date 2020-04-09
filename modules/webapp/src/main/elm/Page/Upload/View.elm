@@ -4,12 +4,13 @@ import Comp.ShareTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (Model, Msg(..))
 
 
-view : Model -> Html Msg
-view model =
+view : Messages -> Model -> Html Msg
+view texts model =
     div
         [ classList
             [ ( "ui container upload-page", True )

@@ -4,11 +4,12 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Messages exposing (Messages)
 import Page.NewInvite.Data exposing (..)
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Messages -> Flags -> Model -> Html Msg
+view texts flags model =
     div [ class "newinvite-page" ]
         [ div [ class "ui text container" ]
             [ h1 [ class "ui cener aligned header" ]

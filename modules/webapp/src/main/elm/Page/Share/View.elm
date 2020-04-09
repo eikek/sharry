@@ -10,12 +10,13 @@ import Data.UploadDict exposing (countDone)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Share.Data exposing (Model, Msg(..))
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Messages -> Flags -> Model -> Html Msg
+view texts flags model =
     let
         counts =
             countDone model.uploads
