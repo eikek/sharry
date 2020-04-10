@@ -16,7 +16,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
-import Messages.MailSend as T
+import Messages.MailSend exposing (Texts)
 import Util.Http
 
 
@@ -29,7 +29,7 @@ type alias Model =
 
 type alias Loader =
     { active : Bool
-    , message : T.MailSend -> String
+    , message : Texts -> String
     }
 
 
@@ -144,7 +144,7 @@ update flags msg model =
             )
 
 
-view : T.MailSend -> List ( String, Bool ) -> Model -> Html Msg
+view : Texts -> List ( String, Bool ) -> Model -> Html Msg
 view texts classes model =
     div [ classList classes ]
         [ div

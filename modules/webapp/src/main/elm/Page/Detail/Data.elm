@@ -31,7 +31,7 @@ import Data.UploadDict exposing (UploadDict)
 import Data.UploadState exposing (UploadState)
 import Data.ValidityValue exposing (ValidityValue)
 import Http
-import Messages
+import Messages.DetailPage exposing (Texts)
 
 
 type alias Model =
@@ -77,7 +77,7 @@ type Property
 
 type alias LoaderModel =
     { active : Bool
-    , message : Messages.Detail -> String
+    , message : Texts -> String
     }
 
 

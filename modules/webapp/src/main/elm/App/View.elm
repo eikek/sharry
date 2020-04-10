@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
 import Messages exposing (Messages)
+import Messages.App
 import Page exposing (Page(..))
 import Page.Account.View
 import Page.Alias.View
@@ -77,13 +78,13 @@ defaultLayout texts model =
                         []
                     , text model.flags.config.appName
                     ]
-                , loginInfo model
+                , loginInfo texts model
                 ]
             ]
         , div [ class "main-content" ]
             [ case model.page of
                 HomePage ->
-                    viewHome model
+                    viewHome texts model
 
                 LoginPage _ ->
                     viewLogin texts model
@@ -95,7 +96,7 @@ defaultLayout texts model =
                     viewNewInvite texts model
 
                 InfoPage n ->
-                    viewInfo n texts model
+                    viewInfo n model
 
                 AccountPage id ->
                     viewAccount id texts model
@@ -127,7 +128,7 @@ defaultLayout texts model =
 
 viewOpenDetail : String -> Messages -> Model -> Html Msg
 viewOpenDetail id texts model =
-    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts.openDetail model.flags model.openDetailModel)
+    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts.detail model.flags model.openDetailModel)
 
 
 viewDetail : String -> Messages -> Model -> Html Msg
@@ -137,7 +138,7 @@ viewDetail id texts model =
 
 viewSettings : Messages -> Model -> Html Msg
 viewSettings texts model =
-    Html.map SettingsMsg (Page.Settings.View.view texts model.settingsModel)
+    Html.map SettingsMsg (Page.Settings.View.view texts.settings model.settingsModel)
 
 
 viewAlias : Maybe String -> Messages -> Model -> Html Msg
@@ -147,12 +148,12 @@ viewAlias id texts model =
 
 viewUpload : Messages -> Model -> Html Msg
 viewUpload texts model =
-    Html.map UploadMsg (Page.Upload.View.view texts model.uploadModel)
+    Html.map UploadMsg (Page.Upload.View.view texts.upload model.uploadModel)
 
 
 viewOpenShare : String -> Messages -> Model -> Html Msg
 viewOpenShare id texts model =
-    Html.map OpenShareMsg (Page.OpenShare.View.view texts.openShare model.flags id model.openShareModel)
+    Html.map OpenShareMsg (Page.OpenShare.View.view texts.share model.flags id model.openShareModel)
 
 
 viewShare : Messages -> Model -> Html Msg
@@ -165,14 +166,14 @@ viewAccount id texts model =
     Html.map AccountMsg (Page.Account.View.view id texts.account model.accountModel)
 
 
-viewInfo : Int -> Messages -> Model -> Html Msg
-viewInfo msgnum texts model =
-    Html.map InfoMsg (Page.Info.View.view msgnum texts model.infoModel)
+viewInfo : Int -> Model -> Html Msg
+viewInfo msgnum model =
+    Html.map InfoMsg (Page.Info.View.view msgnum model.infoModel)
 
 
 viewNewInvite : Messages -> Model -> Html Msg
 viewNewInvite texts model =
-    Html.map NewInviteMsg (Page.NewInvite.View.view texts model.flags model.newInviteModel)
+    Html.map NewInviteMsg (Page.NewInvite.View.view texts.newInvite model.flags model.newInviteModel)
 
 
 viewRegister : Messages -> Model -> Html Msg
@@ -185,17 +186,17 @@ viewLogin texts model =
     Html.map LoginMsg (Page.Login.View.view texts.login model.flags model.loginModel)
 
 
-viewHome : Model -> Html Msg
-viewHome model =
-    Html.map HomeMsg (Page.Home.View.view model.homeModel)
+viewHome : Messages -> Model -> Html Msg
+viewHome texts model =
+    Html.map HomeMsg (Page.Home.View.view texts.home model.homeModel)
 
 
-loginInfo : Model -> Html Msg
-loginInfo model =
+loginInfo : Messages -> Model -> Html Msg
+loginInfo texts model =
     div [ class "right menu" ]
         (case model.flags.account of
             Just acc ->
-                [ userMenu model acc
+                [ userMenu texts.app model acc
                 ]
 
             Nothing ->
@@ -203,20 +204,20 @@ loginInfo model =
                     [ class "item"
                     , Page.href (Page.loginPage model.page)
                     ]
-                    [ text "Login"
+                    [ text texts.app.login
                     ]
                 , a
                     [ class "item"
                     , Page.href RegisterPage
                     ]
-                    [ text "Register"
+                    [ text texts.app.register
                     ]
                 ]
         )
 
 
-userMenu : Model -> AuthResult -> Html Msg
-userMenu model acc =
+userMenu : Messages.App.Texts -> Model -> AuthResult -> Html Msg
+userMenu texts model acc =
     div
         [ class "ui dropdown icon link item"
         , onClick ToggleNavMenu
@@ -235,24 +236,24 @@ userMenu model acc =
                     , src model.flags.config.iconUrl
                     ]
                     []
-                , text "Home"
+                , text texts.home
                 ]
             , div [ class "divider" ] []
             , menuEntry model
                 UploadPage
                 [ i [ class "ui upload icon" ] []
-                , text "Shares"
+                , text texts.shares
                 ]
             , menuEntry model
                 (AliasPage Nothing)
                 [ i [ class "ui dot circle outline icon" ] []
-                , text "Aliases"
+                , text texts.aliases
                 ]
             , if acc.admin then
                 menuEntry model
                     (AccountPage Nothing)
                     [ i [ class "ui users icon" ] []
-                    , text "Accounts"
+                    , text texts.accounts
                     ]
 
               else
@@ -260,13 +261,13 @@ userMenu model acc =
             , menuEntry model
                 SettingsPage
                 [ i [ class "ui cog icon" ] []
-                , text "Settings"
+                , text texts.settings
                 ]
             , if acc.admin && model.flags.config.signupMode == "invite" then
                 menuEntry model
                     NewInvitePage
                     [ i [ class "ui key icon" ] []
-                    , text "New Invites"
+                    , text texts.newInvites
                     ]
 
               else
@@ -278,9 +279,7 @@ userMenu model acc =
                 , onClick Logout
                 ]
                 [ i [ class "sign-out icon" ] []
-                , text "Logout ("
-                , text acc.user
-                , text ")"
+                , text (texts.logout acc.user)
                 ]
             ]
         ]

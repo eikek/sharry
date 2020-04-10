@@ -4,36 +4,36 @@ import Comp.PasswordInput
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages exposing (Messages)
+import Messages.SettingsPage exposing (Texts)
 import Page.Settings.Data exposing (Model, Msg(..))
 
 
-view : Messages -> Model -> Html Msg
+view : Texts -> Model -> Html Msg
 view texts model =
     div [ class "ui text container account-page" ]
         [ h1 [ class "ui dividing header" ]
             [ i [ class "ui cog icon" ] []
-            , text "Settings"
+            , text texts.settingsTitle
             ]
         , banner model
-        , emailForm model
-        , changePasswordForm model
+        , emailForm texts model
+        , changePasswordForm texts model
         ]
 
 
-emailForm : Model -> Html Msg
-emailForm model =
+emailForm : Texts -> Model -> Html Msg
+emailForm texts model =
     div [ class "ui segments" ]
         [ div [ class "ui segment" ]
             [ h2 [ class "ui header" ]
-                [ text "Change your E-Mail"
+                [ text texts.changeMailHeader
                 ]
             , Html.form [ class "ui form" ]
                 [ div [ class "ui field" ]
-                    [ label [] [ text "New E-Mail" ]
+                    [ label [] [ text texts.newEmail ]
                     , input
                         [ type_ "text"
-                        , placeholder "E-Mail address"
+                        , placeholder texts.newEmailPlaceholder
                         , onInput SetEmail
                         , Maybe.withDefault "" model.emailField
                             |> value
@@ -41,7 +41,7 @@ emailForm model =
                         []
                     ]
                 , p []
-                    [ text "Submitting an empty form deletes the E-Mail address."
+                    [ text texts.submitEmptyMailInfo
                     ]
                 ]
             ]
@@ -51,22 +51,22 @@ emailForm model =
                 , class "ui primary button"
                 , onClick SubmitEmail
                 ]
-                [ text "Submit"
+                [ text texts.submit
                 ]
             ]
         ]
 
 
-changePasswordForm : Model -> Html Msg
-changePasswordForm model =
+changePasswordForm : Texts -> Model -> Html Msg
+changePasswordForm texts model =
     div [ class "ui segments" ]
         [ div [ class "ui segment" ]
             [ h2 [ class "ui header" ]
-                [ text "Change Password"
+                [ text texts.changePasswordHeader
                 ]
             , Html.form [ class "ui form" ]
                 [ div [ class "ui required field" ]
-                    [ label [] [ text "Current Password" ]
+                    [ label [] [ text texts.currentPassword ]
                     , Html.map SetOldPassword
                         (Comp.PasswordInput.view
                             model.oldPasswordField
@@ -74,7 +74,7 @@ changePasswordForm model =
                         )
                     ]
                 , div [ class "ui required field" ]
-                    [ label [] [ text "New Password" ]
+                    [ label [] [ text texts.newPassword ]
                     , Html.map SetNewPassword1
                         (Comp.PasswordInput.view
                             model.newPasswordField1
@@ -82,7 +82,7 @@ changePasswordForm model =
                         )
                     ]
                 , div [ class "ui required field" ]
-                    [ label [] [ text "New Password (Repeat)" ]
+                    [ label [] [ text texts.newPasswordRepeat ]
                     , Html.map SetNewPassword2
                         (Comp.PasswordInput.view
                             model.newPasswordField2
@@ -97,7 +97,7 @@ changePasswordForm model =
                 , class "ui primary button"
                 , onClick SubmitPassword
                 ]
-                [ text "Submit"
+                [ text texts.submit
                 ]
             ]
         ]

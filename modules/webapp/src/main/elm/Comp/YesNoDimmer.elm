@@ -14,7 +14,7 @@ module Comp.YesNoDimmer exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.YesNoDimmer as T
+import Messages.YesNoDimmer exposing (Texts)
 
 
 type alias Model =
@@ -44,7 +44,7 @@ type alias Settings =
     }
 
 
-defaultSettings : T.YesNoDimmer -> Settings
+defaultSettings : Texts -> Settings
 defaultSettings texts =
     { message = texts.message
     , headerIcon = "exclamation icon"
@@ -80,7 +80,7 @@ update msg model =
             ( { model | active = False }, True )
 
 
-view : T.YesNoDimmer -> Model -> Html Msg
+view : Texts -> Model -> Html Msg
 view texts model =
     view2 True (defaultSettings texts) model
 

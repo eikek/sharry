@@ -1,10 +1,10 @@
 module Messages.MailForm exposing
-    ( MailForm
+    ( Texts
     , gb
     )
 
 
-type alias MailForm =
+type alias Texts =
     { receivers : String
     , separateRecipientsByComma : String
     , subject : String
@@ -14,7 +14,7 @@ type alias MailForm =
     }
 
 
-gb : MailForm
+gb : Texts
 gb =
     { receivers = "Receiver(s)"
     , separateRecipientsByComma = "Separate multiple recipients by comma"

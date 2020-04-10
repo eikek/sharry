@@ -1,17 +1,17 @@
 module Messages.YesNoDimmer exposing
-    ( YesNoDimmer
+    ( Texts
     , gb
     )
 
 
-type alias YesNoDimmer =
+type alias Texts =
     { message : String
     , confirmButton : String
     , cancelButton : String
     }
 
 
-gb : YesNoDimmer
+gb : Texts
 gb =
     { message = "Delete this item permanently?"
     , confirmButton = "Yes, do it!"

@@ -18,7 +18,7 @@ import Data.ValidityValue exposing (ValidityValue(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
-import Messages.AliasForm as T
+import Messages.AliasForm exposing (Texts)
 import Util.Maybe
 
 
@@ -174,7 +174,7 @@ update msg model =
                         ( model, FormCreated ac )
 
 
-view : T.AliasForm -> Model -> Html Msg
+view : Texts -> Model -> Html Msg
 view texts model =
     div []
         [ Html.map YesNoMsg (Comp.YesNoDimmer.view texts.yesNo model.yesNoModel)
@@ -223,6 +223,7 @@ view texts model =
                 [ label [] [ text texts.validity ]
                 , Html.map ValidityMsg
                     (Comp.ValidityField.view
+                        texts.validityField
                         model.validityField
                         model.validityModel
                     )

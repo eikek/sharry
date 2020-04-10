@@ -4,34 +4,38 @@ import Comp.ShareTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages exposing (Messages)
+import Messages.UploadPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (Model, Msg(..))
 
 
-view : Messages -> Model -> Html Msg
+view : Texts -> Model -> Html Msg
 view texts model =
     div
         [ classList
             [ ( "ui container upload-page", True )
             ]
         ]
-        (viewList model)
+        (viewList texts model)
 
 
-viewList : Model -> List (Html Msg)
-viewList model =
+viewList : Texts -> Model -> List (Html Msg)
+viewList texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui share alternate icon" ] []
-        , text "Your Shares"
+        , text texts.yourShares
         ]
-    , searchArea model
-    , Html.map ShareTableMsg (Comp.ShareTable.view model.searchResult model.tableModel)
+    , searchArea texts model
+    , Html.map ShareTableMsg
+        (Comp.ShareTable.view texts.shareTable
+            model.searchResult
+            model.tableModel
+        )
     ]
 
 
-searchArea : Model -> Html Msg
-searchArea _ =
+searchArea : Texts -> Model -> Html Msg
+searchArea texts _ =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]
             [ div [ class "fitted-item" ]
@@ -39,7 +43,7 @@ searchArea _ =
                     [ input
                         [ type_ "text"
                         , onInput SetQuery
-                        , placeholder "Search…"
+                        , placeholder texts.search
                         ]
                         []
                     , i [ class "ui search icon" ]
@@ -51,7 +55,7 @@ searchArea _ =
                     [ class "ui primary button"
                     , Page.href SharePage
                     ]
-                    [ text "New Share"
+                    [ text texts.newShare
                     ]
                 ]
             ]

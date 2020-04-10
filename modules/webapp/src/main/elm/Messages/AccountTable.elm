@@ -1,12 +1,12 @@
 module Messages.AccountTable exposing
-    ( AccountTable
+    ( Texts
     , gb
     )
 
 -- AccountTable component texts
 
 
-type alias AccountTable =
+type alias Texts =
     { login : String
     , source : String
     , state : String
@@ -18,7 +18,7 @@ type alias AccountTable =
     }
 
 
-gb : AccountTable
+gb : Texts
 gb =
     { login = "Login"
     , source = "Source"

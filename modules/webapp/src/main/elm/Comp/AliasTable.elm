@@ -11,7 +11,7 @@ import Data.ValidityOptions exposing (findValidityItemMillis)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.AliasTable as T
+import Messages.AliasTable exposing (Texts)
 import Util.Html
 import Util.Time
 
@@ -38,7 +38,7 @@ update msg model =
             ( { model | selected = Just alias_ }, Just alias_ )
 
 
-view : T.AliasTable -> List AliasDetail -> Model -> Html Msg
+view : Texts -> List AliasDetail -> Model -> Html Msg
 view texts aliases model =
     table [ class "ui selectable padded table" ]
         [ thead []

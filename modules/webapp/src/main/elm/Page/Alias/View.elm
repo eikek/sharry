@@ -8,14 +8,14 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages
+import Messages.AliasPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Alias.Data exposing (Model, Msg(..))
 import QRCode
 import Util.Html
 
 
-view : Messages.Alias -> Flags -> Maybe String -> Model -> Html Msg
+view : Texts -> Flags -> Maybe String -> Model -> Html Msg
 view texts flags id model =
     div
         [ classList
@@ -37,7 +37,7 @@ view texts flags id model =
                     viewList texts model
 
 
-viewCreate : Messages.Alias -> Model -> List (Html Msg)
+viewCreate : Texts -> Model -> List (Html Msg)
 viewCreate texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui upload icon" ] []
@@ -53,7 +53,7 @@ viewCreate texts model =
     ]
 
 
-viewModify : Messages.Alias -> Flags -> Model -> AliasDetail -> List (Html Msg)
+viewModify : Texts -> Flags -> Model -> AliasDetail -> List (Html Msg)
 viewModify texts flags model alias_ =
     [ div [ class "row" ]
         [ div [ class "column" ]
@@ -79,7 +79,7 @@ viewModify texts flags model alias_ =
     ]
 
 
-viewList : Messages.Alias -> Model -> List (Html Msg)
+viewList : Texts -> Model -> List (Html Msg)
 viewList texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui users icon" ] []
@@ -95,7 +95,7 @@ viewList texts model =
     ]
 
 
-searchArea : Messages.Alias -> Model -> Html Msg
+searchArea : Texts -> Model -> Html Msg
 searchArea texts model =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]
@@ -125,7 +125,7 @@ searchArea texts model =
         ]
 
 
-qrCodeView : Messages.Alias -> String -> Html msg
+qrCodeView : Texts -> String -> Html msg
 qrCodeView texts message =
     QRCode.encode message
         |> Result.map QRCode.toSvg
@@ -133,7 +133,7 @@ qrCodeView texts message =
             (Html.text texts.errorQrCode)
 
 
-shareText : Messages.Alias -> Flags -> Model -> AliasDetail -> Html Msg
+shareText : Texts -> Flags -> Model -> AliasDetail -> Html Msg
 shareText texts flags model alias_ =
     let
         url =
@@ -166,7 +166,7 @@ shareText texts flags model alias_ =
         ]
 
 
-shareInfo : Messages.Alias -> Flags -> Model -> String -> Html Msg
+shareInfo : Texts -> Flags -> Model -> String -> Html Msg
 shareInfo texts flags model url =
     div [ class "ui bottom attached segment" ]
         [ div [ class "ui two column stackable center aligned grid" ]

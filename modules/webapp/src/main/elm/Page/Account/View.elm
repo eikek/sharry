@@ -7,13 +7,13 @@ import Comp.AccountTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Messages
+import Messages.AccountPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Account.Data exposing (Model, Msg(..))
 import Util.Html
 
 
-view : Maybe String -> Messages.Account -> Model -> Html Msg
+view : Maybe String -> Texts -> Model -> Html Msg
 view id texts model =
     div
         [ classList
@@ -34,7 +34,7 @@ view id texts model =
                     viewList texts model
 
 
-viewCreate : Messages.Account -> Model -> List (Html Msg)
+viewCreate : Texts -> Model -> List (Html Msg)
 viewCreate texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui user circle outline icon" ] []
@@ -48,7 +48,7 @@ viewCreate texts model =
     ]
 
 
-viewModify : Messages.Account -> Model -> AccountDetail -> List (Html Msg)
+viewModify : Texts -> Model -> AccountDetail -> List (Html Msg)
 viewModify texts model acc =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui user circle icon" ] []
@@ -62,7 +62,7 @@ viewModify texts model acc =
     ]
 
 
-viewList : Messages.Account -> Model -> List (Html Msg)
+viewList : Texts -> Model -> List (Html Msg)
 viewList texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui users icon" ] []
@@ -77,7 +77,7 @@ viewList texts model =
     ]
 
 
-searchArea : Messages.Account -> Model -> Html Msg
+searchArea : Texts -> Model -> Html Msg
 searchArea texts model =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]

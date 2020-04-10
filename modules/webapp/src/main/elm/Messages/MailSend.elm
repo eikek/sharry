@@ -1,19 +1,19 @@
 module Messages.MailSend exposing
-    ( MailSend
+    ( Texts
     , gb
     )
 
-import Messages.MailForm exposing (MailForm)
+import Messages.MailForm
 
 
-type alias MailSend =
+type alias Texts =
     { sendingEmail : String
     , loadingTemplate : String
-    , mailForm : MailForm
+    , mailForm : Messages.MailForm.Texts
     }
 
 
-gb : MailSend
+gb : Texts
 gb =
     { sendingEmail = "Sending mail ..."
     , loadingTemplate = "Loading template ..."

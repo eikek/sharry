@@ -8,12 +8,12 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Markdown
-import Messages exposing (Messages)
+import Messages.LoginPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
 
 
-view : Messages.Login -> Flags -> Model -> Html Msg
+view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
     div [ class "login-page" ]
         [ div [ class "ui centered grid" ]
@@ -81,7 +81,7 @@ view texts flags model =
         ]
 
 
-renderLangAndSignup : Messages.Login -> Flags -> Model -> Html Msg
+renderLangAndSignup : Texts -> Flags -> Model -> Html Msg
 renderLangAndSignup texts flags model =
     div [ class "ui two column stackable grid basic segment" ]
         [ div [ class "column" ]
@@ -116,7 +116,7 @@ renderWelcome flags =
                 ]
 
 
-renderOAuthButtons : Messages.Login -> Flags -> Model -> Html Msg
+renderOAuthButtons : Texts -> Flags -> Model -> Html Msg
 renderOAuthButtons texts flags model =
     div [ class "ui very basic segment" ]
         [ div [ class "ui horizontal divider" ] [ text "Or" ]
@@ -125,7 +125,7 @@ renderOAuthButtons texts flags model =
         ]
 
 
-renderOAuthButton : Messages.Login -> Flags -> OAuthItem -> Html Msg
+renderOAuthButton : Texts -> Flags -> OAuthItem -> Html Msg
 renderOAuthButton texts flags item =
     let
         icon =
@@ -144,7 +144,7 @@ renderOAuthButton texts flags item =
         ]
 
 
-resultMessage : Messages.Login -> Model -> Html Msg
+resultMessage : Texts -> Model -> Html Msg
 resultMessage texts model =
     case model.result of
         Just r ->

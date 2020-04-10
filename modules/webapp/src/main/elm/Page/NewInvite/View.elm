@@ -4,21 +4,21 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Messages exposing (Messages)
+import Messages.NewInvitePage exposing (Texts)
 import Page.NewInvite.Data exposing (..)
 
 
-view : Messages -> Flags -> Model -> Html Msg
+view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
     div [ class "newinvite-page" ]
         [ div [ class "ui text container" ]
             [ h1 [ class "ui cener aligned header" ]
                 [ i [ class "pencil alternate icon" ] []
                 , div [ class "content" ]
-                    [ text "Create new invitations"
+                    [ text texts.createNewTitle
                     ]
                 ]
-            , inviteMessage flags
+            , inviteMessage texts flags
             , Html.form
                 [ classList
                     [ ( "ui large form raised segment", True )
@@ -28,7 +28,7 @@ view texts flags model =
                 , onSubmit GenerateInvite
                 ]
                 [ div [ class "required field" ]
-                    [ label [] [ text "New Invitation Password" ]
+                    [ label [] [ text texts.newInvitePassword ]
                     , div [ class "ui left icon input" ]
                         [ input
                             [ type_ "password"
@@ -44,19 +44,19 @@ view texts flags model =
                     [ class "ui primary button"
                     , type_ "submit"
                     ]
-                    [ text "Submit"
+                    [ text texts.submit
                     ]
                 , a [ class "ui right floated button", href "", onClick Reset ]
-                    [ text "Reset"
+                    [ text texts.reset
                     ]
-                , resultMessage model
+                , resultMessage texts model
                 ]
             ]
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+resultMessage : Texts -> Model -> Html Msg
+resultMessage texts model =
     div
         [ classList
             [ ( "ui message", True )
@@ -68,15 +68,15 @@ resultMessage model =
         [ case model.result of
             Failed m ->
                 div [ class "content" ]
-                    [ div [ class "header" ] [ text "Error" ]
+                    [ div [ class "header" ] [ text texts.error ]
                     , p [] [ text m ]
                     ]
 
             Success r ->
                 div [ class "content" ]
-                    [ div [ class "header" ] [ text "Success" ]
+                    [ div [ class "header" ] [ text texts.success ]
                     , p [] [ text r.message ]
-                    , p [] [ text "Invitation Key:" ]
+                    , p [] [ text texts.invitationKey ]
                     , pre []
                         [ Maybe.withDefault "" r.key |> text
                         ]
@@ -87,28 +87,12 @@ resultMessage model =
         ]
 
 
-inviteMessage : Flags -> Html Msg
-inviteMessage flags =
+inviteMessage : Texts -> Flags -> Html Msg
+inviteMessage texts flags =
     div
         [ classList
             [ ( "ui message", True )
             , ( "hidden", flags.config.signupMode /= "invite" )
             ]
         ]
-        [ p []
-            [ text
-                """Sharry requires an invite when signing up. You can
-             create these invites here and send them to friends so
-             they can signup with Sharry."""
-            ]
-        , p []
-            [ text
-                """Each invite can only be used once. You'll need to
-             create one key for each person you want to invite."""
-            ]
-        , p []
-            [ text
-                """Creating an invite requires providing the password
-             from the configuration."""
-            ]
-        ]
+        (List.map (Html.map (\_ -> Reset)) texts.message)

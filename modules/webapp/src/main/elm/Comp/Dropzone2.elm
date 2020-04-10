@@ -18,7 +18,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
-import Messages.Dropzone2 as T
+import Messages.Dropzone2 exposing (Texts)
 import Util.List
 import Util.Size
 
@@ -102,7 +102,7 @@ mkViewSettings active uploads =
     }
 
 
-view : T.Dropzone2 -> ViewSettings -> Model -> Html Msg
+view : Texts -> ViewSettings -> Model -> Html Msg
 view texts sett model =
     let
         files =

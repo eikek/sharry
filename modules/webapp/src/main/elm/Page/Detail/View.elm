@@ -17,7 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
-import Messages
+import Messages.DetailPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Detail.Data
     exposing
@@ -37,7 +37,7 @@ import Util.Size
 import Util.Time
 
 
-view : Messages.Detail -> Flags -> Model -> Html Msg
+view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
     let
         ( head, desc ) =
@@ -64,7 +64,7 @@ view texts flags model =
         ]
 
 
-descriptionView : Messages.Detail -> Model -> String -> Html Msg
+descriptionView : Texts -> Model -> String -> Html Msg
 descriptionView texts model desc =
     case model.descEdit of
         Just ( dm, str ) ->
@@ -87,7 +87,7 @@ descriptionView texts model desc =
             Markdown.toHtml [ class "share-description ui basic segment" ] desc
 
 
-fileList : Messages.Detail -> Flags -> Model -> Html Msg
+fileList : Texts -> Flags -> Model -> Html Msg
 fileList texts flags model =
     let
         sett =
@@ -106,7 +106,7 @@ fileList texts flags model =
             model.fileListModel
 
 
-shareLink : Messages.Detail -> Flags -> Model -> List (Html Msg)
+shareLink : Texts -> Flags -> Model -> List (Html Msg)
 shareLink texts flags model =
     case isPublished model.share of
         Unpublished ->
@@ -122,7 +122,7 @@ shareLink texts flags model =
             shareLinkMaxViewsExeeded texts model
 
 
-shareLinkMaxViewsExeeded : Messages.Detail -> Model -> List (Html Msg)
+shareLinkMaxViewsExeeded : Texts -> Model -> List (Html Msg)
 shareLinkMaxViewsExeeded texts model =
     [ div
         [ classList
@@ -135,7 +135,7 @@ shareLinkMaxViewsExeeded texts model =
     ]
 
 
-shareLinkNotPublished : Messages.Detail -> Model -> List (Html Msg)
+shareLinkNotPublished : Texts -> Model -> List (Html Msg)
 shareLinkNotPublished texts model =
     [ div
         [ classList
@@ -148,7 +148,7 @@ shareLinkNotPublished texts model =
     ]
 
 
-shareLinkExpired : Messages.Detail -> Model -> List (Html Msg)
+shareLinkExpired : Texts -> Model -> List (Html Msg)
 shareLinkExpired texts model =
     [ div
         [ classList
@@ -161,7 +161,7 @@ shareLinkExpired texts model =
     ]
 
 
-shareLinkPublished : Messages.Detail -> Flags -> Model -> List (Html Msg)
+shareLinkPublished : Texts -> Flags -> Model -> List (Html Msg)
 shareLinkPublished texts flags model =
     let
         share =
@@ -242,7 +242,7 @@ messageDiv model =
     Util.Html.resultMsgMaybe model.message
 
 
-shareProps : Messages.Detail -> Model -> List (Html Msg)
+shareProps : Texts -> Model -> List (Html Msg)
 shareProps texts model =
     let
         share =
@@ -436,7 +436,7 @@ shareProps texts model =
 
 
 property :
-    Messages.Detail
+    Texts
     ->
         { label : String
         , content : List (Html Msg)
@@ -469,7 +469,7 @@ property texts rec =
         ]
 
 
-propertyEdit : Messages.Detail -> EditField -> List (Html Msg)
+propertyEdit : Texts -> EditField -> List (Html Msg)
 propertyEdit texts ef =
     let
         saveButton =
@@ -520,7 +520,7 @@ propertyEdit texts ef =
 
         EditValidity ( vm, v ) ->
             [ div [ class "ui mini action input" ]
-                [ Html.map ValidityEditMsg (Comp.ValidityField.view v vm)
+                [ Html.map ValidityEditMsg (Comp.ValidityField.view texts.validityField v vm)
                 , saveButton
                 , cancelButton
                 ]
@@ -535,7 +535,7 @@ propertyEdit texts ef =
             ]
 
 
-topMenu : Messages.Detail -> Model -> Html Msg
+topMenu : Texts -> Model -> Html Msg
 topMenu texts model =
     let
         share =
@@ -576,7 +576,7 @@ topMenu texts model =
         ]
 
 
-publishIconLabel : Messages.Detail -> ShareDetail -> ( String, String )
+publishIconLabel : Texts -> ShareDetail -> ( String, String )
 publishIconLabel texts share =
     case isPublished share of
         Unpublished ->
@@ -606,7 +606,7 @@ topMenuLink model state label =
         ]
 
 
-middleMenu : Messages.Detail -> Model -> Html Msg
+middleMenu : Texts -> Model -> Html Msg
 middleMenu texts model =
     div
         [ classList
@@ -654,7 +654,7 @@ middleMenu texts model =
         ]
 
 
-dropzone : Messages.Detail -> Flags -> Model -> Html Msg
+dropzone : Texts -> Flags -> Model -> Html Msg
 dropzone texts flags model =
     let
         viewSettings =
@@ -735,7 +735,7 @@ dropzone texts flags model =
         ]
 
 
-deleteLoader : Messages.Detail -> Model -> Html Msg
+deleteLoader : Texts -> Model -> Html Msg
 deleteLoader texts model =
     div
         [ classList

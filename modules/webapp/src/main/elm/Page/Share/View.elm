@@ -10,12 +10,12 @@ import Data.UploadDict exposing (countDone)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages
+import Messages.SharePage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Share.Data exposing (Model, Msg(..))
 
 
-view : Messages.Share -> Flags -> Model -> Html Msg
+view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
     let
         counts =
@@ -32,7 +32,7 @@ view texts flags model =
         [ div [ class "ui container" ]
             [ h1 [ class "ui dividing header" ]
                 [ i [ class "ui share alternate icon" ] []
-                , text "Create a Share"
+                , text texts.createShare
                 ]
             ]
         , div [ class "ui container" ]
@@ -45,10 +45,10 @@ view texts flags model =
                     ]
                 ]
                 [ if allDone then
-                    doneMessageBox counts model
+                    doneMessageBox counts texts model
 
                   else
-                    controls model
+                    controls texts model
                 , Data.Flags.limitsMessage flags
                     [ class "ui info message" ]
                 , div [ class "ui error message" ]
@@ -63,7 +63,7 @@ view texts flags model =
                         , onClick ToggleDetails
                         ]
                         [ i [ class "dropdown icon" ] []
-                        , text "Details"
+                        , text texts.details
                         ]
                     , div
                         [ classList
@@ -72,7 +72,7 @@ view texts flags model =
                             ]
                         ]
                         [ div [ class "field" ]
-                            [ label [] [ text "Description" ]
+                            [ label [] [ text texts.description ]
                             , Html.map DescMsg
                                 (Comp.MarkdownInput.view
                                     texts.markdownInput
@@ -82,18 +82,19 @@ view texts flags model =
                             ]
                         , div [ class "two fields" ]
                             [ div [ class "field" ]
-                                [ label [] [ text "Name" ]
+                                [ label [] [ text texts.name ]
                                 , input
                                     [ type_ "text"
-                                    , placeholder "Optional Name"
+                                    , placeholder texts.namePlaceholder
                                     , onInput SetName
                                     ]
                                     []
                                 ]
                             , div [ class "required field" ]
-                                [ label [] [ text "Validity" ]
+                                [ label [] [ text texts.validity ]
                                 , Html.map ValidityMsg
                                     (Comp.ValidityField.view
+                                        texts.validityField
                                         model.validityField
                                         model.validityModel
                                     )
@@ -103,10 +104,12 @@ view texts flags model =
                             [ Html.map MaxViewMsg
                                 (Comp.IntField.view
                                     model.maxViewField
+                                    texts.intField
+                                    texts.maxPublicViews
                                     model.maxViewModel
                                 )
                             , div [ class "field" ]
-                                [ label [] [ text "Password" ]
+                                [ label [] [ text texts.password ]
                                 , Html.map PasswordMsg
                                     (Comp.PasswordInput.view model.passwordField
                                         model.passwordModel
@@ -116,7 +119,7 @@ view texts flags model =
                         ]
                     , div [ class "active ui header title" ]
                         [ i [ class "dropdown icon" ] []
-                        , text "Files"
+                        , text texts.files
                         ]
                     , Html.map DropzoneMsg
                         (Comp.Dropzone2.view
@@ -130,8 +133,8 @@ view texts flags model =
         ]
 
 
-doneMessageBox : ( Int, Int ) -> Model -> Html Msg
-doneMessageBox ( _, err ) model =
+doneMessageBox : ( Int, Int ) -> Texts -> Model -> Html Msg
+doneMessageBox ( _, err ) texts model =
     let
         buttons =
             div [ class "" ]
@@ -140,13 +143,13 @@ doneMessageBox ( _, err ) model =
                     , href "#"
                     , onClick ResetForm
                     ]
-                    [ text "New Share"
+                    [ text texts.newShare
                     ]
                 , a
                     [ class "ui secondary button"
                     , Page.href (DetailPage <| Maybe.withDefault "" model.shareId)
                     ]
-                    [ text "Goto Share"
+                    [ text texts.gotoShare
                     ]
                 ]
 
@@ -155,7 +158,7 @@ doneMessageBox ( _, err ) model =
                 [ i [ class "ui check icon" ] []
                 , div [ class "content" ]
                     [ div [ class "ui header" ]
-                        [ text "All files uploaded"
+                        [ text texts.allFilesUploaded
                         ]
                     , div [ class "ui divider" ] []
                     , buttons
@@ -167,11 +170,11 @@ doneMessageBox ( _, err ) model =
                 [ i [ class "ui meh icon" ] []
                 , div [ class "content" ]
                     [ div [ class "header" ]
-                        [ text "Some files failed"
+                        [ text texts.someFilesFailedHeader
                         ]
                     , p []
-                        [ text "Some files failed to upload…. "
-                        , text "You can go to the share and try uploading them again."
+                        [ text texts.someFilesFailedText
+                        , text texts.someFilesFailedTextAddon
                         ]
                     , div [ class "ui divider" ] []
                     , buttons
@@ -185,8 +188,8 @@ doneMessageBox ( _, err ) model =
         success
 
 
-controls : Model -> Html Msg
-controls model =
+controls : Texts -> Model -> Html Msg
+controls texts model =
     div
         [ class "field"
         ]
@@ -199,7 +202,7 @@ controls model =
             , onClick Submit
             ]
             [ i [ class "upload icon" ] []
-            , text "Submit"
+            , text texts.submit
             ]
         , a
             [ onClick ClearFiles
@@ -210,7 +213,7 @@ controls model =
                 ]
             ]
             [ i [ class "undo icon" ] []
-            , text "Clear Files"
+            , text texts.clearFiles
             ]
         , a
             [ classList
@@ -231,10 +234,10 @@ controls model =
                 ]
                 []
             , if model.uploadPaused then
-                text "Resume"
+                text texts.resume
 
               else
-                text "Pause"
+                text texts.pause
             ]
         ]
 

@@ -5,12 +5,12 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Messages
+import Messages.RegisterPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
 
 
-view : Messages.Register -> Flags -> Model -> Html Msg
+view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
     div [ class "register-page" ]
         [ div [ class "ui centered grid" ]
@@ -123,7 +123,7 @@ view texts flags model =
         ]
 
 
-renderLanguageAndSignin : Messages.Register -> Html Msg
+renderLanguageAndSignin : Texts -> Html Msg
 renderLanguageAndSignin texts =
     div [ class "ui two column stackable grid basic segment" ]
         [ div [ class "column" ]
@@ -139,7 +139,7 @@ renderLanguageAndSignin texts =
         ]
 
 
-resultMessage : Messages.Register -> Model -> Html Msg
+resultMessage : Texts -> Model -> Html Msg
 resultMessage texts model =
     case model.result of
         Just r ->

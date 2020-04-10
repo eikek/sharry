@@ -1,10 +1,10 @@
 module Messages.MarkdownInput exposing
-    ( MarkdownInput
+    ( Texts
     , gb
     )
 
 
-type alias MarkdownInput =
+type alias Texts =
     { edit : String
     , preview : String
     , split : String
@@ -12,7 +12,7 @@ type alias MarkdownInput =
     }
 
 
-gb : MarkdownInput
+gb : Texts
 gb =
     { edit = "Edit"
     , preview = "Preview"

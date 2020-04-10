@@ -10,7 +10,7 @@ import Api.Model.AccountDetail exposing (AccountDetail)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.AccountTable as T
+import Messages.AccountTable exposing (Texts)
 import Util.Html
 import Util.Time
 
@@ -37,7 +37,7 @@ update msg model =
             ( { model | selected = Just acc }, Just acc )
 
 
-view : T.AccountTable -> List AccountDetail -> Model -> Html Msg
+view : Texts -> List AccountDetail -> Model -> Html Msg
 view texts accounts model =
     table [ class "ui selectable padded table" ]
         [ thead []

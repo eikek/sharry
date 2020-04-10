@@ -1,9 +1,9 @@
-module Messages.AccountForm exposing (AccountForm, gb)
+module Messages.AccountForm exposing (Texts, gb)
 
--- AccountForm component texts
+import Messages.FixedDropdown
 
 
-type alias AccountForm =
+type alias Texts =
     { id : String
     , login : String
     , state : String
@@ -11,10 +11,11 @@ type alias AccountForm =
     , password : String
     , submit : String
     , back : String
+    , dropdown : Messages.FixedDropdown.Texts
     }
 
 
-gb : AccountForm
+gb : Texts
 gb =
     { id = "Id"
     , login = "Login"
@@ -23,4 +24,5 @@ gb =
     , password = "Password"
     , submit = "Submit"
     , back = "Back"
+    , dropdown = Messages.FixedDropdown.gb
     }

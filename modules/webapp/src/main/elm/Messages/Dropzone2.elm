@@ -1,10 +1,10 @@
 module Messages.Dropzone2 exposing
-    ( Dropzone2
+    ( Texts
     , gb
     )
 
 
-type alias Dropzone2 =
+type alias Texts =
     { dropHere : String
     , filesSelected : String
     , or : String
@@ -12,7 +12,7 @@ type alias Dropzone2 =
     }
 
 
-gb : Dropzone2
+gb : Texts
 gb =
     { dropHere = "Drop files here"
     , filesSelected = " files selected ("

@@ -13,7 +13,7 @@ import Api.Model.SimpleMail exposing (SimpleMail)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Messages.MailForm as T
+import Messages.MailForm exposing (Texts)
 
 
 type alias Model =
@@ -79,7 +79,7 @@ update msg model =
             ( model, FormSend sm )
 
 
-view : T.MailForm -> Model -> Html Msg
+view : Texts -> Model -> Html Msg
 view texts model =
     div [ class "ui form" ]
         [ div [ class "field" ]

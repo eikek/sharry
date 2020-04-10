@@ -2,13 +2,12 @@ module Page.Info.View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages exposing (Messages)
 import Page.Info.Data exposing (Model, Msg(..))
 import Util.List
 
 
-view : Int -> Messages -> Model -> Html Msg
-view msg texts model =
+view : Int -> Model -> Html Msg
+view msg model =
     case Util.List.get model msg of
         Just m ->
             div [ class "info-page" ]

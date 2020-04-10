@@ -10,7 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
-import Messages.MarkdownInput as T
+import Messages.MarkdownInput exposing (Texts)
 
 
 type Display
@@ -47,7 +47,7 @@ update txt msg model =
             ( { model | display = dsp }, txt )
 
 
-view : T.MarkdownInput -> String -> Model -> Html Msg
+view : Texts -> String -> Model -> Html Msg
 view texts txt model =
     div []
         [ div [ class "ui top attached tabular mini menu" ]

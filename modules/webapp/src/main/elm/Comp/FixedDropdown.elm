@@ -13,6 +13,7 @@ module Comp.FixedDropdown exposing
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.FixedDropdown exposing (Texts)
 
 
 type alias Item a =
@@ -68,8 +69,8 @@ update msg model =
             ( model, Just item.id )
 
 
-view : Maybe (Item a) -> Model a -> Html (Msg a)
-view selected model =
+view : Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
+view selected texts model =
     div
         [ classList
             [ ( "ui selection dropdown", True )
@@ -86,7 +87,7 @@ view selected model =
                 ]
             ]
             [ Maybe.map .display selected
-                |> Maybe.withDefault "Select…"
+                |> Maybe.withDefault texts.select
                 |> text
             ]
         , div

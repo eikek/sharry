@@ -1,10 +1,10 @@
 module Messages.AliasTable exposing
-    ( AliasTable
+    ( Texts
     , gb
     )
 
 
-type alias AliasTable =
+type alias Texts =
     { name : String
     , enabled : String
     , validity : String
@@ -12,7 +12,7 @@ type alias AliasTable =
     }
 
 
-gb : AliasTable
+gb : Texts
 gb =
     { name = "Name"
     , enabled = "Enabled"

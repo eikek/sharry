@@ -16,7 +16,7 @@ import Comp.YesNoDimmer
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.ShareFileList as T
+import Messages.ShareFileList exposing (Texts)
 import Set exposing (Set)
 import Util.Size
 
@@ -54,7 +54,7 @@ init =
     }
 
 
-dimmerSettings : T.ShareFileList -> Comp.YesNoDimmer.Settings
+dimmerSettings : Texts -> Comp.YesNoDimmer.Settings
 dimmerSettings texts =
     Comp.YesNoDimmer.defaultSettings texts.yesNo
 
@@ -116,7 +116,7 @@ update msg model =
             ( { model | yesNoModel = ym }, action )
 
 
-view : T.ShareFileList -> Settings -> List ShareFile -> Model -> Html Msg
+view : Texts -> Settings -> List ShareFile -> Model -> Html Msg
 view texts settings files model =
     case settings.viewMode of
         ViewList ->
@@ -126,13 +126,13 @@ view texts settings files model =
             fileCards texts settings model files
 
 
-fileCards : T.ShareFileList -> Settings -> Model -> List ShareFile -> Html Msg
+fileCards : Texts -> Settings -> Model -> List ShareFile -> Html Msg
 fileCards texts settings model files =
     div [ class "ui centered cards" ] <|
         List.map (fileCard texts settings model) files
 
 
-fileCard : T.ShareFileList -> Settings -> Model -> ShareFile -> Html Msg
+fileCard : Texts -> Settings -> Model -> ShareFile -> Html Msg
 fileCard texts settings model file =
     div [ class "ui card", id file.id ]
         [ Html.map YesNoMsg
@@ -186,7 +186,7 @@ fileCard texts settings model file =
         ]
 
 
-incompleteLabel : T.ShareFileList -> ShareFile -> Html msg
+incompleteLabel : Texts -> ShareFile -> Html msg
 incompleteLabel texts file =
     let
         perc =
@@ -225,7 +225,7 @@ previewPossible mime =
     previewFor (previewDeferred ++ previewDirect ++ [ "image/" ]) mime
 
 
-fileEmbed : T.ShareFileList -> Settings -> Model -> ShareFile -> Html Msg
+fileEmbed : Texts -> Settings -> Model -> ShareFile -> Html Msg
 fileEmbed texts settings model file =
     let
         mime =
@@ -264,7 +264,7 @@ fileEmbed texts settings model file =
             ]
 
 
-fileTable : T.ShareFileList -> Settings -> Model -> List ShareFile -> Html Msg
+fileTable : Texts -> Settings -> Model -> List ShareFile -> Html Msg
 fileTable texts settings model files =
     let
         yesNo =
@@ -289,7 +289,7 @@ fileTable texts settings model files =
         ]
 
 
-fileRow : T.ShareFileList -> Settings -> Model -> ShareFile -> Html Msg
+fileRow : Texts -> Settings -> Model -> ShareFile -> Html Msg
 fileRow texts { baseUrl, delete } model file =
     tr [ id file.id ]
         [ td [ class "collapsing" ]

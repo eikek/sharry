@@ -1,23 +1,23 @@
 module Messages.ShareFileList exposing
-    ( ShareFileList
+    ( Texts
     , gb
     )
 
-import Messages.YesNoDimmer exposing (YesNoDimmer)
+import Messages.YesNoDimmer
 
 
-type alias ShareFileList =
+type alias Texts =
     { previewNotSupported : String
     , downloadToDisk : String
     , viewInBrowser : String
     , deleteFile : String
     , fileIsIncomplete : String
     , tryUploadAgain : String
-    , yesNo : YesNoDimmer
+    , yesNo : Messages.YesNoDimmer.Texts
     }
 
 
-gb : ShareFileList
+gb : Texts
 gb =
     { previewNotSupported = "Preview not supported"
     , downloadToDisk = "Download to disk"

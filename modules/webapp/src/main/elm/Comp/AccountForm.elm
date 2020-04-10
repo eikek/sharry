@@ -18,7 +18,7 @@ import Data.AccountState exposing (AccountState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
-import Messages.AccountForm as T
+import Messages.AccountForm exposing (Texts)
 import Util.Maybe
 
 
@@ -186,7 +186,7 @@ update msg model =
                         )
 
 
-view : T.AccountForm -> Model -> Html Msg
+view : Texts -> Model -> Html Msg
 view texts model =
     div [ class "ui segments" ]
         [ Html.form [ class "ui form segment" ]
@@ -225,6 +225,7 @@ view texts model =
                 , Html.map StateMsg
                     (Comp.FixedDropdown.view
                         (Just model.stateField)
+                        texts.dropdown
                         model.stateModel
                     )
                 ]

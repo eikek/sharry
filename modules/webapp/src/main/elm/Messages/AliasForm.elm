@@ -1,13 +1,14 @@
 module Messages.AliasForm exposing
-    ( AliasForm
+    ( Texts
     , gb
     )
 
 import Html exposing (..)
-import Messages.YesNoDimmer exposing (YesNoDimmer)
+import Messages.ValidityField
+import Messages.YesNoDimmer
 
 
-type alias AliasForm =
+type alias Texts =
     { id : String
     , noteToIdsHead : String
     , noteToIds : Html Never
@@ -17,11 +18,12 @@ type alias AliasForm =
     , submit : String
     , back : String
     , delete : String
-    , yesNo : YesNoDimmer
+    , yesNo : Messages.YesNoDimmer.Texts
+    , validityField : Messages.ValidityField.Texts
     }
 
 
-gb : AliasForm
+gb : Texts
 gb =
     { id = "Id"
     , noteToIdsHead = "Note to Ids"
@@ -41,4 +43,5 @@ gb =
     , back = "Back"
     , delete = "Delete"
     , yesNo = Messages.YesNoDimmer.gb
+    , validityField = Messages.ValidityField.gb
     }
