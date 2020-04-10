@@ -726,7 +726,12 @@ dropzone texts flags model =
             ]
             [ text model.uploadFormState.message
             ]
-        , Html.map DropzoneMsg (Comp.Dropzone2.view viewSettings model.dropzone)
+        , Html.map DropzoneMsg
+            (Comp.Dropzone2.view
+                texts.dropzone
+                viewSettings
+                model.dropzone
+            )
         ]
 
 

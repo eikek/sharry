@@ -1,10 +1,8 @@
 module Comp.Zoom exposing (FileUrl, view)
 
-import Api
 import Api.Model.ShareDetail exposing (ShareDetail)
 import Api.Model.ShareFile exposing (ShareFile)
 import Comp.ShareFileList exposing (ViewMode(..), previewPossible)
-import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)

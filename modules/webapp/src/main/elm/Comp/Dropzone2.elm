@@ -18,6 +18,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
+import Messages.Dropzone2 as T
 import Util.List
 import Util.Size
 
@@ -101,8 +102,8 @@ mkViewSettings active uploads =
     }
 
 
-view : ViewSettings -> Model -> Html Msg
-view sett model =
+view : T.Dropzone2 -> ViewSettings -> Model -> Html Msg
+view texts sett model =
     let
         files =
             List.unzip sett.files
@@ -140,7 +141,7 @@ view sett model =
             [ div [ class "ui icon header" ]
                 [ i [ class "mouse pointer icon" ] []
                 , div [ class "content" ]
-                    [ text "Drop files here"
+                    [ text texts.dropHere
                     ]
                 ]
             , case List.length files of
@@ -150,17 +151,17 @@ view sett model =
                 n ->
                     div [ class "inline" ]
                         [ String.fromInt n |> text
-                        , text " files selected ("
+                        , text texts.filesSelected
                         , text allsize
                         , text ")"
                         ]
             , div [ class "ui horizontal divider" ]
-                [ text "Or"
+                [ text texts.or
                 ]
             , div [ class "custom-upload" ]
                 [ label [ class "ui basic primary button" ]
                     [ i [ class "folder open icon" ] []
-                    , text "Select Files ..."
+                    , text texts.selectFiles
                     , input
                         [ type_ "file"
                         , multiple True

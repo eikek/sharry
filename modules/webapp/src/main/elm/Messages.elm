@@ -20,6 +20,7 @@ import Messages.AccountForm
 import Messages.AccountTable
 import Messages.AliasForm
 import Messages.AliasTable
+import Messages.Dropzone2
 import Messages.MailSend
 import Messages.MarkdownInput
 import Messages.ShareFileList
@@ -238,6 +239,7 @@ type alias Detail =
     , uploadsGreaterThan : String -> String
     , waitDeleteShare : String
     , loadingData : String
+    , dropzone : Messages.Dropzone2.Dropzone2
     }
 
 
@@ -294,6 +296,7 @@ detailGB =
             "All uploads must not be greater than " ++ size ++ "."
     , waitDeleteShare = "Deleting share. Please wait."
     , loadingData = "Loading data..."
+    , dropzone = Messages.Dropzone2.gb
     }
 
 
@@ -316,12 +319,14 @@ openDetailGB =
 
 type alias Share =
     { markdownInput : Messages.MarkdownInput.MarkdownInput
+    , dropzone : Messages.Dropzone2.Dropzone2
     }
 
 
 shareGB : Share
 shareGB =
     { markdownInput = Messages.MarkdownInput.gb
+    , dropzone = Messages.Dropzone2.gb
     }
 
 

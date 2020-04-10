@@ -62,6 +62,7 @@ view texts flags id model =
                     ]
                 , Html.map DropzoneMsg
                     (Comp.Dropzone2.view
+                        texts.dropzone
                         (mkViewSettings model)
                         model.dropzoneModel
                     )
