@@ -8,6 +8,7 @@ module Comp.FixedDropdown exposing
     , initTuple
     , update
     , view
+    , viewFloating
     )
 
 import Html exposing (..)
@@ -19,6 +20,7 @@ import Messages.FixedDropdown exposing (Texts)
 type alias Item a =
     { id : a
     , display : String
+    , icon : Maybe String
     }
 
 
@@ -42,19 +44,19 @@ init options =
 
 initString : List String -> Model String
 initString strings =
-    init <| List.map (\s -> Item s s) strings
+    init <| List.map (\s -> Item s s Nothing) strings
 
 
 initMap : (a -> String) -> List a -> Model a
 initMap elToString els =
-    init <| List.map (\a -> Item a (elToString a)) els
+    init <| List.map (\a -> Item a (elToString a) Nothing) els
 
 
 initTuple : List ( String, a ) -> Model a
 initTuple tuples =
     let
         mkItem ( txt, id ) =
-            Item id txt
+            Item id txt Nothing
     in
     init <| List.map mkItem tuples
 
@@ -70,26 +72,34 @@ update msg model =
 
 
 view : Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
-view selected texts model =
+view =
+    viewClass "ui selection dropdown"
+
+
+viewFloating : Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
+viewFloating =
+    viewClass "ui floating dropdown"
+
+
+viewClass : String -> Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
+viewClass cls selected texts model =
     div
         [ classList
-            [ ( "ui selection dropdown", True )
+            [ ( cls, True )
             , ( "open", model.menuOpen )
             ]
         , onClick ToggleMenu
         ]
-        [ input [ type_ "hidden" ] []
-        , i [ class "dropdown icon" ] []
-        , div
+        [ div
             [ classList
                 [ ( "default", selected == Nothing )
                 , ( "text", True )
                 ]
             ]
-            [ Maybe.map .display selected
-                |> Maybe.withDefault texts.select
-                |> text
-            ]
+            (Maybe.map showSelected selected
+                |> Maybe.withDefault [ text texts.select ]
+            )
+        , i [ class "dropdown icon" ] []
         , div
             [ classList
                 [ ( "menu transition", True )
@@ -102,8 +112,20 @@ view selected texts model =
         ]
 
 
+showSelected : Item a -> List (Html msg)
+showSelected item =
+    case item.icon of
+        Just cls ->
+            [ i [ class cls ] []
+            , text item.display
+            ]
+
+        Nothing ->
+            [ text item.display
+            ]
+
+
 renderItems : Item a -> Html (Msg a)
 renderItems item =
     div [ class "item", onClick (SelectItem item) ]
-        [ text item.display
-        ]
+        (showSelected item)

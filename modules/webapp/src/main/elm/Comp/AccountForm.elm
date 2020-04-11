@@ -42,7 +42,10 @@ init ma =
 
 mkStateItem : AccountState -> Comp.FixedDropdown.Item AccountState
 mkStateItem state =
-    Comp.FixedDropdown.Item state (Data.AccountState.toString state)
+    Comp.FixedDropdown.Item
+        state
+        (Data.AccountState.toString state)
+        Nothing
 
 
 initNew : Model

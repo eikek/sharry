@@ -44,7 +44,7 @@ update msg model =
 
 mkValidityItem : ( String, ValidityValue ) -> Comp.FixedDropdown.Item ValidityValue
 mkValidityItem ( text, id ) =
-    Comp.FixedDropdown.Item id text
+    Comp.FixedDropdown.Item id text Nothing
 
 
 view : Texts -> ValidityValue -> Model -> Html Msg
