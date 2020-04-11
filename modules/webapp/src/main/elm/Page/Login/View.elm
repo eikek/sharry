@@ -8,6 +8,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Markdown
+import Messages exposing (Language)
 import Messages.LoginPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
@@ -15,6 +16,11 @@ import Page.Login.Data exposing (..)
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
+    let
+        currentLanguage =
+            Messages.fromFlags flags
+                |> .lang
+    in
     div [ class "login-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
@@ -73,7 +79,7 @@ view texts flags model =
                       else
                         renderOAuthButtons texts flags model
                     , resultMessage texts model
-                    , renderLangAndSignup texts flags model
+                    , renderLangAndSignup currentLanguage texts flags model
                     ]
                 ]
             , renderWelcome flags
@@ -81,11 +87,16 @@ view texts flags model =
         ]
 
 
-renderLangAndSignup : Texts -> Flags -> Model -> Html Msg
-renderLangAndSignup texts flags model =
+renderLangAndSignup : Language -> Texts -> Flags -> Model -> Html Msg
+renderLangAndSignup current texts flags model =
     div [ class "ui two column stackable grid basic segment" ]
-        [ div [ class "column" ]
-            [ Comp.LanguageChoose.linkList SetLanguage
+        [ div [ class "column language" ]
+            [ Html.map LangChooseMsg
+                (Comp.LanguageChoose.view
+                    texts.dropdown
+                    current
+                    model.langChoose
+                )
             ]
         , div
             [ classList

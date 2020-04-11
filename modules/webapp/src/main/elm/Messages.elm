@@ -67,7 +67,8 @@ fromIso2 iso =
 {-| The messages record contains all strings used in the application.
 -}
 type alias Messages =
-    { iso2 : String
+    { lang : Language
+    , iso2 : String
     , label : String
     , flagIcon : String
     , app : Messages.App.Texts
@@ -100,7 +101,8 @@ fromFlags flags =
 
 gb : Messages
 gb =
-    { iso2 = "gb"
+    { lang = English
+    , iso2 = "gb"
     , label = "English"
     , flagIcon = "gb uk flag"
     , app = Messages.App.gb

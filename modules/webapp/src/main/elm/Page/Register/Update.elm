@@ -2,6 +2,7 @@ module Page.Register.Update exposing (update)
 
 import Api
 import Api.Model.Registration exposing (Registration)
+import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
@@ -100,8 +101,20 @@ update flags msg model =
         SubmitResp (Err err) ->
             ( model, Cmd.none )
 
-        SetLanguage lang ->
-            ( model, Ports.setLang lang )
+        LangChooseMsg lmsg ->
+            let
+                ( lm, ll ) =
+                    Comp.LanguageChoose.update lmsg model.langChoose
+
+                cmd =
+                    case ll of
+                        Just lang ->
+                            Ports.setLang lang
+
+                        Nothing ->
+                            Cmd.none
+            in
+            ( { model | langChoose = lm }, cmd )
 
 
 validateForm : Model -> List String

@@ -1,6 +1,7 @@
 module Page.Register.Data exposing (..)
 
 import Api.Model.BasicResult exposing (BasicResult)
+import Comp.LanguageChoose
 import Http
 import Messages exposing (Language)
 
@@ -16,6 +17,7 @@ type alias Model =
     , loading : Bool
     , successMsg : String
     , invite : Maybe String
+    , langChoose : Comp.LanguageChoose.Model
     }
 
 
@@ -31,6 +33,7 @@ emptyModel =
     , successMsg = ""
     , loading = False
     , invite = Nothing
+    , langChoose = Comp.LanguageChoose.init
     }
 
 
@@ -43,4 +46,4 @@ type Msg
     | ToggleShowPass1
     | ToggleShowPass2
     | SubmitResp (Result Http.Error BasicResult)
-    | SetLanguage Language
+    | LangChooseMsg Comp.LanguageChoose.Msg

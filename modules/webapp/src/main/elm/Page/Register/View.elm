@@ -5,6 +5,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Messages exposing (Language)
 import Messages.RegisterPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
@@ -12,6 +13,11 @@ import Page.Register.Data exposing (..)
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
+    let
+        currentLanguage =
+            Messages.fromFlags flags
+                |> .lang
+    in
     div [ class "register-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
@@ -116,18 +122,23 @@ view texts flags model =
                             ]
                         ]
                     , resultMessage texts model
-                    , renderLanguageAndSignin texts
+                    , renderLanguageAndSignin currentLanguage texts model
                     ]
                 ]
             ]
         ]
 
 
-renderLanguageAndSignin : Texts -> Html Msg
-renderLanguageAndSignin texts =
+renderLanguageAndSignin : Language -> Texts -> Model -> Html Msg
+renderLanguageAndSignin current texts model =
     div [ class "ui two column stackable grid basic segment" ]
         [ div [ class "column" ]
-            [ Comp.LanguageChoose.linkList SetLanguage
+            [ Html.map LangChooseMsg
+                (Comp.LanguageChoose.view
+                    texts.dropdown
+                    current
+                    model.langChoose
+                )
             ]
         , div [ class "right aligned column" ]
             [ text (texts.alreadySignedUp ++ " ")

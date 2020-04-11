@@ -1,6 +1,7 @@
 module Page.Login.Data exposing (..)
 
 import Api.Model.AuthResult exposing (AuthResult)
+import Comp.LanguageChoose
 import Http
 import Messages exposing (Language)
 
@@ -9,6 +10,7 @@ type alias Model =
     { username : String
     , password : String
     , result : Maybe AuthResult
+    , langChoose : Comp.LanguageChoose.Model
     }
 
 
@@ -17,6 +19,7 @@ empty =
     { username = ""
     , password = ""
     , result = Nothing
+    , langChoose = Comp.LanguageChoose.init
     }
 
 
@@ -26,4 +29,4 @@ type Msg
     | Authenticate
     | AuthResp (Result Http.Error AuthResult)
     | Init
-    | SetLanguage Language
+    | LangChooseMsg Comp.LanguageChoose.Msg

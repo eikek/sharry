@@ -3,6 +3,8 @@ module Messages.LoginPage exposing
     , gb
     )
 
+import Messages.FixedDropdown
+
 
 type alias Texts =
     { username : String
@@ -14,6 +16,7 @@ type alias Texts =
     , loginSuccessful : String
     , noAccount : String
     , signupLink : String
+    , dropdown : Messages.FixedDropdown.Texts
     }
 
 
@@ -28,4 +31,5 @@ gb =
     , loginSuccessful = "Login successful"
     , noAccount = "No account?"
     , signupLink = "Sign up!"
+    , dropdown = Messages.FixedDropdown.gb
     }

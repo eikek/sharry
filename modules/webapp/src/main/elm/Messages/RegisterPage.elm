@@ -3,6 +3,8 @@ module Messages.RegisterPage exposing
     , gb
     )
 
+import Messages.FixedDropdown
+
 
 type alias Texts =
     { signup : String
@@ -14,6 +16,7 @@ type alias Texts =
     , alreadySignedUp : String
     , signin : String
     , registrationSuccessful : String
+    , dropdown : Messages.FixedDropdown.Texts
     }
 
 
@@ -28,4 +31,5 @@ gb =
     , alreadySignedUp = "Already signed up?"
     , signin = "Sign in"
     , registrationSuccessful = "Registration successful."
+    , dropdown = Messages.FixedDropdown.gb
     }
