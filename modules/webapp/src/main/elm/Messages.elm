@@ -94,8 +94,16 @@ get lang =
 
 fromFlags : Flags -> Messages
 fromFlags flags =
-    Maybe.map fromIso2 flags.language
-        |> Maybe.withDefault English
+    let
+        iso =
+            case flags.language of
+                Just lang ->
+                    lang
+
+                Nothing ->
+                    flags.config.defaultLanguage
+    in
+    fromIso2 iso
         |> get
 
 

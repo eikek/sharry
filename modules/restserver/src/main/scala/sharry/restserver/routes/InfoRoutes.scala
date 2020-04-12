@@ -52,7 +52,8 @@ object InfoRoutes {
       cfg.backend.share.maxValidity,
       cfg.backend.share.maxSize,
       cfg.backend.mail.enabled,
-      cfg.webapp.welcomeMessage
+      cfg.webapp.welcomeMessage,
+      cfg.webapp.defaultLanguage
     )
   }
 
