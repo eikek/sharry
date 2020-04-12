@@ -4,6 +4,7 @@ import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
+import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Data.UploadState exposing (UploadState)
 import Http
@@ -30,6 +31,7 @@ type alias Model =
     , key : Key
     , page : Page
     , navMenuOpen : Bool
+    , langChoose : Comp.LanguageChoose.Model
     , version : VersionInfo
     , homeModel : Page.Home.Data.Model
     , loginModel : Page.Login.Data.Model
@@ -57,6 +59,7 @@ init key url flags =
     , key = key
     , page = page
     , navMenuOpen = False
+    , langChoose = Comp.LanguageChoose.init
     , version = Api.Model.VersionInfo.empty
     , homeModel = Page.Home.Data.emptyModel
     , loginModel = Page.Login.Data.empty
@@ -99,6 +102,7 @@ type Msg
     | UploadStateMsg (Result String UploadState)
     | UploadStoppedMsg (Maybe String)
     | ReceiveLanguage String
+    | LangChooseMsg Comp.LanguageChoose.Msg
 
 
 isSignedIn : Flags -> Bool

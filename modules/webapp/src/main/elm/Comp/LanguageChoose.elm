@@ -4,6 +4,7 @@ module Comp.LanguageChoose exposing
     , init
     , update
     , view
+    , viewItem
     )
 
 import Comp.FixedDropdown exposing (Item)
@@ -45,5 +46,16 @@ view : Texts -> Language -> Model -> Html Msg
 view texts selected model =
     Comp.FixedDropdown.viewFloating
         (mkLanguageItem selected |> Just)
+        texts
+        model
+
+
+viewItem : Texts -> Language -> Model -> Html Msg
+viewItem texts selected model =
+    Comp.FixedDropdown.viewFull
+        { mainClass = "ui dropdown item"
+        , iconOnly = True
+        , selected = mkLanguageItem selected |> Just
+        }
         texts
         model

@@ -8,7 +8,9 @@ module Comp.FixedDropdown exposing
     , initTuple
     , update
     , view
+    , viewClass
     , viewFloating
+    , viewFull
     )
 
 import Html exposing (..)
@@ -82,21 +84,37 @@ viewFloating =
 
 
 viewClass : String -> Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
-viewClass cls selected texts model =
+viewClass cls selected =
+    viewFull
+        { iconOnly = False
+        , mainClass = cls
+        , selected = selected
+        }
+
+
+viewFull :
+    { iconOnly : Bool
+    , mainClass : String
+    , selected : Maybe (Item a)
+    }
+    -> Texts
+    -> Model a
+    -> Html (Msg a)
+viewFull cfg texts model =
     div
         [ classList
-            [ ( cls, True )
+            [ ( cfg.mainClass, True )
             , ( "open", model.menuOpen )
             ]
         , onClick ToggleMenu
         ]
         [ div
             [ classList
-                [ ( "default", selected == Nothing )
+                [ ( "default", cfg.selected == Nothing )
                 , ( "text", True )
                 ]
             ]
-            (Maybe.map showSelected selected
+            (Maybe.map (showSelected cfg.iconOnly) cfg.selected
                 |> Maybe.withDefault [ text texts.select ]
             )
         , i [ class "dropdown icon" ] []
@@ -112,13 +130,17 @@ viewClass cls selected texts model =
         ]
 
 
-showSelected : Item a -> List (Html msg)
-showSelected item =
+showSelected : Bool -> Item a -> List (Html msg)
+showSelected iconOnly item =
     case item.icon of
         Just cls ->
-            [ i [ class cls ] []
-            , text item.display
-            ]
+            if iconOnly then
+                [ i [ class cls ] [] ]
+
+            else
+                [ i [ class cls ] []
+                , text item.display
+                ]
 
         Nothing ->
             [ text item.display
@@ -128,4 +150,4 @@ showSelected item =
 renderItems : Item a -> Html (Msg a)
 renderItems item =
     div [ class "item", onClick (SelectItem item) ]
-        (showSelected item)
+        (showSelected False item)

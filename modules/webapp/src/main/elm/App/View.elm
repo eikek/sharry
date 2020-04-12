@@ -2,6 +2,7 @@ module App.View exposing (view)
 
 import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
+import Comp.LanguageChoose
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -196,7 +197,8 @@ loginInfo texts model =
     div [ class "right menu" ]
         (case model.flags.account of
             Just acc ->
-                [ userMenu texts.app model acc
+                [ languageMenu texts model
+                , userMenu texts model acc
                 ]
 
             Nothing ->
@@ -212,11 +214,23 @@ loginInfo texts model =
                     ]
                     [ text texts.app.register
                     ]
+                , div [ class "divider" ] []
+                , languageMenu texts model
                 ]
         )
 
 
-userMenu : Messages.App.Texts -> Model -> AuthResult -> Html Msg
+languageMenu : Messages -> Model -> Html Msg
+languageMenu texts model =
+    Html.map LangChooseMsg
+        (Comp.LanguageChoose.viewItem
+            texts.login.dropdown
+            texts.lang
+            model.langChoose
+        )
+
+
+userMenu : Messages -> Model -> AuthResult -> Html Msg
 userMenu texts model acc =
     div
         [ class "ui dropdown icon link item"
@@ -236,24 +250,24 @@ userMenu texts model acc =
                     , src model.flags.config.iconUrl
                     ]
                     []
-                , text texts.home
+                , text texts.app.home
                 ]
             , div [ class "divider" ] []
             , menuEntry model
                 UploadPage
                 [ i [ class "ui upload icon" ] []
-                , text texts.shares
+                , text texts.app.shares
                 ]
             , menuEntry model
                 (AliasPage Nothing)
                 [ i [ class "ui dot circle outline icon" ] []
-                , text texts.aliases
+                , text texts.app.aliases
                 ]
             , if acc.admin then
                 menuEntry model
                     (AccountPage Nothing)
                     [ i [ class "ui users icon" ] []
-                    , text texts.accounts
+                    , text texts.app.accounts
                     ]
 
               else
@@ -261,13 +275,13 @@ userMenu texts model acc =
             , menuEntry model
                 SettingsPage
                 [ i [ class "ui cog icon" ] []
-                , text texts.settings
+                , text texts.app.settings
                 ]
             , if acc.admin && model.flags.config.signupMode == "invite" then
                 menuEntry model
                     NewInvitePage
                     [ i [ class "ui key icon" ] []
-                    , text texts.newInvites
+                    , text texts.app.newInvites
                     ]
 
               else
@@ -279,7 +293,7 @@ userMenu texts model acc =
                 , onClick Logout
                 ]
                 [ i [ class "sign-out icon" ] []
-                , text (texts.logout acc.user)
+                , text (texts.app.logout acc.user)
                 ]
             ]
         ]

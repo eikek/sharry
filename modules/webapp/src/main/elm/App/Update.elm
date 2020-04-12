@@ -4,6 +4,7 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
+import Comp.LanguageChoose
 import Data.Flags
 import Page exposing (Page(..))
 import Page.Account.Data
@@ -202,6 +203,23 @@ update msg model =
             in
             ( { model | flags = nf }
             , Cmd.none
+            )
+
+        LangChooseMsg lmsg ->
+            let
+                ( lm, ll ) =
+                    Comp.LanguageChoose.update lmsg model.langChoose
+
+                cmd =
+                    case ll of
+                        Just lang ->
+                            Ports.setLang lang
+
+                        Nothing ->
+                            Cmd.none
+            in
+            ( { model | langChoose = lm }
+            , cmd
             )
 
 
