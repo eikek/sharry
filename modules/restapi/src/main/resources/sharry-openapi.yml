@@ -1657,6 +1657,7 @@ components:
         - maxSize
         - mailEnabled
         - welcomeMessage
+        - defaultLanguage
       properties:
         appName:
           type: string
@@ -1695,6 +1696,8 @@ components:
         mailEnabled:
           type: boolean
         welcomeMessage:
+          type: string
+        defaultLanguage:
           type: string
     OAuthItem:
       description: |

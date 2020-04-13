@@ -17,6 +17,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
+import Messages.DetailPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Detail.Data
     exposing
@@ -36,40 +37,40 @@ import Util.Size
 import Util.Time
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Texts -> Flags -> Model -> Html Msg
+view texts flags model =
     let
         ( head, desc ) =
-            Util.Share.splitDescription model.share
+            Util.Share.splitDescription model.share texts.yourShare
     in
     div [ class "ui grid container detail-page" ]
         [ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
-        , deleteLoader model
+        , deleteLoader texts model
         , div [ class "row" ]
             [ div [ class "sixteen wide column" ]
                 ([ Markdown.toHtml [] head
-                 , topMenu model
+                 , topMenu texts model
                  ]
-                    ++ shareProps model
-                    ++ shareLink flags model
+                    ++ shareProps texts model
+                    ++ shareLink texts flags model
                     ++ [ messageDiv model
-                       , descriptionView model desc
-                       , middleMenu model
-                       , dropzone flags model
-                       , fileList flags model
+                       , descriptionView texts model desc
+                       , middleMenu texts model
+                       , dropzone texts flags model
+                       , fileList texts flags model
                        ]
                 )
             ]
         ]
 
 
-descriptionView : Model -> String -> Html Msg
-descriptionView model desc =
+descriptionView : Texts -> Model -> String -> Html Msg
+descriptionView texts model desc =
     case model.descEdit of
         Just ( dm, str ) ->
             div [ class "ui form" ]
                 [ Html.map DescEditMsg
-                    (Comp.MarkdownInput.view str dm)
+                    (Comp.MarkdownInput.view texts.markdownInput str dm)
                 , div [ class "ui secondary menu" ]
                     [ a
                         [ class "link item"
@@ -77,7 +78,7 @@ descriptionView model desc =
                         , href "#"
                         ]
                         [ i [ class "disk icon" ] []
-                        , text "Save"
+                        , text texts.save
                         ]
                     ]
                 ]
@@ -86,8 +87,8 @@ descriptionView model desc =
             Markdown.toHtml [ class "share-description ui basic segment" ] desc
 
 
-fileList : Flags -> Model -> Html Msg
-fileList flags model =
+fileList : Texts -> Flags -> Model -> Html Msg
+fileList texts flags model =
     let
         sett =
             Comp.ShareFileList.Settings
@@ -99,70 +100,69 @@ fileList flags model =
             List.sortBy .filename model.share.files
     in
     Html.map FileListMsg <|
-        Comp.ShareFileList.view sett sorted model.fileListModel
+        Comp.ShareFileList.view texts.shareFileList
+            sett
+            sorted
+            model.fileListModel
 
 
-shareLink : Flags -> Model -> List (Html Msg)
-shareLink flags model =
+shareLink : Texts -> Flags -> Model -> List (Html Msg)
+shareLink texts flags model =
     case isPublished model.share of
         Unpublished ->
-            shareLinkNotPublished model
+            shareLinkNotPublished texts model
 
         PublishOk ->
-            shareLinkPublished flags model
+            shareLinkPublished texts flags model
 
         PublishExpired ->
-            shareLinkExpired model
+            shareLinkExpired texts model
 
         MaxViewsExceeded ->
-            shareLinkMaxViewsExeeded model
+            shareLinkMaxViewsExeeded texts model
 
 
-shareLinkMaxViewsExeeded : Model -> List (Html Msg)
-shareLinkMaxViewsExeeded model =
+shareLinkMaxViewsExeeded : Texts -> Model -> List (Html Msg)
+shareLinkMaxViewsExeeded texts model =
     [ div
         [ classList
             [ ( "invisible", model.topMenu /= TopShare )
             , ( "ui attached warning message segment", True )
             ]
         ]
-        [ text "The share has been published, but its max-views has been reached. You can "
-        , text "increase this property if you want to have this published for another while."
+        [ text texts.sharePublished
         ]
     ]
 
 
-shareLinkNotPublished : Model -> List (Html Msg)
-shareLinkNotPublished model =
+shareLinkNotPublished : Texts -> Model -> List (Html Msg)
+shareLinkNotPublished texts model =
     [ div
         [ classList
             [ ( "invisible", model.topMenu /= TopShare )
             , ( "ui attached info message segment", True )
             ]
         ]
-        [ text "In order to share this with others, you need to publish "
-        , text "this share. Then everyone you'll send the generated link "
-        , text "can access this data."
+        [ text texts.shareNotPublished
         ]
     ]
 
 
-shareLinkExpired : Model -> List (Html Msg)
-shareLinkExpired model =
+shareLinkExpired : Texts -> Model -> List (Html Msg)
+shareLinkExpired texts model =
     [ div
         [ classList
             [ ( "invisible", model.topMenu /= TopShare )
             , ( "ui attached warning message segment", True )
             ]
         ]
-        [ text "The share has been published, but it is now expired. You can "
-        , text "first unpublish and then publish it again."
+        [ text texts.shareLinkExpired
         ]
     ]
 
 
-shareLinkPublished : Flags -> Model -> List (Html Msg)
-shareLinkPublished flags model =
+shareLinkPublished : Texts -> Flags -> Model -> List (Html Msg)
+shareLinkPublished texts flags model =
     let
         share =
             model.share
@@ -179,7 +179,7 @@ shareLinkPublished flags model =
             QRCode.encode message
                 |> Result.map QRCode.toSvg
                 |> Result.withDefault
-                    (Html.text "Error while encoding to QRCode.")
+                    (Html.text texts.errorQrCode)
     in
     [ div
         [ classList
@@ -187,18 +187,19 @@ shareLinkPublished flags model =
             , ( "ui attached segment", True )
             ]
         ]
-        [ text "The share is publicly available at"
+        [ text texts.sharePublicAvailableAt
         , pre [ class "url" ]
             [ code []
                 [ text url
                 ]
             ]
-        , text "You can share this link to all you'd like to access this data."
+        , text texts.shareAsYouLike
         ]
     , case model.mailForm of
         Just mf ->
             Html.map MailFormMsg
                 (Comp.MailSend.view
+                    texts.mailSend
                     [ ( "invisible", model.topMenu /= TopShare )
                     , ( "ui bottom attached segment", True )
                     ]
@@ -213,7 +214,8 @@ shareLinkPublished flags model =
                     ]
                 ]
                 [ div [ class "ui two column stackable center aligned grid" ]
-                    [ div [ class "ui vertical divider" ] [ text "Or" ]
+                    [ div [ class "ui vertical divider" ]
+                        [ text texts.or ]
                     , div [ class "middle aligned row" ]
                         [ div [ class "column" ]
                             [ qrCodeView url
@@ -227,7 +229,7 @@ shareLinkPublished flags model =
                                 , href "#"
                                 , onClick InitMail
                                 ]
-                                [ text "Send E-Mail"
+                                [ text texts.sendEmail
                                 ]
                             ]
                         ]
@@ -241,8 +243,8 @@ messageDiv model =
     Util.Html.resultMsgMaybe model.message
 
 
-shareProps : Model -> List (Html Msg)
-shareProps model =
+shareProps : Texts -> Model -> List (Html Msg)
+shareProps texts model =
     let
         share =
             model.share
@@ -259,15 +261,16 @@ shareProps model =
             , ( "ui attached segment", True )
             ]
         ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view model.yesNoModel)
+        [ Html.map YesNoMsg (Comp.YesNoDimmer.view texts.yesNo model.yesNoModel)
         , div [ class "ui stackable two column grid" ]
             [ div [ class "column" ]
                 [ div [ class "ui items" ]
                     [ property
-                        { label = "Name"
+                        texts
+                        { label = texts.name
                         , content =
                             isEdit model Name
-                                |> Maybe.map propertyEdit
+                                |> Maybe.map (propertyEdit texts)
                                 |> Maybe.withDefault
                                     (propertyDisplay "comment outline icon"
                                         (Maybe.withDefault "" share.name)
@@ -275,32 +278,37 @@ shareProps model =
                         , editAction = Just (ReqEdit Name)
                         }
                     , property
-                        { label = "Validity Time"
+                        texts
+                        { label = texts.validity
                         , content =
                             isEdit model Validity
-                                |> Maybe.map propertyEdit
+                                |> Maybe.map (propertyEdit texts)
                                 |> Maybe.withDefault
                                     (propertyDisplay "hourglass half icon"
-                                        (Data.ValidityOptions.findValidityItemMillis share.validity
+                                        (Data.ValidityOptions.findValidityItemMillis
+                                            texts.validityField
+                                            share.validity
                                             |> Tuple.first
                                         )
                                     )
                         , editAction = Just (ReqEdit Validity)
                         }
                     , property
-                        { label = "Max. Views"
+                        texts
+                        { label = texts.maxViews
                         , content =
                             isEdit model MaxViews
-                                |> Maybe.map propertyEdit
+                                |> Maybe.map (propertyEdit texts)
                                 |> Maybe.withDefault
                                     (propertyDisplay "eye icon" (String.fromInt share.maxViews))
                         , editAction = Just (ReqEdit MaxViews)
                         }
                     , property
-                        { label = "Password"
+                        texts
+                        { label = texts.password
                         , content =
                             isEdit model Password
-                                |> Maybe.map propertyEdit
+                                |> Maybe.map (propertyEdit texts)
                                 |> Maybe.withDefault
                                     (propertyDisplay
                                         (if share.password then
@@ -310,16 +318,17 @@ shareProps model =
                                             "unlock icon"
                                         )
                                         (if share.password then
-                                            "Password Protected"
+                                            texts.passwordProtected
 
                                          else
-                                            "None"
+                                            texts.passwordNone
                                         )
                                     )
                         , editAction = Just (ReqEdit Password)
                         }
                     , property
-                        { label = "#/Size"
+                        texts
+                        { label = texts.shareSize
                         , content =
                             propertyDisplay "file icon"
                                 (String.fromInt (List.length model.share.files)
@@ -333,7 +342,8 @@ shareProps model =
                         , editAction = Nothing
                         }
                     , property
-                        { label = "Created"
+                        texts
+                        { label = texts.created
                         , content =
                             propertyDisplay "calendar icon"
                                 (Util.Time.formatDateTime share.created)
@@ -344,15 +354,17 @@ shareProps model =
             , div [ class "column" ]
                 [ div [ class "ui items" ]
                     [ property
-                        { label = "Alias"
+                        texts
+                        { label = texts.aliasLabel
                         , content =
                             propertyDisplay "dot circle outline icon" (Maybe.withDefault "-" share.aliasName)
                         , editAction = Nothing
                         }
                     , property
-                        { label = "Published on"
+                        texts
+                        { label = texts.publishedOn
                         , content =
-                            propertyDisplay (Tuple.first <| publishIconLabel share)
+                            propertyDisplay (Tuple.first <| publishIconLabel texts share)
                                 (Maybe.map .publishDate share.publishInfo
                                     |> Maybe.map Util.Time.formatDateTime
                                     |> Maybe.withDefault "-"
@@ -360,7 +372,8 @@ shareProps model =
                         , editAction = Nothing
                         }
                     , property
-                        { label = "Published until"
+                        texts
+                        { label = texts.publishedUntil
                         , content =
                             propertyDisplay "hourglass icon"
                                 (Maybe.map .publishUntil share.publishInfo
@@ -370,7 +383,8 @@ shareProps model =
                         , editAction = Nothing
                         }
                     , property
-                        { label = "Last Access"
+                        texts
+                        { label = texts.lastAccess
                         , content =
                             propertyDisplay "calendar outline icon"
                                 (Maybe.andThen .lastAccess share.publishInfo
@@ -380,7 +394,8 @@ shareProps model =
                         , editAction = Nothing
                         }
                     , property
-                        { label = "Views"
+                        texts
+                        { label = texts.views
                         , content =
                             propertyDisplay "eye icon"
                                 (Maybe.map .views share.publishInfo
@@ -408,7 +423,7 @@ shareProps model =
                     ]
                 , onClick (PublishShare False)
                 ]
-                [ text "Publish with new Link"
+                [ text texts.publishWithNewLink
                 ]
             , button
                 [ type_ "button"
@@ -416,7 +431,7 @@ shareProps model =
                 , onClick RequestDelete
                 ]
                 [ i [ class "trash icon" ] []
-                , text "Delete"
+                , text texts.delete
                 ]
             ]
         ]
@@ -424,12 +439,14 @@ shareProps model =
 
 
 property :
-    { label : String
-    , content : List (Html Msg)
-    , editAction : Maybe Msg
-    }
+    Texts
+    ->
+        { label : String
+        , content : List (Html Msg)
+        , editAction : Maybe Msg
+        }
     -> Html Msg
-property rec =
+property texts rec =
     div [ class "item" ]
         [ div [ class "content" ]
             [ div [ class "header" ] <|
@@ -440,7 +457,7 @@ property rec =
                         a
                             [ class "ui link"
                             , href "#"
-                            , title "Edit"
+                            , title texts.edit
                             , onClick msg
                             ]
                             [ i [ class "edit icon" ] []
@@ -455,8 +472,8 @@ property rec =
         ]
 
 
-propertyEdit : EditField -> List (Html Msg)
-propertyEdit ef =
+propertyEdit : Texts -> EditField -> List (Html Msg)
+propertyEdit texts ef =
     let
         saveButton =
             a
@@ -481,7 +498,7 @@ propertyEdit ef =
             [ div [ class "ui mini action input" ]
                 [ input
                     [ type_ "text"
-                    , placeholder "Name"
+                    , placeholder texts.name
                     , onInput SetName
                     , Maybe.withDefault "" v |> value
                     ]
@@ -506,7 +523,7 @@ propertyEdit ef =
 
         EditValidity ( vm, v ) ->
             [ div [ class "ui mini action input" ]
-                [ Html.map ValidityEditMsg (Comp.ValidityField.view v vm)
+                [ Html.map ValidityEditMsg (Comp.ValidityField.view texts.validityField v vm)
                 , saveButton
                 , cancelButton
                 ]
@@ -521,14 +538,14 @@ propertyEdit ef =
             ]
 
 
-topMenu : Model -> Html Msg
-topMenu model =
+topMenu : Texts -> Model -> Html Msg
+topMenu texts model =
     let
         share =
             model.share
 
         ( publishIcon, label ) =
-            publishIconLabel share
+            publishIconLabel texts share
     in
     div
         [ classList
@@ -536,8 +553,8 @@ topMenu model =
             , ( "top attached", model.topMenu /= TopClosed )
             ]
         ]
-        [ topMenuLink model TopDetail "Details"
-        , topMenuLink model TopShare "Share Link"
+        [ topMenuLink model TopDetail texts.detailsMenu
+        , topMenuLink model TopShare texts.shareLinkMenu
         , div [ class "right menu" ]
             [ a
                 [ classList
@@ -545,7 +562,7 @@ topMenu model =
                     , ( "active", model.descEdit /= Nothing )
                     ]
                 , href "#"
-                , title "Edit description"
+                , title texts.editDescription
                 , onClick ToggleEditDesc
                 ]
                 [ i [ class "ui edit icon" ] []
@@ -562,20 +579,20 @@ topMenu model =
         ]
 
 
-publishIconLabel : ShareDetail -> ( String, String )
-publishIconLabel share =
+publishIconLabel : Texts -> ShareDetail -> ( String, String )
+publishIconLabel texts share =
     case isPublished share of
         Unpublished ->
-            ( "circle outline icon", "Publish" )
+            ( "circle outline icon", texts.publish )
 
         PublishExpired ->
-            ( "red bolt icon", "Unpublish" )
+            ( "red bolt icon", texts.unpublish )
 
         MaxViewsExceeded ->
-            ( "red bolt icon", "Unpublish" )
+            ( "red bolt icon", texts.unpublish )
 
         PublishOk ->
-            ( "green circle icon", "Unpublish" )
+            ( "green circle icon", texts.unpublish )
 
 
 topMenuLink : Model -> TopMenuState -> String -> Html Msg
@@ -592,8 +609,8 @@ topMenuLink model state label =
         ]
 
 
-middleMenu : Model -> Html Msg
-middleMenu model =
+middleMenu : Texts -> Model -> Html Msg
+middleMenu texts model =
     div
         [ classList
             [ ( "ui menu", True )
@@ -607,7 +624,7 @@ middleMenu model =
                 ]
             , href "#"
             , onClick (SetFileView ViewList)
-            , title "List View"
+            , title texts.listView
             ]
             [ i [ class "ui list icon" ] []
             ]
@@ -618,7 +635,7 @@ middleMenu model =
                 ]
             , href "#"
             , onClick (SetFileView ViewCard)
-            , title "Card View"
+            , title texts.cardView
             ]
             [ i [ class "th icon" ] []
             ]
@@ -640,8 +657,8 @@ middleMenu model =
         ]
 
 
-dropzone : Flags -> Model -> Html Msg
-dropzone flags model =
+dropzone : Texts -> Flags -> Model -> Html Msg
+dropzone texts flags model =
     let
         viewSettings =
             Comp.Dropzone2.mkViewSettings (not model.uploading) model.uploads
@@ -659,7 +676,7 @@ dropzone flags model =
                 , onClick SubmitFiles
                 ]
                 [ i [ class "upload icon" ] []
-                , text "Submit"
+                , text texts.submit
                 ]
             , a
                 [ class "item"
@@ -667,7 +684,7 @@ dropzone flags model =
                 , onClick ResetFileForm
                 ]
                 [ i [ class "undo icon" ] []
-                , text "Clear"
+                , text texts.clear
                 ]
             , div [ class "right floated menu" ]
                 [ a
@@ -690,20 +707,19 @@ dropzone flags model =
                         []
                     , text
                         (if model.uploadPaused then
-                            "Resume"
+                            texts.resume
 
                          else
-                            "Pause"
+                            texts.pause
                         )
                     ]
                 ]
             ]
         , p []
-            [ text "All uploads must not be greater than "
-            , toFloat flags.config.maxSize
+            [ toFloat flags.config.maxSize
                 |> Util.Size.bytesReadable Util.Size.B
+                |> texts.uploadsGreaterThan
                 |> text
-            , text "."
             ]
         , div
             [ classList
@@ -713,12 +729,17 @@ dropzone flags model =
             ]
             [ text model.uploadFormState.message
             ]
-        , Html.map DropzoneMsg (Comp.Dropzone2.view viewSettings model.dropzone)
+        , Html.map DropzoneMsg
+            (Comp.Dropzone2.view
+                texts.dropzone
+                viewSettings
+                model.dropzone
+            )
         ]
 
 
-deleteLoader : Model -> Html Msg
-deleteLoader model =
+deleteLoader : Texts -> Model -> Html Msg
+deleteLoader texts model =
     div
         [ classList
             [ ( "ui dimmer", True )
@@ -726,6 +747,6 @@ deleteLoader model =
             ]
         ]
         [ div [ class "ui indeterminate text loader" ]
-            [ text model.loader.message
+            [ text (model.loader.message texts)
             ]
         ]

@@ -15,6 +15,7 @@ import Data.ValidityOptions
         )
 import Data.ValidityValue exposing (ValidityValue)
 import Html exposing (..)
+import Messages.ValidityField exposing (Texts)
 
 
 type alias Model =
@@ -43,15 +44,15 @@ update msg model =
 
 mkValidityItem : ( String, ValidityValue ) -> Comp.FixedDropdown.Item ValidityValue
 mkValidityItem ( text, id ) =
-    Comp.FixedDropdown.Item id text
+    Comp.FixedDropdown.Item id text Nothing
 
 
-view : ValidityValue -> Model -> Html Msg
-view validity model =
+view : Texts -> ValidityValue -> Model -> Html Msg
+view texts validity model =
     let
         value =
-            findValidityItem validity
+            findValidityItem texts validity
                 |> mkValidityItem
     in
     Html.map ValidityMsg
-        (Comp.FixedDropdown.view (Just value) model)
+        (Comp.FixedDropdown.view (Just value) texts.dropdown model)

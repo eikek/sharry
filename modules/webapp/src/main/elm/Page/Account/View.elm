@@ -7,13 +7,14 @@ import Comp.AccountTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.AccountPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Account.Data exposing (Model, Msg(..))
 import Util.Html
 
 
-view : Maybe String -> Model -> Html Msg
-view id model =
+view : Maybe String -> Texts -> Model -> Html Msg
+view id texts model =
     div
         [ classList
             [ ( "ui container account-page", True )
@@ -23,57 +24,61 @@ view id model =
     <|
         case model.selected of
             Just acc ->
-                viewModify model acc
+                viewModify texts model acc
 
             Nothing ->
                 if id == Just "new" then
-                    viewCreate model
+                    viewCreate texts model
 
                 else
-                    viewList model
+                    viewList texts model
 
 
-viewCreate : Model -> List (Html Msg)
-viewCreate model =
+viewCreate : Texts -> Model -> List (Html Msg)
+viewCreate texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui user circle outline icon" ] []
-        , text "Create a new internal account"
+        , text texts.createAccountTitle
         ]
     , div [ class "" ]
-        [ Html.map AccountFormMsg (Comp.AccountForm.view model.formModel)
+        [ Html.map AccountFormMsg (Comp.AccountForm.view texts.accountForm model.formModel)
         ]
     , Maybe.map Util.Html.resultMsg model.saveResult
         |> Maybe.withDefault Util.Html.noElement
     ]
 
 
-viewModify : Model -> AccountDetail -> List (Html Msg)
-viewModify model acc =
+viewModify : Texts -> Model -> AccountDetail -> List (Html Msg)
+viewModify texts model acc =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui user circle icon" ] []
         , text acc.login
         ]
     , div [ class "" ]
-        [ Html.map AccountFormMsg (Comp.AccountForm.view model.formModel)
+        [ Html.map AccountFormMsg (Comp.AccountForm.view texts.accountForm model.formModel)
         ]
     , Maybe.map Util.Html.resultMsg model.saveResult
         |> Maybe.withDefault Util.Html.noElement
     ]
 
 
-viewList : Model -> List (Html Msg)
-viewList model =
+viewList : Texts -> Model -> List (Html Msg)
+viewList texts model =
     [ h1 [ class "ui dividing header" ]
         [ i [ class "ui users icon" ] []
-        , text "Accounts"
+        , text texts.accounts
         ]
-    , searchArea model
-    , Html.map AccountTableMsg (Comp.AccountTable.view model.searchResult model.tableModel)
+    , searchArea texts model
+    , Html.map AccountTableMsg
+        (Comp.AccountTable.view texts.accountTable
+            model.searchResult
+            model.tableModel
+        )
     ]
 
 
-searchArea : Model -> Html Msg
-searchArea model =
+searchArea : Texts -> Model -> Html Msg
+searchArea texts model =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]
             [ div [ class "fitted-item" ]
@@ -81,7 +86,7 @@ searchArea model =
                     [ input
                         [ type_ "text"
                         , onInput SetQuery
-                        , placeholder "Search…"
+                        , placeholder texts.searchPlaceholder
                         ]
                         []
                     , i [ class "ui search icon" ]
@@ -94,7 +99,7 @@ searchArea model =
                         [ class "ui primary button"
                         , Page.href (AccountPage (Just "new"))
                         ]
-                        [ text "New Account"
+                        [ text texts.newAccount
                         ]
                     ]
                 ]

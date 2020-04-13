@@ -16,6 +16,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
+import Messages.MailSend exposing (Texts)
 import Util.Http
 
 
@@ -28,28 +29,28 @@ type alias Model =
 
 type alias Loader =
     { active : Bool
-    , message : String
+    , message : Texts -> String
     }
 
 
 sendingLoader : Loader
 sendingLoader =
     { active = True
-    , message = "Sending mail ..."
+    , message = \texts -> texts.sendingEmail
     }
 
 
 templateLoader : Loader
 templateLoader =
     { active = True
-    , message = "Loading template ..."
+    , message = \texts -> texts.loadingTemplate
     }
 
 
 noLoader : Loader
 noLoader =
     { active = False
-    , message = ""
+    , message = \_ -> ""
     }
 
 
@@ -143,8 +144,8 @@ update flags msg model =
             )
 
 
-view : List ( String, Bool ) -> Model -> Html Msg
-view classes model =
+view : Texts -> List ( String, Bool ) -> Model -> Html Msg
+view texts classes model =
     div [ classList classes ]
         [ div
             [ classList
@@ -153,7 +154,7 @@ view classes model =
                 ]
             ]
             [ div [ class "ui text loader" ]
-                [ text model.loader.message
+                [ text (model.loader.message texts)
                 ]
             ]
         , div
@@ -171,5 +172,9 @@ view classes model =
                 |> Maybe.withDefault ""
                 |> text
             ]
-        , Html.map MailFormMsg (Comp.MailForm.view model.mailForm)
+        , Html.map MailFormMsg
+            (Comp.MailForm.view
+                texts.mailForm
+                model.mailForm
+            )
         ]

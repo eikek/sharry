@@ -7,7 +7,7 @@ import App.View exposing (..)
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
-import Data.UploadState exposing (UploadState)
+import Data.UploadState
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -87,6 +87,9 @@ uploadStopped =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
+        langSub =
+            Ports.receiveLanguage ReceiveLanguage
+
         uploadSubs =
             Sub.batch
                 [ uploadStateSub
@@ -95,13 +98,22 @@ subscriptions model =
     in
     case model.page of
         SharePage ->
-            uploadSubs
+            Sub.batch
+                [ uploadSubs
+                , langSub
+                ]
 
         OpenSharePage _ ->
-            uploadSubs
+            Sub.batch
+                [ uploadSubs
+                , langSub
+                ]
 
         DetailPage _ ->
-            uploadSubs
+            Sub.batch
+                [ uploadSubs
+                , langSub
+                ]
 
         _ ->
-            Sub.none
+            langSub

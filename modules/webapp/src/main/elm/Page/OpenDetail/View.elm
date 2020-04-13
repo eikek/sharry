@@ -9,22 +9,23 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
+import Messages.DetailPage exposing (Texts)
 import Page.OpenDetail.Data exposing (Model, Msg(..))
 import Util.Html
 import Util.Share
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Texts -> Flags -> Model -> Html Msg
+view texts flags model =
     div [ class "ui grid container detail-page" ]
         [ zoomView flags model
-        , passwordDialog model
+        , passwordDialog texts model
         , div [ class "row" ]
             [ div [ class "sixteen wide column" ]
-                [ descriptionView model
+                [ descriptionView texts model
                 , messageDiv model
-                , middleMenu model
-                , fileList flags model
+                , middleMenu texts model
+                , fileList texts flags model
                 ]
             ]
         ]
@@ -35,8 +36,8 @@ zoomView flags model =
     Comp.Zoom.view (Api.fileOpenUrl flags (shareId model)) model SetZoom QuitZoom
 
 
-passwordDialog : Model -> Html Msg
-passwordDialog model =
+passwordDialog : Texts -> Model -> Html Msg
+passwordDialog texts model =
     div
         [ classList
             [ ( "ui dimmer", True )
@@ -46,7 +47,7 @@ passwordDialog model =
         [ div [ class "inline content" ]
             [ h2 [ class "ui inverted icon header" ]
                 [ i [ class "lock icon" ] []
-                , text "Password required"
+                , text texts.passwordRequired
                 ]
             , div [ class "ui basic segment" ]
                 [ div [ class "ui action input" ]
@@ -60,7 +61,7 @@ passwordDialog model =
                         , href "#"
                         , onClick SubmitPassword
                         ]
-                        [ text "Submit"
+                        [ text texts.submit
                         ]
                     ]
                 , div
@@ -69,7 +70,7 @@ passwordDialog model =
                         , ( "invisible hidden", not model.password.badPassword )
                         ]
                     ]
-                    [ text "Password invalid"
+                    [ text texts.passwordInvalid
                     ]
                 ]
             ]
@@ -81,11 +82,11 @@ messageDiv model =
     Util.Html.resultMsgMaybe model.message
 
 
-descriptionView : Model -> Html Msg
-descriptionView model =
+descriptionView : Texts -> Model -> Html Msg
+descriptionView texts model =
     let
         ( title, desc ) =
-            Util.Share.splitDescription model.share
+            Util.Share.splitDescription model.share texts.yourShare
     in
     div [ class "ui container share-description" ]
         [ Markdown.toHtml [] title
@@ -93,8 +94,8 @@ descriptionView model =
         ]
 
 
-middleMenu : Model -> Html Msg
-middleMenu model =
+middleMenu : Texts -> Model -> Html Msg
+middleMenu texts model =
     div
         [ class "ui menu"
         ]
@@ -105,7 +106,7 @@ middleMenu model =
                 ]
             , href "#"
             , onClick (SetFileView ViewList)
-            , title "List View"
+            , title texts.listView
             ]
             [ i [ class "ui list icon" ] []
             ]
@@ -116,15 +117,15 @@ middleMenu model =
                 ]
             , href "#"
             , onClick (SetFileView ViewCard)
-            , title "Card View"
+            , title texts.cardView
             ]
             [ i [ class "th icon" ] []
             ]
         ]
 
 
-fileList : Flags -> Model -> Html Msg
-fileList flags model =
+fileList : Texts -> Flags -> Model -> Html Msg
+fileList texts flags model =
     let
         sett =
             Comp.ShareFileList.Settings
@@ -133,7 +134,10 @@ fileList flags model =
                 False
     in
     Html.map FileListMsg <|
-        Comp.ShareFileList.view sett model.share.files model.fileListModel
+        Comp.ShareFileList.view texts.shareFileList
+            sett
+            model.share.files
+            model.fileListModel
 
 
 shareId : Model -> String

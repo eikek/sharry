@@ -22,7 +22,8 @@ object Config {
       appFooterVisible: Boolean,
       chunkSize: ByteSize,
       retryDelays: Seq[Duration],
-      welcomeMessage: String
+      welcomeMessage: String,
+      defaultLanguage: String
   )
 
 }

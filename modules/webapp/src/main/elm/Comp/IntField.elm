@@ -3,13 +3,13 @@ module Comp.IntField exposing (Model, Msg, init, update, view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Messages.IntField exposing (Texts)
 
 
 type alias Model =
     { min : Maybe Int
     , max : Maybe Int
-    , label : String
-    , error : Maybe String
+    , error : Maybe (Texts -> String)
     , lastInput : String
     }
 
@@ -18,11 +18,10 @@ type Msg
     = SetValue String
 
 
-init : Maybe Int -> Maybe Int -> String -> Model
-init min max label =
+init : Maybe Int -> Maybe Int -> Model
+init min max =
     { min = min
     , max = max
-    , label = label
     , error = Nothing
     , lastInput = ""
     }
@@ -43,15 +42,15 @@ tooHigh model n =
 update : Msg -> Model -> ( Model, Maybe Int )
 update msg model =
     let
-        tooHighError =
+        tooHighError texts =
             Maybe.withDefault 0 model.max
                 |> String.fromInt
-                |> (++) "Number must be <= "
+                |> (++) texts.mustBeLower
 
-        tooLowError =
+        tooLowError texts =
             Maybe.withDefault 0 model.min
                 |> String.fromInt
-                |> (++) "Number must be >= "
+                |> (++) texts.mustBeGreater
     in
     case msg of
         SetValue str ->
@@ -75,20 +74,20 @@ update msg model =
                         ( { m | error = Nothing }, Just n )
 
                 Nothing ->
-                    ( { m | error = Just ("'" ++ str ++ "' is not a valid number!") }
+                    ( { m | error = Just (\texts -> texts.notANumber str) }
                     , Nothing
                     )
 
 
-view : Maybe Int -> Model -> Html Msg
-view nval model =
+view : Maybe Int -> Texts -> String -> Model -> Html Msg
+view nval texts labelText model =
     div
         [ classList
             [ ( "field", True )
             , ( "error", model.error /= Nothing )
             ]
         ]
-        [ label [] [ text model.label ]
+        [ label [] [ text labelText ]
         , input
             [ type_ "text"
             , Maybe.map String.fromInt nval
@@ -103,6 +102,8 @@ view nval model =
                 , ( "hidden", model.error == Nothing )
                 ]
             ]
-            [ Maybe.withDefault "" model.error |> text
+            [ Maybe.map (\f -> f texts) model.error
+                |> Maybe.withDefault ""
+                |> text
             ]
         ]

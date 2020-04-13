@@ -10,6 +10,7 @@ import Api.Model.ShareListItem exposing (ShareListItem)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Messages.ShareTable exposing (Texts)
 import Util.Html
 import Util.Size
 import Util.String
@@ -38,18 +39,18 @@ update msg model =
             ( { model | selected = Just acc }, Just acc )
 
 
-view : List ShareListItem -> Model -> Html Msg
-view accounts model =
+view : Texts -> List ShareListItem -> Model -> Html Msg
+view texts accounts model =
     table [ class "ui selectable table" ]
         [ thead []
             [ tr []
-                [ th [] [ text "Name/Id" ]
-                , th [] [ text "Alias" ]
-                , th [ class "collapsing" ] [ text "Max Views" ]
-                , th [ class "collapsing" ] [ text "Published" ]
-                , th [ class "collapsing" ] [ text "#Files" ]
-                , th [ class "collapsing" ] [ text "Size" ]
-                , th [ class "collapsing" ] [ text "Created" ]
+                [ th [] [ text texts.nameId ]
+                , th [] [ text texts.aliasLabel ]
+                , th [ class "collapsing" ] [ text texts.maxViews ]
+                , th [ class "collapsing" ] [ text texts.published ]
+                , th [ class "collapsing" ] [ text texts.nFiles ]
+                , th [ class "collapsing" ] [ text texts.size ]
+                , th [ class "collapsing" ] [ text texts.created ]
                 ]
             ]
         , tbody []

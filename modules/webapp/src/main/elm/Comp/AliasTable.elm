@@ -11,7 +11,7 @@ import Data.ValidityOptions exposing (findValidityItemMillis)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Util.Duration
+import Messages.AliasTable exposing (Texts)
 import Util.Html
 import Util.Time
 
@@ -38,19 +38,19 @@ update msg model =
             ( { model | selected = Just alias_ }, Just alias_ )
 
 
-view : List AliasDetail -> Model -> Html Msg
-view aliases model =
+view : Texts -> List AliasDetail -> Model -> Html Msg
+view texts aliases model =
     table [ class "ui selectable padded table" ]
         [ thead []
             [ tr []
-                [ th [] [ text "Name" ]
-                , th [] [ text "Enabled" ]
-                , th [] [ text "Validity" ]
-                , th [] [ text "Created" ]
+                [ th [] [ text texts.name ]
+                , th [] [ text texts.enabled ]
+                , th [] [ text texts.validity ]
+                , th [] [ text texts.created ]
                 ]
             ]
         , tbody []
-            (List.map (viewTableLine model) aliases)
+            (List.map (viewTableLine texts model) aliases)
         ]
 
 
@@ -61,8 +61,8 @@ isSelected model alias_ =
         |> Maybe.withDefault False
 
 
-viewTableLine : Model -> AliasDetail -> Html Msg
-viewTableLine model alias_ =
+viewTableLine : Texts -> Model -> AliasDetail -> Html Msg
+viewTableLine texts model alias_ =
     tr
         [ onClick (Select alias_)
         , classList [ ( "active", isSelected model alias_ ) ]
@@ -72,7 +72,7 @@ viewTableLine model alias_ =
             [ Util.Html.checkbox alias_.enabled
             ]
         , td []
-            [ findValidityItemMillis alias_.validity
+            [ findValidityItemMillis texts.validityField alias_.validity
                 |> Tuple.first
                 |> text
             ]

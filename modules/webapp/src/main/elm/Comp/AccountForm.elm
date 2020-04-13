@@ -18,6 +18,7 @@ import Data.AccountState exposing (AccountState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
+import Messages.AccountForm exposing (Texts)
 import Util.Maybe
 
 
@@ -41,7 +42,10 @@ init ma =
 
 mkStateItem : AccountState -> Comp.FixedDropdown.Item AccountState
 mkStateItem state =
-    Comp.FixedDropdown.Item state (Data.AccountState.toString state)
+    Comp.FixedDropdown.Item
+        state
+        (Data.AccountState.toString state)
+        Nothing
 
 
 initNew : Model
@@ -185,8 +189,8 @@ update msg model =
                         )
 
 
-view : Model -> Html Msg
-view model =
+view : Texts -> Model -> Html Msg
+view texts model =
     div [ class "ui segments" ]
         [ Html.form [ class "ui form segment" ]
             [ div
@@ -195,7 +199,7 @@ view model =
                     , ( "invisible", isCreate model )
                     ]
                 ]
-                [ label [] [ text "Id" ]
+                [ label [] [ text texts.id ]
                 , input
                     [ type_ "text"
                     , Maybe.map .id model.existing
@@ -211,7 +215,7 @@ view model =
                     , ( "error", String.isEmpty model.loginField )
                     ]
                 ]
-                [ label [] [ text "Login" ]
+                [ label [] [ text texts.login ]
                 , input
                     [ type_ "text"
                     , value model.loginField
@@ -220,10 +224,11 @@ view model =
                     []
                 ]
             , div [ class "required field" ]
-                [ label [] [ text "State" ]
+                [ label [] [ text texts.state ]
                 , Html.map StateMsg
                     (Comp.FixedDropdown.view
                         (Just model.stateField)
+                        texts.dropdown
                         model.stateModel
                     )
                 ]
@@ -235,7 +240,7 @@ view model =
                         , checked model.adminField
                         ]
                         []
-                    , label [] [ text "Admin" ]
+                    , label [] [ text texts.admin ]
                     ]
                 ]
             , div [ class "field" ]
@@ -255,7 +260,7 @@ view model =
                     , ( "disabled", not (isCreate model || isIntern model) )
                     ]
                 ]
-                [ label [] [ text "Password" ]
+                [ label [] [ text texts.password ]
                 , Html.map PasswordMsg
                     (Comp.PasswordInput.view model.passwordField
                         model.passwordModel
@@ -268,14 +273,14 @@ view model =
                 , class "ui primary button"
                 , onClick Submit
                 ]
-                [ text "Submit"
+                [ text texts.submit
                 ]
             , button
                 [ class "ui button"
                 , type_ "button"
                 , onClick Cancel
                 ]
-                [ text "Back"
+                [ text texts.back
                 ]
             ]
         ]

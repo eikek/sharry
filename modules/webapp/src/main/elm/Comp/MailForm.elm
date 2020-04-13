@@ -13,6 +13,7 @@ import Api.Model.SimpleMail exposing (SimpleMail)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Messages.MailForm exposing (Texts)
 
 
 type alias Model =
@@ -78,14 +79,14 @@ update msg model =
             ( model, FormSend sm )
 
 
-view : Model -> Html Msg
-view model =
+view : Texts -> Model -> Html Msg
+view texts model =
     div [ class "ui form" ]
         [ div [ class "field" ]
             [ label []
-                [ text "Receiver(s)"
+                [ text texts.receivers
                 , span [ class "muted" ]
-                    [ text "Separate multiple recipients by comma" ]
+                    [ text texts.separateRecipientsByComma ]
                 ]
             , input
                 [ type_ "text"
@@ -95,7 +96,7 @@ view model =
                 []
             ]
         , div [ class "field" ]
-            [ label [] [ text "Subject" ]
+            [ label [] [ text texts.subject ]
             , input
                 [ type_ "text"
                 , onInput SetSubject
@@ -104,7 +105,7 @@ view model =
                 []
             ]
         , div [ class "field" ]
-            [ label [] [ text "Body" ]
+            [ label [] [ text texts.body ]
             , textarea [ onInput SetBody ]
                 [ text model.body ]
             ]
@@ -115,12 +116,12 @@ view model =
                 ]
             , onClick Send
             ]
-            [ text "Send"
+            [ text texts.send
             ]
         , button
             [ class "ui secondary button"
             , onClick Cancel
             ]
-            [ text "Cancel"
+            [ text texts.cancel
             ]
         ]

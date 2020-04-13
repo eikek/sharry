@@ -31,6 +31,7 @@ import Data.UploadDict exposing (UploadDict)
 import Data.UploadState exposing (UploadState)
 import Data.ValidityValue exposing (ValidityValue)
 import Http
+import Messages.DetailPage exposing (Texts)
 
 
 type alias Model =
@@ -76,7 +77,7 @@ type Property
 
 type alias LoaderModel =
     { active : Bool
-    , message : String
+    , message : Texts -> String
     }
 
 
@@ -112,21 +113,21 @@ emptyModel =
 deleteLoader : LoaderModel
 deleteLoader =
     { active = True
-    , message = "Deleting share. Please wait."
+    , message = \texts -> texts.waitDeleteShare
     }
 
 
 getLoader : LoaderModel
 getLoader =
     { active = True
-    , message = "Loading data..."
+    , message = \texts -> texts.loadingData
     }
 
 
 noLoader : LoaderModel
 noLoader =
     { active = False
-    , message = ""
+    , message = \_ -> ""
     }
 
 

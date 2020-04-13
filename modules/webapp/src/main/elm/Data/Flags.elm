@@ -4,11 +4,13 @@ import Api.Model.AppConfig exposing (AppConfig)
 import Api.Model.AuthResult exposing (AuthResult)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Messages.SharePage exposing (Texts)
 import Util.Size
 
 
 type alias Flags =
     { account : Maybe AuthResult
+    , language : Maybe String
     , config : AppConfig
     }
 
@@ -29,12 +31,13 @@ withoutAccount flags =
     { flags | account = Nothing }
 
 
-limitsMessage : Flags -> List (Html.Attribute msg) -> Html msg
-limitsMessage flags attr =
+limitsMessage : Texts -> Flags -> List (Html.Attribute msg) -> Html msg
+limitsMessage texts flags attr =
+    let
+        size =
+            toFloat flags.config.maxSize
+                |> Util.Size.bytesReadable Util.Size.B
+    in
     div attr
-        [ text "Uploads are possible up to "
-        , toFloat flags.config.maxSize
-            |> Util.Size.bytesReadable Util.Size.B
-            |> text
-        , text "."
+        [ texts.uploadsUpTo size |> text
         ]

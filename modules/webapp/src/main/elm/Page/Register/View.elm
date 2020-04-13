@@ -1,15 +1,23 @@
 module Page.Register.View exposing (view)
 
+import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Messages exposing (Language)
+import Messages.RegisterPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
 
 
-view : Flags -> Model -> Html Msg
-view flags model =
+view : Texts -> Flags -> Model -> Html Msg
+view texts flags model =
+    let
+        currentLanguage =
+            Messages.fromFlags flags
+                |> .lang
+    in
     div [ class "register-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
@@ -21,7 +29,7 @@ view flags model =
                             ]
                             []
                         , div [ class "content" ]
-                            [ text "Sign up"
+                            [ text texts.signup
                             ]
                         ]
                     , Html.form
@@ -30,7 +38,7 @@ view flags model =
                         , autocomplete False
                         ]
                         [ div [ class "required field" ]
-                            [ label [] [ text "User Login" ]
+                            [ label [] [ text texts.userLogin ]
                             , div [ class "ui left icon input" ]
                                 [ input
                                     [ type_ "text"
@@ -45,7 +53,7 @@ view flags model =
                         , div
                             [ class "required field"
                             ]
-                            [ label [] [ text "Password" ]
+                            [ label [] [ text texts.password ]
                             , div [ class "ui left icon action input" ]
                                 [ input
                                     [ type_ <|
@@ -68,7 +76,7 @@ view flags model =
                         , div
                             [ class "required field"
                             ]
-                            [ label [] [ text "Password (repeat)" ]
+                            [ label [] [ text texts.passwordRepeat ]
                             , div [ class "ui left icon action input" ]
                                 [ input
                                     [ type_ <|
@@ -94,7 +102,7 @@ view flags model =
                                 , ( "invisible", flags.config.signupMode /= "invite" )
                                 ]
                             ]
-                            [ label [] [ text "Invitation Key" ]
+                            [ label [] [ text texts.invitationKey ]
                             , div [ class "ui left icon input" ]
                                 [ input
                                     [ type_ "text"
@@ -110,30 +118,45 @@ view flags model =
                             [ class "ui primary button"
                             , type_ "submit"
                             ]
-                            [ text "Submit"
+                            [ text texts.submitButton
                             ]
                         ]
-                    , resultMessage model
-                    , div [ class "ui very basic right aligned segment" ]
-                        [ text "Already signed up? "
-                        , a [ class "ui link", Page.href (LoginPage ( Nothing, False )) ]
-                            [ i [ class "sign-in icon" ] []
-                            , text "Sign in"
-                            ]
-                        ]
+                    , resultMessage texts model
+                    , renderLanguageAndSignin currentLanguage texts model
                     ]
                 ]
             ]
         ]
 
 
-resultMessage : Model -> Html Msg
-resultMessage model =
+renderLanguageAndSignin : Language -> Texts -> Model -> Html Msg
+renderLanguageAndSignin current texts model =
+    div [ class "ui two column stackable grid basic segment" ]
+        [ div [ class "column" ]
+            [ Html.map LangChooseMsg
+                (Comp.LanguageChoose.view
+                    texts.dropdown
+                    current
+                    model.langChoose
+                )
+            ]
+        , div [ class "right aligned column" ]
+            [ text (texts.alreadySignedUp ++ " ")
+            , a [ class "ui link", Page.href (LoginPage ( Nothing, False )) ]
+                [ i [ class "sign-in icon" ] []
+                , text texts.signin
+                ]
+            ]
+        ]
+
+
+resultMessage : Texts -> Model -> Html Msg
+resultMessage texts model =
     case model.result of
         Just r ->
             if r.success then
                 div [ class "ui success message" ]
-                    [ text "Registration successful."
+                    [ text texts.registrationSuccessful
                     ]
 
             else

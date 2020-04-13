@@ -3,6 +3,7 @@ module Page.Login.Update exposing (update)
 import Api
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.UserPass exposing (UserPass)
+import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
@@ -52,6 +53,21 @@ update ( referrer, oauth ) flags msg model =
                     { empty | message = Util.Http.errorToString err }
             in
             ( { model | password = "", result = Just lr }, Ports.removeAccount (), Just empty )
+
+        LangChooseMsg lmsg ->
+            let
+                ( lm, ll ) =
+                    Comp.LanguageChoose.update lmsg model.langChoose
+
+                cmd =
+                    case ll of
+                        Just lang ->
+                            Ports.setLang lang
+
+                        Nothing ->
+                            Cmd.none
+            in
+            ( { model | langChoose = lm }, cmd, Nothing )
 
 
 loginSuccess : Maybe Page -> AuthResult -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
