@@ -92,6 +92,16 @@ The setting `client_max_body_size` is relevant, too. This is the
 maximum size of a single requests. This must be greater than sharry's
 `webapp.chunk-size` setting.
 
+The setting `proxy_buffering off;` disables buffering responses from
+the application coming to nginx. Buffering may introduce backpressure
+problems if the client is not reading fast enough. The response coming
+from the application may quickly be too large to fit in memory and
+nginx then writes a temporary file (which is limited to 1G by
+default). If this limit is reached, nginx waits until the client has
+received all disk buffered data which in turn can result in send
+timeouts.
+
+
 ```
 server {
     listen 0.0.0.0:80 ;
@@ -121,13 +131,11 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
+        proxy_buffering off;
         client_max_body_size 105M;
         proxy_send_timeout   300s;
         proxy_read_timeout   300s;
         send_timeout         300s;
-        location = / {
-            return 302 /app;
-        }
     }
 }
 ```

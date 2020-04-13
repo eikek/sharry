@@ -242,7 +242,7 @@ lazy val microsite = project.in(file("modules/microsite")).
     ),
     micrositeName := "Sharry",
     micrositeDescription := "Sharry – Share files conveniently",
-    micrositeDocumentationUrl := "/sharry/doc/index.html",
+    micrositeDocumentationUrl := "/sharry/doc",
     micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon-32x32.png", "32x32")),
     micrositeBaseUrl := "/sharry",
     micrositeAuthor := "eikek",

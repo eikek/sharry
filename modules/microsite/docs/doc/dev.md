@@ -8,9 +8,15 @@ permalink: doc/dev
 
 ## Building
 
-[Sbt](https://scala-sbt.org) is used to build the application. Clone
-the sources, start `sbt` in the source root and run inside the sbt
-shell:
+Clone the repository using [git](https://git-scm.org).
+
+```
+git clone https://github.com/eikek/sharry
+```
+
+Install [Elm](https://elm-lang.org) and [Sbt](https://scala-sbt.org),
+which is used to build the application. Start `sbt` in the source root
+and run inside the sbt shell:
 
 - `make` to compile all sources (Elm + Scala)
 - `make-zip` to create zip packages
