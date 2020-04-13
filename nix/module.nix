@@ -16,6 +16,7 @@ let
       address = "localhost";
       port = 9090;
     };
+    response-timeout = "4 minutes";
     webapp = {
       app-name = "Sharry";
       chunk-size = "100M";
@@ -206,6 +207,17 @@ in {
         });
         default = defaults.bind;
         description = "Address and port bind the rest server.";
+      };
+
+      response-timeout = mkOption {
+        type = types.str;
+        default = defauts.response-timeout;
+        description = ''
+          The time from receiving a request until the first line of the
+          response is rendered. When uploading big chunks on slow
+          connections, this may have to be increased (or the
+          `webapp.chunk-size' decreased).
+        '';
       };
 
       webapp = mkOption {

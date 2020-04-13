@@ -15,6 +15,7 @@ import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 import org.log4s.getLogger
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 
 import sharry.common.syntax.all._
 import sharry.backend.auth.AuthToken
@@ -68,6 +69,8 @@ object RestServer {
       .flatMap(httpApp =>
         BlazeServerBuilder[F]
           .bindHttp(cfg.bind.port, cfg.bind.address)
+          .withResponseHeaderTimeout(cfg.responseTimeout.toScala)
+          .withIdleTimeout(cfg.responseTimeout.toScala + 30.seconds)
           .withHttpApp(httpApp)
           .withoutBanner
           .serve
