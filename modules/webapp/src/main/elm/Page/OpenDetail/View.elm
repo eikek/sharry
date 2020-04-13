@@ -22,7 +22,7 @@ view texts flags model =
         , passwordDialog texts model
         , div [ class "row" ]
             [ div [ class "sixteen wide column" ]
-                [ descriptionView model
+                [ descriptionView texts model
                 , messageDiv model
                 , middleMenu texts model
                 , fileList texts flags model
@@ -82,11 +82,11 @@ messageDiv model =
     Util.Html.resultMsgMaybe model.message
 
 
-descriptionView : Model -> Html Msg
-descriptionView model =
+descriptionView : Texts -> Model -> Html Msg
+descriptionView texts model =
     let
         ( title, desc ) =
-            Util.Share.splitDescription model.share
+            Util.Share.splitDescription model.share texts.yourShare
     in
     div [ class "ui container share-description" ]
         [ Markdown.toHtml [] title

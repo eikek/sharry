@@ -51,7 +51,7 @@ view : Texts -> ValidityValue -> Model -> Html Msg
 view texts validity model =
     let
         value =
-            findValidityItem validity
+            findValidityItem texts validity
                 |> mkValidityItem
     in
     Html.map ValidityMsg

@@ -1,5 +1,6 @@
 module Messages.LoginPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -16,6 +17,7 @@ type alias Texts =
     , loginSuccessful : String
     , noAccount : String
     , signupLink : String
+    , or : String
     , dropdown : Messages.FixedDropdown.Texts
     }
 
@@ -31,5 +33,22 @@ gb =
     , loginSuccessful = "Login successful"
     , noAccount = "No account?"
     , signupLink = "Sign up!"
+    , or = "Or"
     , dropdown = Messages.FixedDropdown.gb
+    }
+
+
+de : Texts
+de =
+    { username = "Benutzer"
+    , password = "Passwort"
+    , loginPlaceholder = "Benutzer"
+    , passwordPlaceholder = "Passwort"
+    , loginButton = "Anmelden"
+    , via = "via"
+    , loginSuccessful = "Anmeldung erfolgreich"
+    , noAccount = "Kein Konto?"
+    , signupLink = "Hier registrieren!"
+    , or = "Oder"
+    , dropdown = Messages.FixedDropdown.de
     }

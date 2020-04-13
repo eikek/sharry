@@ -1,5 +1,6 @@
 module Messages.IntField exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -16,4 +17,12 @@ gb =
     { mustBeLower = "Number must be <= "
     , mustBeGreater = "Number must be >= "
     , notANumber = \str -> "'" ++ str ++ "' is not a valid number!"
+    }
+
+
+de : Texts
+de =
+    { mustBeLower = "Zahl muss <= "
+    , mustBeGreater = "Zahl muss >= "
+    , notANumber = \str -> "'" ++ str ++ "' ist keine Zahl!"
     }

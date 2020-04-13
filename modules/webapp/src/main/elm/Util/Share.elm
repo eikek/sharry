@@ -6,12 +6,12 @@ import Data.Flags exposing (Flags)
 import Data.UploadDict exposing (UploadDict)
 
 
-splitDescription : ShareDetail -> ( String, String )
-splitDescription share =
+splitDescription : ShareDetail -> String -> ( String, String )
+splitDescription share defaultHeader =
     let
         fallback =
             Maybe.map (\n -> "# " ++ n) share.name
-                |> Maybe.withDefault "# Your Share"
+                |> Maybe.withDefault ("# " ++ defaultHeader)
 
         desc =
             Maybe.map String.trim share.description

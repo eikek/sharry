@@ -1,5 +1,6 @@
 module Messages.NewInvitePage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -43,6 +44,36 @@ gb =
             [ text
                 """Creating an invite requires providing the password
              from the configuration."""
+            ]
+        ]
+    }
+
+
+de : Texts
+de =
+    { createNewTitle = "Neue Einladungen erstellen"
+    , newInvitePassword = "Password zum Erstellen neuer Einladungen"
+    , submit = "Code erzeugen"
+    , reset = "Zurücksetzen"
+    , error = "Fehler"
+    , success = "Erfolg"
+    , invitationKey = "Einladungs-Code:"
+    , message =
+        [ p []
+            [ text
+                """Sharry erfordert einen Code zum Registrieren. Sie können
+             diese Codes hier erzeugen und ihn Freunden zukommen lassen, die
+             sich dann hier registrieren können."""
+            ]
+        , p []
+            [ text
+                """Jeder Code kann genau einmal verwendet werden. Sie müssen
+              für jede Person einen separaten Code erzeugen."""
+            ]
+        , p []
+            [ text
+                """Um einen Einladungs-Code zu erzeugen, ist ein Passwort aus
+                 der Konfiguration erforderlich."""
             ]
         ]
     }

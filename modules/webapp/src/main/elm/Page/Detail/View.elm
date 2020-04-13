@@ -41,7 +41,7 @@ view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
     let
         ( head, desc ) =
-            Util.Share.splitDescription model.share
+            Util.Share.splitDescription model.share texts.yourShare
     in
     div [ class "ui grid container detail-page" ]
         [ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
@@ -214,7 +214,8 @@ shareLinkPublished texts flags model =
                     ]
                 ]
                 [ div [ class "ui two column stackable center aligned grid" ]
-                    [ div [ class "ui vertical divider" ] [ text "Or" ]
+                    [ div [ class "ui vertical divider" ]
+                        [ text texts.or ]
                     , div [ class "middle aligned row" ]
                         [ div [ class "column" ]
                             [ qrCodeView url
@@ -284,7 +285,9 @@ shareProps texts model =
                                 |> Maybe.map (propertyEdit texts)
                                 |> Maybe.withDefault
                                     (propertyDisplay "hourglass half icon"
-                                        (Data.ValidityOptions.findValidityItemMillis share.validity
+                                        (Data.ValidityOptions.findValidityItemMillis
+                                            texts.validityField
+                                            share.validity
                                             |> Tuple.first
                                         )
                                     )

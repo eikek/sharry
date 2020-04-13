@@ -1,4 +1,8 @@
-module Messages.AccountForm exposing (Texts, gb)
+module Messages.AccountForm exposing
+    ( Texts
+    , de
+    , gb
+    )
 
 import Messages.FixedDropdown
 
@@ -25,4 +29,17 @@ gb =
     , submit = "Submit"
     , back = "Back"
     , dropdown = Messages.FixedDropdown.gb
+    }
+
+
+de : Texts
+de =
+    { id = "Id"
+    , login = "Benutzer"
+    , state = "Status"
+    , admin = "Admin"
+    , password = "Passwort"
+    , submit = "Speichern"
+    , back = "Zurück"
+    , dropdown = Messages.FixedDropdown.de
     }

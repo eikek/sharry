@@ -1,5 +1,6 @@
 module Messages.AccountTable exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -28,4 +29,17 @@ gb =
     , nrLogins = "#Logins"
     , lastLogin = "Last Login"
     , created = "Created"
+    }
+
+
+de : Texts
+de =
+    { login = "Benutzer"
+    , source = "Quelle"
+    , state = "Status"
+    , nrShares = "#Freigaben"
+    , admin = "Admin"
+    , nrLogins = "#Anmeldungen"
+    , lastLogin = "Letzte Anmeldung"
+    , created = "Erstellt"
     }

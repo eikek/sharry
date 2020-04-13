@@ -1,5 +1,6 @@
 module Messages.Dropzone2 exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -18,4 +19,13 @@ gb =
     , filesSelected = " files selected ("
     , or = "Or"
     , selectFiles = "Select Files ..."
+    }
+
+
+de : Texts
+de =
+    { dropHere = "Dateien hier reinziehen"
+    , filesSelected = " Dateien ausgewählt ("
+    , or = "Oder"
+    , selectFiles = "Dateien wählen ..."
     }

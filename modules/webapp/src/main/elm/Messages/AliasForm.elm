@@ -1,5 +1,6 @@
 module Messages.AliasForm exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -44,4 +45,28 @@ gb =
     , delete = "Delete"
     , yesNo = Messages.YesNoDimmer.gb
     , validityField = Messages.ValidityField.gb
+    }
+
+
+de : Texts
+de =
+    { id = "Id"
+    , noteToIdsHead = "Zu IDs"
+    , noteToIds =
+        p []
+            [ text "Die ID ist Teil der URL, über welche "
+            , em [] [ text "jeder" ]
+            , text " Dateien hochladen kann. Es ist empfohlen hier"
+            , text " etwas Zufälliges zu nehmen. Die ID kann zwar zu  "
+            , text " irgendeinen Wert geändert werden, ist das Feld aber leer,"
+            , text " wird eine zufällige ID erzeugt."
+            ]
+    , name = "Name"
+    , validity = "Gültigkeit"
+    , enabled = "Aktiv"
+    , submit = "Speichern"
+    , back = "Zurück"
+    , delete = "Löschen"
+    , yesNo = Messages.YesNoDimmer.de
+    , validityField = Messages.ValidityField.de
     }

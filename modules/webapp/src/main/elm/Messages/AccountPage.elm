@@ -1,5 +1,6 @@
 module Messages.AccountPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -25,4 +26,15 @@ gb =
     , newAccount = "New Account"
     , accountForm = Messages.AccountForm.gb
     , accountTable = Messages.AccountTable.gb
+    }
+
+
+de : Texts
+de =
+    { createAccountTitle = "Neues internes Konto erstellen"
+    , accounts = "Konten"
+    , searchPlaceholder = "Suche…"
+    , newAccount = "Neues Konto"
+    , accountForm = Messages.AccountForm.de
+    , accountTable = Messages.AccountTable.de
     }

@@ -13,7 +13,7 @@ view texts model =
         [ div [ class "ui red raised placeholder segment" ]
             [ h1 [ class "ui icon header" ]
                 [ i [ class "ui share alternate square icon" ] []
-                , text "Share files with others"
+                , text texts.shareFilesWithOthers
                 ]
             , div [ class "inline" ]
                 [ a

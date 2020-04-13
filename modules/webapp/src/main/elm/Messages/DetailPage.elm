@@ -1,5 +1,6 @@
 module Messages.DetailPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -14,6 +15,7 @@ import Messages.YesNoDimmer
 type alias Texts =
     { mailSend : Messages.MailSend.Texts
     , save : String
+    , yourShare : String
     , markdownInput : Messages.MarkdownInput.Texts
     , shareFileList : Messages.ShareFileList.Texts
     , yesNo : Messages.YesNoDimmer.Texts
@@ -58,6 +60,7 @@ type alias Texts =
     , validityField : Messages.ValidityField.Texts
     , passwordRequired : String
     , passwordInvalid : String
+    , or : String
     }
 
 
@@ -65,6 +68,7 @@ gb : Texts
 gb =
     { mailSend = Messages.MailSend.gb
     , save = "Save"
+    , yourShare = "Your Share"
     , markdownInput = Messages.MarkdownInput.gb
     , shareFileList = Messages.ShareFileList.gb
     , yesNo = Messages.YesNoDimmer.gb
@@ -118,4 +122,68 @@ gb =
     , validityField = Messages.ValidityField.gb
     , passwordRequired = "Password required"
     , passwordInvalid = "Password invalid"
+    , or = "Or"
+    }
+
+
+de : Texts
+de =
+    { mailSend = Messages.MailSend.de
+    , save = "Speichern"
+    , yourShare = "Deine Datei-Freigabe"
+    , markdownInput = Messages.MarkdownInput.de
+    , shareFileList = Messages.ShareFileList.de
+    , yesNo = Messages.YesNoDimmer.de
+    , sharePublished =
+        "Die Dateien sind veröffentlicht, aber das Limit für die maximale Ansicht wurde erreicht."
+            ++ " Sie können das Limit erhöhen, um die Veröffentlichung zu verlängern."
+    , shareNotPublished =
+        "Sie müssen diese Datei-Freigabe veröffentlichen, damit andere Zugriff erhalten können. "
+            ++ "Den damit erzeugten Link können Sie mit anderen teilen, die damit dann die "
+            ++ "Dateien einsehen können."
+    , shareLinkExpired =
+        "Die Datei-Freigabe wurde veröffentlicht, aber die Gültigkeit ist abgelaufen. Sie können "
+            ++ "sie erneut veröffentlichen, indem sie zuerts „Veröffentlichung zurückziehen” klicken "
+            ++ "und danach wieder „Veröffentlichen”."
+    , errorQrCode = "Fehler beim Erzeugen des QR-Codes."
+    , sharePublicAvailableAt = "Die Datei-Freigabe ist hier öffentlich verfügbar:"
+    , shareAsYouLike = "Sie können diesen Link mit denen teilen, die Zugriff auf diese Dateien bekommen sollen."
+    , sendEmail = "Sende E-Mail"
+    , name = "Name"
+    , validity = "Gültigkeit"
+    , maxViews = "Max. Ansichten"
+    , password = "Passwort"
+    , passwordProtected = "Passwortgeschützt"
+    , passwordNone = "Keins"
+    , shareSize = "#/Größe"
+    , created = "Erstellt"
+    , aliasLabel = "Alias"
+    , publishedOn = "Veröffentlicht am"
+    , publishedUntil = "Veröffentlicht bis"
+    , lastAccess = "Letzter Zugriff"
+    , views = "Ansichten"
+    , publishWithNewLink = "Neuen Link veröffentlichen"
+    , delete = "Löschen"
+    , edit = "Ändern"
+    , detailsMenu = "Details"
+    , shareLinkMenu = "Link teilen"
+    , editDescription = "Beschreibung ändern"
+    , publish = "Veröffentlichen"
+    , unpublish = "Veröffentlichung zurückziehen"
+    , listView = "Listen Ansicht"
+    , cardView = "Kachel Ansicht"
+    , submit = "Absenden"
+    , clear = "Zurücksetzen"
+    , resume = "Fortfahren"
+    , pause = "Pause"
+    , uploadsGreaterThan =
+        \size ->
+            "Alle Dateien dürfen nicht größer sein als " ++ size ++ "."
+    , waitDeleteShare = "Datei-Freigabe wird gelöscht. Bitte warten."
+    , loadingData = "Lade Daten ..."
+    , dropzone = Messages.Dropzone2.de
+    , validityField = Messages.ValidityField.de
+    , passwordRequired = "Passwort erforderlich"
+    , passwordInvalid = "Passwort ungültig"
+    , or = "Oder"
     }

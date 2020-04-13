@@ -1,5 +1,6 @@
 module Messages.UploadPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -20,4 +21,13 @@ gb =
     , newShare = "New Share"
     , search = "Search…"
     , shareTable = Messages.ShareTable.gb
+    }
+
+
+de : Texts
+de =
+    { yourShares = "Deine Freigaben"
+    , newShare = "Neue Freigabe"
+    , search = "Suche…"
+    , shareTable = Messages.ShareTable.de
     }

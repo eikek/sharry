@@ -50,7 +50,7 @@ view texts aliases model =
                 ]
             ]
         , tbody []
-            (List.map (viewTableLine model) aliases)
+            (List.map (viewTableLine texts model) aliases)
         ]
 
 
@@ -61,8 +61,8 @@ isSelected model alias_ =
         |> Maybe.withDefault False
 
 
-viewTableLine : Model -> AliasDetail -> Html Msg
-viewTableLine model alias_ =
+viewTableLine : Texts -> Model -> AliasDetail -> Html Msg
+viewTableLine texts model alias_ =
     tr
         [ onClick (Select alias_)
         , classList [ ( "active", isSelected model alias_ ) ]
@@ -72,7 +72,7 @@ viewTableLine model alias_ =
             [ Util.Html.checkbox alias_.enabled
             ]
         , td []
-            [ findValidityItemMillis alias_.validity
+            [ findValidityItemMillis texts.validityField alias_.validity
                 |> Tuple.first
                 |> text
             ]

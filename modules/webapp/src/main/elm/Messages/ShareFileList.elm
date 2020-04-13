@@ -1,5 +1,6 @@
 module Messages.ShareFileList exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -26,4 +27,16 @@ gb =
     , fileIsIncomplete = "The file is incomplete ("
     , tryUploadAgain = "%). Try uploading again."
     , yesNo = Messages.YesNoDimmer.gb
+    }
+
+
+de : Texts
+de =
+    { previewNotSupported = "Vorschau nicht unterstützt"
+    , downloadToDisk = "Herunterladen"
+    , viewInBrowser = "Im Browser ansehen"
+    , deleteFile = "Datei löschen."
+    , fileIsIncomplete = "Die Datei ist unvollständig ("
+    , tryUploadAgain = "%). Versuchen Sie erneut hochzuladen."
+    , yesNo = Messages.YesNoDimmer.de
     }

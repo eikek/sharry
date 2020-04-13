@@ -1,5 +1,6 @@
 module Messages.MailForm exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -22,4 +23,15 @@ gb =
     , body = "Body"
     , send = "Send"
     , cancel = "Cancel"
+    }
+
+
+de : Texts
+de =
+    { receivers = "Empfänger"
+    , separateRecipientsByComma = "Mehrere Empfänger durch Komma trennen"
+    , subject = "Betreff"
+    , body = "E-Mail Text"
+    , send = "Absenden"
+    , cancel = "Abbrechen"
     }

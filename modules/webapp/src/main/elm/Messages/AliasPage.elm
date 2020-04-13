@@ -1,5 +1,6 @@
 module Messages.AliasPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -40,4 +41,22 @@ gb =
     , aliasForm = Messages.AliasForm.gb
     , aliasTable = Messages.AliasTable.gb
     , mailSend = Messages.MailSend.gb
+    }
+
+
+de : Texts
+de =
+    { createNew = "Neue Alias Seite erstellen"
+    , aliasPage = "Alias Seite: "
+    , aliasPages = "Alias Seiten"
+    , newAliasPage = "Neue Alias Seite"
+    , searchPlaceholder = "Suche…"
+    , errorQrCode = "Fehler beim Erstellen des QR-Code."
+    , shareThisLink = "Teile diesen Link"
+    , aliasPageNowAt = "Die Alias Seite ist nun hier: "
+    , shareThisUrl = "Du kannst diese URL mit anderen teilen, um von ihnen Dateien zu erhalten."
+    , sendEmail = "Sende E-Mail"
+    , aliasForm = Messages.AliasForm.de
+    , aliasTable = Messages.AliasTable.de
+    , mailSend = Messages.MailSend.de
     }

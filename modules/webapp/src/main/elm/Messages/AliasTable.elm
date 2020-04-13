@@ -1,7 +1,10 @@
 module Messages.AliasTable exposing
     ( Texts
+    , de
     , gb
     )
+
+import Messages.ValidityField
 
 
 type alias Texts =
@@ -9,6 +12,7 @@ type alias Texts =
     , enabled : String
     , validity : String
     , created : String
+    , validityField : Messages.ValidityField.Texts
     }
 
 
@@ -18,4 +22,15 @@ gb =
     , enabled = "Enabled"
     , validity = "Validity"
     , created = "Created"
+    , validityField = Messages.ValidityField.gb
+    }
+
+
+de : Texts
+de =
+    { name = "Name"
+    , enabled = "Aktiv"
+    , validity = "Gültigkeit"
+    , created = "Erstellt"
+    , validityField = Messages.ValidityField.de
     }

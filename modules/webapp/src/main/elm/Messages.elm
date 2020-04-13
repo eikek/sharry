@@ -23,11 +23,13 @@ import Messages.UploadPage
 
 type Language
     = English
+    | German
 
 
 allLanguages : List Language
 allLanguages =
     [ English
+    , German
     ]
 
 
@@ -91,6 +93,9 @@ get lang =
         English ->
             gb
 
+        German ->
+            de
+
 
 fromFlags : Flags -> Messages
 fromFlags flags =
@@ -124,4 +129,24 @@ gb =
     , upload = Messages.UploadPage.gb
     , newInvite = Messages.NewInvitePage.gb
     , settings = Messages.SettingsPage.gb
+    }
+
+
+de : Messages
+de =
+    { lang = German
+    , iso2 = "de"
+    , label = "Deutsch"
+    , flagIcon = "de flag"
+    , app = Messages.App.de
+    , login = Messages.LoginPage.de
+    , register = Messages.RegisterPage.de
+    , account = Messages.AccountPage.de
+    , aliasPage = Messages.AliasPage.de
+    , detail = Messages.DetailPage.de
+    , share = Messages.SharePage.de
+    , home = Messages.HomePage.de
+    , upload = Messages.UploadPage.de
+    , newInvite = Messages.NewInvitePage.de
+    , settings = Messages.SettingsPage.de
     }

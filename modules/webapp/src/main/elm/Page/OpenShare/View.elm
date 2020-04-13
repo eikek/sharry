@@ -46,7 +46,9 @@ view texts flags id model =
 
                   else
                     controls texts model
-                , Data.Flags.limitsMessage flags
+                , Data.Flags.limitsMessage
+                    texts
+                    flags
                     [ class "ui info message" ]
                 , div [ class "ui error message" ]
                     [ text model.formState.message

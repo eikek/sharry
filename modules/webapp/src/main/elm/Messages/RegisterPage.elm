@@ -1,5 +1,6 @@
 module Messages.RegisterPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -32,4 +33,19 @@ gb =
     , signin = "Sign in"
     , registrationSuccessful = "Registration successful."
     , dropdown = Messages.FixedDropdown.gb
+    }
+
+
+de : Texts
+de =
+    { signup = "Registrierung"
+    , userLogin = "Benutzername"
+    , password = "Passwort"
+    , passwordRepeat = "Passwort (Wiederholung)"
+    , invitationKey = "Einladungscode"
+    , submitButton = "Absenden"
+    , alreadySignedUp = "Schon registriert?"
+    , signin = "Anmelden"
+    , registrationSuccessful = "Registrierung erfolgreich."
+    , dropdown = Messages.FixedDropdown.de
     }

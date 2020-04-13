@@ -1,5 +1,6 @@
 module Messages.SettingsPage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -30,4 +31,19 @@ gb =
     , currentPassword = "Current Password"
     , newPassword = "New Password"
     , newPasswordRepeat = "New Password (Repeat)"
+    }
+
+
+de : Texts
+de =
+    { settingsTitle = "Einstellungen"
+    , changeMailHeader = "E-Mail ändern"
+    , newEmail = "Neue E-Mail"
+    , newEmailPlaceholder = "E-Mail Addresse"
+    , submitEmptyMailInfo = "Abschicken eines leeren Formulars löscht die E-Mail Addresse."
+    , submit = "Speichern"
+    , changePasswordHeader = "Passwort ändern"
+    , currentPassword = "Aktuelles Passwort"
+    , newPassword = "Neues Passwort"
+    , newPasswordRepeat = "Neues Passwort (Wiederholung)"
     }

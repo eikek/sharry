@@ -1,5 +1,6 @@
 module Messages.FixedDropdown exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -12,4 +13,10 @@ type alias Texts =
 gb : Texts
 gb =
     { select = "Select…"
+    }
+
+
+de : Texts
+de =
+    { select = "Auswahl…"
     }

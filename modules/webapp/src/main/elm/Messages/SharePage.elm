@@ -1,5 +1,6 @@
 module Messages.SharePage exposing
     ( Texts
+    , de
     , gb
     )
 
@@ -35,6 +36,7 @@ type alias Texts =
     , newShare : String
     , gotoShare : String
     , maxPublicViews : String
+    , uploadsUpTo : String -> String
     }
 
 
@@ -65,4 +67,42 @@ gb =
     , newShare = "New Share"
     , gotoShare = "Goto Share"
     , maxPublicViews = "Maximum Public Views"
+    , uploadsUpTo =
+        \size ->
+            "Uploads are possible up to " ++ size ++ "."
+    }
+
+
+de : Texts
+de =
+    { markdownInput = Messages.MarkdownInput.de
+    , dropzone = Messages.Dropzone2.de
+    , validityField = Messages.ValidityField.de
+    , intField = Messages.IntField.de
+    , sendFiles = "Dateien versenden"
+    , description = "Beschreibung"
+    , sendMoreFiles = "Weitere Dateien versenden"
+    , allFilesUploaded = "Alle Dateien hochgeladen"
+    , someFilesFailedHeader = "Einige Dateien fehlerhaft"
+    , someFilesFailedText =
+        "Einigen Dateien konnten nicht hochgeladen werden. "
+            ++ "Sie können versuchen, sie erneut hochzuladen. "
+    , someFilesFailedTextAddon = "Gehen Sie zur Datei-Freigabe und laden Sie die gleiche Datei nochmal hoch."
+    , submit = "Hochladen"
+    , clearFiles = "Dateien entfernen"
+    , resume = "Fortfahren"
+    , pause = "Pause"
+    , password = "Passwort"
+    , createShare = "Neue Datei-Freigabe erstellen"
+    , details = "Details"
+    , name = "Name"
+    , namePlaceholder = "Optionaler Name"
+    , validity = "Gültigkeit"
+    , files = "Dateien"
+    , newShare = "Neue Freigabe"
+    , gotoShare = "Zur Freigabe"
+    , maxPublicViews = "Maximale Ansichten"
+    , uploadsUpTo =
+        \size ->
+            "Es kann bis zu " ++ size ++ " hochgeladen werden."
     }

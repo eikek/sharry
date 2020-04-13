@@ -130,7 +130,8 @@ renderWelcome flags =
 renderOAuthButtons : Texts -> Flags -> Model -> Html Msg
 renderOAuthButtons texts flags model =
     div [ class "ui very basic segment" ]
-        [ div [ class "ui horizontal divider" ] [ text "Or" ]
+        [ div [ class "ui horizontal divider" ]
+            [ text texts.or ]
         , div [ class "ui buttons" ]
             (List.map (renderOAuthButton texts flags) flags.config.oauthConfig)
         ]
