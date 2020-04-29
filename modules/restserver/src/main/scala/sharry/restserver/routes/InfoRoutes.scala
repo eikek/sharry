@@ -1,7 +1,6 @@
 package sharry.restserver.routes
 
 import cats.effect._
-import org.http4s._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityEncoder._

@@ -58,7 +58,7 @@ object DescriptionTemplate {
     def byName: Map[String, FileInfo] =
       name match {
         case Some(n) =>
-          Map(n.replaceAllLiterally(".", "") -> this)
+          Map(n.replace(".", "") -> this)
         case None =>
           Map.empty
       }
