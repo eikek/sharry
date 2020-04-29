@@ -36,10 +36,10 @@ object Queries {
     val table = fr"filemeta"
   }
   object FileChunkCols {
-    val table     = fr"filechunk"
-    val fileId    = Column("fileId")
+    val table       = fr"filechunk"
+    val fileId      = Column("fileId")
     val chunkLength = Column("chunkLength")
-    val chunkNr   = Column("chunkNr")
+    val chunkNr     = Column("chunkNr")
   }
 
   case class FileDesc(metaId: Ident, name: Option[String], mime: String, length: ByteSize) {
@@ -61,9 +61,9 @@ object Queries {
   }
 
   private def fileDataFragment0(where: Fragment): Fragment = {
-    val fId = "f" :: RShareFile.Columns.id
+    val fId   = "f" :: RShareFile.Columns.id
     val fFile = "f" :: RShareFile.Columns.fileId
-    val mId = "m" :: FileMetaCols.id
+    val mId   = "m" :: FileMetaCols.id
 
     val cols = Seq(
       fId,
@@ -100,7 +100,7 @@ object Queries {
 
   def shareSize(shareId: Ident): ConnectionIO[ByteSize] = {
     val fShare = "f" :: RShareFile.Columns.shareId
-    val fSize = "f" :: RShareFile.Columns.realSize
+    val fSize  = "f" :: RShareFile.Columns.realSize
 
     val qSize = Sql.selectSimple(
       fr"COALESCE(SUM(" ++ fSize.f ++ fr"), 0) as size",
@@ -185,7 +185,8 @@ object Queries {
     val rFile  = "r" :: RShareFile.Columns.fileId
     val rShare = "r" :: RShareFile.Columns.shareId
 
-    val cols = rShare.f ++ fr"as fshare, COUNT(" ++ fileId.f ++ fr") as files, SUM(" ++ size.f ++ fr") as size"
+    val cols =
+      rShare.f ++ fr"as fshare, COUNT(" ++ fileId.f ++ fr") as files, SUM(" ++ size.f ++ fr") as size"
     val table = RShareFile.table ++ fr"r" ++
       fr"INNER JOIN filemeta m ON" ++ rFile.is(fileId) ++
       fr"GROUP BY fshare"

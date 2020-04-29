@@ -5,10 +5,10 @@ import sharry.common.ByteSize
 import sharry.common.Timestamp
 
 case class ShareItem(
-  share: RShare,
-  published: Option[ShareItem.PublishSummary],
-  aliasName: Option[String],
-  files: ShareItem.FileSummary
+    share: RShare,
+    published: Option[ShareItem.PublishSummary],
+    aliasName: Option[String],
+    files: ShareItem.FileSummary
 )
 
 object ShareItem {

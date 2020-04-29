@@ -18,26 +18,25 @@ final class HttpBasicAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.httpBasic.enabled)(
-      Kleisli(
-        up =>
-          Ident.fromString(up.user) match {
-            case Right(login) =>
-              def okResult: F[LoginResult] =
-                HttpAuth.addAccount(login, oacc).flatMap(
-                  accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
-                )
+      Kleisli(up =>
+        Ident.fromString(up.user) match {
+          case Right(login) =>
+            def okResult: F[LoginResult] =
+              HttpAuth
+                .addAccount(login, oacc)
+                .flatMap(accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok))
 
-              for {
-                _    <- logger.fdebug(s"HttpBasicAuth: starting login $up")
-                res  <- executeReq(up, cfg.httpBasic)
-                resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-                _    <- logger.fdebug(s"HttpBasicAuth: $up => $resp")
-              } yield resp
+            for {
+              _    <- logger.fdebug(s"HttpBasicAuth: starting login $up")
+              res  <- executeReq(up, cfg.httpBasic)
+              resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
+              _    <- logger.fdebug(s"HttpBasicAuth: $up => $resp")
+            } yield resp
 
-            case Left(err) =>
-              logger.fdebug(s"HttpBasicAuth: failed.") *>
-                LoginResult.invalidAuth.pure[F]
-          }
+          case Left(err) =>
+            logger.fdebug(s"HttpBasicAuth: failed.") *>
+              LoginResult.invalidAuth.pure[F]
+        }
       )
     )
 
@@ -47,16 +46,15 @@ final class HttpBasicAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
 
     cfg.url.open match {
       case Right(res) =>
-        res.use(
-          conn =>
-            Effect[F].delay {
-              conn.setRequestProperty("Authorization", s"Basic $header")
-              conn.setRequestMethod(cfg.method)
-              conn.connect()
+        res.use(conn =>
+          Effect[F].delay {
+            conn.setRequestProperty("Authorization", s"Basic $header")
+            conn.setRequestMethod(cfg.method)
+            conn.connect()
 
-              val code = conn.asInstanceOf[HttpURLConnection].getResponseCode()
-              code >= 200 && code <= 299
-            }
+            val code = conn.asInstanceOf[HttpURLConnection].getResponseCode()
+            code >= 200 && code <= 299
+          }
         )
 
       case Left(err) =>

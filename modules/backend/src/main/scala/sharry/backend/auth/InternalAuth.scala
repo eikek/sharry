@@ -17,27 +17,26 @@ final class InternalAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
 
   def login: LoginModule[F] =
     LoginModule.enabledState(cfg.internal.enabled, op, AccountSource.intern)(
-      Kleisli(
-        up =>
-          Ident.fromString(up.user) match {
-            case Right(login) =>
-              def okResult(accId: AccountId) =
-                op.updateLoginStats(accId) *>
-                  AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
+      Kleisli(up =>
+        Ident.fromString(up.user) match {
+          case Right(login) =>
+            def okResult(accId: AccountId) =
+              op.updateLoginStats(accId) *>
+                AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
 
-              for {
-                _    <- logger.ftrace(s"Internal auth: doing account lookup: ${login.id}")
-                data <- op.findByLogin(login)
-                _    <- logger.ftrace(s"Internal auth: Account lookup: $data")
-                res <- data
-                        .filter(check(up.pass))
-                        .map(record => okResult(record.accountId(None)))
-                        .getOrElse(LoginResult.invalidAuth.pure[F])
-              } yield res
-            case Left(_) =>
-              logger.fdebug(s"Internal auth: failed.") *>
-                LoginResult.invalidAuth.pure[F]
-          }
+            for {
+              _    <- logger.ftrace(s"Internal auth: doing account lookup: ${login.id}")
+              data <- op.findByLogin(login)
+              _    <- logger.ftrace(s"Internal auth: Account lookup: $data")
+              res <- data
+                      .filter(check(up.pass))
+                      .map(record => okResult(record.accountId(None)))
+                      .getOrElse(LoginResult.invalidAuth.pure[F])
+            } yield res
+          case Left(_) =>
+            logger.fdebug(s"Internal auth: failed.") *>
+              LoginResult.invalidAuth.pure[F]
+        }
       )
     )
 

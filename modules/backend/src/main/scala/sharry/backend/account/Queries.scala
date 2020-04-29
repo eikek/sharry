@@ -36,7 +36,8 @@ object Queries {
     val sId  = "s" :: RShare.Columns.id
 
     val cols = RAccount.Columns.all.map("a" :: _).map(_.f) :+ fr"COUNT(" ++ sId.f ++ fr") as shares"
-    val from = RAccount.table ++ fr"a LEFT OUTER JOIN" ++ RShare.table ++ fr"s ON" ++ aId.is(sAcc) ++ fr"GROUP BY" ++ aId.f
+    val from =
+      RAccount.table ++ fr"a LEFT OUTER JOIN" ++ RShare.table ++ fr"s ON" ++ aId.is(sAcc) ++ fr"GROUP BY" ++ aId.f
 
     Sql.selectSimple(Sql.commas(cols), from, where).query[AccountItem]
   }

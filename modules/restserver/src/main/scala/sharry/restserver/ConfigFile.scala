@@ -27,14 +27,13 @@ object ConfigFile {
 
     implicit val mailSslTypeReader: ConfigReader[SSLType] =
       ConfigReader[String].emap(
-        reason(
-          s =>
-            s.toLowerCase match {
-              case "none"     => Right(SSLType.NoEncryption)
-              case "starttls" => Right(SSLType.StartTLS)
-              case "ssl"      => Right(SSLType.SSL)
-              case _          => Left(s"Invalid ssl type '$s'. Use one of none, ssl or starttls.")
-            }
+        reason(s =>
+          s.toLowerCase match {
+            case "none"     => Right(SSLType.NoEncryption)
+            case "starttls" => Right(SSLType.StartTLS)
+            case "ssl"      => Right(SSLType.SSL)
+            case _          => Left(s"Invalid ssl type '$s'. Use one of none, ssl or starttls.")
+          }
         )
       )
 

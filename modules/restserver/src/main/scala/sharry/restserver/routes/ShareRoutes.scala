@@ -119,7 +119,6 @@ object ShareRoutes {
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Max. views updated.")))
         } yield resp).getOrElseF(NotFound())
 
-
       case req @ POST -> Root / Ident(id) / "password" =>
         (for {
           in <- OptionT.liftF(req.as[SingleString])
@@ -130,10 +129,12 @@ object ShareRoutes {
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password updated.")))
         } yield resp).getOrElseF(NotFound())
 
-
       case req @ DELETE -> Root / Ident(id) / "password" =>
         (for {
-          res  <- backend.share.setPassword(token.account, id, None).attempt.map(AddResult.fromEither)
+          res <- backend.share
+                  .setPassword(token.account, id, None)
+                  .attempt
+                  .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password deleted.")))
         } yield resp).getOrElseF(NotFound())
     }

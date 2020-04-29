@@ -34,15 +34,19 @@ object ShareDetailResponse {
     (for {
       now    <- OptionT.liftF(Timestamp.current[F])
       detail <- backend.share.shareDetails(shareId, pass)
-      resp   <- OptionT.liftF(
-        detail.fold(d => Ok(shareDetail(now, baseUri)(d)),
-          _ => Forbidden(), _ => Unauthorized(authChallenge)))
+      resp <- OptionT.liftF(
+               detail.fold(
+                 d => Ok(shareDetail(now, baseUri)(d)),
+                 _ => Forbidden(),
+                 _ => Unauthorized(authChallenge)
+               )
+             )
     } yield resp).getOrElseF(NotFound())
   }
 
   def shareDetail(now: Timestamp, baseUri: LenientUri)(item: ShareDetail): ShareDetailDto = {
-    val files = item.files.map(
-      f => ShareFile(f.id, f.name.getOrElse(""), f.length, f.mimetype.asString, f.checksum, f.saved)
+    val files = item.files.map(f =>
+      ShareFile(f.id, f.name.getOrElse(""), f.length, f.mimetype.asString, f.checksum, f.saved)
     )
 
     ShareDetailDto(
@@ -56,17 +60,16 @@ object ShareDetailResponse {
       item.share.description,
       item.descProcessed(baseUri),
       item.share.created,
-      item.published.map(
-        p =>
-          SharePublish(
-            p.id,
-            p.enabled,
-            p.views,
-            p.publishDate,
-            p.publishUntil,
-            p.publishUntil.isBefore(now),
-            p.lastAccess
-          )
+      item.published.map(p =>
+        SharePublish(
+          p.id,
+          p.enabled,
+          p.views,
+          p.publishDate,
+          p.publishUntil,
+          p.publishUntil.isBefore(now),
+          p.lastAccess
+        )
       ),
       files.toList
     )

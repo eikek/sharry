@@ -42,15 +42,16 @@ object LoginModule {
       f: Kleisli[F, UserPassData, LoginResult]
   ): LoginModule[F] =
     if (!enable) loginEmpty[F]
-    else LoginModule { up =>
-      Ident.fromString(up.user) match {
-        case Right(login) =>
-          (for {
-            acc <- OptionT(op.findByLogin(login)).filter(_.source == src)
-            res <- OptionT.liftF(f.run(up))
-          } yield res).value
-        case Left(err) =>
-          OptionT.some[F](LoginResult.invalidAuth).value
+    else
+      LoginModule { up =>
+        Ident.fromString(up.user) match {
+          case Right(login) =>
+            (for {
+              acc <- OptionT(op.findByLogin(login)).filter(_.source == src)
+              res <- OptionT.liftF(f.run(up))
+            } yield res).value
+          case Left(err) =>
+            OptionT.some[F](LoginResult.invalidAuth).value
+        }
       }
-    }
 }

@@ -22,10 +22,12 @@ object ByteResult {
       data <- OptionT.pure(Stream.emit(meta._2).through(store.bitpeace.fetchData(range)))
     } yield FileRange(meta._1, meta._2, data)
 
-
   // impl. note: bitpeace uses for filemeta's timestamp column a different mapping, so
   // it's complicated to create a single query with doobie. Using to two queries.
-  private def loadMeta[F[_]: Effect](fileId: Ident, store: Store[F]): OptionT[F, (RShareFile, FileMeta)] =
+  private def loadMeta[F[_]: Effect](
+      fileId: Ident,
+      store: Store[F]
+  ): OptionT[F, (RShareFile, FileMeta)] =
     for {
       rf <- OptionT(store.transact(RShareFile.findById(fileId)))
       fm <- OptionT(store.bitpeace.get(rf.fileId.id).unNoneTerminate.compile.last)

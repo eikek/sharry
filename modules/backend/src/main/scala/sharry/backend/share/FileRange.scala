@@ -5,7 +5,7 @@ import bitpeace.FileMeta
 import sharry.store.records.RShareFile
 
 case class FileRange[F[_]](
-  shareFile: RShareFile,
-  fileMeta: FileMeta,
-  data: Stream[F, Byte]
+    shareFile: RShareFile,
+    fileMeta: FileMeta,
+    data: Stream[F, Byte]
 )

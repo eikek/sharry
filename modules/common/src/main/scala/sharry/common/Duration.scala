@@ -11,7 +11,7 @@ import io.circe.Encoder
 
 final class Duration(val nanos: Long) extends AnyVal {
 
-  def <= (other: Duration): Boolean =
+  def <=(other: Duration): Boolean =
     nanos <= other.nanos
 
   def millis: Long = nanos / 1000000
@@ -30,16 +30,13 @@ final class Duration(val nanos: Long) extends AnyVal {
     s"$millis ms"
 
   def formatHuman: String = {
-    val factors = List((1000000, "millis"),
-      (1000, "seconds"),
-      (60, "minutes"),
-      (60, "hours"),
-      (24, "days"))
+    val factors =
+      List((1000000, "millis"), (1000, "seconds"), (60, "minutes"), (60, "hours"), (24, "days"))
 
     val (value, unit) = factors.foldLeft((nanos.toDouble, "nanos")) {
       case ((r, runit), (fac, funit)) =>
-      if (r < fac) (r, runit)
-      else (r / fac.toDouble, funit)
+        if (r < fac) (r, runit)
+        else (r / fac.toDouble, funit)
     }
     s"$value $unit"
   }

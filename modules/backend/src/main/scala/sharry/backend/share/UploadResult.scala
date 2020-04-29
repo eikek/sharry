@@ -11,10 +11,10 @@ sealed trait UploadResult[+A] {
   def map[B](f: A => B): UploadResult[B] =
     flatMap(a => UploadResult.Success(f(a)))
 
-  def mapF[F[_]: Applicative, B](f: A  => F[B]): F[UploadResult[B]] =
+  def mapF[F[_]: Applicative, B](f: A => F[B]): F[UploadResult[B]] =
     flatMapF[F, B](a => f(a).map(UploadResult.success))
 
-  def flatMapF[F[_]: Applicative, B](f: A  => F[UploadResult[B]]): F[UploadResult[B]]
+  def flatMapF[F[_]: Applicative, B](f: A => F[UploadResult[B]]): F[UploadResult[B]]
 
   def exists(f: A => Boolean): Boolean =
     toOption.exists(f)
@@ -50,7 +50,7 @@ object UploadResult {
     def flatMap[B](f: A => UploadResult[B]): UploadResult[B] =
       f(value)
 
-    def flatMapF[F[_]: Applicative, B](f: A  => F[UploadResult[B]]): F[UploadResult[B]] =
+    def flatMapF[F[_]: Applicative, B](f: A => F[UploadResult[B]]): F[UploadResult[B]] =
       f(value)
 
     def toOption: Option[A] = Some(value)
@@ -60,7 +60,7 @@ object UploadResult {
     def flatMap[B](f: Nothing => UploadResult[B]): UploadResult[B] =
       this
 
-    def flatMapF[F[_]: Applicative, B](f: Nothing  => F[UploadResult[B]]): F[UploadResult[B]] =
+    def flatMapF[F[_]: Applicative, B](f: Nothing => F[UploadResult[B]]): F[UploadResult[B]] =
       (this: UploadResult[B]).pure[F]
 
     def toOption: Option[Nothing] = None
@@ -70,7 +70,7 @@ object UploadResult {
     def flatMap[B](f: Nothing => UploadResult[B]): UploadResult[B] =
       this
 
-    def flatMapF[F[_]: Applicative, B](f: Nothing  => F[UploadResult[B]]): F[UploadResult[B]] =
+    def flatMapF[F[_]: Applicative, B](f: Nothing => F[UploadResult[B]]): F[UploadResult[B]] =
       (this: UploadResult[B]).pure[F]
 
     def toOption: Option[Nothing] = None

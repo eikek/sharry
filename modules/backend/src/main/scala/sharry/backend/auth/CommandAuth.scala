@@ -18,40 +18,38 @@ final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.command.enabled)(
-      Kleisli(
-        up =>
-          Ident.fromString(up.user) match {
-            case Right(login) =>
-              def okResult: F[LoginResult] =
-                HttpAuth
-                  .addAccount(login, oacc)
-                  .flatMap(
-                    accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
-                  )
+      Kleisli(up =>
+        Ident.fromString(up.user) match {
+          case Right(login) =>
+            def okResult: F[LoginResult] =
+              HttpAuth
+                .addAccount(login, oacc)
+                .flatMap(accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok))
 
-              for {
-                _    <- logger.fdebug(s"CommandAuth: starting login $up")
-                res  <- runCommand(up, cfg.command)
-                resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-                _    <- logger.fdebug(s"CommandAuth: $up => $resp")
-              } yield resp
+            for {
+              _    <- logger.fdebug(s"CommandAuth: starting login $up")
+              res  <- runCommand(up, cfg.command)
+              resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
+              _    <- logger.fdebug(s"CommandAuth: $up => $resp")
+            } yield resp
 
-            case Left(err) =>
-              logger.fdebug(s"CommandAuth: failed.") *>
-                LoginResult.invalidAuth.pure[F]
-          }
+          case Left(err) =>
+            logger.fdebug(s"CommandAuth: failed.") *>
+              LoginResult.invalidAuth.pure[F]
+        }
       )
     )
 
   def runCommand(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] = Effect[F].delay {
-    val prg = cfg.program.
-      map(s => mustache.parse(s) match {
+    val prg = cfg.program.map(s =>
+      mustache.parse(s) match {
         case Right(tpl) =>
           up.render(tpl)
         case Left(err) =>
           logger.warn(s"Error in command template '$s': $err")
           s
-      })
+      }
+    )
 
     val result = Either.catchNonFatal(Process(prg).!)
     logger.debug(s"Result of external auth command: $result")

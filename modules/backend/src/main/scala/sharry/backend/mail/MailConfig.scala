@@ -28,7 +28,7 @@ object MailConfig {
       sslType: SSLType,
       checkCertificates: Boolean,
       timeout: Duration,
-    defaultFrom: Option[MailAddress],
+      defaultFrom: Option[MailAddress],
       listId: String
   )
 

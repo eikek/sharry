@@ -96,14 +96,13 @@ object ShareUploadRoutes {
 
     val files = mp.parts
       .filter(p => p.name.forall(s => !s.equalsIgnoreCase("meta")))
-      .map(
-        p =>
-          File(
-            p.filename,
-            p.headers.get(`Content-Type`).map(fromContentType),
-            p.headers.get(`Content-Length`).map(_.length),
-            p.body
-          )
+      .map(p =>
+        File(
+          p.filename,
+          p.headers.get(`Content-Type`).map(fromContentType),
+          p.headers.get(`Content-Length`).map(_.length),
+          p.body
+        )
       )
 
     for {

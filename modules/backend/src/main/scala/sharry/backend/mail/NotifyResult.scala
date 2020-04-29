@@ -1,11 +1,9 @@
 package sharry.backend.mail
 
-sealed trait NotifyResult {
-
-}
+sealed trait NotifyResult {}
 
 object NotifyResult {
-  def missingEmail: NotifyResult = MissingEmail
+  def missingEmail: NotifyResult    = MissingEmail
   def featureDisabled: NotifyResult = FeatureDisabled
 
   case object InvalidAlias extends NotifyResult
