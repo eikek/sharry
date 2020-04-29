@@ -3,8 +3,6 @@ package sharry.restserver
 import cats.effect._
 import cats.implicits._
 
-import scala.concurrent.ExecutionContext
-import java.util.concurrent.Executors
 import java.nio.file.{Files, Paths}
 
 import org.log4s._
@@ -14,13 +12,14 @@ import sharry.store.migrate.MigrateFrom06
 object Main extends IOApp {
   private[this] val logger = getLogger
 
-  val blockingEc: ExecutionContext = ExecutionContext.fromExecutor(
-    Executors.newCachedThreadPool(ThreadFactories.ofName("sharry-restserver-blocking"))
+  val blockingEC = ThreadFactories.cached[IO](
+    ThreadFactories.ofName("sharry-restserver-blocking")
   )
-  val blocker = Blocker.liftExecutionContext(blockingEc)
-  val connectEC: ExecutionContext = ExecutionContext.fromExecutorService(
-    Executors.newFixedThreadPool(5, ThreadFactories.ofName("sharry-dbconnect"))
-  )
+  val connectEC =
+    ThreadFactories.fixed[IO](5, ThreadFactories.ofName("sharry-dbconnect"))
+
+  val restEC =
+    ThreadFactories.workSteal[IO](ThreadFactories.ofNameFJ("sharry-restserver"))
 
   def run(args: List[String]) = {
     args match {
@@ -51,16 +50,26 @@ object Main extends IOApp {
       cfg.baseUrl
     )
     logger.info(s"\n${banner.render("***>")}")
-    if ("true" == System.getProperty("sharry.migrate-old-dbschema")) {
-      MigrateFrom06[IO](cfg.backend.jdbc, connectEC, blocker)
-        .use(mig => mig.migrate)
-        .as(ExitCode.Success)
-    } else {
-      RestServer
-        .stream[IO](cfg, ExecutionContext.global, connectEC, blocker)
-        .compile
-        .drain
-        .as(ExitCode.Success)
+
+    val pools = for {
+      bec     <- blockingEC
+      blocker = Blocker.liftExecutionContext(bec)
+      cec     <- connectEC
+      rec     <- restEC
+    } yield Pools(cec, bec, blocker, rec)
+
+    pools.use { p =>
+      if ("true" == System.getProperty("sharry.migrate-old-dbschema")) {
+        MigrateFrom06[IO](cfg.backend.jdbc, p.connectEC, p.blocker)
+          .use(mig => mig.migrate)
+          .as(ExitCode.Success)
+      } else {
+        RestServer
+          .stream[IO](cfg, p)
+          .compile
+          .drain
+          .as(ExitCode.Success)
+      }
     }
   }
 }

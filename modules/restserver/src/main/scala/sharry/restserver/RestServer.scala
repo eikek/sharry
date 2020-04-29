@@ -14,7 +14,6 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 import org.log4s.getLogger
-import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 import sharry.common.syntax.all._
@@ -27,19 +26,17 @@ object RestServer {
 
   def stream[F[_]: ConcurrentEffect](
       cfg: Config,
-      ec: ExecutionContext,
-      connectEC: ExecutionContext,
-      blocker: Blocker
+      pools: Pools
   )(
       implicit T: Timer[F],
       CS: ContextShift[F]
   ): Stream[F, Nothing] = {
 
-    val templates = TemplateRoutes[F](blocker, cfg)
+    val templates = TemplateRoutes[F](pools.blocker, cfg)
     val app = for {
-      restApp <- RestAppImpl.create[F](cfg, connectEC, blocker)
+      restApp <- RestAppImpl.create[F](cfg, pools.connectEC, pools.blocker)
       _       <- Resource.liftF(restApp.init)
-      client  <- BlazeClientBuilder[F](ec).resource
+      client  <- BlazeClientBuilder[F](pools.httpClientEC).resource
 
       httpApp = Router(
         "/api/v2/open/" -> openRoutes(cfg, client, restApp),
@@ -54,7 +51,7 @@ object RestServer {
           else notFound[F](token)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> WebjarRoutes.appRoutes[F](blocker, cfg),
+        "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker, cfg),
         "/app"        -> templates.app,
         "/"           -> redirectTo("/app")
       ).orNotFound
@@ -67,7 +64,7 @@ object RestServer {
     Stream
       .resource(app)
       .flatMap(httpApp =>
-        BlazeServerBuilder[F]
+        BlazeServerBuilder[F](pools.restEC)
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withResponseHeaderTimeout(cfg.responseTimeout.toScala)
           .withIdleTimeout(cfg.responseTimeout.toScala + 30.seconds)
