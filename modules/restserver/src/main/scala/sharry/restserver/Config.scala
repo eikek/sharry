@@ -9,7 +9,25 @@ case class Config(
     bind: Config.Bind,
     webapp: Config.Webapp,
     backend: BackendConfig
-)
+) {
+
+  def validate: List[String] = {
+    val threshold = Duration.seconds(30)
+    List(
+      if (backend.auth.sessionValid >= (webapp.authRenewal + threshold)) ""
+      else
+        s"session-valid time (${backend.auth.sessionValid}) must be " +
+          s"at least 30s greater than webapp.auth-renewal (${webapp.authRenewal})"
+    ).filter(_.nonEmpty)
+  }
+
+  def validOrThrow: Config =
+    validate match {
+      case Nil => this
+      case errs =>
+        sys.error(s"Configuration is not valid: ${errs.mkString(", ")}")
+    }
+}
 
 object Config {
 
@@ -24,7 +42,8 @@ object Config {
       chunkSize: ByteSize,
       retryDelays: Seq[Duration],
       welcomeMessage: String,
-      defaultLanguage: String
+      defaultLanguage: String,
+      authRenewal: Duration
   )
 
 }

@@ -1658,6 +1658,7 @@ components:
         - mailEnabled
         - welcomeMessage
         - defaultLanguage
+        - authRefreshTime
       properties:
         appName:
           type: string
@@ -1699,6 +1700,9 @@ components:
           type: string
         defaultLanguage:
           type: string
+        authRefreshTime:
+          type: integer
+          format: duration
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

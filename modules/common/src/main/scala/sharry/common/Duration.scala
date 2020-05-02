@@ -14,6 +14,12 @@ final class Duration(val nanos: Long) extends AnyVal {
   def <=(other: Duration): Boolean =
     nanos <= other.nanos
 
+  def >=(other: Duration): Boolean =
+    nanos >= other.nanos
+
+  def +(other: Duration): Duration =
+    new Duration(nanos + other.nanos)
+
   def millis: Long = nanos / 1000000
 
   def seconds: Long = millis / 1000

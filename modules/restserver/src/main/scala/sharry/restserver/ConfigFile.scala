@@ -14,7 +14,7 @@ object ConfigFile {
   import Implicits._
 
   def loadConfig: Config =
-    ConfigSource.default.at("sharry.restserver").loadOrThrow[Config]
+    ConfigSource.default.at("sharry.restserver").loadOrThrow[Config].validOrThrow
 
   object Implicits {
     implicit val signupModeReader: ConfigReader[SignupMode] =

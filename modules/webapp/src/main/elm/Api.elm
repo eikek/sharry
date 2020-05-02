@@ -535,10 +535,10 @@ refreshSession : Flags -> (Result Http.Error AuthResult -> msg) -> Cmd msg
 refreshSession flags receive =
     case flags.account of
         Just acc ->
-            if acc.success && acc.validMs > 30000 then
+            if acc.success then
                 let
                     delay =
-                        acc.validMs - 30000 |> toFloat
+                        flags.config.authRefreshTime |> toFloat
                 in
                 Http2.executeIn delay receive (refreshSessionTask flags)
 
