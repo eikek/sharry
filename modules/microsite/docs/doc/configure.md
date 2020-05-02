@@ -149,7 +149,7 @@ curl -X POST -H 'Sharry-Auth: {{apikey}}' -d '{"password":"blabla"}' "http://loc
 ## Authentication
 
 The initial authentication will generate an authentication token which
-is valid for a some time. Subsequent calls to secured routes can use
+is valid for some time. Subsequent calls to secured routes can use
 this token. The token can be given as a normal http header or via a
 cookie header.
 
@@ -158,7 +158,7 @@ The following options configure this token:
 ```
 sharry.restserver.auth {
   server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
-  session-valid = "5 minutes"
+  session-valid = "8 minutes"
 }
 ```
 
@@ -171,8 +171,16 @@ string's utf8 bytes are used.
 
 The `session-valid` deterimens how long a token is valid. This can be
 just some minutes, the web application obtains new ones
-periodically. So a short time is recommended.
+periodically. So a rather short time is recommended.
 
+The interval the webapp retrieves a new token can be configured, too.
+It must be at least 30s below the `session-valid` time.
+
+```
+sharry.restserver.webapp {
+  auth-renewal = "4 minutes"
+}
+```
 
 ### Login Modules
 
