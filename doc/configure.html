@@ -130,7 +130,7 @@ example).</p>
 <h2 id="authentication">Authentication</h2>
 
 <p>The initial authentication will generate an authentication token which
-is valid for a some time. Subsequent calls to secured routes can use
+is valid for some time. Subsequent calls to secured routes can use
 this token. The token can be given as a normal http header or via a
 cookie header.</p>
 
@@ -138,7 +138,7 @@ cookie header.</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.auth {
   server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
-  session-valid = "5 minutes"
+  session-valid = "8 minutes"
 }
 </code></pre></div></div>
 
@@ -151,7 +151,15 @@ string’s utf8 bytes are used.</p>
 
 <p>The <code class="highlighter-rouge">session-valid</code> deterimens how long a token is valid. This can be
 just some minutes, the web application obtains new ones
-periodically. So a short time is recommended.</p>
+periodically. So a rather short time is recommended.</p>
+
+<p>The interval the webapp retrieves a new token can be configured, too.
+It must be at least 30s below the <code class="highlighter-rouge">session-valid</code> time.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.webapp {
+  auth-renewal = "4 minutes"
+}
+</code></pre></div></div>
 
 <h3 id="login-modules">Login Modules</h3>
 
@@ -350,6 +358,12 @@ sharry.restserver {
     port = 9090
   }
 
+  # The time from receiving a request until the first line of the
+  # response is rendered. When uploading big chunks on slow
+  # connections, this may have to be increased (or the
+  # `webapp.chunk-size' decreased).
+  response-timeout = "4 minutes"
+
   webapp {
     # This is shown in the top right corner of the web application
     app-name = "Sharry"
@@ -375,8 +389,10 @@ sharry.restserver {
     # one requests, resulting in faster uploads.
     #
     # You might need to adjust this value depending on your setup. A
-    # higher value usually means faster uploads.
-    chunk-size = "100M"
+    # higher value usually means faster uploads (if the up-link is
+    # good enough). It is set rather low by default, because it is a
+    # safer default.
+    chunk-size = "10M"
 
     # Number of milliseconds the client should wait before doing a new
     # upload attempt after something failed. The length of the array
@@ -387,6 +403,14 @@ sharry.restserver {
     # everyone. The text is processed as markdown.
     welcome-message = ""
 
+    # The ISO-3166-1 code of the default language to use. If a invalid
+    # code is given (or one where no language is available), it falls
+    # back to "gb".
+    default-language = "gb"
+
+    # The interval a new authentication token is retrieved. This must
+    # be at least 30s lower than `backend.auth.session-valid'.
+    auth-renewal = "4 minutes"
   }
 
   backend {
@@ -402,7 +426,7 @@ sharry.restserver {
 
       # How long an authentication token is valid. The web application
       # will get a new one periodically.
-      session-valid = "5 minutes"
+      session-valid = "8 minutes"
 
       #### Login Modules
       ##
