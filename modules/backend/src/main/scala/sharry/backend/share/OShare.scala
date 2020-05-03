@@ -261,6 +261,7 @@ object OShare {
           data: Stream[F, Byte]
       ): OptionT[F, UploadResult[ByteSize]] = {
         val startChunk = (offset.bytes / cfg.chunkSize.bytes).toInt
+        val reqLen     = length.getOrElse(ByteSize.zero)
 
         def storeChunk(
             fileMetaId: Ident,
@@ -268,7 +269,7 @@ object OShare {
             mimeHint: MimetypeHint,
             sizeLeft: ByteSize
         ) =
-          logger.fdebug(s"Start storing request of size ${length.toHuman}") *>
+          logger.fdebug(s"Start storing request of size ${reqLen.toHuman}") *>
             data
               .take(sizeLeft.bytes + 1)
               .chunkN(cfg.chunkSize.bytes.toInt)
@@ -276,7 +277,7 @@ object OShare {
               .map(tc => FileChunk(fileMetaId.id, tc._2 + startChunk, tc._1.toByteVector))
               .flatMap(chunk =>
                 Stream.eval(
-                  logger.fdebug(s"Storing chunk ${chunk.chunkNr} of size ${chunk.chunkData.size}")
+                  logger.ftrace(s"Storing chunk ${chunk.chunkNr} of size ${chunk.chunkData.size}")
                 ) >>
                   store.bitpeace
                     .addChunkByLength(chunk, cfg.chunkSize.bytes.toInt, length.bytes, mimeHint)
@@ -308,7 +309,7 @@ object OShare {
         for {
           _ <- OptionT(store.transact(Queries.checkFile(fileId, accId)))
           res <- OptionT.liftF(
-                  checkShareSize(store, cfg.maxSize, shareId, length.getOrElse(ByteSize.zero))
+                  checkShareSize(store, cfg.maxSize, shareId, reqLen)
                 )
           desc <- OptionT(store.transact(Queries.fileDesc(fileId)))
           next <- OptionT.liftF(
