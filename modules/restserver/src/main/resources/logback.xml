@@ -9,6 +9,7 @@
 
   <logger name="sharry" level="debug" />
   <logger name="emil" level="debug" />
+  <logger name="org.http4s" level="info"/>
 
   <root level="WARN">
     <appender-ref ref="STDOUT" />
