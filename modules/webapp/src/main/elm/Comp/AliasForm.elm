@@ -46,7 +46,7 @@ initNew flags =
     , nameField = ""
     , validityModel = Comp.ValidityField.init flags
     , validityField = Data.ValidityValue.Days 2
-    , enabledField = False
+    , enabledField = True
     , yesNoModel = Comp.YesNoDimmer.emptyModel
     }
 
