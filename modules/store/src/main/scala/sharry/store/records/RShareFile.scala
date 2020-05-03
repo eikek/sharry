@@ -54,4 +54,7 @@ object RShareFile {
 
   def setRealSize(fid: Ident, size: ByteSize): ConnectionIO[Int] =
     Sql.updateRow(table, id.is(fid), realSize.setTo(size)).update.run
+
+  def addRealSize(fid: Ident, size: ByteSize): ConnectionIO[Int] =
+    Sql.updateRow(table, id.is(fid), realSize.increment(size.bytes)).update.run
 }

@@ -49,8 +49,8 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isGt(c: Column): Fragment =
     f ++ fr">" ++ c.f
 
-  def increment(n: Int): Fragment =
-    f ++ fr"=" ++ f ++ fr"+ $n"
+  def increment[A: Put](a: A): Fragment =
+    f ++ fr"=" ++ f ++ fr"+ $a"
 
   def setTo[A: Put](value: A): Fragment =
     is(value)

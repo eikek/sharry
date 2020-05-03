@@ -19,6 +19,7 @@ import sharry.store.records.RAlias
 import sharry.store.AddResult
 import sharry.store.records.RPublishShare
 import bitpeace.RangeDef
+import bitpeace.Outcome
 
 trait OShare[F[_]] {
 
@@ -267,24 +268,36 @@ object OShare {
             mimeHint: MimetypeHint,
             sizeLeft: ByteSize
         ) =
-          data
-            .take(sizeLeft.bytes + 1)
-            .chunkN(cfg.chunkSize.bytes.toInt)
-            .zipWithIndex
-            .map(tc => FileChunk(fileMetaId.id, tc._2 + startChunk, tc._1.toByteVector))
-            .flatMap(chunk =>
-              store.bitpeace
-                .addChunkByLength(chunk, cfg.chunkSize.bytes.toInt, length.bytes, mimeHint)
-                .map(_ => chunk.chunkData.size)
-            )
-            .fold1(_ + _)
-            .compile
-            .last
-            .map(_.getOrElse(0L))
-            .flatMap { bytesSaved =>
-              val len = offset + ByteSize(bytesSaved)
-              store.transact(RShareFile.setRealSize(fileId, len)).map(_ => len)
-            }
+          logger.fdebug(s"Start storing request of size ${length.toHuman}") *>
+            data
+              .take(sizeLeft.bytes + 1)
+              .chunkN(cfg.chunkSize.bytes.toInt)
+              .zipWithIndex
+              .map(tc => FileChunk(fileMetaId.id, tc._2 + startChunk, tc._1.toByteVector))
+              .flatMap(chunk =>
+                Stream.eval(
+                  logger.fdebug(s"Storing chunk ${chunk.chunkNr} of size ${chunk.chunkData.size}")
+                ) >>
+                  store.bitpeace
+                    .addChunkByLength(chunk, cfg.chunkSize.bytes.toInt, length.bytes, mimeHint)
+                    .evalMap({
+                      case Outcome.Created(_) =>
+                        store.transact(
+                          RShareFile.addRealSize(fileId, ByteSize(chunk.chunkData.size))
+                        )
+                      case Outcome.Unmodified(_) =>
+                        0.pure[F]
+                    })
+                    .map(_ => chunk.chunkData.size)
+              )
+              .fold1(_ + _)
+              .compile
+              .last
+              .map(_.getOrElse(0L))
+              .flatMap { bytesSaved =>
+                val len = offset + ByteSize(bytesSaved)
+                store.transact(RShareFile.setRealSize(fileId, len)).map(_ => len)
+              }
 
         val deleteFile = store
           .transact(RShareFile.delete(fileId))
