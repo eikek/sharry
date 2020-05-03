@@ -26,11 +26,12 @@ let
       app-footer = "";
       app-footer-visible = true;
       welcome-message = "";
+      auth-renewal = "4 minutes";
     };
     backend = {
       auth = {
         server-secret = "hex:caffee";
-        session-valid = "5 minutes";
+        session-valid = "8 minutes";
         fixed = {
           enabled = false;
           user = "admin";
@@ -211,7 +212,7 @@ in {
 
       response-timeout = mkOption {
         type = types.str;
-        default = defauts.response-timeout;
+        default = defaults.response-timeout;
         description = ''
           The time from receiving a request until the first line of the
           response is rendered. When uploading big chunks on slow
@@ -288,6 +289,15 @@ in {
                 denotes the number of retries.
               '';
             };
+            auth-renewal = mkOption {
+              type = types.str;
+              default = defaults.webapp.auth-renewal;
+              description = ''
+                The interval a new authentication token is retrieved. This must
+                be at least 30s lower than `backend.auth.session-valid'.
+              '';
+            };
+
           };
         });
         default = defaults.webapp;
