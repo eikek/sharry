@@ -35,7 +35,7 @@ gb =
 de : Texts
 de =
     { home = "Home"
-    , shares = "Shares"
+    , shares = "Freigaben"
     , aliases = "Aliase"
     , accounts = "Konten"
     , settings = "Einstellungen"
