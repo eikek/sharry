@@ -28,10 +28,11 @@ final class InternalAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
               _    <- logger.ftrace(s"Internal auth: doing account lookup: ${login.id}")
               data <- op.findByLogin(login)
               _    <- logger.ftrace(s"Internal auth: Account lookup: $data")
-              res <- data
-                      .filter(check(up.pass))
-                      .map(record => okResult(record.accountId(None)))
-                      .getOrElse(LoginResult.invalidAuth.pure[F])
+              res <-
+                data
+                  .filter(check(up.pass))
+                  .map(record => okResult(record.accountId(None)))
+                  .getOrElse(LoginResult.invalidAuth.pure[F])
             } yield res
           case Left(_) =>
             logger.fdebug(s"Internal auth: failed.") *>

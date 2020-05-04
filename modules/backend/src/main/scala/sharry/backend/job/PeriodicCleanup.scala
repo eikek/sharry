@@ -21,7 +21,12 @@ object PeriodicCleanup {
       Resource.liftF(logger.finfo("Cleanup job not running, because it is disabled"))
     else {
       val main =
-        (logStarting ++ loop(cleanupCfg, signupCfg, shareOps, signupOps) ++ logStopped).compile.drain
+        (logStarting ++ loop(
+          cleanupCfg,
+          signupCfg,
+          shareOps,
+          signupOps
+        ) ++ logStopped).compile.drain
       Resource
         .make(ConcurrentEffect[F].start(main))(fiber =>
           logger.fdebug("Periodic cleanup cancelled") *> fiber.cancel

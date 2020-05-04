@@ -37,7 +37,13 @@ final class Duration(val nanos: Long) extends AnyVal {
 
   def formatHuman: String = {
     val factors =
-      List((1000000, "millis"), (1000, "seconds"), (60, "minutes"), (60, "hours"), (24, "days"))
+      List(
+        (1000000, "millis"),
+        (1000, "seconds"),
+        (60, "minutes"),
+        (60, "hours"),
+        (24, "days")
+      )
 
     val (value, unit) = factors.foldLeft((nanos.toDouble, "nanos")) {
       case ((r, runit), (fac, funit)) =>

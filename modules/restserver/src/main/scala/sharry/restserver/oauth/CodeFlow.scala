@@ -31,12 +31,16 @@ object CodeFlow {
 
     for {
       _ <- OptionT.liftF(
-            logger.fdebug[F](s"Obtaining access_token for provider ${cfg.id.id} and code $code")
-          )
+        logger.fdebug[F](
+          s"Obtaining access_token for provider ${cfg.id.id} and code $code"
+        )
+      )
       token <- codeToToken[F](c, dsl, cfg, redirectUri, code)
       _ <- OptionT.liftF(
-            logger.fdebug[F](s"Obtaining user-info for provider ${cfg.id.id} and token $token")
-          )
+        logger.fdebug[F](
+          s"Obtaining user-info for provider ${cfg.id.id} and token $token"
+        )
+      )
       user <- tokenToUser[F](c, dsl, cfg, token)
     } yield user
   }
@@ -64,7 +68,8 @@ object CodeFlow {
     OptionT(c.fetch(req) {
       case Status.Successful(r) =>
         val u1 = r.as[UrlForm].map(_.getFirst("access_token"))
-        val u2 = r.as[Json].map(_.asObject.flatMap(_.apply("access_token")).flatMap(_.asString))
+        val u2 =
+          r.as[Json].map(_.asObject.flatMap(_.apply("access_token")).flatMap(_.asString))
         u1.recoverWith(_ => u2).flatTap(at => logger.finfo(s"Got token: $at"))
       case r =>
         logger
@@ -96,7 +101,9 @@ object CodeFlow {
           .flatTap(uid => logger.finfo(s"Got user id: $uid"))
       case r =>
         r.as[String]
-          .flatMap(err => logger.ferror(s"Cannot obtain user info: ${r.status.code} / ${err}"))
+          .flatMap(err =>
+            logger.ferror(s"Cannot obtain user info: ${r.status.code} / ${err}")
+          )
           .map(_ => None)
 
     }

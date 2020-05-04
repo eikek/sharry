@@ -69,10 +69,14 @@ object ShareUploadRoutes {
           resp      <- OptionT.liftF(Ok(Conv.uploadBasicResult("File(s) added")(ur)))
         } yield resp).getOrElseF(NotFound())
 
-      case req @ (PATCH | POST | GET | OPTIONS | HEAD) -> Ident(id) /: "files" /: "tus" /: rest =>
+      case req @ (PATCH | POST | GET | OPTIONS | HEAD) -> Ident(
+            id
+          ) /: "files" /: "tus" /: rest =>
         val pi      = req.pathInfo.substring(id.id.length() + 10)
         val rootUri = rootUrl / id.id / "files" / "tus"
-        TusRoutes(id, backend, token, cfg, rootUri).run(req.withPathInfo(pi)).getOrElseF(NotFound())
+        TusRoutes(id, backend, token, cfg, rootUri)
+          .run(req.withPathInfo(pi))
+          .getOrElseF(NotFound())
     }
   }
 
@@ -81,10 +85,15 @@ object ShareUploadRoutes {
       body
         .through(fs2.text.utf8Decode)
         .parseJsonAs[ShareProperties]
-        .map(_.fold(ex => {
-          logger.error(ex)("Reading upload metadata failed.")
-          throw ex
-        }, identity))
+        .map(
+          _.fold(
+            ex => {
+              logger.error(ex)("Reading upload metadata failed.")
+              throw ex
+            },
+            identity
+          )
+        )
 
     def fromContentType(header: `Content-Type`): Mimetype =
       Mimetype(header.mediaType.mainType, header.mediaType.subType)

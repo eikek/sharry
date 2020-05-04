@@ -42,7 +42,10 @@ object TusRoutes {
               .semiflatMap({
                 case UploadResult.Success(fid) =>
                   val url = rootUrl / fid.id
-                  Created(TusHeader.resumable, Location(Uri.unsafeFromString(url.asString)))
+                  Created(
+                    TusHeader.resumable,
+                    Location(Uri.unsafeFromString(url.asString))
+                  )
                 case UploadResult.ValidityExceeded(_) =>
                   BadRequest()
                 case UploadResult.SizeExceeded(_) =>
@@ -75,14 +78,14 @@ object TusRoutes {
           _    <- OptionT.liftF(logger.fdebug(s"Return info for file ${fileId.id}"))
           data <- backend.share.getFileData(fileId, token.account)
           resp <- OptionT.liftF(
-                   Ok(
-                     TusHeader.resumable,
-                     UploadOffset(data.saved),
-                     TusHeader.cacheControl,
-                     TusMaxSize(cfg.backend.share.maxSize),
-                     UploadLength(data.length)
-                   )
-                 )
+            Ok(
+              TusHeader.resumable,
+              UploadOffset(data.saved),
+              TusHeader.cacheControl,
+              TusMaxSize(cfg.backend.share.maxSize),
+              UploadLength(data.length)
+            )
+          )
         } yield resp).getOrElseF(NotFound())
 
     }

@@ -35,16 +35,19 @@ object AccountRoutes {
     val r2 = HttpRoutes.of[F] {
       case req @ POST -> Root / Ident(id) =>
         for {
-          in   <- req.as[AccountModify]
-          res  <- backend.account.modify(id, ModAccount(in.state, in.admin, in.email, in.password))
+          in <- req.as[AccountModify]
+          res <- backend.account.modify(
+            id,
+            ModAccount(in.state, in.admin, in.email, in.password)
+          )
           resp <- Ok(Conv.basicResult(res, "Account successfully modified."))
         } yield resp
 
       case req @ GET -> Root =>
         val q = req.params.getOrElse("q", "")
         for {
-          _    <- logger.ftrace(s"Listing accounts: $q")
-          all  <- backend.account.findAccounts(q).take(100).compile.toVector
+          _   <- logger.ftrace(s"Listing accounts: $q")
+          all <- backend.account.findAccounts(q).take(100).compile.toVector
           list = AccountList(all.map(accountDetail).toList)
           resp <- Ok(list)
         } yield resp
@@ -53,13 +56,13 @@ object AccountRoutes {
         for {
           in <- req.as[AccountCreate]
           acc <- NewAccount.create(
-                  in.login,
-                  AccountSource.Intern,
-                  in.state,
-                  in.password,
-                  in.email,
-                  in.admin
-                )
+            in.login,
+            AccountSource.Intern,
+            in.state,
+            in.password,
+            in.email,
+            in.admin
+          )
           res  <- backend.account.create(acc)
           resp <- Ok(Conv.basicResult(res, "Account successfully created."))
         } yield resp

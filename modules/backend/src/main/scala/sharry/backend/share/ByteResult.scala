@@ -11,7 +11,11 @@ import sharry.store.records.RShareFile
 
 object ByteResult {
 
-  def loadFileData[F[_]](bitpeace: Bitpeace[F], id: String, range: RangeDef): Stream[F, Byte] =
+  def loadFileData[F[_]](
+      bitpeace: Bitpeace[F],
+      id: String,
+      range: RangeDef
+  ): Stream[F, Byte] =
     bitpeace.get(id).unNoneTerminate.through(bitpeace.fetchData(range))
 
   def load[F[_]: Effect](

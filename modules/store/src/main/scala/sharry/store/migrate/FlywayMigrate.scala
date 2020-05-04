@@ -8,12 +8,13 @@ import org.log4s._
 object FlywayMigrate {
   private[this] val logger = getLogger
 
-  def run[F[_]: Sync](jdbc: JdbcConfig): F[Int] = Sync[F].delay {
-    logger.info("Running db migrations...")
-    val fw = makeFlyway(jdbc)
-    fw.repair()
-    fw.migrate()
-  }
+  def run[F[_]: Sync](jdbc: JdbcConfig): F[Int] =
+    Sync[F].delay {
+      logger.info("Running db migrations...")
+      val fw = makeFlyway(jdbc)
+      fw.repair()
+      fw.migrate()
+    }
 
   def makeFlyway(jdbc: JdbcConfig) = {
     val locations = findLocations(jdbc)

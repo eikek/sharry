@@ -59,12 +59,13 @@ object OAccount {
           AddResult.Failure(new Exception("Not an internal account."))
 
         val change = for {
-          acc     <- OptionT(findById(id))
+          acc <- OptionT(findById(id))
           pwmatch = PasswordCrypt.check(oldPw, acc.password)
           intern  = acc.source == AccountSource.Intern
-          res <- if (!intern) OptionT.some[F](notInternal)
-                else if (!pwmatch) OptionT.some[F](wrongPassword)
-                else OptionT.liftF(update)
+          res <-
+            if (!intern) OptionT.some[F](notInternal)
+            else if (!pwmatch) OptionT.some[F](wrongPassword)
+            else OptionT.liftF(update)
         } yield res
 
         change.getOrElse(AddResult.Failure(new Exception("Account not found")))
@@ -137,7 +138,9 @@ object OAccount {
           case AddResult.Success => acc.id.pure[F]
           case AddResult.EntityExists(msg) =>
             logger.fdebug[F](msg) *>
-              store.transact(RAccount.findByLogin(acc.login)).map(_.map(_.id).getOrElse(acc.id))
+              store
+                .transact(RAccount.findByLogin(acc.login))
+                .map(_.map(_.id).getOrElse(acc.id))
           case AddResult.Failure(ex) =>
             Effect[F].raiseError(ex)
         }

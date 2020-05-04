@@ -34,9 +34,8 @@ object Main extends IOApp {
             if (!Files.exists(path)) {
               logger.info(s"Not using config file '$f' because it doesn't exist")
               System.clearProperty("config.file")
-            } else {
+            } else
               logger.info(s"Using config file from system properties: $f")
-            }
           case _ =>
         }
     }
@@ -52,24 +51,23 @@ object Main extends IOApp {
     logger.info(s"\n${banner.render("***>")}")
 
     val pools = for {
-      bec     <- blockingEC
+      bec <- blockingEC
       blocker = Blocker.liftExecutionContext(bec)
-      cec     <- connectEC
-      rec     <- restEC
+      cec <- connectEC
+      rec <- restEC
     } yield Pools(cec, bec, blocker, rec)
 
     pools.use { p =>
-      if ("true" == System.getProperty("sharry.migrate-old-dbschema")) {
+      if ("true" == System.getProperty("sharry.migrate-old-dbschema"))
         MigrateFrom06[IO](cfg.backend.jdbc, p.connectEC, p.blocker)
           .use(mig => mig.migrate)
           .as(ExitCode.Success)
-      } else {
+      else
         RestServer
           .stream[IO](cfg, p)
           .compile
           .drain
           .as(ExitCode.Success)
-      }
     }
   }
 }

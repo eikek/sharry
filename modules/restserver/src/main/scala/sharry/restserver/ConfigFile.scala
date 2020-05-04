@@ -22,7 +22,9 @@ object ConfigFile {
 
     implicit val mailAddressReader: ConfigReader[Option[MailAddress]] =
       ConfigReader[String].emap(
-        reason(s => if (s.trim.isEmpty) Right(None) else MailAddress.parse(s).map(m => Some(m)))
+        reason(s =>
+          if (s.trim.isEmpty) Right(None) else MailAddress.parse(s).map(m => Some(m))
+        )
       )
 
     implicit val mailSslTypeReader: ConfigReader[SSLType] =
@@ -39,7 +41,9 @@ object ConfigFile {
 
     implicit val templateReader: ConfigReader[Template] =
       ConfigReader[String].emap(
-        reason(s => mustache.parse(s).leftMap(err => s"Error parsing template at ${err._1.pos}"))
+        reason(s =>
+          mustache.parse(s).leftMap(err => s"Error parsing template at ${err._1.pos}")
+        )
       )
   }
 }

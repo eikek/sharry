@@ -17,7 +17,11 @@ import sharry.common.syntax.all._
 object SettingRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], token: AuthToken, cfg: Config): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      backend: BackendApp[F],
+      token: AuthToken,
+      cfg: Config
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -39,16 +43,20 @@ object SettingRoutes {
 
       case GET -> Root / "email" =>
         for {
-          acc   <- backend.account.findById(token.account.id)
+          acc <- backend.account.findById(token.account.id)
           email = acc.flatMap(_.email)
-          resp  <- Ok(EmailInfo(email))
+          resp <- Ok(EmailInfo(email))
         } yield resp
 
       case req @ POST -> Root / "password" =>
         for {
-          in   <- req.as[PasswordChange]
-          _    <- logger.fdebug(s"Changing password for ${token.account}")
-          res  <- backend.account.changePassword(token.account.id, in.oldPassword, in.newPassword)
+          in <- req.as[PasswordChange]
+          _  <- logger.fdebug(s"Changing password for ${token.account}")
+          res <- backend.account.changePassword(
+            token.account.id,
+            in.oldPassword,
+            in.newPassword
+          )
           resp <- Ok(Conv.basicResult(res, "Password successfully changed."))
         } yield resp
     }

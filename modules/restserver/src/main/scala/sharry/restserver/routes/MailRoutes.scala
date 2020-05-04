@@ -26,7 +26,11 @@ object MailRoutes {
 
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], token: AuthToken, cfg: Config): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      backend: BackendApp[F],
+      token: AuthToken,
+      cfg: Config
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

@@ -33,7 +33,8 @@ object RPublishShare {
     val publishUntil = Column("publish_until")
     val created      = Column("created")
 
-    val all = List(id, shareId, enabled, views, lastAccess, publishDate, publishUntil, created)
+    val all =
+      List(id, shareId, enabled, views, lastAccess, publishDate, publishUntil, created)
   }
 
   import Columns._
@@ -78,8 +79,8 @@ object RPublishShare {
       now      <- Timestamp.current[ConnectionIO]
       id       <- Ident.randomId[ConnectionIO]
       validity <- RShare.getDuration(share)
-      record   = RPublishShare(id, share, true, 0, None, now, now.plus(validity), now)
-      n        <- insert(record)
+      record = RPublishShare(id, share, true, 0, None, now, now.plus(validity), now)
+      n <- insert(record)
     } yield record
 
   def update(share: Ident, enable: Boolean, reuseId: Boolean): ConnectionIO[Int] =
@@ -87,10 +88,11 @@ object RPublishShare {
       nid      <- Ident.randomId[ConnectionIO]
       validity <- RShare.getDuration(share)
       now      <- Timestamp.current[ConnectionIO]
-      sets = Seq(enabled.setTo(enable)) ++
-        (if (enable) Seq(publishDate.setTo(now), publishUntil.setTo(now.plus(validity)))
-         else Seq.empty) ++
-        (if (reuseId) Seq.empty else Seq(id.setTo(nid)))
+      sets =
+        Seq(enabled.setTo(enable)) ++
+          (if (enable) Seq(publishDate.setTo(now), publishUntil.setTo(now.plus(validity)))
+           else Seq.empty) ++
+          (if (reuseId) Seq.empty else Seq(id.setTo(nid)))
       frag <- Sql.updateRow(table, shareId.is(share), Sql.commas(sets)).update.run
     } yield frag
 

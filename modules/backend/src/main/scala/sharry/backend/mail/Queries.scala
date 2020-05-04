@@ -9,7 +9,10 @@ import emil.MailAddress
 
 object Queries {
 
-  def resolveAlias(aliasId: Ident, shareId: Ident): ConnectionIO[Option[(RAlias, RAccount)]] = {
+  def resolveAlias(
+      aliasId: Ident,
+      shareId: Ident
+  ): ConnectionIO[Option[(RAlias, RAccount)]] = {
     val aId      = "a" :: RAlias.Columns.id
     val aAccount = "a" :: RAlias.Columns.account
     val uId      = "u" :: RAccount.Columns.id
@@ -30,14 +33,20 @@ object Queries {
       .option
   }
 
-  def publishIdAndPassword(accId: Ident, shareId: Ident): ConnectionIO[Option[(Boolean, Ident)]] = {
+  def publishIdAndPassword(
+      accId: Ident,
+      shareId: Ident
+  ): ConnectionIO[Option[(Boolean, Ident)]] = {
     val sId    = "s" :: RShare.Columns.id
     val sAcc   = "s" :: RShare.Columns.accountId
     val sPass  = "s" :: RShare.Columns.password
     val pId    = "p" :: RPublishShare.Columns.id
     val pShare = "p" :: RPublishShare.Columns.shareId
 
-    val from = RShare.table ++ fr"s INNER JOIN" ++ RPublishShare.table ++ fr"p ON" ++ pShare.is(sId)
+    val from =
+      RShare.table ++ fr"s INNER JOIN" ++ RPublishShare.table ++ fr"p ON" ++ pShare.is(
+        sId
+      )
 
     Sql
       .selectSimple(Seq(sPass, pId), from, Sql.and(sId.is(shareId), sAcc.is(accId)))
@@ -48,7 +57,11 @@ object Queries {
 
   def getEmail(accId: Ident): ConnectionIO[Option[MailAddress]] =
     Sql
-      .selectSimple(Seq(RAccount.Columns.email), RAccount.table, RAccount.Columns.id.is(accId))
+      .selectSimple(
+        Seq(RAccount.Columns.email),
+        RAccount.table,
+        RAccount.Columns.id.is(accId)
+      )
       .query[MailAddress]
       .option
 }

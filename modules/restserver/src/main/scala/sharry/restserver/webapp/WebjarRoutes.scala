@@ -10,8 +10,8 @@ import sharry.restserver.Config
 
 object WebjarRoutes {
 
-  def appRoutes[F[_]: Effect](blocker: Blocker, cfg: Config)(
-      implicit C: ContextShift[F]
+  def appRoutes[F[_]: Effect](blocker: Blocker, cfg: Config)(implicit
+      C: ContextShift[F]
   ): HttpRoutes[F] =
     webjarService(
       WebjarConfig(

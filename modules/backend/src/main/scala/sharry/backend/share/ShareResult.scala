@@ -52,7 +52,7 @@ object ShareResult {
       (this: ShareResult[B]).pure[F]
 
     def map[B](f: Nothing => B) =
-      (this: ShareResult[B])
+      this: ShareResult[B]
 
   }
 
@@ -69,7 +69,7 @@ object ShareResult {
       (this: ShareResult[B]).pure[F]
 
     def map[B](f: Nothing => B) =
-      (this: ShareResult[B])
+      this: ShareResult[B]
 
   }
 

@@ -60,7 +60,9 @@ object UploadResult {
     def flatMap[B](f: Nothing => UploadResult[B]): UploadResult[B] =
       this
 
-    def flatMapF[F[_]: Applicative, B](f: Nothing => F[UploadResult[B]]): F[UploadResult[B]] =
+    def flatMapF[F[_]: Applicative, B](
+        f: Nothing => F[UploadResult[B]]
+    ): F[UploadResult[B]] =
       (this: UploadResult[B]).pure[F]
 
     def toOption: Option[Nothing] = None
@@ -70,7 +72,9 @@ object UploadResult {
     def flatMap[B](f: Nothing => UploadResult[B]): UploadResult[B] =
       this
 
-    def flatMapF[F[_]: Applicative, B](f: Nothing => F[UploadResult[B]]): F[UploadResult[B]] =
+    def flatMapF[F[_]: Applicative, B](
+        f: Nothing => F[UploadResult[B]]
+    ): F[UploadResult[B]] =
       (this: UploadResult[B]).pure[F]
 
     def toOption: Option[Nothing] = None

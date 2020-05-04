@@ -26,21 +26,24 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
 
   def migrate: F[Unit] =
     for {
-      a    <- createTables
-      b    <- copyAccounts
-      c    <- copyAlias
-      d    <- copyShare
-      e    <- copyFiles
+      a <- createTables
+      b <- copyAccounts
+      c <- copyAlias
+      d <- copyShare
+      e <- copyFiles
       errs = a + b + c + d + e
-      _ <- if (errs == 0) dropOldTables *> flywayBaseline *> logger.finfo[F]("Migration done")
-          else logger.finfo[F]("Some error occured, you might try again")
+      _ <-
+        if (errs == 0)
+          dropOldTables *> flywayBaseline *> logger.finfo[F]("Migration done")
+        else logger.finfo[F]("Some error occured, you might try again")
     } yield ()
 
-  def flywayBaseline: F[Unit] = Effect[F].delay {
-    val fw = FlywayMigrate.baselineFlyway(cfg)
-    fw.migrate()
-    ()
-  }
+  def flywayBaseline: F[Unit] =
+    Effect[F].delay {
+      val fw = FlywayMigrate.baselineFlyway(cfg)
+      fw.migrate()
+      ()
+    }
 
   def dropOldTables: F[Unit] =
     for {
@@ -58,7 +61,9 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       case Some(n)    => n
       case None       => sys.error(s"Unknown dbms for url: ${cfg.url}")
     }
-    val file = Option(getClass.getResource(s"/db/migration/$db/V1.0.0__initial.sql")) match {
+    val file = Option(
+      getClass.getResource(s"/db/migration/$db/V1.0.0__initial.sql")
+    ) match {
       case None    => sys.error("Schema file not found")
       case Some(f) => f
     }
@@ -72,7 +77,8 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
     for {
       stmt <- text
       _    <- logger.finfo[F]("Creating new tables")
-      n    <- result(store.transact(Fragment.const(stmt).update.run), "Error creating tables")
+      n <-
+        result(store.transact(Fragment.const(stmt).update.run), "Error creating tables")
     } yield n
   }
 
@@ -101,7 +107,8 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
             psha  <- u.toPublish.value
             _     <- logger.finfo[F](s"Inserting share: $share")
             n     <- result(store.transact(RShare.insert(share)), "Error inserting share")
-            _     <- psha.map(p => store.transact(RPublishShare.insert(p))).getOrElse(0.pure[F])
+            _ <-
+              psha.map(p => store.transact(RPublishShare.insert(p))).getOrElse(0.pure[F])
           } yield n
         )
         .compile
@@ -116,7 +123,9 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       loadChunks[UploadFile](q)(-1)
         .evalMap(_.toRShareFile)
         .evalTap(f => logger.finfo[F](s"Insert file: $f"))
-        .evalMap(f => result(store.transact(RShareFile.insert(f)), "Error inserting file"))
+        .evalMap(f =>
+          result(store.transact(RShareFile.insert(f)), "Error inserting file")
+        )
         .compile
         .foldMonoid
   }
@@ -129,7 +138,9 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       loadChunks[OldAccount](next)(-1)
         .evalMap(_.toAccount)
         .evalTap(a => logger.finfo[F](s"Insert account: $a"))
-        .evalMap(a => result(store.transact(RAccount.insert(a)), "Error inserting account"))
+        .evalMap(a =>
+          result(store.transact(RAccount.insert(a)), "Error inserting account")
+        )
         .compile
         .foldMonoid
   }
@@ -137,9 +148,10 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
   def loadChunks[A <: RowNum: Read](q: Fragment)(start: Long): Stream[F, A] = {
     val query = fr"SELECT * FROM (" ++ q ++ fr") v WHERE v.rn > $start ORDER BY v.rn"
 
-    Stream.eval(store.transact(query.query[A].stream.take(50).compile.toVector)).flatMap { v =>
-      if (v.isEmpty) Stream.empty
-      else Stream.emits(v) ++ loadChunks(q)(v.last.rownum)
+    Stream.eval(store.transact(query.query[A].stream.take(50).compile.toVector)).flatMap {
+      v =>
+        if (v.isEmpty) Stream.empty
+        else Stream.emits(v) ++ loadChunks(q)(v.last.rownum)
     }
   }
 
@@ -153,13 +165,19 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
   def accountId(login: Ident): F[Ident] =
     store.transact(
       Sql
-        .selectSimple(Seq(RAccount.Columns.id), RAccount.table, RAccount.Columns.login.is(login))
+        .selectSimple(
+          Seq(RAccount.Columns.id),
+          RAccount.table,
+          RAccount.Columns.login.is(login)
+        )
         .query[Ident]
         .unique
     )
 
   def getFileLength(fid: Ident): F[ByteSize] =
-    store.transact(sql"SELECT length FROM filemeta WHERE id = $fid".query[ByteSize].unique)
+    store.transact(
+      sql"SELECT length FROM filemeta WHERE id = $fid".query[ByteSize].unique
+    )
 
   trait RowNum {
     def rownum: Long
@@ -229,7 +247,17 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
     def toShare: F[RShare] =
       for {
         accId <- accountId(login)
-      } yield RShare(id, accId, alias, name, Duration(validity), maxdl, password, descr, created)
+      } yield RShare(
+        id,
+        accId,
+        alias,
+        name,
+        Duration(validity),
+        maxdl,
+        password,
+        descr,
+        created
+      )
 
     def toPublish: OptionT[F, RPublishShare] =
       for {

@@ -12,7 +12,10 @@ final class DescriptionTemplate(sd: ShareDetail) {
     sd.share.description.map(process(baseUri))
 
   def process(baseUri: LenientUri)(desc: String): String =
-    mustache.parse(desc).map(DescriptionTemplate.ShareContext(sd, baseUri).render).getOrElse(desc)
+    mustache
+      .parse(desc)
+      .map(DescriptionTemplate.ShareContext(sd, baseUri).render)
+      .getOrElse(desc)
 
 }
 object DescriptionTemplate {

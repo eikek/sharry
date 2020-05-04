@@ -24,33 +24,33 @@ final class FixedAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
 
   def login: LoginModule[F] =
     LoginModule { up =>
-      if (!cfg.fixed.enabled || up.user != cfg.fixed.user.id) (None: Option[LoginResult]).pure[F]
-      else if (up.pass == cfg.fixed.password) {
+      if (!cfg.fixed.enabled || up.user != cfg.fixed.user.id)
+        (None: Option[LoginResult]).pure[F]
+      else if (up.pass == cfg.fixed.password)
         for {
           _     <- logger.fdebug(s"Fixed auth: success for user ${cfg.fixed.user}")
           id    <- addAccount(cfg.fixed)
           token <- AuthToken.user(id, cfg.serverSecret)
         } yield LoginResult.ok(token).some
-      } else {
+      else
         logger.fdebug("Fixed auth: failed.") *>
           Option(LoginResult.invalidAuth).pure[F]
-      }
     }
 
   private def addAccount(cfg: AuthConfig.Fixed): F[AccountId] =
     for {
       acc <- NewAccount.create[F](
-              cfg.user,
-              AccountSource.Extern,
-              AccountState.Active,
-              Password.empty,
-              None,
-              true
-            )
-      id <- op
-             .createIfMissing(acc)
-             .map(id => AccountId(id, cfg.user, true, None))
-             .flatTap(accId => op.updateLoginStats(accId))
+        cfg.user,
+        AccountSource.Extern,
+        AccountState.Active,
+        Password.empty,
+        None,
+        true
+      )
+      id <-
+        op.createIfMissing(acc)
+          .map(id => AccountId(id, cfg.user, true, None))
+          .flatTap(accId => op.updateLoginStats(accId))
 
     } yield id
 

@@ -50,9 +50,9 @@ object ByteResponse {
     (for {
       file <- backend.share.loadFile(shareId, fid, pass, rangeDef)
       resp <- OptionT.liftF {
-               if (rangeInvalid(file.fileMeta, sr)) RangeNotSatisfiable()
-               else partialResponse(dsl, file, sr)
-             }
+        if (rangeInvalid(file.fileMeta, sr)) RangeNotSatisfiable()
+        else partialResponse(dsl, file, sr)
+      }
     } yield resp).getOrElseF(NotFound())
   }
 
@@ -69,19 +69,19 @@ object ByteResponse {
     (for {
       file <- backend.share.loadFile(shareId, fid, pass, RangeDef.all)
       resp <- OptionT.liftF(
-               etag(dsl, req, file).getOrElseF(
-                 Ok(file.data).map(
-                   _.withHeaders(
-                     `Content-Type`(mediaType(file)),
-                     `Accept-Ranges`.bytes,
-                     `Last-Modified`(timestamp(file)),
-                     `Content-Disposition`("inline", fileNameMap(file)),
-                     ETag(file.fileMeta.checksum),
-                     `Content-Length`.unsafeFromLong(file.fileMeta.length)
-                   )
-                 )
-               )
-             )
+        etag(dsl, req, file).getOrElseF(
+          Ok(file.data).map(
+            _.withHeaders(
+              `Content-Type`(mediaType(file)),
+              `Accept-Ranges`.bytes,
+              `Last-Modified`(timestamp(file)),
+              `Content-Disposition`("inline", fileNameMap(file)),
+              ETag(file.fileMeta.checksum),
+              `Content-Length`.unsafeFromLong(file.fileMeta.length)
+            )
+          )
+        )
+      )
     } yield resp).getOrElseF(NotFound())
   }
 

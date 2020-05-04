@@ -51,7 +51,7 @@ object AuthToken {
 
   def user[F[_]: Sync](accountId: AccountId, key: ByteVector): F[AuthToken] =
     for {
-      salt   <- Common.genSaltString[F]
+      salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
       cd     = AuthToken(millis, accountId, salt, "")
       sig    = sign(cd, key)
@@ -74,6 +74,7 @@ object AuthToken {
     Either.catchNonFatal(s.toLong).toOption
 
   private def constTimeEq(s1: String, s2: String): Boolean =
-    s1.zip(s2).foldLeft(true)({ case (r, (c1, c2)) => r & c1 == c2 }) & s1.length == s2.length
+    s1.zip(s2)
+      .foldLeft(true)({ case (r, (c1, c2)) => r & c1 == c2 }) & s1.length == s2.length
 
 }

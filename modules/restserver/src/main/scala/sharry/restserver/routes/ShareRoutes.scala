@@ -22,7 +22,11 @@ import sharry.restserver.routes.headers.SharryPassword
 object ShareRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], token: AuthToken, cfg: Config): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      backend: BackendApp[F],
+      token: AuthToken,
+      cfg: Config
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -30,9 +34,9 @@ object ShareRoutes {
       case req @ GET -> Root / "search" =>
         val q = req.params.getOrElse("q", "")
         for {
-          _    <- logger.ftrace(s"Listing shares: $q")
-          now  <- Timestamp.current[F]
-          all  <- backend.share.findShares(q, token.account).take(100).compile.toVector
+          _   <- logger.ftrace(s"Listing shares: $q")
+          now <- Timestamp.current[F]
+          all <- backend.share.findShares(q, token.account).take(100).compile.toVector
           list = ShareList(all.map(shareListItem(now)).toList)
           resp <- Ok(list)
         } yield resp
@@ -44,16 +48,18 @@ object ShareRoutes {
       case req @ POST -> Root / Ident(id) / "publish" =>
         (for {
           in <- OptionT.liftF(req.as[PublishData])
-          res <- backend.share
-                  .publish(id, token.account, in.reuseId)
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .publish(id, token.account, in.reuseId)
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Share published.")))
         } yield resp).getOrElseF(NotFound())
 
       case DELETE -> Root / Ident(id) / "publish" =>
         (for {
-          res  <- backend.share.unpublish(id, token.account).attempt.map(AddResult.fromEither)
+          res <-
+            backend.share.unpublish(id, token.account).attempt.map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Share unpublished.")))
         } yield resp).getOrElseF(NotFound())
 
@@ -63,78 +69,90 @@ object ShareRoutes {
 
       case req @ DELETE -> Root / Ident(id) / file / Ident(fid) =>
         (for {
-          e    <- backend.share.deleteFile(token.account, fid).attempt.map(AddResult.fromEither)
+          e <-
+            backend.share.deleteFile(token.account, fid).attempt.map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(e, "File deleted.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ DELETE -> Root / Ident(id) =>
         (for {
-          e    <- backend.share.deleteShare(token.account, id).attempt.map(AddResult.fromEither)
+          e <-
+            backend.share.deleteShare(token.account, id).attempt.map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(e, "Share deleted.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ POST -> Root / Ident(id) / "description" =>
         (for {
           in <- OptionT.liftF(req.as[SingleString])
-          res <- backend.share
-                  .setDescription(token.account, id, in.value)
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setDescription(token.account, id, in.value)
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Description updated.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ POST -> Root / Ident(id) / "name" =>
         (for {
           in <- OptionT.liftF(req.as[SingleString])
-          res <- backend.share
-                  .setName(token.account, id, Some(in.value))
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setName(token.account, id, Some(in.value))
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Name updated.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ DELETE -> Root / Ident(id) / "name" =>
         (for {
-          res  <- backend.share.setName(token.account, id, None).attempt.map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setName(token.account, id, None)
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Name deleted.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ POST -> Root / Ident(id) / "validity" =>
         (for {
           in <- OptionT.liftF(req.as[SingleNumber])
-          res <- backend.share
-                  .setValidity(token.account, id, Duration.millis(in.value))
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setValidity(token.account, id, Duration.millis(in.value))
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Validity updated.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ POST -> Root / Ident(id) / "maxviews" =>
         (for {
           in <- OptionT.liftF(req.as[SingleNumber])
-          res <- backend.share
-                  .setMaxViews(token.account, id, in.value.toInt)
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setMaxViews(token.account, id, in.value.toInt)
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Max. views updated.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ POST -> Root / Ident(id) / "password" =>
         (for {
           in <- OptionT.liftF(req.as[SingleString])
-          res <- backend.share
-                  .setPassword(token.account, id, Some(Password(in.value)))
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setPassword(token.account, id, Some(Password(in.value)))
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password updated.")))
         } yield resp).getOrElseF(NotFound())
 
       case req @ DELETE -> Root / Ident(id) / "password" =>
         (for {
-          res <- backend.share
-                  .setPassword(token.account, id, None)
-                  .attempt
-                  .map(AddResult.fromEither)
+          res <-
+            backend.share
+              .setPassword(token.account, id, None)
+              .attempt
+              .map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password deleted.")))
         } yield resp).getOrElseF(NotFound())
     }

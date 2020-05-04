@@ -27,8 +27,8 @@ object RestServer {
   def stream[F[_]: ConcurrentEffect](
       cfg: Config,
       pools: Pools
-  )(
-      implicit T: Timer[F],
+  )(implicit
+      T: Timer[F],
       CS: ContextShift[F]
   ): Stream[F, Nothing] = {
 
@@ -43,12 +43,14 @@ object RestServer {
         "/api/v2/sec/" -> Authenticate(restApp.backend.login, cfg.backend.auth) { token =>
           securedRoutes(cfg, restApp, token)
         },
-        "/api/v2/alias/" -> Authenticate.alias(restApp.backend.login, cfg.backend.auth) { token =>
-          aliasRoutes[F](cfg, restApp, token)
+        "/api/v2/alias/" -> Authenticate.alias(restApp.backend.login, cfg.backend.auth) {
+          token =>
+            aliasRoutes[F](cfg, restApp, token)
         },
-        "/api/v2/admin/" -> Authenticate(restApp.backend.login, cfg.backend.auth) { token =>
-          if (token.account.admin) adminRoutes(cfg, restApp, token)
-          else notFound[F](token)
+        "/api/v2/admin/" -> Authenticate(restApp.backend.login, cfg.backend.auth) {
+          token =>
+            if (token.account.admin) adminRoutes(cfg, restApp, token)
+            else notFound[F](token)
         },
         "/api/doc"    -> templates.doc,
         "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker, cfg),
@@ -75,7 +77,11 @@ object RestServer {
 
   }.drain
 
-  def aliasRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F], token: AuthToken): HttpRoutes[F] =
+  def aliasRoutes[F[_]: Effect](
+      cfg: Config,
+      restApp: RestApp[F],
+      token: AuthToken
+  ): HttpRoutes[F] =
     Router(
       "upload" -> ShareUploadRoutes(
         restApp.backend,
@@ -105,7 +111,11 @@ object RestServer {
       "mail" -> MailRoutes(restApp.backend, token, cfg)
     )
 
-  def adminRoutes[F[_]: Effect](cfg: Config, restApp: RestApp[F], token: AuthToken): HttpRoutes[F] =
+  def adminRoutes[F[_]: Effect](
+      cfg: Config,
+      restApp: RestApp[F],
+      token: AuthToken
+  ): HttpRoutes[F] =
     Router(
       "signup"  -> RegisterRoutes(restApp.backend, cfg).genInvite,
       "account" -> AccountRoutes(restApp.backend, cfg)

@@ -20,7 +20,9 @@ object Sql {
       commas(cols.map(_.f)) ++ Fragment.const(") VALUES (") ++ vals ++ Fragment.const(")")
 
   def updateRow(table: Fragment, where: Fragment, setter: Fragment): Fragment =
-    Fragment.const("UPDATE ") ++ table ++ Fragment.const(" SET ") ++ setter ++ this.where(where)
+    Fragment.const("UPDATE ") ++ table ++ Fragment.const(" SET ") ++ setter ++ this.where(
+      where
+    )
 
   def selectSimple(cols: Seq[Column], table: Fragment, where: Fragment): Fragment =
     selectSimple(commas(cols.map(_.f)), table, where)
@@ -30,9 +32,10 @@ object Sql {
       Fragment.const(" FROM ") ++ table ++ this.where(where)
 
   def selectCount(col: Column, table: Fragment, where: Fragment): Fragment =
-    Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this.where(
-      where
-    )
+    Fragment.const("SELECT COUNT(") ++ col.f ++ Fragment.const(") FROM ") ++ table ++ this
+      .where(
+        where
+      )
 
   def deleteFrom(table: Fragment, where: Fragment): Fragment =
     fr"DELETE FROM" ++ table ++ this.where(where)
@@ -53,7 +56,9 @@ object Sql {
     and(f0 :: fs.toList)
 
   def or(fs: Seq[Fragment]): Fragment =
-    Fragment.const(" (") ++ fs.reduce(_ ++ Fragment.const(" OR ") ++ _) ++ Fragment.const(") ")
+    Fragment.const(" (") ++ fs.reduce(_ ++ Fragment.const(" OR ") ++ _) ++ Fragment.const(
+      ") "
+    )
   def or(f0: Fragment, fs: Fragment*): Fragment =
     or(f0 :: fs.toList)
 

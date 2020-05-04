@@ -16,13 +16,25 @@ import cats.data.EitherT
 
 trait OMail[F[_]] {
 
-  def notifyAliasUpload(aliasId: Ident, shareId: Ident, baseUrl: LenientUri): F[NotifyResult]
+  def notifyAliasUpload(
+      aliasId: Ident,
+      shareId: Ident,
+      baseUrl: LenientUri
+  ): F[NotifyResult]
 
-  def getShareTemplate(acc: AccountId, shareId: Ident, baseUrl: LenientUri): OptionT[F, MailData]
+  def getShareTemplate(
+      acc: AccountId,
+      shareId: Ident,
+      baseUrl: LenientUri
+  ): OptionT[F, MailData]
 
   def getAliasTemplate(acc: AccountId, aliasId: Ident, baseUrl: LenientUri): F[MailData]
 
-  def sendMail(acc: AccountId, receiver: List[MailAddress], mail: MailData): F[MailSendResult]
+  def sendMail(
+      acc: AccountId,
+      receiver: List[MailAddress],
+      mail: MailData
+  ): F[MailSendResult]
 }
 
 object OMail {
@@ -50,22 +62,27 @@ object OMail {
           )
 
         def send(rec: MailAddress, td: TemplateData): F[NotifyResult] =
-          emil(cfg.toEmil).send(createMail(cfg.templates.uploadNotify, td, rec)).attempt.map {
-            case Right(_) => NotifyResult.SendSuccessful
-            case Left(ex) =>
-              logger.warn(ex)("Sending failed")
-              NotifyResult.SendFailed(ex.getMessage)
-          }
+          emil(cfg.toEmil)
+            .send(createMail(cfg.templates.uploadNotify, td, rec))
+            .attempt
+            .map {
+              case Right(_) => NotifyResult.SendSuccessful
+              case Left(ex) =>
+                logger.warn(ex)("Sending failed")
+                NotifyResult.SendFailed(ex.getMessage)
+            }
 
         if (!cfg.enabled) NotifyResult.featureDisabled.pure[F]
         else
           (for {
-            t        <- OptionT(store.transact(Queries.resolveAlias(aliasId, shareId)))
+            t <- OptionT(store.transact(Queries.resolveAlias(aliasId, shareId)))
             receiver = t._2.email.map(MailAddress.parse).flatMap(_.toOption)
             td       = TemplateData(t._2.login, baseUrl / shareId.id, false, t._1.name)
             res <- OptionT.liftF(
-                    receiver.map(rec => send(rec, td)).getOrElse(NotifyResult.missingEmail.pure[F])
-                  )
+              receiver
+                .map(rec => send(rec, td))
+                .getOrElse(NotifyResult.missingEmail.pure[F])
+            )
           } yield res).getOrElse(NotifyResult.InvalidAlias)
       }
 
@@ -75,12 +92,16 @@ object OMail {
           baseUrl: LenientUri
       ): OptionT[F, MailData] =
         for {
-          t   <- OptionT(store.transact(Queries.publishIdAndPassword(acc.id, shareId)))
+          t <- OptionT(store.transact(Queries.publishIdAndPassword(acc.id, shareId)))
           td  = TemplateData(acc.userLogin, baseUrl / t._2.id, t._1, "")
           tpl = cfg.templates.download
         } yield MailData(td.render(tpl.subject), td.render(tpl.body))
 
-      def getAliasTemplate(acc: AccountId, aliasId: Ident, baseUrl: LenientUri): F[MailData] = {
+      def getAliasTemplate(
+          acc: AccountId,
+          aliasId: Ident,
+          baseUrl: LenientUri
+      ): F[MailData] = {
         val tpl = cfg.templates.alias
         val td  = TemplateData(acc.userLogin, baseUrl / aliasId.id, false, "")
         MailData(td.render(tpl.subject), td.render(tpl.body)).pure[F]

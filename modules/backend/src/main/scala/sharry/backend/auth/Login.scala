@@ -40,13 +40,14 @@ object Login {
 
       def loginAlias(config: AuthConfig)(alias: String): F[LoginResult] =
         (for {
-          aliasId <- OptionT
-                      .fromOption[F](Ident.fromString(alias).toOption.filter(_ != Ident.empty))
+          aliasId <-
+            OptionT
+              .fromOption[F](Ident.fromString(alias).toOption.filter(_ != Ident.empty))
           acc <- oacc.findByAlias(aliasId)
           tok <- OptionT.liftF(
-                  AuthToken
-                    .user(acc.accountId(Some(aliasId)).copy(admin = false), config.serverSecret)
-                )
+            AuthToken
+              .user(acc.accountId(Some(aliasId)).copy(admin = false), config.serverSecret)
+          )
           res = LoginResult.ok(tok)
         } yield res).getOrElse(LoginResult.invalidAuth)
 

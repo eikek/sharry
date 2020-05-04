@@ -6,8 +6,8 @@ import bitpeace.Mimetype
 
 trait YamuscaCommon {
 
-  implicit def yamuscaIntMapConverter[A](
-      implicit ca: ValueConverter[Map[String, A]]
+  implicit def yamuscaIntMapConverter[A](implicit
+      ca: ValueConverter[Map[String, A]]
   ): ValueConverter[Map[Int, A]] =
     ValueConverter.of(m => ca(m.map(t => (t._1.toString, t._2))))
 

@@ -69,7 +69,10 @@ object RAlias {
       .run
 
   def findById(aliasId: Ident, accId: Ident): ConnectionIO[Option[RAlias]] =
-    Sql.selectSimple(all, table, Sql.and(id.is(aliasId), account.is(accId))).query[RAlias].option
+    Sql
+      .selectSimple(all, table, Sql.and(id.is(aliasId), account.is(accId)))
+      .query[RAlias]
+      .option
 
   def existsById(aliasId: Ident): ConnectionIO[Boolean] =
     Sql.selectCount(id, table, id.is(aliasId)).query[Int].map(_ > 0).unique

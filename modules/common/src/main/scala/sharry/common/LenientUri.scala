@@ -40,7 +40,9 @@ case class LenientUri(
     withQueryPlain(name, URLEncoder.encode(value, "UTF-8"))
 
   def withQueryPlain(name: String, value: String): LenientUri =
-    copy(query = query.map(q => q + "&" + name + "=" + value).orElse(Option(s"$name=$value")))
+    copy(query =
+      query.map(q => q + "&" + name + "=" + value).orElse(Option(s"$name=$value"))
+    )
 
   def withFragment(f: String): LenientUri =
     copy(fragment = Some(f))
@@ -56,7 +58,10 @@ case class LenientUri(
         )
     }
 
-  def readURL[F[_]: Sync: ContextShift](chunkSize: Int, blocker: Blocker): Stream[F, Byte] =
+  def readURL[F[_]: Sync: ContextShift](
+      chunkSize: Int,
+      blocker: Blocker
+  ): Stream[F, Byte] =
     Stream
       .emit(Either.catchNonFatal(new URL(asString)))
       .covary[F]
@@ -114,11 +119,12 @@ object LenientUri {
     val isRoot   = false
     def /(seg: String): Path =
       copy(segs = segs.append(seg))
-    def asString = segs.head match {
-      case "."  => segments.map(percentEncode).mkString("/")
-      case ".." => segments.map(percentEncode).mkString("/")
-      case _    => "/" + segments.map(percentEncode).mkString("/")
-    }
+    def asString =
+      segs.head match {
+        case "."  => segments.map(percentEncode).mkString("/")
+        case ".." => segments.map(percentEncode).mkString("/")
+        case _    => "/" + segments.map(percentEncode).mkString("/")
+      }
   }
 
   def unsafe(str: String): LenientUri =
@@ -128,15 +134,18 @@ object LenientUri {
     unsafe(u.toExternalForm)
 
   def parse(str: String): Either[String, LenientUri] = {
-    def makePath(str: String): Path = str.trim match {
-      case "/" => RootPath
-      case ""  => EmptyPath
-      case _ =>
-        NonEmptyList.fromList(stripLeading(str, '/').split('/').toList.map(percentDecode)) match {
-          case Some(nl) => NonEmptyPath(nl)
-          case None     => sys.error(s"Invalid url: $str")
-        }
-    }
+    def makePath(str: String): Path =
+      str.trim match {
+        case "/" => RootPath
+        case ""  => EmptyPath
+        case _ =>
+          NonEmptyList.fromList(
+            stripLeading(str, '/').split('/').toList.map(percentDecode)
+          ) match {
+            case Some(nl) => NonEmptyPath(nl)
+            case None     => sys.error(s"Invalid url: $str")
+          }
+      }
 
     def makeNonEmpty(str: String): Option[String] =
       Option(str).filter(_.nonEmpty)

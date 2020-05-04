@@ -33,7 +33,17 @@ object RShare {
     val description = Column("description")
     val created     = Column("created")
 
-    val all = List(id, accountId, aliasId, name, validity, maxViews, password, description, created)
+    val all = List(
+      id,
+      accountId,
+      aliasId,
+      name,
+      validity,
+      maxViews,
+      password,
+      description,
+      created
+    )
   }
 
   import Columns._

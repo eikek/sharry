@@ -24,10 +24,11 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isNot[A: Put](value: A): Fragment =
     f ++ fr"<> $value"
 
-  def is[A: Put](ov: Option[A]): Fragment = ov match {
-    case Some(v) => f ++ fr" = $v"
-    case None    => f ++ fr"is null"
-  }
+  def is[A: Put](ov: Option[A]): Fragment =
+    ov match {
+      case Some(v) => f ++ fr" = $v"
+      case None    => f ++ fr"is null"
+    }
 
   def isNull: Fragment =
     f ++ fr"is null"

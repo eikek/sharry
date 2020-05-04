@@ -35,8 +35,8 @@ object LoginRoutes {
         for {
           up <- req.as[UserPass]
           res <- S.login.loginUserPass(cfg.backend.auth)(
-                  UserPassData(up.account, Password(up.password))
-                )
+            UserPassData(up.account, Password(up.password))
+          )
           resp <- makeResponse(dsl, cfg, res)
         } yield resp
 
@@ -66,14 +66,14 @@ object LoginRoutes {
           c <- code
           u <- CodeFlow(client)(p, redirectUri(cfg, p).asString, c)
           acc <- OptionT.liftF(
-                  NewAccount.create(u ++ Ident.atSign ++ p.id, AccountSource.OAuth(p.id.id))
-                )
-          id    <- OptionT.liftF(S.account.createIfMissing(acc))
+            NewAccount.create(u ++ Ident.atSign ++ p.id, AccountSource.OAuth(p.id.id))
+          )
+          id <- OptionT.liftF(S.account.createIfMissing(acc))
           accId = AccountId(id, acc.login, false, None)
-          _     <- OptionT.liftF(S.account.updateLoginStats(accId))
+          _ <- OptionT.liftF(S.account.updateLoginStats(accId))
           token <- OptionT.liftF(
-                    AuthToken.user[F](accId, cfg.backend.auth.serverSecret)
-                  )
+            AuthToken.user[F](accId, cfg.backend.auth.serverSecret)
+          )
         } yield token
 
         val uri      = cfg.baseUrl.withQuery("oauth", "1") / "app" / "login"
@@ -117,18 +117,21 @@ object LoginRoutes {
     res match {
       case LoginResult.Ok(token) =>
         for {
-          cd <- AuthToken.user(token.account, cfg.backend.auth.serverSecret).map(CookieData.apply)
+          cd <-
+            AuthToken
+              .user(token.account, cfg.backend.auth.serverSecret)
+              .map(CookieData.apply)
           resp <- Ok(
-                   AuthResult(
-                     token.account.id,
-                     token.account.userLogin,
-                     token.account.admin,
-                     true,
-                     "Login successful",
-                     Some(cd.asString),
-                     cfg.backend.auth.sessionValid.millis
-                   )
-                 ).map(_.addCookie(cd.asCookie(cfg)))
+            AuthResult(
+              token.account.id,
+              token.account.userLogin,
+              token.account.admin,
+              true,
+              "Login successful",
+              Some(cd.asString),
+              cfg.backend.auth.sessionValid.millis
+            )
+          ).map(_.addCookie(cd.asCookie(cfg)))
         } yield resp
       case _ =>
         Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))

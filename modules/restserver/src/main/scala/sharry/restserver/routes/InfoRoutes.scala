@@ -45,7 +45,10 @@ object InfoRoutes {
       cfg.webapp.appFooter,
       cfg.webapp.appFooterVisible,
       cfg.backend.signup.mode,
-      cfg.backend.auth.oauth.filter(_.enabled).map(oa => OAuthItem(oa.id, oa.name, oa.icon)).toList,
+      cfg.backend.auth.oauth
+        .filter(_.enabled)
+        .map(oa => OAuthItem(oa.id, oa.name, oa.icon))
+        .toList,
       cfg.webapp.chunkSize.bytes,
       cfg.webapp.retryDelays.map(_.millis).toList,
       cfg.backend.share.maxValidity,

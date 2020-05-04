@@ -24,7 +24,9 @@ final class HttpBasicAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
             def okResult: F[LoginResult] =
               HttpAuth
                 .addAccount(login, oacc)
-                .flatMap(accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok))
+                .flatMap(accId =>
+                  AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
+                )
 
             for {
               _    <- logger.fdebug(s"HttpBasicAuth: starting login $up")
@@ -58,7 +60,9 @@ final class HttpBasicAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
         )
 
       case Left(err) =>
-        logger.fwarn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err").map(_ => false)
+        logger
+          .fwarn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err")
+          .map(_ => false)
     }
   }
 

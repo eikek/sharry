@@ -59,6 +59,7 @@ object BackendApp {
     for {
       store   <- Store.create(cfg.jdbc, connectEC, blocker, true)
       backend <- create(cfg, blocker, store)
-      _       <- PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)
+      _ <-
+        PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)
     } yield backend
 }

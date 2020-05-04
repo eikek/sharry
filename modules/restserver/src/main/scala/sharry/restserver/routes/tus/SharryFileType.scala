@@ -7,6 +7,9 @@ import bitpeace.Mimetype
 object SharryFileType {
 
   def apply[F[_]](req: Request[F]): Option[Mimetype] =
-    req.headers.get("sharry-file-type".ci).map(_.value).flatMap(s => Mimetype.parse(s).toOption)
+    req.headers
+      .get("sharry-file-type".ci)
+      .map(_.value)
+      .flatMap(s => Mimetype.parse(s).toOption)
 
 }

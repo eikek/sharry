@@ -39,7 +39,18 @@ object RAccount {
     val lastLogin  = Column("lastlogin")
     val created    = Column("created")
 
-    val all = List(id, login, source, state, password, email, admin, loginCount, lastLogin, created)
+    val all = List(
+      id,
+      login,
+      source,
+      state,
+      password,
+      email,
+      admin,
+      loginCount,
+      lastLogin,
+      created
+    )
   }
 
   import Columns._
@@ -115,7 +126,8 @@ object RAccount {
     val aliasEnabled = "n" :: RAlias.Columns.enabled
     val aliasAccount = "n" :: RAlias.Columns.account
     val accId        = "a" :: Columns.id
-    val from         = table ++ fr"a INNER JOIN" ++ RAlias.table ++ fr"n ON" ++ accId.is(aliasAccount)
+    val from =
+      table ++ fr"a INNER JOIN" ++ RAlias.table ++ fr"n ON" ++ accId.is(aliasAccount)
     Sql
       .selectSimple(
         all.map("a" :: _),

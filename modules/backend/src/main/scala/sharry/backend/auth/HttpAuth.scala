@@ -26,7 +26,9 @@ final class HttpAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
             def okResult: F[LoginResult] =
               HttpAuth
                 .addAccount(login, oacc)
-                .flatMap(accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok))
+                .flatMap(accId =>
+                  AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
+                )
 
             for {
               _    <- logger.fdebug(s"HttpAuth: starting login $up")
@@ -44,7 +46,11 @@ final class HttpAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
 
   private def executeReq(up: UserPassData, cfg: AuthConfig.Http): F[Boolean] = {
     val url =
-      mustache.parse(cfg.url.asString).leftMap(_.toString).map(up.render).flatMap(LenientUri.parse)
+      mustache
+        .parse(cfg.url.asString)
+        .leftMap(_.toString)
+        .map(up.render)
+        .flatMap(LenientUri.parse)
 
     url.flatMap(_.open) match {
       case Right(res) =>
@@ -75,7 +81,9 @@ final class HttpAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
         )
 
       case Left(err) =>
-        logger.fwarn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err").map(_ => false)
+        logger
+          .fwarn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err")
+          .map(_ => false)
     }
   }
 
@@ -91,17 +99,18 @@ object HttpAuth {
   def addAccount[F[_]: Sync](user: Ident, oacc: OAccount[F]): F[AccountId] =
     for {
       acc <- NewAccount.create[F](
-              user,
-              AccountSource.extern,
-              AccountState.Active,
-              Password.empty,
-              None,
-              false
-            )
-      id <- oacc
-             .createIfMissing(acc)
-             .map(id => AccountId(id, user, true, None))
-             .flatTap(accId => oacc.updateLoginStats(accId))
+        user,
+        AccountSource.extern,
+        AccountState.Active,
+        Password.empty,
+        None,
+        false
+      )
+      id <-
+        oacc
+          .createIfMissing(acc)
+          .map(id => AccountId(id, user, true, None))
+          .flatTap(accId => oacc.updateLoginStats(accId))
 
     } yield id
 

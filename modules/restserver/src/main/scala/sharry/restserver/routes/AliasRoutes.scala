@@ -20,7 +20,11 @@ import cats.data.OptionT
 object AliasRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], token: AuthToken, cfg: Config): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      backend: BackendApp[F],
+      token: AuthToken,
+      cfg: Config
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -44,16 +48,20 @@ object AliasRoutes {
 
       case req @ POST -> Root / Ident(id) =>
         for {
-          in  <- req.as[AliasChange]
-          _   <- logger.fdebug(s"Change alias $id to $in")
-          na  <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
-          res <- backend.alias.modify(id, token.account.id, na.copy(id = in.id.getOrElse(na.id)))
+          in <- req.as[AliasChange]
+          _  <- logger.fdebug(s"Change alias $id to $in")
+          na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
+          res <- backend.alias.modify(
+            id,
+            token.account.id,
+            na.copy(id = in.id.getOrElse(na.id))
+          )
           resp <- Ok(
-                   convert(
-                     Conv.basicResult(res, "Alias successfully modified."),
-                     in.id.getOrElse(na.id)
-                   )
-                 )
+            convert(
+              Conv.basicResult(res, "Alias successfully modified."),
+              in.id.getOrElse(na.id)
+            )
+          )
         } yield resp
 
       case GET -> Root / Ident(id) =>

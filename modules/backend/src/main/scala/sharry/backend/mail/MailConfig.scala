@@ -5,7 +5,11 @@ import yamusca.imports._
 
 import sharry.common._
 
-case class MailConfig(enabled: Boolean, smtp: MailConfig.Smtp, templates: MailConfig.Templates) {
+case class MailConfig(
+    enabled: Boolean,
+    smtp: MailConfig.Smtp,
+    templates: MailConfig.Templates
+) {
 
   def toEmil: EmilConfig =
     EmilConfig(

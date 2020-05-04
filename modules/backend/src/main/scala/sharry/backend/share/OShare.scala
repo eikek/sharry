@@ -99,7 +99,10 @@ trait OShare[F[_]] {
 
   /** Get all details about a share.
     */
-  def shareDetails(id: ShareId, pass: Option[Password]): OptionT[F, ShareResult[ShareDetail]]
+  def shareDetails(
+      id: ShareId,
+      pass: Option[Password]
+  ): OptionT[F, ShareResult[ShareDetail]]
 
   /** Publishes a share.
     *
@@ -132,7 +135,11 @@ trait OShare[F[_]] {
 
   def setMaxViews(accId: AccountId, share: Ident, value: Int): OptionT[F, Unit]
 
-  def setPassword(accId: AccountId, share: Ident, value: Option[Password]): OptionT[F, Unit]
+  def setPassword(
+      accId: AccountId,
+      share: Ident,
+      value: Option[Password]
+  ): OptionT[F, Unit]
 
   /** Deletes all shares (with all its data) that have been published
     * but are expired now.
@@ -149,20 +156,23 @@ trait OShare[F[_]] {
 object OShare {
   private[this] val logger = getLogger
 
-  def apply[F[_]: ConcurrentEffect](store: Store[F], cfg: ShareConfig): Resource[F, OShare[F]] =
+  def apply[F[_]: ConcurrentEffect](
+      store: Store[F],
+      cfg: ShareConfig
+  ): Resource[F, OShare[F]] =
     Resource.pure[F, OShare[F]](new OShare[F] {
 
       def create(data: ShareData[F], accId: AccountId): F[UploadResult[Ident]] = {
         val createShare = for {
           share <- createShareRecord(
-                    store,
-                    accId.id,
-                    accId.alias,
-                    data.copy(password = data.password.map(PasswordCrypt.crypt))
-                  )
+            store,
+            accId.id,
+            accId.alias,
+            data.copy(password = data.password.map(PasswordCrypt.crypt))
+          )
           valid = UploadResult(share).checkValidity(cfg.maxValidity)(_.validity)
-          _     <- valid.mapF(r => store.transact(RShare.insert(r)))
-          _     <- logger.fdebug(s"Result creating share for '${accId.id.id}': $valid")
+          _ <- valid.mapF(r => store.transact(RShare.insert(r)))
+          _ <- logger.fdebug(s"Result creating share for '${accId.id.id}': $valid")
         } yield valid.map(_.id)
 
         val storeFiles = (id: Ident) =>
@@ -225,9 +235,9 @@ object OShare {
           info: FileInfo
       ): OptionT[F, UploadResult[Ident]] = {
         val insert = for {
-          fid    <- Ident.randomId[F]
-          sid    <- Ident.randomId[F]
-          now    <- Timestamp.current[F]
+          fid <- Ident.randomId[F]
+          sid <- Ident.randomId[F]
+          now <- Timestamp.current[F]
           rest   = if (info.length % cfg.chunkSize.bytes == 0) 0 else 1
           chunks = info.length / cfg.chunkSize.bytes + rest
           fm = FileMeta(
@@ -240,15 +250,17 @@ object OShare {
             cfg.chunkSize.bytes.toInt
           )
           rf = RShareFile(sid, share, fid, info.name, now, ByteSize.zero)
-          _  <- store.bitpeace.saveFileMeta(fm).compile.drain
-          _  <- store.transact(RShareFile.insert(rf))
-          _  <- logger.fdebug(s"Created empty file: ${sid.id}")
+          _ <- store.bitpeace.saveFileMeta(fm).compile.drain
+          _ <- store.transact(RShareFile.insert(rf))
+          _ <- logger.fdebug(s"Created empty file: ${sid.id}")
         } yield rf.id
 
         for {
-          _   <- OptionT(store.transact(Queries.checkShare(share, accId)))
-          res <- OptionT.liftF(checkShareSize(store, cfg.maxSize, share, ByteSize(info.length)))
-          r   <- OptionT.liftF(res.mapF(_ => insert))
+          _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
+          res <- OptionT.liftF(
+            checkShareSize(store, cfg.maxSize, share, ByteSize(info.length))
+          )
+          r <- OptionT.liftF(res.mapF(_ => insert))
         } yield r
       }
 
@@ -277,10 +289,17 @@ object OShare {
               .map(tc => FileChunk(fileMetaId.id, tc._2 + startChunk, tc._1.toByteVector))
               .flatMap(chunk =>
                 Stream.eval(
-                  logger.ftrace(s"Storing chunk ${chunk.chunkNr} of size ${chunk.chunkData.size}")
+                  logger.ftrace(
+                    s"Storing chunk ${chunk.chunkNr} of size ${chunk.chunkData.size}"
+                  )
                 ) >>
                   store.bitpeace
-                    .addChunkByLength(chunk, cfg.chunkSize.bytes.toInt, length.bytes, mimeHint)
+                    .addChunkByLength(
+                      chunk,
+                      cfg.chunkSize.bytes.toInt,
+                      length.bytes,
+                      mimeHint
+                    )
                     .evalMap({
                       case Outcome.Created(_) =>
                         store.transact(
@@ -302,32 +321,34 @@ object OShare {
 
         val deleteFile = store
           .transact(RShareFile.delete(fileId))
-          .flatTap(_ => logger.fwarn("Deleting file due to max-size when uploading chunk!"))
+          .flatTap(_ =>
+            logger.fwarn("Deleting file due to max-size when uploading chunk!")
+          )
           .map(_ => UploadResult.sizeExceeded[Long](cfg.maxSize))
           .map(_.map(ByteSize.apply))
 
         for {
           _ <- OptionT(store.transact(Queries.checkFile(fileId, accId)))
           res <- OptionT.liftF(
-                  checkShareSize(store, cfg.maxSize, shareId, reqLen)
-                )
+            checkShareSize(store, cfg.maxSize, shareId, reqLen)
+          )
           desc <- OptionT(store.transact(Queries.fileDesc(fileId)))
           next <- OptionT.liftF(
-                   res.mapF(rem =>
-                     storeChunk(
-                       desc.metaId,
-                       desc.length,
-                       MimetypeHint(desc.name, desc.mime.some),
-                       rem
-                     )
-                   )
-                 )
+            res.mapF(rem =>
+              storeChunk(
+                desc.metaId,
+                desc.length,
+                MimetypeHint(desc.name, desc.mime.some),
+                rem
+              )
+            )
+          )
           // check again against db state, because of parallel uploads
           currentSize2 <- OptionT.liftF(store.transact(Queries.shareSize(shareId)))
           ur <- OptionT.liftF(next.flatMapF { _ =>
-                 if (currentSize2 >= cfg.maxSize) deleteFile
-                 else next.pure[F]
-               })
+            if (currentSize2 >= cfg.maxSize) deleteFile
+            else next.pure[F]
+          })
 
         } yield next
       }
@@ -343,9 +364,11 @@ object OShare {
           pass: Option[Password]
       ): OptionT[F, ShareResult[ShareDetail]] =
         for {
-          sd  <- OptionT(store.transact(Queries.shareDetail(shareId).value))
+          sd <- OptionT(store.transact(Queries.shareDetail(shareId).value))
           res = checkPassword(shareId, pass, sd.share.password)
-          _   <- OptionT.liftF(res.mapF(_ => store.transact(Queries.countPublishAccess(shareId))))
+          _ <- OptionT.liftF(
+            res.mapF(_ => store.transact(Queries.countPublishAccess(shareId)))
+          )
         } yield res.map(_ => sd)
 
       def publish(share: Ident, accId: AccountId, reuseId: Boolean): OptionT[F, Unit] = {
@@ -383,7 +406,9 @@ object OShare {
         val checkQuery = shareId.fold(
           pub => Queries.checkFilePublish(pub.id, file),
           priv =>
-            Queries.checkFile(file, priv.account).map(opt => opt.map(_ => (None: Option[Password])))
+            Queries
+              .checkFile(file, priv.account)
+              .map(opt => opt.map(_ => (None: Option[Password])))
         )
 
         for {
@@ -398,10 +423,12 @@ object OShare {
           fd <- OptionT(store.transact(Queries.fileDesc(file)))
           _  <- OptionT.liftF(store.transact(RShareFile.delete(file)))
           _ <- OptionT.liftF(
-                ConcurrentEffect[F].start(
-                  Queries.deleteFile(store)(fd.metaId) *> logger.fdebug(s"File deleted: ${file.id}")
-                )
+            ConcurrentEffect[F].start(
+              Queries.deleteFile(store)(fd.metaId) *> logger.fdebug(
+                s"File deleted: ${file.id}"
               )
+            )
+          )
         } yield ()
 
       def deleteShare(accId: AccountId, share: Ident): OptionT[F, Unit] =
@@ -410,13 +437,21 @@ object OShare {
           _ <- OptionT.liftF(Queries.deleteShare(share, true)(store))
         } yield ()
 
-      def setDescription(accId: AccountId, share: Ident, value: String): OptionT[F, Unit] =
+      def setDescription(
+          accId: AccountId,
+          share: Ident,
+          value: String
+      ): OptionT[F, Unit] =
         for {
           _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
           _ <- OptionT.liftF(store.transact(Queries.setDescription(share, value)))
         } yield ()
 
-      def setName(accId: AccountId, share: Ident, value: Option[String]): OptionT[F, Unit] =
+      def setName(
+          accId: AccountId,
+          share: Ident,
+          value: Option[String]
+      ): OptionT[F, Unit] =
         for {
           _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
           _ <- OptionT.liftF(store.transact(Queries.setName(share, value)))
@@ -434,38 +469,47 @@ object OShare {
           _ <- OptionT.liftF(store.transact(Queries.setMaxViews(share, value)))
         } yield ()
 
-      def setPassword(accId: AccountId, share: Ident, value: Option[Password]): OptionT[F, Unit] =
+      def setPassword(
+          accId: AccountId,
+          share: Ident,
+          value: Option[Password]
+      ): OptionT[F, Unit] =
         for {
-          _  <- OptionT(store.transact(Queries.checkShare(share, accId)))
+          _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
           pw = value.map(PasswordCrypt.crypt)
-          _  <- OptionT.liftF(store.transact(Queries.setPassword(share, pw)))
+          _ <- OptionT.liftF(store.transact(Queries.setPassword(share, pw)))
         } yield ()
 
       def cleanupExpired(invalidAge: Duration): F[Int] =
         for {
-          now   <- Timestamp.current[F]
+          now <- Timestamp.current[F]
           point = now.minus(invalidAge)
-          n <- store
-                .transact(Queries.findExpired(point))
-                .evalMap(id =>
-                  logger
-                    .fdebug(s"Delete expired share: ${id.id}") *> Queries.deleteShare(id, false)(
+          n <-
+            store
+              .transact(Queries.findExpired(point))
+              .evalMap(id =>
+                logger
+                  .fdebug(s"Delete expired share: ${id.id}") *> Queries
+                  .deleteShare(id, false)(
                     store
                   )
-                )
-                .compile
-                .fold(0)((n, _) => n + 1)
+              )
+              .compile
+              .fold(0)((n, _) => n + 1)
         } yield n
 
       def deleteOrphanedFiles: F[Int] =
         for {
-          n <- store
-                .transact(Queries.findOrphanedFiles)
-                .evalMap(id =>
-                  logger.fdebug(s"Delete orphaned file '${id.id}'") *> Queries.deleteFile(store)(id)
-                )
-                .compile
-                .fold(0)((n, _) => n + 1)
+          n <-
+            store
+              .transact(Queries.findOrphanedFiles)
+              .evalMap(id =>
+                logger.fdebug(s"Delete orphaned file '${id.id}'") *> Queries.deleteFile(
+                  store
+                )(id)
+              )
+              .compile
+              .fold(0)((n, _) => n + 1)
         } yield n
     })
 
@@ -475,22 +519,23 @@ object OShare {
       shareId: ShareId,
       given: Option[Password],
       sharePw: Option[Password]
-  ): ShareResult[Unit] = shareId match {
-    case ShareId.PrivateId(_, _) =>
-      ShareResult.Success(())
-    case ShareId.PublicId(_) =>
-      (given, sharePw) match {
-        case (Some(plain), Some(pw)) =>
-          if (PasswordCrypt.check(plain, pw)) ShareResult.Success(())
-          else ShareResult.PasswordMismatch
+  ): ShareResult[Unit] =
+    shareId match {
+      case ShareId.PrivateId(_, _) =>
+        ShareResult.Success(())
+      case ShareId.PublicId(_) =>
+        (given, sharePw) match {
+          case (Some(plain), Some(pw)) =>
+            if (PasswordCrypt.check(plain, pw)) ShareResult.Success(())
+            else ShareResult.PasswordMismatch
 
-        case (None, Some(pw)) =>
-          ShareResult.PasswordMissing
+          case (None, Some(pw)) =>
+            ShareResult.PasswordMissing
 
-        case _ =>
-          ShareResult.Success(())
-      }
-  }
+          case _ =>
+            ShareResult.Success(())
+        }
+    }
 
   private def checkShareSize[F[_]: Sync](
       store: Store[F],
@@ -500,12 +545,18 @@ object OShare {
   ) =
     for {
       currentSize <- store.transact(Queries.shareSize(shareId))
-      sizeLeft    = maxSize - currentSize
-      result = if (fileSize > sizeLeft) UploadResult.sizeExceeded(maxSize)
-      else UploadResult(sizeLeft)
+      sizeLeft = maxSize - currentSize
+      result =
+        if (fileSize > sizeLeft) UploadResult.sizeExceeded(maxSize)
+        else UploadResult(sizeLeft)
     } yield result
 
-  def createFile[F[_]: Sync](store: Store[F], shareId: Ident, chunkSz: ByteSize, maxSize: ByteSize)(
+  def createFile[F[_]: Sync](
+      store: Store[F],
+      shareId: Ident,
+      chunkSz: ByteSize,
+      maxSize: ByteSize
+  )(
       file: File[F]
   ): F[UploadResult[(FileMeta, RShareFile)]] = {
 
@@ -518,35 +569,43 @@ object OShare {
     def insertFileData(now: Timestamp) =
       for {
         // first check advertised length against max-size
-        result <- checkShareSize[F](store, maxSize, shareId, ByteSize(file.length.getOrElse(0L)))
+        result <-
+          checkShareSize[F](store, maxSize, shareId, ByteSize(file.length.getOrElse(0L)))
 
         // store file, at most max-size +1 bytes
         urfm <- result.mapF(sizeLeft =>
-                 store.bitpeace
-                   .saveNew(
-                     file.data.take(sizeLeft.bytes + 1L),
-                     chunkSz.bytes.toInt,
-                     MimetypeHint(file.name, file.advertisedMime.map(_.asString)),
-                     None,
-                     now.value
-                   )
-                   .compile
-                   .lastOrError
-               )
+          store.bitpeace
+            .saveNew(
+              file.data.take(sizeLeft.bytes + 1L),
+              chunkSz.bytes.toInt,
+              MimetypeHint(file.name, file.advertisedMime.map(_.asString)),
+              None,
+              now.value
+            )
+            .compile
+            .lastOrError
+        )
 
         // check again against db state, because of parallel uploads
         currentSize2 <- store.transact(Queries.shareSize(shareId))
         ur <- urfm.flatMapF { fm =>
-               if (currentSize2 >= maxSize) deleteFileMeta(fm)
-               else urfm.pure[F]
-             }
+          if (currentSize2 >= maxSize) deleteFileMeta(fm)
+          else urfm.pure[F]
+        }
       } yield ur
 
     def saveShareFile(fm: FileMeta, now: Timestamp) =
       for {
         sfid <- Ident.randomId[F]
-        sf   = RShareFile(sfid, shareId, Ident.unsafe(fm.id), file.name, now, ByteSize(fm.length))
-        _    <- store.transact(RShareFile.insert(sf))
+        sf = RShareFile(
+          sfid,
+          shareId,
+          Ident.unsafe(fm.id),
+          file.name,
+          now,
+          ByteSize(fm.length)
+        )
+        _ <- store.transact(RShareFile.insert(sf))
       } yield UploadResult((fm, sf))
 
     for {
@@ -563,9 +622,10 @@ object OShare {
       data: ShareData[F]
   ): F[RShare] =
     for {
-      dbalias <- alias.map(a => store.transact(RAlias.findById(a, accId))).getOrElse(None.pure[F])
-      id      <- Ident.randomId[F]
-      now     <- Timestamp.current[F]
+      dbalias <-
+        alias.map(a => store.transact(RAlias.findById(a, accId))).getOrElse(None.pure[F])
+      id  <- Ident.randomId[F]
+      now <- Timestamp.current[F]
     } yield RShare(
       id,
       accId,

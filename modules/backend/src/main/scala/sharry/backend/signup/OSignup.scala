@@ -30,19 +30,18 @@ object OSignup {
     Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult] =
-        if (cfg.mode != SignupMode.Invite) {
+        if (cfg.mode != SignupMode.Invite)
           Effect[F].pure(NewInviteResult.invitationClosed)
-        } else if (cfg.invitePassword != password) {
+        else if (cfg.invitePassword != password)
           Effect[F].pure(NewInviteResult.passwordMismatch)
-        } else {
+        else
           store.transact(RInvitation.insertNew).map(ri => NewInviteResult.success(ri.id))
-        }
 
       def cleanInvites(cfg: SignupConfig): F[Int] =
         for {
-          now  <- Timestamp.current[F]
+          now <- Timestamp.current[F]
           date = now.minus(cfg.inviteTime)
-          n    <- store.transact(RInvitation.deleteOlderThan(date))
+          n <- store.transact(RInvitation.deleteOlderThan(date))
         } yield n
 
       def register(cfg: SignupConfig)(data: RegisterData): F[SignupResult] =
@@ -59,15 +58,19 @@ object OSignup {
                 for {
                   now <- Timestamp.current[F]
                   min = now.minus(cfg.inviteTime)
-                  ok  <- store.transact(RInvitation.useInvite(inv, min))
-                  res <- if (ok) addUser(data).map(SignupResult.fromAddResult)
-                        else SignupResult.invalidInvitationKey.pure[F]
-                  _ <- if (retryInvite(res))
-                        logger.fdebug(s"Adding account failed ($res). Allow retry with invite.") *> store
-                          .transact(
-                            RInvitation.insert(RInvitation(inv, now))
-                          )
-                      else 0.pure[F]
+                  ok <- store.transact(RInvitation.useInvite(inv, min))
+                  res <-
+                    if (ok) addUser(data).map(SignupResult.fromAddResult)
+                    else SignupResult.invalidInvitationKey.pure[F]
+                  _ <-
+                    if (retryInvite(res))
+                      logger.fdebug(
+                        s"Adding account failed ($res). Allow retry with invite."
+                      ) *> store
+                        .transact(
+                          RInvitation.insert(RInvitation(inv, now))
+                        )
+                    else 0.pure[F]
                 } yield res
               case None =>
                 SignupResult.invalidInvitationKey.pure[F]
@@ -91,13 +94,13 @@ object OSignup {
       private def addUser(data: RegisterData): F[AddResult] =
         for {
           acc <- NewAccount.create[F](
-                  data.login,
-                  AccountSource.Intern,
-                  AccountState.Active,
-                  data.password,
-                  None,
-                  false
-                )
+            data.login,
+            AccountSource.Intern,
+            AccountState.Active,
+            data.password,
+            None,
+            false
+          )
           res <- OAccount(store).use(_.create(acc))
         } yield res
     })

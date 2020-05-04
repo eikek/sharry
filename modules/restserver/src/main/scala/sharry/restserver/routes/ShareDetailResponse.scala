@@ -35,18 +35,27 @@ object ShareDetailResponse {
       now    <- OptionT.liftF(Timestamp.current[F])
       detail <- backend.share.shareDetails(shareId, pass)
       resp <- OptionT.liftF(
-               detail.fold(
-                 d => Ok(shareDetail(now, baseUri)(d)),
-                 _ => Forbidden(),
-                 _ => Unauthorized(authChallenge)
-               )
-             )
+        detail.fold(
+          d => Ok(shareDetail(now, baseUri)(d)),
+          _ => Forbidden(),
+          _ => Unauthorized(authChallenge)
+        )
+      )
     } yield resp).getOrElseF(NotFound())
   }
 
-  def shareDetail(now: Timestamp, baseUri: LenientUri)(item: ShareDetail): ShareDetailDto = {
+  def shareDetail(now: Timestamp, baseUri: LenientUri)(
+      item: ShareDetail
+  ): ShareDetailDto = {
     val files = item.files.map(f =>
-      ShareFile(f.id, f.name.getOrElse(""), f.length, f.mimetype.asString, f.checksum, f.saved)
+      ShareFile(
+        f.id,
+        f.name.getOrElse(""),
+        f.length,
+        f.mimetype.asString,
+        f.checksum,
+        f.saved
+      )
     )
 
     ShareDetailDto(

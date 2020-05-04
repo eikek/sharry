@@ -19,7 +19,11 @@ object NotifyRoutes {
 
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], token: AuthToken, cfg: Config): HttpRoutes[F] = {
+  def apply[F[_]: Effect](
+      backend: BackendApp[F],
+      token: AuthToken,
+      cfg: Config
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -40,21 +44,22 @@ object NotifyRoutes {
     }
   }
 
-  private def basicResult(n: NotifyResult): BasicResult = n match {
-    case NotifyResult.InvalidAlias =>
-      BasicResult(false, "Invalid alias")
+  private def basicResult(n: NotifyResult): BasicResult =
+    n match {
+      case NotifyResult.InvalidAlias =>
+        BasicResult(false, "Invalid alias")
 
-    case NotifyResult.FeatureDisabled =>
-      BasicResult(false, "Mail feature is disabled.")
+      case NotifyResult.FeatureDisabled =>
+        BasicResult(false, "Mail feature is disabled.")
 
-    case NotifyResult.MissingEmail =>
-      BasicResult(false, "There is no e-mail address.")
+      case NotifyResult.MissingEmail =>
+        BasicResult(false, "There is no e-mail address.")
 
-    case NotifyResult.SendFailed(err) =>
-      BasicResult(false, s"Sending failed: $err.")
+      case NotifyResult.SendFailed(err) =>
+        BasicResult(false, s"Sending failed: $err.")
 
-    case NotifyResult.SendSuccessful =>
-      BasicResult(true, s"Mail sent.")
-  }
+      case NotifyResult.SendSuccessful =>
+        BasicResult(true, s"Mail sent.")
+    }
 
 }

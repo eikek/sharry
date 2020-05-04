@@ -42,7 +42,12 @@ object Queries {
     val chunkNr     = Column("chunkNr")
   }
 
-  case class FileDesc(metaId: Ident, name: Option[String], mime: String, length: ByteSize) {
+  case class FileDesc(
+      metaId: Ident,
+      name: Option[String],
+      mime: String,
+      length: ByteSize
+  ) {
     def mimeType: Mimetype =
       Mimetype.parse(mime).fold(throw _, identity)
   }
@@ -154,7 +159,11 @@ object Queries {
 
     for {
       now <- Timestamp.current[ConnectionIO]
-      q   <- Sql.selectSimple(Seq(sPass), from, Sql.and(cond(now))).query[Option[Password]].option
+      q <-
+        Sql
+          .selectSimple(Seq(sPass), from, Sql.and(cond(now)))
+          .query[Option[Password]]
+          .option
     } yield q
   }
 
@@ -223,7 +232,10 @@ object Queries {
     val frag = Sql.selectSimple(
       Sql.commas(cols),
       from,
-      Sql.and(account.is(accId.id), Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs)))
+      Sql.and(
+        account.is(accId.id),
+        Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs))
+      )
     ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC"
     logger.trace(s"$frag")
     frag.query[ShareItem].stream
@@ -251,7 +263,13 @@ object Queries {
 
     def cond(now: Timestamp) =
       shareId.fold(
-        pub => Sql.and(pId.is(pub.id), pEnable.is(true), pUntil.isGt(now), sMaxViews.isGt(pViews)),
+        pub =>
+          Sql.and(
+            pId.is(pub.id),
+            pEnable.is(true),
+            pUntil.isGt(now),
+            sMaxViews.isGt(pViews)
+          ),
         priv => Sql.and(account.is(priv.account.id), sId.is(priv.id))
       )
 
@@ -260,24 +278,28 @@ object Queries {
       fileDataShareFragment(share)
 
     for {
-      now    <- OptionT.liftF(Timestamp.current[ConnectionIO])
-      detail <- OptionT(qDetail(now).query[(RShare, Option[RPublishShare], Option[RAlias])].option)
-      files  <- OptionT.liftF(qFiles(detail._1.id).query[FileData].to[List])
+      now <- OptionT.liftF(Timestamp.current[ConnectionIO])
+      detail <- OptionT(
+        qDetail(now).query[(RShare, Option[RPublishShare], Option[RAlias])].option
+      )
+      files <- OptionT.liftF(qFiles(detail._1.id).query[FileData].to[List])
     } yield ShareDetail(detail._1, detail._2, detail._3, files)
   }
 
-  def countPublishAccess(shareId: ShareId): ConnectionIO[Unit] = shareId match {
-    case ShareId.PrivateId(_, _) =>
-      Sync[ConnectionIO].pure(())
+  def countPublishAccess(shareId: ShareId): ConnectionIO[Unit] =
+    shareId match {
+      case ShareId.PrivateId(_, _) =>
+        Sync[ConnectionIO].pure(())
 
-    case ShareId.PublicId(id) =>
-      val pId         = RPublishShare.Columns.id
-      val pViews      = RPublishShare.Columns.views
-      val pLastAccess = RPublishShare.Columns.lastAccess
+      case ShareId.PublicId(id) =>
+        val pId         = RPublishShare.Columns.id
+        val pViews      = RPublishShare.Columns.views
+        val pLastAccess = RPublishShare.Columns.lastAccess
 
-      for {
-        now <- Timestamp.current[ConnectionIO]
-        _ <- Sql
+        for {
+          now <- Timestamp.current[ConnectionIO]
+          _ <-
+            Sql
               .updateRow(
                 RPublishShare.table,
                 pId.is(id),
@@ -288,8 +310,8 @@ object Queries {
               )
               .update
               .run
-      } yield ()
-  }
+        } yield ()
+    }
 
   def findExpired(point: Timestamp): Stream[ConnectionIO, Ident] = {
     val pShare  = RPublishShare.Columns.shareId
@@ -297,7 +319,11 @@ object Queries {
     val pEnable = RPublishShare.Columns.enabled
 
     Sql
-      .selectSimple(Seq(pShare), RPublishShare.table, Sql.and(pEnable.is(true), pUntil.isLt(point)))
+      .selectSimple(
+        Seq(pShare),
+        RPublishShare.table,
+        Sql.and(pEnable.is(true), pUntil.isLt(point))
+      )
       .query[Ident]
       .stream
   }
@@ -307,8 +333,9 @@ object Queries {
     val fFile = "f" :: RShareFile.Columns.fileId
     val mId   = "m" :: FileMetaCols.id
 
-    val from = FileMetaCols.table ++ fr"m LEFT OUTER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fFile
-      .is(mId)
+    val from =
+      FileMetaCols.table ++ fr"m LEFT OUTER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fFile
+        .is(mId)
     val q = Sql.selectSimple(Seq(mId), from, fId.isNull)
     logger.trace(s"findOrphaned: $q")
     q.query[Ident].stream
@@ -373,37 +400,59 @@ object Queries {
       _    <- logger.fdebug[F](s"Going to delete share: ${share.id}")
       fids <- allFileIds
       _    <- store.transact(RShare.delete(share))
-      _    <- if (background) ConcurrentEffect[F].start(deleteAllFiles(fids)) else deleteAllFiles(fids)
+      _ <-
+        if (background) ConcurrentEffect[F].start(deleteAllFiles(fids))
+        else deleteAllFiles(fids)
     } yield ()
   }
 
   def setDescription(share: Ident, value: String): ConnectionIO[Int] =
     Sql
-      .updateRow(RShare.table, RShare.Columns.id.is(share), RShare.Columns.description.setTo(value))
+      .updateRow(
+        RShare.table,
+        RShare.Columns.id.is(share),
+        RShare.Columns.description.setTo(value)
+      )
       .update
       .run
 
   def setName(share: Ident, value: Option[String]): ConnectionIO[Int] =
     Sql
-      .updateRow(RShare.table, RShare.Columns.id.is(share), RShare.Columns.name.setTo(value))
+      .updateRow(
+        RShare.table,
+        RShare.Columns.id.is(share),
+        RShare.Columns.name.setTo(value)
+      )
       .update
       .run
 
   def setValidity(share: Ident, value: Duration): ConnectionIO[Int] =
     Sql
-      .updateRow(RShare.table, RShare.Columns.id.is(share), RShare.Columns.validity.setTo(value))
+      .updateRow(
+        RShare.table,
+        RShare.Columns.id.is(share),
+        RShare.Columns.validity.setTo(value)
+      )
       .update
       .run
 
   def setMaxViews(share: Ident, value: Int): ConnectionIO[Int] =
     Sql
-      .updateRow(RShare.table, RShare.Columns.id.is(share), RShare.Columns.maxViews.setTo(value))
+      .updateRow(
+        RShare.table,
+        RShare.Columns.id.is(share),
+        RShare.Columns.maxViews.setTo(value)
+      )
       .update
       .run
 
   def setPassword(share: Ident, value: Option[Password]): ConnectionIO[Int] =
     Sql
-      .updateRow(RShare.table, RShare.Columns.id.is(share), RShare.Columns.password.setTo(value))
+      .updateRow(
+        RShare.table,
+        RShare.Columns.id.is(share),
+        RShare.Columns.password.setTo(value)
+      )
       .update
       .run
 }

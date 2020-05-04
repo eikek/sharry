@@ -24,7 +24,9 @@ final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
             def okResult: F[LoginResult] =
               HttpAuth
                 .addAccount(login, oacc)
-                .flatMap(accId => AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok))
+                .flatMap(accId =>
+                  AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
+                )
 
             for {
               _    <- logger.fdebug(s"CommandAuth: starting login $up")
@@ -40,21 +42,22 @@ final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
       )
     )
 
-  def runCommand(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] = Effect[F].delay {
-    val prg = cfg.program.map(s =>
-      mustache.parse(s) match {
-        case Right(tpl) =>
-          up.render(tpl)
-        case Left(err) =>
-          logger.warn(s"Error in command template '$s': $err")
-          s
-      }
-    )
+  def runCommand(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] =
+    Effect[F].delay {
+      val prg = cfg.program.map(s =>
+        mustache.parse(s) match {
+          case Right(tpl) =>
+            up.render(tpl)
+          case Left(err) =>
+            logger.warn(s"Error in command template '$s': $err")
+            s
+        }
+      )
 
-    val result = Either.catchNonFatal(Process(prg).!)
-    logger.debug(s"Result of external auth command: $result")
-    result == Right(cfg.success)
-  }
+      val result = Either.catchNonFatal(Process(prg).!)
+      logger.debug(s"Result of external auth command: $result")
+      result == Right(cfg.success)
+    }
 
   def withPosition: (Int, LoginModule[F]) = (cfg.command.order, login)
 
