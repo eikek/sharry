@@ -30,6 +30,9 @@ in
     enable = true;
     bind.address = "0.0.0.0";
     base-url = "http://localhost:9090";
+    webapp = {
+      default-language = "de";
+    };
     backend = {
       auth = {
         oauth = [];

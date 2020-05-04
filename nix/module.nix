@@ -27,6 +27,7 @@ let
       app-footer-visible = true;
       welcome-message = "";
       auth-renewal = "4 minutes";
+      default-language = "gb";
     };
     backend = {
       auth = {
@@ -295,6 +296,15 @@ in {
               description = ''
                 The interval a new authentication token is retrieved. This must
                 be at least 30s lower than `backend.auth.session-valid'.
+              '';
+            };
+            default-language = mkOption {
+              type = types.str;
+              default = defaults.webapp.default-language;
+              description = ''
+                The ISO-3166-1 code of the default language to use. If a invalid
+                code is given (or one where no language is available), it falls
+                back to "gb".
               '';
             };
 
