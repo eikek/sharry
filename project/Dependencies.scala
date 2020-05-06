@@ -12,7 +12,7 @@ object Dependencies {
   val Fs2Version              = "2.3.0"
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.21.4"
-  val JQueryVersion           = "3.5.0"
+  val JQueryVersion           = "3.5.1"
   val KindProjectorVersion    = "0.10.3"
   val Log4sVersion            = "1.8.2"
   val LogbackVersion          = "1.2.3"
