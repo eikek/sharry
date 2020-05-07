@@ -2,6 +2,7 @@ module Messages.AccountPage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.AccountForm
@@ -37,4 +38,14 @@ de =
     , newAccount = "Neues Konto"
     , accountForm = Messages.AccountForm.de
     , accountTable = Messages.AccountTable.de
+    }
+
+fr : Texts
+fr =
+    { createAccountTitle = "Créer un nouveau compte local"
+    , accounts = "Comptes"
+    , searchPlaceholder = "Recherche…"
+    , newAccount = "Nouveau compte"
+    , accountForm = Messages.AccountForm.fr
+    , accountTable = Messages.AccountTable.fr
     }

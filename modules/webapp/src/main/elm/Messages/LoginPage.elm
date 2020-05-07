@@ -2,6 +2,7 @@ module Messages.LoginPage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.FixedDropdown
@@ -51,4 +52,19 @@ de =
     , signupLink = "Hier registrieren!"
     , or = "Oder"
     , dropdown = Messages.FixedDropdown.de
+    }
+
+fr : Texts
+fr =
+    { username = "Identifiant"
+    , password = "Mot de passe"
+    , loginPlaceholder = "Utilisateur"
+    , passwordPlaceholder = "Mot de passe"
+    , loginButton = "Connexion"
+    , via = "via"
+    , loginSuccessful = "Identification réussie"
+    , noAccount = "Pas de compte ?"
+    , signupLink = "S'inscrire"
+    , or = "Ou"
+    , dropdown = Messages.FixedDropdown.fr
     }

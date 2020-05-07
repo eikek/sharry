@@ -2,6 +2,7 @@ module Messages.AccountForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.FixedDropdown
@@ -42,4 +43,16 @@ de =
     , submit = "Speichern"
     , back = "Zurück"
     , dropdown = Messages.FixedDropdown.de
+    }
+
+fr : Texts
+fr =
+    { id = "Id"
+    , login = "Identifiant"
+    , state = "État"
+    , admin = "Admin"
+    , password = "Mot de passe"
+    , submit = "Envoyer"
+    , back = "Retour"
+    , dropdown = Messages.FixedDropdown.fr
     }

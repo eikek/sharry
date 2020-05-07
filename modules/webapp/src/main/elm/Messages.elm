@@ -24,12 +24,14 @@ import Messages.UploadPage
 type Language
     = English
     | German
+    | French
 
 
 allLanguages : List Language
 allLanguages =
     [ English
     , German
+    , French
     ]
 
 
@@ -96,6 +98,9 @@ get lang =
         German ->
             de
 
+        French ->
+            fr
+
 
 fromFlags : Flags -> Messages
 fromFlags flags =
@@ -149,4 +154,23 @@ de =
     , upload = Messages.UploadPage.de
     , newInvite = Messages.NewInvitePage.de
     , settings = Messages.SettingsPage.de
+    }
+
+fr : Messages
+fr =
+    { lang = French
+    , iso2 = "fr"
+    , label = "Français"
+    , flagIcon = "fr flag"
+    , app = Messages.App.fr
+    , login = Messages.LoginPage.fr
+    , register = Messages.RegisterPage.fr
+    , account = Messages.AccountPage.fr
+    , aliasPage = Messages.AliasPage.fr
+    , detail = Messages.DetailPage.fr
+    , share = Messages.SharePage.fr
+    , home = Messages.HomePage.fr
+    , upload = Messages.UploadPage.fr
+    , newInvite = Messages.NewInvitePage.fr
+    , settings = Messages.SettingsPage.fr
     }

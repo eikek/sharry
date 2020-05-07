@@ -2,6 +2,7 @@ module Messages.MailForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -34,4 +35,14 @@ de =
     , body = "E-Mail Text"
     , send = "Absenden"
     , cancel = "Abbrechen"
+    }
+
+fr : Texts
+fr =
+    { receivers = "Destinataire(s)"
+    , separateRecipientsByComma = "Séparez de multiples destinataires par une virgule"
+    , subject = "Sujet"
+    , body = "Corps"
+    , send = "Envoi"
+    , cancel = "Annulation"
     }

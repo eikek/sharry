@@ -2,6 +2,7 @@ module Messages.HomePage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -28,4 +29,12 @@ de =
     , viewShares = "Datei-Freigaben ansehen"
     , documentation = "Dokumentation (Englisch)"
     , shareFilesWithOthers = "Dateien mit anderen teilen"
+    }
+
+fr : Texts
+fr =
+    { createShare = "Créer un partage"
+    , viewShares = "Voir les partages"
+    , documentation = "Documentation"
+    , shareFilesWithOthers = "Partager des fichiers"
     }

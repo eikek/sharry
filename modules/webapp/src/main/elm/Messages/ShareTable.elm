@@ -2,6 +2,7 @@ module Messages.ShareTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -37,4 +38,15 @@ de =
     , nFiles = "#Dateien"
     , size = "Größe"
     , created = "Erstellt"
+    }
+
+fr : Texts
+fr =
+    { nameId = "Nom/Id"
+    , aliasLabel = "Alias"
+    , maxViews = "Vues max."
+    , published = "Publié"
+    , nFiles = "#Fichiers"
+    , size = "Taille"
+    , created = "Créé"
     }

@@ -2,6 +2,7 @@ module Messages.ShareFileList exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.YesNoDimmer
@@ -39,4 +40,15 @@ de =
     , fileIsIncomplete = "Die Datei ist unvollständig ("
     , tryUploadAgain = "%). Versuchen Sie erneut hochzuladen."
     , yesNo = Messages.YesNoDimmer.de
+    }
+
+fr : Texts
+fr =
+    { previewNotSupported = "Prévisualisation non supportée"
+    , downloadToDisk = "Télécharger"
+    , viewInBrowser = "Prévisualisation"
+    , deleteFile = "Supprimer le fichier."
+    , fileIsIncomplete = "Le fichier est incomplet ("
+    , tryUploadAgain = "%). Essayer à nouveau."
+    , yesNo = Messages.YesNoDimmer.fr
     }

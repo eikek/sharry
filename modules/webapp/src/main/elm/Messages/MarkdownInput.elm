@@ -2,6 +2,7 @@ module Messages.MarkdownInput exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -28,4 +29,12 @@ de =
     , preview = "Vorschau"
     , split = "Geteilt"
     , supportsMarkdown = "Unterstützt Markdown"
+    }
+
+fr : Texts
+fr =
+    { edit = "Éditer"
+    , preview = "Prévisualiser"
+    , split = "Vue séparée"
+    , supportsMarkdown = "Supporte le Markdown"
     }

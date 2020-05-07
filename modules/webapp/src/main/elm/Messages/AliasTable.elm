@@ -2,6 +2,7 @@ module Messages.AliasTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.ValidityField
@@ -33,4 +34,13 @@ de =
     , validity = "Gültigkeit"
     , created = "Erstellt"
     , validityField = Messages.ValidityField.de
+    }
+
+fr : Texts
+fr =
+    { name = "Nom"
+    , enabled = "Activé"
+    , validity = "Validité"
+    , created = "Créé"
+    , validityField = Messages.ValidityField.fr
     }

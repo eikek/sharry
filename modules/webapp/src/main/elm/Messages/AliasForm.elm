@@ -2,6 +2,7 @@ module Messages.AliasForm exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Html exposing (..)
@@ -69,4 +70,27 @@ de =
     , delete = "Löschen"
     , yesNo = Messages.YesNoDimmer.de
     , validityField = Messages.ValidityField.de
+    }
+
+fr : Texts
+fr =
+    { id = "Id"
+    , noteToIdsHead = "À propos des Ids"
+    , noteToIds =
+        p []
+            [ text "L'Id fait partie de l'url où "
+            , em [] [ text "quiconque" ]
+            , text " peut envoyer des fichiers. Il est recommandé d'utiliser "
+            , text " quelque chose d'aléatoire. L'Id peut être modifiée à "
+            , text "n'importe quelle valeur, mais si elle est laissée vide, "
+            , text "une valeur aléatoire sera générée."
+            ]
+    , name = "Nom"
+    , validity = "Validité"
+    , enabled = "Activé"
+    , submit = "Envoyer"
+    , back = "Retour"
+    , delete = "Supprimer"
+    , yesNo = Messages.YesNoDimmer.fr
+    , validityField = Messages.ValidityField.fr
     }

@@ -2,6 +2,7 @@ module Messages.MailSend exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.MailForm
@@ -27,4 +28,11 @@ de =
     { sendingEmail = "Sende E-Mail ..."
     , loadingTemplate = "Lade Template ..."
     , mailForm = Messages.MailForm.de
+    }
+
+fr : Texts
+fr =
+    { sendingEmail = "Envoi de l'email ..."
+    , loadingTemplate = "Chargement du modèle ..."
+    , mailForm = Messages.MailForm.fr
     }

@@ -2,6 +2,7 @@ module Messages.NewInvitePage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Html exposing (Html, p, text)
@@ -74,6 +75,34 @@ de =
             [ text
                 """Um einen Einladungs-Code zu erzeugen, ist ein Passwort aus
                  der Konfiguration erforderlich."""
+            ]
+        ]
+    }
+
+fr : Texts
+fr =
+    { createNewTitle = "Créer des invitations"
+    , newInvitePassword = "Mot de passe d'invitation"
+    , submit = "Envoyer"
+    , reset = "Réinitialiser"
+    , error = "Erreur"
+    , success = "Succès"
+    , invitationKey = "Clé d'invitation:"
+    , message =
+        [ p []
+            [ text
+                """Sharry exige une invitation lors de l'inscription. 
+             Vous pouvez créer ces invitations ici et les envoyer à 
+             vos amis afin qu'ils puissent s'inscrire."""
+            ]
+        , p []
+            [ text
+                """Chaque invitation ne peut être utilisée qu'une seule fois.
+             Vous devrez créer une clé pour chaque personne que vous souhaitez inviter."""
+            ]
+        , p []
+            [ text
+                """Pour créer une invitation, il faut fournir le mot de passe choisi lors de la configuration."""
             ]
         ]
     }

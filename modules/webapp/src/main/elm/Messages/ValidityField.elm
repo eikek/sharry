@@ -2,6 +2,7 @@ module Messages.ValidityField exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.FixedDropdown
@@ -45,4 +46,17 @@ de =
     , weeks = "Wochen"
     , month = "Monat"
     , months = "Monate"
+    }
+
+fr : Texts
+fr =
+    { dropdown = Messages.FixedDropdown.fr
+    , hour = "heure"
+    , hours = "heures"
+    , day = "jour"
+    , days = "jours"
+    , week = "semaine"
+    , weeks = "semaines"
+    , month = "mois"
+    , months = "mois"
     }
