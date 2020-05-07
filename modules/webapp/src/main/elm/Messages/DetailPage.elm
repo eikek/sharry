@@ -2,6 +2,7 @@ module Messages.DetailPage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Dropzone2
@@ -186,4 +187,65 @@ de =
     , passwordRequired = "Passwort erforderlich"
     , passwordInvalid = "Passwort ungültig"
     , or = "Oder"
+    }
+
+fr : Texts
+fr =
+    { mailSend = Messages.MailSend.fr
+    , save = "Sauver"
+    , yourShare = "Votre partage"
+    , markdownInput = Messages.MarkdownInput.fr
+    , shareFileList = Messages.ShareFileList.fr
+    , yesNo = Messages.YesNoDimmer.fr
+    , sharePublished =
+        "Le partage a été publié mais le nombre de vues maximal a été atteint. Vous pouvez "
+            ++ "augmenter cette propriété si vous souhaitez le publier pendant un certain temps encore."
+    , shareNotPublished =
+        "Afin de partager ceci avec d'autres, vous devez publier "
+            ++ "ce partage. Ensuite, envoyez le lien généré à chaque "
+            ++ "personne pour qu’elle y accède."
+    , shareLinkExpired =
+        "Le partage est publié mais il a expiré. Vous pouvez  "
+            ++ "premièrement le dépublier pour le publier à nouveau."
+    , errorQrCode = "Erreur lors de l'encodage en QR Code."
+    , sharePublicAvailableAt = "Ce partage est accessible au public à l'adresse suivante"
+    , shareAsYouLike = "Vous pouvez partager ce lien avec tous ceux qui souhaitent accéder à ces données."
+    , sendEmail = "Envoyer un email"
+    , name = "Nom"
+    , validity = "Durée de validité"
+    , maxViews = "Vues max."
+    , password = "Mot de passe"
+    , passwordProtected = "Protégé"
+    , passwordNone = "Sans"
+    , shareSize = "#/Taille"
+    , created = "Créé le"
+    , aliasLabel = "Alias"
+    , publishedOn = "Publié le"
+    , publishedUntil = "Expiration"
+    , lastAccess = "Dernier accès"
+    , views = "Vues"
+    , publishWithNewLink = "Publier avec un nouveau lien"
+    , delete = "Supprimer"
+    , edit = "Éditer"
+    , detailsMenu = "Détails"
+    , shareLinkMenu = "Lien de partage"
+    , editDescription = "Modifier la description"
+    , publish = "Publier"
+    , unpublish = "Dépublier"
+    , listView = "Liste"
+    , cardView = "Miniatures"
+    , submit = "Envoyer"
+    , clear = "Nettoyer"
+    , resume = "Reprendre"
+    , pause = "Pause"
+    , uploadsGreaterThan =
+        \size ->
+            "Chaque téléversement ne doit pas dépasser " ++ size ++ "."
+    , waitDeleteShare = "Suppresion du partage. Patientez."
+    , loadingData = "Chargement..."
+    , dropzone = Messages.Dropzone2.fr
+    , validityField = Messages.ValidityField.fr
+    , passwordRequired = "Mot de passe requis"
+    , passwordInvalid = "Mot de passe invalide"
+    , or = "Ou"
     }

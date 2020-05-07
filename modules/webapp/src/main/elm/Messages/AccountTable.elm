@@ -2,6 +2,7 @@ module Messages.AccountTable exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 -- AccountTable component texts
@@ -42,4 +43,16 @@ de =
     , nrLogins = "#Anmeldungen"
     , lastLogin = "Letzte Anmeldung"
     , created = "Erstellt"
+    }
+
+fr : Texts
+fr =
+    { login = "Identifiant"
+    , source = "Source"
+    , state = "État"
+    , nrShares = "#Partages"
+    , admin = "Admin"
+    , nrLogins = "#Identifiants"
+    , lastLogin = "Dernière connexion"
+    , created = "Créé"
     }

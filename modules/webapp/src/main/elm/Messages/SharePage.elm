@@ -2,6 +2,7 @@ module Messages.SharePage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.Dropzone2
@@ -105,4 +106,36 @@ de =
     , uploadsUpTo =
         \size ->
             "Es kann bis zu " ++ size ++ " hochgeladen werden."
+    }
+
+fr : Texts
+fr =
+    { markdownInput = Messages.MarkdownInput.fr
+    , dropzone = Messages.Dropzone2.fr
+    , validityField = Messages.ValidityField.fr
+    , intField = Messages.IntField.fr
+    , sendFiles = "Envoyer des fichiers"
+    , description = "Description"
+    , sendMoreFiles = "Envoyer plus de fichiers"
+    , allFilesUploaded = "Tous les fichiers sont téléversés"
+    , someFilesFailedHeader = "Certains téléversements ont échoué"
+    , someFilesFailedText = "Certains téléversements ont échoué…. Vous pouvez essayer à nouveau. "
+    , someFilesFailedTextAddon = "Retournez dans votre partage et envoyez le même fichier à nouveau."
+    , submit = "Envoyer"
+    , clearFiles = "Nettoyer les fichiers"
+    , resume = "Reprendre"
+    , pause = "Pause"
+    , password = "Mot de passe"
+    , createShare = "Créer un partage"
+    , details = "Détails"
+    , name = "Nom"
+    , namePlaceholder = "Nom facultatif"
+    , validity = "Validité"
+    , files = "Fichiers"
+    , newShare = "Nouveau partage"
+    , gotoShare = "Voir le partage"
+    , maxPublicViews = "Nombre maximum de vues"
+    , uploadsUpTo =
+        \size ->
+            "Téléversements possibles jusqu'à " ++ size ++ "."
     }

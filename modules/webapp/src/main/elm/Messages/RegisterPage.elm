@@ -2,6 +2,7 @@ module Messages.RegisterPage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.FixedDropdown
@@ -48,4 +49,18 @@ de =
     , signin = "Anmelden"
     , registrationSuccessful = "Registrierung erfolgreich."
     , dropdown = Messages.FixedDropdown.de
+    }
+
+fr : Texts
+fr =
+    { signup = "Inscription"
+    , userLogin = "Identifiant"
+    , password = "Mot de passe"
+    , passwordRepeat = "Mot de passe (bis)"
+    , invitationKey = "Clé d'invitation"
+    , submitButton = "Envoyer"
+    , alreadySignedUp = "Déjà inscrit ?"
+    , signin = "Connexion"
+    , registrationSuccessful = "Inscription réussie."
+    , dropdown = Messages.FixedDropdown.fr
     }

@@ -2,6 +2,7 @@ module Messages.UploadPage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.ShareTable
@@ -30,4 +31,12 @@ de =
     , newShare = "Neue Freigabe"
     , search = "Suche…"
     , shareTable = Messages.ShareTable.de
+    }
+
+fr : Texts
+fr =
+    { yourShares = "Vos partages"
+    , newShare = "Nouveau partage"
+    , search = "Recherche…"
+    , shareTable = Messages.ShareTable.fr
     }

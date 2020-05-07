@@ -2,6 +2,7 @@ module Messages.Dropzone2 exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -28,4 +29,12 @@ de =
     , filesSelected = " Dateien ausgewählt ("
     , or = "Oder"
     , selectFiles = "Dateien wählen ..."
+    }
+
+fr : Texts
+fr =
+    { dropHere = "Glisser des fichiers ici"
+    , filesSelected = " fichiers sélectionnés ("
+    , or = "Ou"
+    , selectFiles = "Sélectionner des fichiers ..."
     }

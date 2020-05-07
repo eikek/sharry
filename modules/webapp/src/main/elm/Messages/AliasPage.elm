@@ -2,6 +2,7 @@ module Messages.AliasPage exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 import Messages.AliasForm
@@ -59,4 +60,21 @@ de =
     , aliasForm = Messages.AliasForm.de
     , aliasTable = Messages.AliasTable.de
     , mailSend = Messages.MailSend.de
+    }
+
+fr : Texts
+fr =
+    { createNew = "Créer une nouvelle page d'Alias"
+    , aliasPage = "Page d'Alias: "
+    , aliasPages = "Pages d'Alias"
+    , newAliasPage = "Nouvelle page d'Alias"
+    , searchPlaceholder = "Recherche…"
+    , errorQrCode = "Erreur lors de l'encodage en QR Code."
+    , shareThisLink = "Partager ce lien"
+    , aliasPageNowAt = "La page d'alias est maintenant à: "
+    , shareThisUrl = "Vous pouvez partager cette URL avec d'autres personnes pour recevoir des fichiers de leur part."
+    , sendEmail = "Envoyer un email"
+    , aliasForm = Messages.AliasForm.fr
+    , aliasTable = Messages.AliasTable.fr
+    , mailSend = Messages.MailSend.fr
     }

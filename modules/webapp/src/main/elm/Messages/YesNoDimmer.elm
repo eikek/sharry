@@ -2,6 +2,7 @@ module Messages.YesNoDimmer exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -25,4 +26,11 @@ de =
     { message = "Dauerhaft entfernen?"
     , confirmButton = "Ja, bitte!"
     , cancelButton = "Nein"
+    }
+
+fr : Texts
+fr =
+    { message = "Supprimer définitivement ?"
+    , confirmButton = "Oui, Allons-y !"
+    , cancelButton = "Non"
     }

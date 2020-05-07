@@ -2,6 +2,7 @@ module Messages.App exposing
     ( Texts
     , de
     , gb
+    , fr
     )
 
 
@@ -43,4 +44,17 @@ de =
     , logout = \user -> "Abmelden (" ++ user ++ ")"
     , login = "Anmelden"
     , register = "Registrieren"
+    }
+
+fr : Texts
+fr =
+    { home = "Accueil"
+    , shares = "Partages"
+    , aliases = "Alias"
+    , accounts = "Comptes"
+    , settings = "Paramètres"
+    , newInvites = "Invitations"
+    , logout = \user -> "Déconnexion (" ++ user ++ ")"
+    , login = "Connexion"
+    , register = "Inscription"
     }
