@@ -52,7 +52,7 @@ fr =
     , state = "État"
     , nrShares = "#Partages"
     , admin = "Admin"
-    , nrLogins = "#Identifiants"
+    , nrLogins = "#Connexions"
     , lastLogin = "Dernière connexion"
     , created = "Créé"
     }
