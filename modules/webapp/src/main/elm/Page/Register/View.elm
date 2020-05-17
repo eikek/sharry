@@ -21,108 +21,110 @@ view texts flags model =
     div [ class "register-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
-                [ div [ class "six wide column ui segment register-view" ]
-                    [ h1 [ class "ui cener aligned icon header" ]
-                        [ img
-                            [ class "ui logo image"
-                            , src flags.config.logoUrl
-                            ]
-                            []
-                        , div [ class "content" ]
-                            [ text texts.signup
-                            ]
-                        ]
-                    , Html.form
-                        [ class "ui large error form raised segment"
-                        , onSubmit RegisterSubmit
-                        , autocomplete False
-                        ]
-                        [ div [ class "required field" ]
-                            [ label [] [ text texts.userLogin ]
-                            , div [ class "ui left icon input" ]
-                                [ input
-                                    [ type_ "text"
-                                    , autocomplete False
-                                    , onInput SetLogin
-                                    , value model.login
-                                    ]
-                                    []
-                                , i [ class "user icon" ] []
+                [ div [ class "sixteen wide mobile ten wide tablet six wide computer column" ]
+                    [ div [ class "ui segment register-view" ]
+                        [ h1 [ class "ui cener aligned icon header" ]
+                            [ img
+                                [ class "ui logo image"
+                                , src flags.config.logoUrl
+                                ]
+                                []
+                            , div [ class "content" ]
+                                [ text texts.signup
                                 ]
                             ]
-                        , div
-                            [ class "required field"
+                        , Html.form
+                            [ class "ui large error form raised segment"
+                            , onSubmit RegisterSubmit
+                            , autocomplete False
                             ]
-                            [ label [] [ text texts.password ]
-                            , div [ class "ui left icon action input" ]
-                                [ input
-                                    [ type_ <|
-                                        if model.showPass1 then
-                                            "text"
+                            [ div [ class "required field" ]
+                                [ label [] [ text texts.userLogin ]
+                                , div [ class "ui left icon input" ]
+                                    [ input
+                                        [ type_ "text"
+                                        , autocomplete False
+                                        , onInput SetLogin
+                                        , value model.login
+                                        ]
+                                        []
+                                    , i [ class "user icon" ] []
+                                    ]
+                                ]
+                            , div
+                                [ class "required field"
+                                ]
+                                [ label [] [ text texts.password ]
+                                , div [ class "ui left icon action input" ]
+                                    [ input
+                                        [ type_ <|
+                                            if model.showPass1 then
+                                                "text"
 
-                                        else
-                                            "password"
-                                    , autocomplete False
-                                    , onInput SetPass1
-                                    , value model.pass1
-                                    ]
-                                    []
-                                , i [ class "lock icon" ] []
-                                , button [ class "ui icon button", onClick ToggleShowPass1 ]
-                                    [ i [ class "eye icon" ] []
+                                            else
+                                                "password"
+                                        , autocomplete False
+                                        , onInput SetPass1
+                                        , value model.pass1
+                                        ]
+                                        []
+                                    , i [ class "lock icon" ] []
+                                    , button [ class "ui icon button", onClick ToggleShowPass1 ]
+                                        [ i [ class "eye icon" ] []
+                                        ]
                                     ]
                                 ]
-                            ]
-                        , div
-                            [ class "required field"
-                            ]
-                            [ label [] [ text texts.passwordRepeat ]
-                            , div [ class "ui left icon action input" ]
-                                [ input
-                                    [ type_ <|
-                                        if model.showPass2 then
-                                            "text"
+                            , div
+                                [ class "required field"
+                                ]
+                                [ label [] [ text texts.passwordRepeat ]
+                                , div [ class "ui left icon action input" ]
+                                    [ input
+                                        [ type_ <|
+                                            if model.showPass2 then
+                                                "text"
 
-                                        else
-                                            "password"
-                                    , autocomplete False
-                                    , onInput SetPass2
-                                    , value model.pass2
-                                    ]
-                                    []
-                                , i [ class "lock icon" ] []
-                                , button [ class "ui icon button", onClick ToggleShowPass2 ]
-                                    [ i [ class "eye icon" ] []
+                                            else
+                                                "password"
+                                        , autocomplete False
+                                        , onInput SetPass2
+                                        , value model.pass2
+                                        ]
+                                        []
+                                    , i [ class "lock icon" ] []
+                                    , button [ class "ui icon button", onClick ToggleShowPass2 ]
+                                        [ i [ class "eye icon" ] []
+                                        ]
                                     ]
                                 ]
-                            ]
-                        , div
-                            [ classList
-                                [ ( "field", True )
-                                , ( "invisible", flags.config.signupMode /= "invite" )
-                                ]
-                            ]
-                            [ label [] [ text texts.invitationKey ]
-                            , div [ class "ui left icon input" ]
-                                [ input
-                                    [ type_ "text"
-                                    , autocomplete False
-                                    , onInput SetInvite
-                                    , model.invite |> Maybe.withDefault "" |> value
+                            , div
+                                [ classList
+                                    [ ( "field", True )
+                                    , ( "invisible", flags.config.signupMode /= "invite" )
                                     ]
-                                    []
-                                , i [ class "key icon" ] []
+                                ]
+                                [ label [] [ text texts.invitationKey ]
+                                , div [ class "ui left icon input" ]
+                                    [ input
+                                        [ type_ "text"
+                                        , autocomplete False
+                                        , onInput SetInvite
+                                        , model.invite |> Maybe.withDefault "" |> value
+                                        ]
+                                        []
+                                    , i [ class "key icon" ] []
+                                    ]
+                                ]
+                            , button
+                                [ class "ui primary button"
+                                , type_ "submit"
+                                ]
+                                [ text texts.submitButton
                                 ]
                             ]
-                        , button
-                            [ class "ui primary button"
-                            , type_ "submit"
-                            ]
-                            [ text texts.submitButton
-                            ]
+                        , resultMessage texts model
+                        , renderLanguageAndSignin currentLanguage texts model
                         ]
-                    , resultMessage texts model
-                    , renderLanguageAndSignin currentLanguage texts model
                     ]
                 ]
             ]

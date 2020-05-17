@@ -24,62 +24,64 @@ view texts flags model =
     div [ class "login-page" ]
         [ div [ class "ui centered grid" ]
             [ div [ class "row" ]
-                [ div [ class "six wide column ui segment login-view" ]
-                    [ h1 [ class "ui center aligned icon header" ]
-                        [ img
-                            [ class "ui logo image"
-                            , src flags.config.logoUrl
+                [ div [ class "sixteen wide mobile ten wide tablet six wide computer column" ]
+                    [ div [ class "ui segment login-view" ]
+                        [ h1 [ class "ui center aligned icon header" ]
+                            [ img
+                                [ class "ui logo image"
+                                , src flags.config.logoUrl
+                                ]
+                                []
                             ]
-                            []
-                        ]
-                    , Html.form
-                        [ class "ui large error raised form segment"
-                        , onSubmit Authenticate
-                        , autocomplete False
-                        ]
-                        [ div [ class "field" ]
-                            [ label [] [ text texts.username ]
-                            , div [ class "ui left icon input" ]
-                                [ input
-                                    [ type_ "text"
-                                    , autocomplete False
-                                    , onInput SetUsername
-                                    , value model.username
-                                    , placeholder texts.loginPlaceholder
-                                    , autofocus True
+                        , Html.form
+                            [ class "ui large error raised form segment"
+                            , onSubmit Authenticate
+                            , autocomplete False
+                            ]
+                            [ div [ class "field" ]
+                                [ label [] [ text texts.username ]
+                                , div [ class "ui left icon input" ]
+                                    [ input
+                                        [ type_ "text"
+                                        , autocomplete False
+                                        , onInput SetUsername
+                                        , value model.username
+                                        , placeholder texts.loginPlaceholder
+                                        , autofocus True
+                                        ]
+                                        []
+                                    , i [ class "user icon" ] []
                                     ]
-                                    []
-                                , i [ class "user icon" ] []
+                                ]
+                            , div [ class "field" ]
+                                [ label [] [ text texts.password ]
+                                , div [ class "ui left icon input" ]
+                                    [ input
+                                        [ type_ "password"
+                                        , autocomplete False
+                                        , onInput SetPassword
+                                        , value model.password
+                                        , placeholder texts.passwordPlaceholder
+                                        ]
+                                        []
+                                    , i [ class "lock icon" ] []
+                                    ]
+                                ]
+                            , button
+                                [ class "ui primary fluid button"
+                                , type_ "submit"
+                                ]
+                                [ text texts.loginButton
                                 ]
                             ]
-                        , div [ class "field" ]
-                            [ label [] [ text texts.password ]
-                            , div [ class "ui left icon input" ]
-                                [ input
-                                    [ type_ "password"
-                                    , autocomplete False
-                                    , onInput SetPassword
-                                    , value model.password
-                                    , placeholder texts.passwordPlaceholder
-                                    ]
-                                    []
-                                , i [ class "lock icon" ] []
-                                ]
-                            ]
-                        , button
-                            [ class "ui primary fluid button"
-                            , type_ "submit"
-                            ]
-                            [ text texts.loginButton
-                            ]
-                        ]
-                    , if List.isEmpty flags.config.oauthConfig then
-                        div [] []
+                        , if List.isEmpty flags.config.oauthConfig then
+                            div [] []
 
-                      else
-                        renderOAuthButtons texts flags model
-                    , resultMessage texts model
-                    , renderLangAndSignup currentLanguage texts flags model
+                          else
+                            renderOAuthButtons texts flags model
+                        , resultMessage texts model
+                        , renderLangAndSignup currentLanguage texts flags model
+                        ]
                     ]
                 ]
             , renderWelcome flags
