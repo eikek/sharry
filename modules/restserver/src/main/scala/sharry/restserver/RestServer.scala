@@ -13,6 +13,7 @@ import org.http4s.headers.Location
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
+import org.http4s.dsl.Http4sDsl
 import org.log4s.getLogger
 import scala.concurrent.duration._
 
@@ -142,14 +143,17 @@ object RestServer {
       )
     )
 
-  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] =
-    Kleisli(req =>
-      OptionT.pure(
+  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {
+    val dsl = new Http4sDsl[F] {}
+    import dsl._
+
+    HttpRoutes.of {
+      case GET -> Root =>
         Response[F](
           Status.SeeOther,
           body = Stream.empty,
           headers = Headers.of(Location(Uri(path = path)))
-        )
-      )
-    )
+        ).pure[F]
+    }
+  }
 }
