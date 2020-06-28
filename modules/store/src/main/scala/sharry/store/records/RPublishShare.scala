@@ -1,6 +1,6 @@
 package sharry.store.records
 
-//import cats.implicits._
+import cats.data.OptionT
 import doobie._, doobie.implicits._
 import sharry.common._
 import sharry.store.doobie._
@@ -82,6 +82,30 @@ object RPublishShare {
       record = RPublishShare(id, share, true, 0, None, now, now.plus(validity), now)
       n <- insert(record)
     } yield record
+
+  def updateValidityTime(share: Ident, validity: Duration): ConnectionIO[Int] =
+    (for {
+      published <- OptionT(
+        Sql
+          .selectSimple(
+            Seq(publishDate),
+            table,
+            Sql.and(shareId.is(share), enabled.is(true))
+          )
+          .query[Timestamp]
+          .option
+      )
+      n <- OptionT.liftF(
+        Sql
+          .updateRow(
+            table,
+            shareId.is(share),
+            publishUntil.setTo(published.plus(validity))
+          )
+          .update
+          .run
+      )
+    } yield n).getOrElse(0)
 
   def update(share: Ident, enable: Boolean, reuseId: Boolean): ConnectionIO[Int] =
     for {
