@@ -427,14 +427,18 @@ object Queries {
       .run
 
   def setValidity(share: Ident, value: Duration): ConnectionIO[Int] =
-    Sql
-      .updateRow(
-        RShare.table,
-        RShare.Columns.id.is(share),
-        RShare.Columns.validity.setTo(value)
-      )
-      .update
-      .run
+    for {
+      n <-
+        Sql
+          .updateRow(
+            RShare.table,
+            RShare.Columns.id.is(share),
+            RShare.Columns.validity.setTo(value)
+          )
+          .update
+          .run
+      k <- RPublishShare.updateValidityTime(share, value)
+    } yield n + k
 
   def setMaxViews(share: Ident, value: Int): ConnectionIO[Int] =
     Sql
