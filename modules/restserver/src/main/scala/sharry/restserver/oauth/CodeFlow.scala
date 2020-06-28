@@ -65,7 +65,7 @@ object CodeFlow {
       Uri.unsafeFromString(cfg.tokenUrl.asString)
     )
 
-    OptionT(c.fetch(req) {
+    OptionT(req.flatMap(c.run(_).use {
       case Status.Successful(r) =>
         val u1 = r.as[UrlForm].map(_.getFirst("access_token"))
         val u2 =
@@ -75,7 +75,7 @@ object CodeFlow {
         logger
           .ferror[F](s"Error obtaining access token '${r.status.code}' / ${r.as[String]}")
           .map(_ => None)
-    })
+    }))
   }
 
   private def tokenToUser[F[_]: ConcurrentEffect](
@@ -92,7 +92,7 @@ object CodeFlow {
       Accept(MediaType.application.json)
     )
 
-    val resp: F[Option[Ident]] = c.fetch(req) {
+    val resp: F[Option[Ident]] = req.flatMap(c.run(_).use {
       case Status.Successful(r) =>
         r.as[Json]
           .flatTap(j => logger.ftrace(s"user structure: ${j.noSpaces}"))
@@ -106,7 +106,7 @@ object CodeFlow {
           )
           .map(_ => None)
 
-    }
+    })
 
     OptionT(resp)
   }
