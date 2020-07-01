@@ -77,7 +77,7 @@ viewTableLine texts model alias_ =
                 |> text
             ]
         , td []
-            [ Util.Time.formatIsoDateTime alias_.created
+            [ Util.Time.formatDateTime alias_.created
                 |> text
             ]
         ]

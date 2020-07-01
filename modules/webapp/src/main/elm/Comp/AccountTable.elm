@@ -79,12 +79,12 @@ viewTableLine model acc =
             ]
         , td [] [ String.fromInt acc.loginCount |> text ]
         , td []
-            [ Maybe.map Util.Time.formatIsoDateTime acc.lastLogin
+            [ Maybe.map Util.Time.formatDateTime acc.lastLogin
                 |> Maybe.withDefault ""
                 |> text
             ]
         , td []
-            [ Util.Time.formatIsoDateTime acc.created
+            [ Util.Time.formatDateTime acc.created
                 |> text
             ]
         ]
