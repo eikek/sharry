@@ -87,11 +87,11 @@ fr : DateTimeMsg
 fr =
     { format =
         [ DateFormat.dayOfWeekNameAbbreviated
-        , DateFormat.text ", "
+        , DateFormat.text ". "
+        , DateFormat.dayOfMonthSuffix
+        , DateFormat.text " "
         , DateFormat.monthNameFull
         , DateFormat.text " "
-        , DateFormat.dayOfMonthSuffix
-        , DateFormat.text ", "
         , DateFormat.yearNumber
         , DateFormat.text ", "
         , DateFormat.hourMilitaryNumber
@@ -231,7 +231,7 @@ toFrenchOrdinalSuffix n =
         "er"
 
     else
-        "e"
+        ""
 
 
 
