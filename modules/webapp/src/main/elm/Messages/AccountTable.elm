@@ -1,9 +1,14 @@
 module Messages.AccountTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
+
+import Language
+import Messages.DateFormat exposing (formatDateTime)
+
+
 
 -- AccountTable component texts
 
@@ -17,6 +22,7 @@ type alias Texts =
     , nrLogins : String
     , lastLogin : String
     , created : String
+    , dateTime : Int -> String
     }
 
 
@@ -30,6 +36,7 @@ gb =
     , nrLogins = "#Logins"
     , lastLogin = "Last Login"
     , created = "Created"
+    , dateTime = formatDateTime Language.English
     }
 
 
@@ -43,7 +50,9 @@ de =
     , nrLogins = "#Anmeldungen"
     , lastLogin = "Letzte Anmeldung"
     , created = "Erstellt"
+    , dateTime = formatDateTime Language.German
     }
+
 
 fr : Texts
 fr =
@@ -55,4 +64,5 @@ fr =
     , nrLogins = "#Connexions"
     , lastLogin = "Dernière connexion"
     , created = "Créé"
+    , dateTime = formatDateTime Language.French
     }

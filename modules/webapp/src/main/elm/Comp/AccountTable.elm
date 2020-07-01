@@ -12,7 +12,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages.AccountTable exposing (Texts)
 import Util.Html
-import Util.Time
 
 
 type alias Model =
@@ -53,7 +52,7 @@ view texts accounts model =
                 ]
             ]
         , tbody []
-            (List.map (viewTableLine model) accounts)
+            (List.map (viewTableLine texts model) accounts)
         ]
 
 
@@ -64,8 +63,8 @@ isSelected model acc =
         |> Maybe.withDefault False
 
 
-viewTableLine : Model -> AccountDetail -> Html Msg
-viewTableLine model acc =
+viewTableLine : Texts -> Model -> AccountDetail -> Html Msg
+viewTableLine texts model acc =
     tr
         [ onClick (Select acc)
         , classList [ ( "active", isSelected model acc ) ]
@@ -79,12 +78,12 @@ viewTableLine model acc =
             ]
         , td [] [ String.fromInt acc.loginCount |> text ]
         , td []
-            [ Maybe.map Util.Time.formatIsoDateTime acc.lastLogin
+            [ Maybe.map texts.dateTime acc.lastLogin
                 |> Maybe.withDefault ""
                 |> text
             ]
         , td []
-            [ Util.Time.formatIsoDateTime acc.created
+            [ texts.dateTime acc.created
                 |> text
             ]
         ]

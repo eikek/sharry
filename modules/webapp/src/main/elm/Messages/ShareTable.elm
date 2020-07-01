@@ -1,9 +1,12 @@
 module Messages.ShareTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
+
+import Language
+import Messages.DateFormat
 
 
 type alias Texts =
@@ -14,6 +17,7 @@ type alias Texts =
     , nFiles : String
     , size : String
     , created : String
+    , dateTime : Int -> String
     }
 
 
@@ -26,6 +30,7 @@ gb =
     , nFiles = "#Files"
     , size = "Size"
     , created = "Created"
+    , dateTime = Messages.DateFormat.formatDateTime Language.English
     }
 
 
@@ -38,7 +43,9 @@ de =
     , nFiles = "#Dateien"
     , size = "Größe"
     , created = "Erstellt"
+    , dateTime = Messages.DateFormat.formatDateTime Language.German
     }
+
 
 fr : Texts
 fr =
@@ -49,4 +56,5 @@ fr =
     , nFiles = "#Fichiers"
     , size = "Taille"
     , created = "Créé"
+    , dateTime = Messages.DateFormat.formatDateTime Language.French
     }

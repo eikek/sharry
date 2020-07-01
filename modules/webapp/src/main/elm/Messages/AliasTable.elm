@@ -1,10 +1,12 @@
 module Messages.AliasTable exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
+import Language
+import Messages.DateFormat
 import Messages.ValidityField
 
 
@@ -14,6 +16,7 @@ type alias Texts =
     , validity : String
     , created : String
     , validityField : Messages.ValidityField.Texts
+    , dateTime : Int -> String
     }
 
 
@@ -24,6 +27,7 @@ gb =
     , validity = "Validity"
     , created = "Created"
     , validityField = Messages.ValidityField.gb
+    , dateTime = Messages.DateFormat.formatDateTime Language.English
     }
 
 
@@ -34,7 +38,9 @@ de =
     , validity = "Gültigkeit"
     , created = "Erstellt"
     , validityField = Messages.ValidityField.de
+    , dateTime = Messages.DateFormat.formatDateTime Language.German
     }
+
 
 fr : Texts
 fr =
@@ -43,4 +49,5 @@ fr =
     , validity = "Validité"
     , created = "Créé"
     , validityField = Messages.ValidityField.fr
+    , dateTime = Messages.DateFormat.formatDateTime Language.French
     }

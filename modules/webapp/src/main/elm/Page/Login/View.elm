@@ -6,9 +6,10 @@ import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onSubmit)
+import Html.Events exposing (onInput, onSubmit)
+import Language exposing (Language)
 import Markdown
-import Messages exposing (Language)
+import Messages
 import Messages.LoginPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)

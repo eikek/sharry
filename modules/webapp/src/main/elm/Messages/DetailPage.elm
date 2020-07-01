@@ -1,10 +1,12 @@
 module Messages.DetailPage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
+import Language
+import Messages.DateFormat
 import Messages.Dropzone2
 import Messages.MailSend
 import Messages.MarkdownInput
@@ -62,6 +64,7 @@ type alias Texts =
     , passwordRequired : String
     , passwordInvalid : String
     , or : String
+    , dateTime : Int -> String
     }
 
 
@@ -124,6 +127,7 @@ gb =
     , passwordRequired = "Password required"
     , passwordInvalid = "Password invalid"
     , or = "Or"
+    , dateTime = Messages.DateFormat.formatDateTime Language.English
     }
 
 
@@ -187,7 +191,9 @@ de =
     , passwordRequired = "Passwort erforderlich"
     , passwordInvalid = "Passwort ungültig"
     , or = "Oder"
+    , dateTime = Messages.DateFormat.formatDateTime Language.German
     }
+
 
 fr : Texts
 fr =
@@ -248,4 +254,5 @@ fr =
     , passwordRequired = "Mot de passe requis"
     , passwordInvalid = "Mot de passe invalide"
     , or = "Ou"
+    , dateTime = Messages.DateFormat.formatDateTime Language.French
     }

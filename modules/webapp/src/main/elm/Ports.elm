@@ -2,7 +2,8 @@ port module Ports exposing (..)
 
 import Api.Model.AuthResult exposing (AuthResult)
 import Json.Decode as D
-import Messages exposing (Language)
+import Language exposing (Language)
+import Messages
 
 
 port setAccount : AuthResult -> Cmd msg
