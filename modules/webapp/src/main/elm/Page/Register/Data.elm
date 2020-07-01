@@ -3,7 +3,6 @@ module Page.Register.Data exposing (..)
 import Api.Model.BasicResult exposing (BasicResult)
 import Comp.LanguageChoose
 import Http
-import Messages exposing (Language)
 
 
 type alias Model =

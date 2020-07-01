@@ -14,7 +14,6 @@ import Messages.ShareTable exposing (Texts)
 import Util.Html
 import Util.Size
 import Util.String
-import Util.Time
 
 
 type alias Model =
@@ -54,7 +53,7 @@ view texts accounts model =
                 ]
             ]
         , tbody []
-            (List.map (viewTableLine model) accounts)
+            (List.map (viewTableLine texts model) accounts)
         ]
 
 
@@ -65,8 +64,8 @@ isSelected model item =
         |> Maybe.withDefault False
 
 
-viewTableLine : Model -> ShareListItem -> Html Msg
-viewTableLine model item =
+viewTableLine : Texts -> Model -> ShareListItem -> Html Msg
+viewTableLine texts model item =
     tr
         [ onClick (Select item)
         , classList [ ( "active", isSelected model item ) ]
@@ -86,8 +85,7 @@ viewTableLine model item =
                 |> text
             ]
         , td [ class "collapsing" ]
-            [ Util.Time.formatDateTime item.created
-                |> text
+            [ texts.dateTime item.created |> text
             ]
         ]
 

@@ -1,13 +1,12 @@
 module Messages exposing
-    ( Language(..)
-    , Messages
-    , allLanguages
+    ( Messages
     , fromFlags
     , get
     , toIso2
     )
 
 import Data.Flags exposing (Flags)
+import Language exposing (Language(..), allLanguages)
 import Messages.AccountPage
 import Messages.AliasPage
 import Messages.App
@@ -19,53 +18,6 @@ import Messages.RegisterPage
 import Messages.SettingsPage
 import Messages.SharePage
 import Messages.UploadPage
-
-
-type Language
-    = English
-    | German
-    | French
-
-
-allLanguages : List Language
-allLanguages =
-    [ English
-    , German
-    , French
-    ]
-
-
-{-| Get a ISO-3166-1 code of the given lanugage.
--}
-toIso2 : Language -> String
-toIso2 lang =
-    get lang |> .iso2
-
-
-{-| Return the Language from given iso2 code. If the iso2 code is not
-known, return Nothing.
--}
-readIso2 : String -> Maybe Language
-readIso2 iso =
-    let
-        isIso lang =
-            iso == toIso2 lang
-    in
-    List.filter isIso allLanguages
-        |> List.head
-
-
-{-| Return the Language from the given iso2 code. If the iso2 code is
-not known, return English as a default.
--}
-fromIso2 : String -> Language
-fromIso2 iso =
-    readIso2 iso
-        |> Maybe.withDefault English
-
-
-
--- Messages
 
 
 {-| The messages record contains all strings used in the application.
@@ -102,6 +54,35 @@ get lang =
             fr
 
 
+{-| Get a ISO-3166-1 code of the given lanugage.
+-}
+toIso2 : Language -> String
+toIso2 lang =
+    get lang |> .iso2
+
+
+{-| Return the Language from given iso2 code. If the iso2 code is not
+known, return Nothing.
+-}
+readIso2 : String -> Maybe Language
+readIso2 iso =
+    let
+        isIso lang =
+            iso == toIso2 lang
+    in
+    List.filter isIso allLanguages
+        |> List.head
+
+
+{-| Return the Language from the given iso2 code. If the iso2 code is
+not known, return English as a default.
+-}
+fromIso2 : String -> Language
+fromIso2 iso =
+    readIso2 iso
+        |> Maybe.withDefault English
+
+
 fromFlags : Flags -> Messages
 fromFlags flags =
     let
@@ -115,6 +96,10 @@ fromFlags flags =
     in
     fromIso2 iso
         |> get
+
+
+
+--- Messages Definitions
 
 
 gb : Messages
@@ -155,6 +140,7 @@ de =
     , newInvite = Messages.NewInvitePage.de
     , settings = Messages.SettingsPage.de
     }
+
 
 fr : Messages
 fr =

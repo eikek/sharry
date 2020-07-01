@@ -10,7 +10,8 @@ module Comp.LanguageChoose exposing
 import Comp.FixedDropdown exposing (Item)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Messages exposing (Language)
+import Language exposing (Language)
+import Messages
 import Messages.FixedDropdown exposing (Texts)
 
 
@@ -24,7 +25,7 @@ type alias Msg =
 
 init : Model
 init =
-    List.map mkLanguageItem Messages.allLanguages
+    List.map mkLanguageItem Language.allLanguages
         |> Comp.FixedDropdown.init
 
 

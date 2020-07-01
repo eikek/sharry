@@ -13,7 +13,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages.AliasTable exposing (Texts)
 import Util.Html
-import Util.Time
 
 
 type alias Model =
@@ -77,7 +76,7 @@ viewTableLine texts model alias_ =
                 |> text
             ]
         , td []
-            [ Util.Time.formatDateTime alias_.created
+            [ texts.dateTime alias_.created
                 |> text
             ]
         ]

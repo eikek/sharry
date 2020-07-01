@@ -34,7 +34,6 @@ import QRCode
 import Util.Html
 import Util.Share
 import Util.Size
-import Util.Time
 
 
 view : Texts -> Flags -> Model -> Html Msg
@@ -346,7 +345,7 @@ shareProps texts model =
                         { label = texts.created
                         , content =
                             propertyDisplay "calendar icon"
-                                (Util.Time.formatDateTime share.created)
+                                (texts.dateTime share.created)
                         , editAction = Nothing
                         }
                     ]
@@ -366,7 +365,7 @@ shareProps texts model =
                         , content =
                             propertyDisplay (Tuple.first <| publishIconLabel texts share)
                                 (Maybe.map .publishDate share.publishInfo
-                                    |> Maybe.map Util.Time.formatDateTime
+                                    |> Maybe.map texts.dateTime
                                     |> Maybe.withDefault "-"
                                 )
                         , editAction = Nothing
@@ -377,7 +376,7 @@ shareProps texts model =
                         , content =
                             propertyDisplay "hourglass icon"
                                 (Maybe.map .publishUntil share.publishInfo
-                                    |> Maybe.map Util.Time.formatDateTime
+                                    |> Maybe.map texts.dateTime
                                     |> Maybe.withDefault "-"
                                 )
                         , editAction = Nothing
@@ -388,7 +387,7 @@ shareProps texts model =
                         , content =
                             propertyDisplay "calendar outline icon"
                                 (Maybe.andThen .lastAccess share.publishInfo
-                                    |> Maybe.map Util.Time.formatDateTime
+                                    |> Maybe.map texts.dateTime
                                     |> Maybe.withDefault "-"
                                 )
                         , editAction = Nothing
