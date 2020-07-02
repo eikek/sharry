@@ -1,10 +1,9 @@
-module Page.Alias.Data exposing (Model, Msg(..), emptyModel)
+module Page.Alias.Data exposing (Model, Msg(..), clipboardData, emptyModel)
 
 import Api.Model.AliasDetail exposing (AliasDetail)
 import Api.Model.AliasList exposing (AliasList)
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.IdResult exposing (IdResult)
-import Api.Model.MailTemplate exposing (MailTemplate)
 import Comp.AliasForm
 import Comp.AliasTable
 import Comp.MailSend
@@ -46,3 +45,8 @@ type Msg
     | DeleteResp (Result Http.Error BasicResult)
     | MailFormMsg Comp.MailSend.Msg
     | InitMail
+
+
+clipboardData : ( String, String )
+clipboardData =
+    ( "Alias", "#alias-copy-to-clipboard-btn" )

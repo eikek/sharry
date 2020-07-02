@@ -152,3 +152,14 @@ elmApp.ports.startUpload.subscribe(function(id) {
         upload.start();
     }
 });
+
+
+var sharry_clipboards = {};
+
+elmApp.ports.initClipboard.subscribe(function(args) {
+    var page = args[0];
+    if (!sharry_clipboards[page]) {
+        var sel = args[1];
+        sharry_clipboards[page] = new ClipboardJS(sel);
+    }
+});

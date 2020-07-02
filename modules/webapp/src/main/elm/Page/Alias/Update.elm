@@ -8,7 +8,13 @@ import Comp.AliasTable
 import Comp.MailSend
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
-import Page.Alias.Data exposing (Model, Msg(..))
+import Page.Alias.Data
+    exposing
+        ( Model
+        , Msg(..)
+        , clipboardData
+        )
+import Ports
 import Util.Http
 
 
@@ -21,20 +27,28 @@ update key flags msg model =
                     Maybe.map .id model.selected
                         |> Maybe.map ((==) id)
                         |> Maybe.withDefault False
+
+                clipboardInit =
+                    Ports.initClipboard clipboardData
             in
             if id == "new" then
                 ( { model
                     | selected = Nothing
                     , formModel = Comp.AliasForm.initNew flags
                   }
-                , Cmd.none
+                , clipboardInit
                 )
 
             else if current then
-                ( model, Cmd.none )
+                ( model, clipboardInit )
 
             else
-                ( model, Api.getAlias flags id LoadResp )
+                ( model
+                , Cmd.batch
+                    [ Api.getAlias flags id LoadResp
+                    , clipboardInit
+                    ]
+                )
 
         Init Nothing ->
             ( { model

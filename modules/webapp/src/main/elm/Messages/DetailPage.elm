@@ -29,6 +29,7 @@ type alias Texts =
     , sharePublicAvailableAt : String
     , shareAsYouLike : String
     , sendEmail : String
+    , copyLink : String
     , name : String
     , validity : String
     , maxViews : String
@@ -90,6 +91,7 @@ gb =
     , sharePublicAvailableAt = "The share is publicly available at"
     , shareAsYouLike = "You can share this link to all you'd like to access this data."
     , sendEmail = "Send E-Mail"
+    , copyLink = "Copy Link"
     , name = "Name"
     , validity = "Validity Time"
     , maxViews = "Max. Views"
@@ -154,6 +156,7 @@ de =
     , sharePublicAvailableAt = "Die Datei-Freigabe ist hier öffentlich verfügbar:"
     , shareAsYouLike = "Sie können diesen Link mit denen teilen, die Zugriff auf diese Dateien bekommen sollen."
     , sendEmail = "Sende E-Mail"
+    , copyLink = "Link kopieren"
     , name = "Name"
     , validity = "Gültigkeit"
     , maxViews = "Max. Ansichten"
@@ -217,6 +220,7 @@ fr =
     , sharePublicAvailableAt = "Ce partage est accessible au public à l'adresse suivante"
     , shareAsYouLike = "Vous pouvez partager ce lien avec tous ceux qui souhaitent accéder à ces données."
     , sendEmail = "Envoyer un email"
+    , copyLink = "Copy Link"
     , name = "Nom"
     , validity = "Durée de validité"
     , maxViews = "Vues max."

@@ -6,6 +6,7 @@ module Page.Detail.Data exposing
     , Property(..)
     , PublishState(..)
     , TopMenuState(..)
+    , clipboardData
     , deleteLoader
     , emptyModel
     , getLoader
@@ -201,6 +202,7 @@ type Msg
     | StartStopUpload
     | MailFormMsg Comp.MailSend.Msg
     | InitMail
+    | CopyToClipboard String
 
 
 isPublished : ShareDetail -> PublishState
@@ -221,3 +223,8 @@ isPublished share =
 
             else
                 PublishOk
+
+
+clipboardData : ( String, String )
+clipboardData =
+    ( "Detail", "#share-copy-to-clipboard-btn" )

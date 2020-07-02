@@ -24,6 +24,7 @@ import Page.Detail.Data
         , Msg(..)
         , PublishState(..)
         , TopMenuState(..)
+        , clipboardData
         , deleteLoader
         , getLoader
         , isEdit
@@ -41,7 +42,12 @@ update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
         Init id ->
-            ( { model | loader = getLoader }, Api.getShare flags id DetailResp )
+            ( { model | loader = getLoader }
+            , Cmd.batch
+                [ Api.getShare flags id DetailResp
+                , Ports.initClipboard clipboardData
+                ]
+            )
 
         DetailResp (Ok details) ->
             ( { model
@@ -470,6 +476,9 @@ update flags msg model =
             ( { model | mailForm = Just mm }
             , Cmd.map MailFormMsg mc
             )
+
+        CopyToClipboard str ->
+            ( model, Cmd.none )
 
 
 trackUpload : Model -> UploadState -> ( Model, Cmd Msg )
