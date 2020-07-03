@@ -131,6 +131,7 @@ object TemplateRoutes {
           "/app/assets" + Webjars.jquery + "/jquery.min.js",
           "/app/assets" + Webjars.semanticui + "/semantic.min.js",
           "/app/assets" + Webjars.tusjsclient + "/dist/tus.min.js",
+          "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
           s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry-app.js"
         ),
         s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry.js",

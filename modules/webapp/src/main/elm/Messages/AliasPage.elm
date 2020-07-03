@@ -1,8 +1,8 @@
 module Messages.AliasPage exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.AliasForm
@@ -21,6 +21,7 @@ type alias Texts =
     , aliasPageNowAt : String
     , shareThisUrl : String
     , sendEmail : String
+    , copyLink : String
     , aliasForm : Messages.AliasForm.Texts
     , aliasTable : Messages.AliasTable.Texts
     , mailSend : Messages.MailSend.Texts
@@ -39,6 +40,7 @@ gb =
     , aliasPageNowAt = "The alias page is now at: "
     , shareThisUrl = "You can share this URL with others to receive files from them."
     , sendEmail = "Send E-Mail"
+    , copyLink = "Copy Link"
     , aliasForm = Messages.AliasForm.gb
     , aliasTable = Messages.AliasTable.gb
     , mailSend = Messages.MailSend.gb
@@ -57,10 +59,12 @@ de =
     , aliasPageNowAt = "Die Alias Seite ist nun hier: "
     , shareThisUrl = "Du kannst diese URL mit anderen teilen, um von ihnen Dateien zu erhalten."
     , sendEmail = "Sende E-Mail"
+    , copyLink = "Link kopieren"
     , aliasForm = Messages.AliasForm.de
     , aliasTable = Messages.AliasTable.de
     , mailSend = Messages.MailSend.de
     }
+
 
 fr : Texts
 fr =
@@ -74,6 +78,7 @@ fr =
     , aliasPageNowAt = "La page d'alias est maintenant à: "
     , shareThisUrl = "Vous pouvez partager cette URL avec d'autres personnes pour recevoir des fichiers de leur part."
     , sendEmail = "Envoyer un email"
+    , copyLink = "Copier le lien"
     , aliasForm = Messages.AliasForm.fr
     , aliasTable = Messages.AliasTable.fr
     , mailSend = Messages.MailSend.fr

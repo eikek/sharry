@@ -66,3 +66,6 @@ setLang lang =
 
 
 port receiveLanguage : (String -> msg) -> Sub msg
+
+
+port initClipboard : ( String, String ) -> Cmd msg

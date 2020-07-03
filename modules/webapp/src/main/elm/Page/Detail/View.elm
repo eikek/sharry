@@ -27,6 +27,7 @@ import Page.Detail.Data
         , Property(..)
         , PublishState(..)
         , TopMenuState(..)
+        , clipboardData
         , isEdit
         , isPublished
         )
@@ -188,7 +189,9 @@ shareLinkPublished texts flags model =
         ]
         [ text texts.sharePublicAvailableAt
         , pre [ class "url" ]
-            [ code []
+            [ code
+                [ id "share-url"
+                ]
                 [ text url
                 ]
             ]
@@ -214,21 +217,38 @@ shareLinkPublished texts flags model =
                 ]
                 [ div [ class "ui two column stackable center aligned grid" ]
                     [ div [ class "ui vertical divider" ]
-                        [ text texts.or ]
-                    , div [ class "middle aligned row" ]
+                        [ text texts.or
+                        ]
+                    , div
+                        [ class "middle aligned row"
+                        ]
                         [ div [ class "column" ]
                             [ qrCodeView url
                             ]
                         , div [ class "column" ]
-                            [ a
-                                [ classList
-                                    [ ( "ui primary button", True )
-                                    , ( "disabled", not flags.config.mailEnabled )
+                            [ div [ class "ui vertical buttons" ]
+                                [ a
+                                    [ class "ui primary labeled icon button"
+                                    , Tuple.second clipboardData
+                                        |> String.dropLeft 1
+                                        |> id
+                                    , href "#"
+                                    , attribute "data-clipboard-target" "#share-url"
                                     ]
-                                , href "#"
-                                , onClick InitMail
-                                ]
-                                [ text texts.sendEmail
+                                    [ i [ class "copy icon" ] []
+                                    , text texts.copyLink
+                                    ]
+                                , a
+                                    [ classList
+                                        [ ( "ui primary labeled icon button", True )
+                                        , ( "disabled", not flags.config.mailEnabled )
+                                        ]
+                                    , href "#"
+                                    , onClick InitMail
+                                    ]
+                                    [ i [ class "envelope icon" ] []
+                                    , text texts.sendEmail
+                                    ]
                                 ]
                             ]
                         ]

@@ -10,7 +10,12 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Messages.AliasPage exposing (Texts)
 import Page exposing (Page(..))
-import Page.Alias.Data exposing (Model, Msg(..))
+import Page.Alias.Data
+    exposing
+        ( Model
+        , Msg(..)
+        , clipboardData
+        )
 import QRCode
 import Util.Html
 
@@ -20,7 +25,6 @@ view texts flags id model =
     div
         [ classList
             [ ( "ui container alias-page", True )
-            , ( "text", id /= Nothing )
             , ( "one column grid", model.selected /= Nothing )
             ]
         ]
@@ -96,7 +100,7 @@ viewList texts model =
 
 
 searchArea : Texts -> Model -> Html Msg
-searchArea texts model =
+searchArea texts _ =
     div [ class "ui secondary menu" ]
         [ div [ class "ui container" ]
             [ div [ class "fitted-item" ]
@@ -146,7 +150,9 @@ shareText texts flags model alias_ =
         , div [ class "ui attached message segment" ]
             [ text texts.aliasPageNowAt
             , pre [ class "url" ]
-                [ code []
+                [ code
+                    [ id "alias-url"
+                    ]
                     [ text url
                     ]
                 ]
@@ -176,15 +182,30 @@ shareInfo texts flags model url =
                     [ qrCodeView texts url
                     ]
                 , div [ class "column" ]
-                    [ a
-                        [ classList
-                            [ ( "ui primary button", True )
-                            , ( "disabled", not flags.config.mailEnabled )
+                    [ div
+                        [ class "ui vertical buttons" ]
+                        [ a
+                            [ class "ui primary labeled icon button"
+                            , Tuple.second clipboardData
+                                |> String.dropLeft 1
+                                |> id
+                            , attribute "data-clipboard-target" "#alias-url"
+                            , href "#"
                             ]
-                        , onClick InitMail
-                        , href "#"
-                        ]
-                        [ text texts.sendEmail
+                            [ i [ class "copy icon" ] []
+                            , text texts.copyLink
+                            ]
+                        , a
+                            [ classList
+                                [ ( "ui primary labeled icon button", True )
+                                , ( "disabled", not flags.config.mailEnabled )
+                                ]
+                            , onClick InitMail
+                            , href "#"
+                            ]
+                            [ i [ class "envelope icon" ] []
+                            , text texts.sendEmail
+                            ]
                         ]
                     ]
                 ]
