@@ -217,11 +217,8 @@ update flags msg model =
 
         DescEditMsg lmsg ->
             case model.descEdit of
-                Just ( dm, _ ) ->
+                Just ( dm, txt ) ->
                     let
-                        txt =
-                            Maybe.withDefault "" model.share.descriptionRaw
-
                         ( m, str ) =
                             Comp.MarkdownInput.update txt lmsg dm
                     in
