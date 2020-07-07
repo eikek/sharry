@@ -145,14 +145,20 @@ fileCard texts settings model file =
             [ fileEmbed texts settings model file
             ]
         , div [ class "content" ]
-            [ text file.filename
+            [ a
+                [ title texts.downloadToDisk
+                , download file.filename
+                , href (settings.baseUrl ++ file.id)
+                ]
+                [ text file.filename
+                ]
             , text " ("
             , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
             , text ")"
             ]
         , div [ class "extra content" ]
             [ a
-                [ class "ui basic icon button"
+                [ class "ui primary icon button"
                 , title texts.downloadToDisk
                 , download file.filename
                 , href (settings.baseUrl ++ file.id)
@@ -296,7 +302,13 @@ fileRow texts { baseUrl, delete } model file =
             [ i [ class ("large " ++ fileIcon file) ] []
             ]
         , td []
-            [ text file.filename
+            [ a
+                [ title texts.downloadToDisk
+                , download file.filename
+                , href (baseUrl ++ file.id)
+                ]
+                [ text file.filename
+                ]
             , text " ("
             , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
             , text ") "
@@ -304,9 +316,8 @@ fileRow texts { baseUrl, delete } model file =
             ]
         , td []
             [ a
-                [ class "ui mini right floated basic icon button"
+                [ class "ui mini right floated primary icon button"
                 , title texts.downloadToDisk
-                , href "#"
                 , download file.filename
                 , href (baseUrl ++ file.id)
                 ]
