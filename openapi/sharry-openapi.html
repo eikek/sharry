@@ -1604,7 +1604,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 1.3.1</div>
+              <div class="app-desc">Version: 1.4.0</div>
             <hr>
             <div><p>Sharry provides a way to share files with others in a convenient
 way. The core functionality is provided by a server that can be
@@ -2439,7 +2439,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.AccountManagementApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{AccountModify}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -2447,7 +2449,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.adminAccountIdPost(id, callback);
+api.adminAccountIdPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -2824,7 +2826,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.AccountManagementApi()
-
+var opts = { 
+  'body':  // {{AccountCreate}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -2832,7 +2836,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.adminAccountPost(, callback);
+api.adminAccountPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -3762,7 +3766,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.AccountManagementApi()
-
+var opts = { 
+  'body':  // {{EmailChange}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -3770,7 +3776,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secSettingsEmailPost(, callback);
+api.secSettingsEmailPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -4109,7 +4115,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.AccountManagementApi()
-
+var opts = { 
+  'body':  // {{PasswordChange}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -4117,7 +4125,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secSettingsPasswordPost(, callback);
+api.secSettingsPasswordPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -5466,7 +5474,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.AliasApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{AliasChange}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -5474,7 +5484,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secAliasIdPost(id, callback);
+api.secAliasIdPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -5847,7 +5857,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.AliasApi()
-
+var opts = { 
+  'body':  // {{AliasChange}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -5855,7 +5867,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secAliasPost(, callback);
+api.secAliasPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -6180,7 +6192,9 @@ AuthenticationApi *apiInstance = [[AuthenticationApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var Sharry = require('sharry');
 
 var api = new Sharry.AuthenticationApi()
-
+var opts = { 
+  'body':  // {{UserPass}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -6188,7 +6202,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openAuthLoginPost(, callback);
+api.openAuthLoginPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -6741,7 +6755,9 @@ AuthenticationApi *apiInstance = [[AuthenticationApi alloc] init];
 
 var api = new Sharry.AuthenticationApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'code': code_example // {{String}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -6749,7 +6765,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully.');
   }
 };
-api.openAuthOauthIdResumePost(id, callback);
+api.openAuthOauthIdResumePost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -8452,7 +8468,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.MailApi()
-
+var opts = { 
+  'body':  // {{SimpleMail}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -8460,7 +8478,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secMailSendPost(, callback);
+api.secMailSendPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -9478,7 +9496,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.RegistrationApi()
-
+var opts = { 
+  'body':  // {{GenInvite}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -9486,7 +9506,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.adminSignupNewinvitePost(, callback);
+api.adminSignupNewinvitePost(opts, callback);
 </code></pre>
                             </div>
 
@@ -9805,7 +9825,9 @@ RegistrationApi *apiInstance = [[RegistrationApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var Sharry = require('sharry');
 
 var api = new Sharry.RegistrationApi()
-
+var opts = { 
+  'body':  // {{Registration}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -9813,7 +9835,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.openSignupRegisterPost(, callback);
+api.openSignupRegisterPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -10473,7 +10495,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{SingleString}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -10481,7 +10505,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secShareIdDescriptionPost(id, callback);
+api.secShareIdDescriptionPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -11925,7 +11949,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{SingleNumber}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -11933,7 +11959,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secShareIdMaxviewsPost(id, callback);
+api.secShareIdMaxviewsPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -12643,7 +12669,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{SingleString}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -12651,7 +12679,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secShareIdNamePost(id, callback);
+api.secShareIdNamePost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -13364,7 +13392,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{SingleString}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -13372,7 +13402,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secShareIdPasswordPost(id, callback);
+api.secShareIdPasswordPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -14093,7 +14123,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{PublishData}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -14101,7 +14133,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secShareIdPublishPost(id, callback);
+api.secShareIdPublishPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -14477,7 +14509,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'body':  // {{SingleNumber}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -14485,7 +14519,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secShareIdValidityPost(id, callback);
+api.secShareIdValidityPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -15883,7 +15917,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesUploadApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -15891,7 +15927,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.aliasUploadIdFilesAddPost(id, callback);
+api.aliasUploadIdFilesAddPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -16621,7 +16657,9 @@ var api = new Sharry.SharesUploadApi()
 var uploadOffset = 789; // {{Long}} 
 var id = id_example; // {{String}} A share identifier
 var fid = fid_example; // {{String}} A file identifier
-
+var opts = { 
+  'body':  // {{Object}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -16629,7 +16667,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully.');
   }
 };
-api.aliasUploadIdFilesTusFidPatch(uploadOffsetidfid, callback);
+api.aliasUploadIdFilesTusFidPatch(uploadOffsetidfid, opts, callback);
 </code></pre>
                             </div>
 
@@ -17828,7 +17866,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.SharesUploadApi()
-
+var opts = { 
+  'body':  // {{ShareProperties}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -17836,7 +17876,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.aliasUploadNewPost(, callback);
+api.aliasUploadNewPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -18192,7 +18232,10 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.SharesUploadApi()
-
+var opts = { 
+  'meta':  // {{ShareProperties}} 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -18200,7 +18243,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.aliasUploadPost(, callback);
+api.aliasUploadPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -18552,7 +18595,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 
 var api = new Sharry.SharesUploadApi()
 var id = id_example; // {{String}} A share identifier
-
+var opts = { 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -18560,7 +18605,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUploadIdFilesAddPost(id, callback);
+api.secUploadIdFilesAddPost(id, opts, callback);
 </code></pre>
                             </div>
 
@@ -19290,7 +19335,9 @@ var api = new Sharry.SharesUploadApi()
 var uploadOffset = 789; // {{Long}} 
 var id = id_example; // {{String}} A share identifier
 var fid = fid_example; // {{String}} A file identifier
-
+var opts = { 
+  'body':  // {{Object}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -19298,7 +19345,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully.');
   }
 };
-api.secUploadIdFilesTusFidPatch(uploadOffsetidfid, callback);
+api.secUploadIdFilesTusFidPatch(uploadOffsetidfid, opts, callback);
 </code></pre>
                             </div>
 
@@ -20497,7 +20544,9 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.SharesUploadApi()
-
+var opts = { 
+  'body':  // {{ShareProperties}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -20505,7 +20554,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUploadNewPost(, callback);
+api.secUploadNewPost(opts, callback);
 </code></pre>
                             </div>
 
@@ -20861,7 +20910,10 @@ authTokenHeader.apiKey = "YOUR API KEY"
 //authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
 
 var api = new Sharry.SharesUploadApi()
-
+var opts = { 
+  'meta':  // {{ShareProperties}} 
+  'file':  // {{array[byte[]]}} 
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -20869,7 +20921,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.secUploadPost(, callback);
+api.secUploadPost(opts, callback);
 </code></pre>
                             </div>
 
