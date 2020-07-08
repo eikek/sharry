@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   restserver:
-    image: eikek0/sharry:1.3.1
+    image: eikek0/sharry:latest
     container_name: sharry
     command: /opt/sharry.conf
     ports:
