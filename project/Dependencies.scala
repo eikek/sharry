@@ -19,7 +19,7 @@ object Dependencies {
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.6.2"
   val MiniTestVersion         = "2.8.2"
-  val PostgresVersion         = "42.2.15"
+  val PostgresVersion         = "42.2.16"
   val PureConfigVersion       = "0.13.0"
   val SemanticUIVersion       = "2.4.1"
   val SwaggerVersion          = "3.32.3"
