@@ -28,22 +28,20 @@ object RegisterRoutes {
 
     new InternRoutes[F] {
       def signup =
-        HttpRoutes.of {
-          case req @ POST -> Root / "register" =>
-            for {
-              data <- req.as[Registration]
-              res  <- backend.signup.register(cfg.backend.signup)(convert(data))
-              resp <- Ok(convert(res))
-            } yield resp
+        HttpRoutes.of { case req @ POST -> Root / "register" =>
+          for {
+            data <- req.as[Registration]
+            res  <- backend.signup.register(cfg.backend.signup)(convert(data))
+            resp <- Ok(convert(res))
+          } yield resp
         }
       def genInvite =
-        HttpRoutes.of {
-          case req @ POST -> Root / "newinvite" =>
-            for {
-              data <- req.as[GenInvite]
-              res  <- backend.signup.newInvite(cfg.backend.signup)(data.password)
-              resp <- Ok(convert(res))
-            } yield resp
+        HttpRoutes.of { case req @ POST -> Root / "newinvite" =>
+          for {
+            data <- req.as[GenInvite]
+            res  <- backend.signup.newInvite(cfg.backend.signup)(data.password)
+            resp <- Ok(convert(res))
+          } yield resp
         }
     }
   }
