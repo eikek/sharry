@@ -27,20 +27,19 @@ object NotifyRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    HttpRoutes.of {
-      case req @ POST -> Root / "notify" / Ident(id) =>
-        token.account.alias match {
-          case Some(alias) =>
-            val baseurl = cfg.baseUrl / "app" / "upload"
-            for {
-              _    <- logger.fdebug("Notify about alias upload")
-              res  <- backend.mail.notifyAliasUpload(alias, id, baseurl)
-              resp <- Ok(basicResult(res))
-            } yield resp
+    HttpRoutes.of { case req @ POST -> Root / "notify" / Ident(id) =>
+      token.account.alias match {
+        case Some(alias) =>
+          val baseurl = cfg.baseUrl / "app" / "upload"
+          for {
+            _    <- logger.fdebug("Notify about alias upload")
+            res  <- backend.mail.notifyAliasUpload(alias, id, baseurl)
+            resp <- Ok(basicResult(res))
+          } yield resp
 
-          case None =>
-            NotFound()
-        }
+        case None =>
+          NotFound()
+      }
     }
   }
 

@@ -45,7 +45,7 @@ object PeriodicCleanup {
         .eval(
           logger.finfo("Running periodic tasks") *>
             doCleanup(cleanupCfg, signupCfg, shareOps, signupOps) *> logger
-            .finfo("Periodic tasks done.")
+              .finfo("Periodic tasks done.")
         )
         .drain
     }
