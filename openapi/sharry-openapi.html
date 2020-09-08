@@ -689,7 +689,7 @@
   <script>
     // Script section to load models into a JS Var
     var defs = {}
-            defs.AccountCreate = {
+            defs["AccountCreate"] = {
   "required" : [ "admin", "login", "password", "state" ],
   "properties" : {
     "login" : {
@@ -713,7 +713,7 @@
   },
   "description" : "Create an account.\n"
 };
-            defs.AccountDetail = {
+            defs["AccountDetail"] = {
   "required" : [ "admin", "created", "id", "login", "loginCount", "shares", "source", "state" ],
   "properties" : {
     "id" : {
@@ -757,7 +757,7 @@
   },
   "description" : "Information about an account.\n"
 };
-            defs.AccountList = {
+            defs["AccountList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -769,7 +769,7 @@
   },
   "description" : "A list of accounts.\n"
 };
-            defs.AccountModify = {
+            defs["AccountModify"] = {
   "required" : [ "admin", "state" ],
   "properties" : {
     "state" : {
@@ -789,7 +789,7 @@
   },
   "description" : "Modify an existing  account.\n"
 };
-            defs.AliasChange = {
+            defs["AliasChange"] = {
   "required" : [ "enabled", "name", "validity" ],
   "properties" : {
     "id" : {
@@ -809,7 +809,7 @@
   },
   "description" : "Data for changing alias properties.\n"
 };
-            defs.AliasDetail = {
+            defs["AliasDetail"] = {
   "required" : [ "created", "enabled", "id", "name", "validity" ],
   "properties" : {
     "id" : {
@@ -833,7 +833,7 @@
   },
   "description" : "Details about one alias.\n"
 };
-            defs.AliasList = {
+            defs["AliasList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -845,7 +845,7 @@
   },
   "description" : "A list of aliases.\n"
 };
-            defs.AppConfig = {
+            defs["AppConfig"] = {
   "required" : [ "appName", "authRefreshTime", "baseUrl", "chunkSize", "defaultLanguage", "footerText", "footerVisible", "iconUrl", "logoUrl", "mailEnabled", "maxSize", "maxValidity", "oauthConfig", "retryDelays", "signupMode", "welcomeMessage" ],
   "properties" : {
     "appName" : {
@@ -912,7 +912,7 @@
   },
   "description" : "Initial configuration.\n"
 };
-            defs.AuthResult = {
+            defs["AuthResult"] = {
   "required" : [ "admin", "id", "message", "success", "user", "validMs" ],
   "properties" : {
     "id" : {
@@ -944,7 +944,7 @@
   },
   "description" : "The response to a authentication request.\n"
 };
-            defs.BasicResult = {
+            defs["BasicResult"] = {
   "required" : [ "message", "success" ],
   "properties" : {
     "success" : {
@@ -956,7 +956,7 @@
   },
   "description" : "Some basic result of an operation.\n"
 };
-            defs.body = {
+            defs["body"] = {
   "type" : "object",
   "properties" : {
     "code" : {
@@ -964,7 +964,7 @@
     }
   }
 };
-            defs.body_1 = {
+            defs["body_1"] = {
   "type" : "object",
   "properties" : {
     "meta" : {
@@ -979,7 +979,7 @@
     }
   }
 };
-            defs.body_2 = {
+            defs["body_2"] = {
   "type" : "object",
   "properties" : {
     "file" : {
@@ -991,7 +991,7 @@
     }
   }
 };
-            defs.EmailChange = {
+            defs["EmailChange"] = {
   "required" : [ "email" ],
   "properties" : {
     "email" : {
@@ -1000,7 +1000,7 @@
   },
   "description" : "Change your email.\n"
 };
-            defs.EmailInfo = {
+            defs["EmailInfo"] = {
   "properties" : {
     "email" : {
       "type" : "string"
@@ -1008,7 +1008,7 @@
   },
   "description" : "Accounts may optionally have an e-mail address registered.\n"
 };
-            defs.GenInvite = {
+            defs["GenInvite"] = {
   "required" : [ "password" ],
   "properties" : {
     "password" : {
@@ -1018,7 +1018,7 @@
   },
   "description" : "A request to generate a new invitation key.\n"
 };
-            defs.IdResult = {
+            defs["IdResult"] = {
   "required" : [ "id", "message", "success" ],
   "properties" : {
     "success" : {
@@ -1034,7 +1034,7 @@
   },
   "description" : "Some basic result of an operation and an identifier. The\nidentifier is valid on success only.\n"
 };
-            defs.InviteResult = {
+            defs["InviteResult"] = {
   "required" : [ "message", "success" ],
   "properties" : {
     "success" : {
@@ -1050,7 +1050,7 @@
   },
   "description" : "The result when requesting new invitation keys.\n"
 };
-            defs.MailTemplate = {
+            defs["MailTemplate"] = {
   "required" : [ "body", "subject" ],
   "properties" : {
     "subject" : {
@@ -1062,7 +1062,7 @@
   },
   "description" : "Contents of a mail template.\n"
 };
-            defs.OAuthItem = {
+            defs["OAuthItem"] = {
   "required" : [ "id", "name" ],
   "properties" : {
     "id" : {
@@ -1078,7 +1078,7 @@
   },
   "description" : "Information about a configured OAuth provider.\n"
 };
-            defs.PasswordChange = {
+            defs["PasswordChange"] = {
   "required" : [ "newPassword", "oldPassword" ],
   "properties" : {
     "oldPassword" : {
@@ -1092,7 +1092,7 @@
   },
   "description" : "Change your password.\n"
 };
-            defs.PublishData = {
+            defs["PublishData"] = {
   "required" : [ "reuseId" ],
   "properties" : {
     "reuseId" : {
@@ -1101,7 +1101,7 @@
   },
   "description" : "Input when publishing a share.\n"
 };
-            defs.Registration = {
+            defs["Registration"] = {
   "required" : [ "login", "password" ],
   "properties" : {
     "login" : {
@@ -1119,7 +1119,7 @@
   },
   "description" : "Data for registering a new account.\n"
 };
-            defs.ShareDetail = {
+            defs["ShareDetail"] = {
   "required" : [ "created", "files", "id", "maxViews", "password", "validity" ],
   "properties" : {
     "id" : {
@@ -1178,7 +1178,7 @@
   },
   "description" : "Details about a single share.\n"
 };
-            defs.ShareFile = {
+            defs["ShareFile"] = {
   "required" : [ "checksum", "filename", "id", "mimetype", "size", "storedSize" ],
   "properties" : {
     "id" : {
@@ -1211,7 +1211,7 @@
   },
   "description" : "Details about a file belonging to a share.\n"
 };
-            defs.ShareList = {
+            defs["ShareList"] = {
   "required" : [ "items" ],
   "properties" : {
     "items" : {
@@ -1223,7 +1223,7 @@
   },
   "description" : "A list of shares\n"
 };
-            defs.ShareListItem = {
+            defs["ShareListItem"] = {
   "required" : [ "created", "files", "id", "maxViews", "password", "size", "validity" ],
   "properties" : {
     "id" : {
@@ -1264,7 +1264,7 @@
   },
   "description" : "Some details about a share used when searching for shares.\n"
 };
-            defs.ShareProperties = {
+            defs["ShareProperties"] = {
   "required" : [ "maxViews", "validity" ],
   "properties" : {
     "name" : {
@@ -1288,7 +1288,7 @@
   },
   "description" : "Describes a share.\n"
 };
-            defs.SharePublish = {
+            defs["SharePublish"] = {
   "required" : [ "enabled", "expired", "id", "publishDate", "publishUntil", "views" ],
   "properties" : {
     "id" : {
@@ -1327,7 +1327,7 @@
   },
   "description" : "Information about a published share.\n"
 };
-            defs.SimpleMail = {
+            defs["SimpleMail"] = {
   "required" : [ "body", "recipients", "subject" ],
   "properties" : {
     "recipients" : {
@@ -1345,7 +1345,7 @@
   },
   "description" : "A simple e-mail.\n"
 };
-            defs.SingleNumber = {
+            defs["SingleNumber"] = {
   "required" : [ "value" ],
   "properties" : {
     "value" : {
@@ -1355,7 +1355,7 @@
   },
   "description" : "For sending a single number.\n"
 };
-            defs.SingleString = {
+            defs["SingleString"] = {
   "required" : [ "value" ],
   "properties" : {
     "value" : {
@@ -1364,7 +1364,7 @@
   },
   "description" : "Sending a single string value.\n"
 };
-            defs.UserPass = {
+            defs["UserPass"] = {
   "required" : [ "account", "password" ],
   "properties" : {
     "account" : {
@@ -1376,7 +1376,7 @@
   },
   "description" : "Account name and password.\n"
 };
-            defs.VersionInfo = {
+            defs["VersionInfo"] = {
   "required" : [ "builtAtMillis", "builtAtString", "gitCommit", "gitVersion", "version" ],
   "properties" : {
     "version" : {
@@ -1604,7 +1604,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 1.4.0</div>
+              <div class="app-desc">Version: 1.4.1</div>
             <hr>
             <div><p>Sharry provides a way to share files with others in a convenient
 way. The core functionality is provided by a server that can be
@@ -1668,7 +1668,10 @@ property.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-adminAccountGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/admin/account?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/admin/account?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-adminAccountGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2001,7 +2004,10 @@ the id is *not* the username, but the account-id.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-adminAccountIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/admin/account/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/admin/account/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-adminAccountIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2343,7 +2349,11 @@ internal, a given password is ignored.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-adminAccountIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/admin/account/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/admin/account/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-adminAccountIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2735,7 +2745,11 @@ are optional or have a sensible default.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-adminAccountPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/admin/account"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/admin/account"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-adminAccountPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3083,7 +3097,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-secSettingsEmailDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/settings/email"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/settings/email"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-secSettingsEmailDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3379,7 +3396,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-secSettingsEmailGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/settings/email"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/settings/email"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-secSettingsEmailGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3675,7 +3695,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-secSettingsEmailPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/settings/email"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/settings/email"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-secSettingsEmailPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4024,7 +4048,11 @@ internal accounts.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-AccountManagement-secSettingsPasswordPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/settings/password"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/settings/password"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-AccountManagement-secSettingsPasswordPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4375,7 +4403,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Alias-secAliasGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/alias?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/alias?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Alias-secAliasGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4707,7 +4738,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Alias-secAliasIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/alias/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/alias/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Alias-secAliasIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -5041,7 +5075,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Alias-secAliasIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/alias/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/alias/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Alias-secAliasIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -5378,7 +5415,11 @@ will be generated.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Alias-secAliasIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/alias/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/alias/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Alias-secAliasIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -5766,7 +5807,11 @@ are not guessable.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Alias-secAliasPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/alias"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/alias"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Alias-secAliasPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6120,7 +6165,10 @@ used for subsequent calls to protected routes.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-openAuthLoginPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v2/open/auth/login"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/open/auth/login"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-openAuthLoginPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6435,7 +6483,8 @@ callback-url is configured at the provider.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-openAuthOauthIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v2/open/auth/oauth/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+"/api/v2/open/auth/oauth/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-openAuthOauthIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6683,7 +6732,9 @@ and then finishes logging into the application.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-openAuthOauthIdResumePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v2/open/auth/oauth/{id}/resume"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Content-Type: multipart/form-data"\
+"/api/v2/open/auth/oauth/{id}/resume"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-openAuthOauthIdResumePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -6971,7 +7022,9 @@ strictly necessary.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-secAuthLogoutPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/auth/logout"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/sec/auth/logout"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-secAuthLogoutPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -7219,7 +7272,10 @@ authentication token based on another valid one.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Authentication-secAuthSessionPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/auth/session"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/auth/session"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Authentication-secAuthSessionPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -7518,7 +7574,9 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Information-openInfoAppconfigGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v2/open/info/appconfig"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"/api/v2/open/info/appconfig"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Information-openInfoAppconfigGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -7775,7 +7833,9 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Information-openInfoVersionGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v2/open/info/version"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"/api/v2/open/info/version"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Information-openInfoVersionGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -8041,7 +8101,10 @@ file.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Mail-aliasMailNotifyIdPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Alias: [[apiKey]]" "/api/v2/alias/mail/notify/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Alias: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/alias/mail/notify/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Mail-aliasMailNotifyIdPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -8377,7 +8440,11 @@ mail feature.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Mail-secMailSendPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/mail/send"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/mail/send"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Mail-secMailSendPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -8728,7 +8795,10 @@ is freed from copy-pasting things.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Mail-secMailTemplateAliasAidGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/mail/template/alias/{aid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/mail/template/alias/{aid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Mail-secMailTemplateAliasAidGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9065,7 +9135,10 @@ is freed from copy-pasting things.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Mail-secMailTemplateShareIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/mail/template/share/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/mail/template/share/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Mail-secMailTemplateShareIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9405,7 +9478,11 @@ for a password that must be set in the configuration file.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Registration-adminSignupNewinvitePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/admin/signup/newinvite"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/admin/signup/newinvite"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Registration-adminSignupNewinvitePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -9753,7 +9830,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Registration-openSignupRegisterPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST "/api/v2/open/signup/register"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/open/signup/register"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Registration-openSignupRegisterPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -10065,7 +10145,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -10399,7 +10482,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdDescriptionPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/description"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/share/{id}/description"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdDescriptionPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -10785,7 +10872,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdFileFidDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/file/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/{id}/file/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdFileFidDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -11152,7 +11242,10 @@ The response supports byte-serving and ETag.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdFileFidGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/file/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: */*"\
+"/api/v2/sec/share/{id}/file/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdFileFidGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -11519,7 +11612,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/{id}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -11853,7 +11949,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdMaxviewsPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/maxviews"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/share/{id}/maxviews"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdMaxviewsPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -12239,7 +12339,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdNameDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/name"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/{id}/name"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdNameDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -12573,7 +12676,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdNamePost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/name"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/share/{id}/name"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdNamePost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -12960,7 +13067,10 @@ share has no password set, a successful response is sent.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdPasswordDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/password"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/{id}/password"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdPasswordDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -13296,7 +13406,11 @@ request. Otherwise it may be empty.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdPasswordPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/password"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/share/{id}/password"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdPasswordPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -13683,7 +13797,10 @@ this endpoint.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdPublishDelete-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X DELETE -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/publish"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/{id}/publish"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdPublishDelete-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -14027,7 +14144,11 @@ links as before), or a new random one should be generated.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdPublishPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/publish"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/share/{id}/publish"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdPublishPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -14413,7 +14534,11 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareIdValidityPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/{id}/validity"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/share/{id}/validity"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareIdValidityPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -14799,7 +14924,10 @@ except ApiException as e:
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Shares-secShareSearchGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/share/search?q="</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/share/search?q="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Shares-secShareSearchGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -15136,7 +15264,9 @@ The response supports byte-serving and ETag.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesPublic-openSharePidFileFidGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v2/open/share/{pid}/file/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: */*"\
+"/api/v2/open/share/{pid}/file/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesPublic-openSharePidFileFidGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -15469,7 +15599,9 @@ response will be returned.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesPublic-openSharePidGet-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET "/api/v2/open/share/{pid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"/api/v2/open/share/{pid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesPublic-openSharePidGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -15821,7 +15953,11 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadIdFilesAddPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload/{id}/files/add"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v2/alias/upload/{id}/files/add"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadIdFilesAddPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -16198,7 +16334,9 @@ specification for more details.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadIdFilesTusFidHead-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X HEAD -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload/{id}/files/tus/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X HEAD\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/alias/upload/{id}/files/tus/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadIdFilesTusFidHead-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -16556,7 +16694,10 @@ specification for more details.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadIdFilesTusFidPatch-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PATCH -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload/{id}/files/tus/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PATCH\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Content-Type: application/offset+octet-stream"\
+"/api/v2/alias/upload/{id}/files/tus/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadIdFilesTusFidPatch-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -17005,7 +17146,9 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadIdFilesTusOptions-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X OPTIONS -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload/{id}/files/tus"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X OPTIONS\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/alias/upload/{id}/files/tus"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadIdFilesTusOptions-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -17340,7 +17483,9 @@ specification for more details.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadIdFilesTusPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload/{id}/files/tus"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/alias/upload/{id}/files/tus"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadIdFilesTusPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -17775,7 +17920,11 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadNewPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload/new"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/alias/upload/new"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadNewPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -18137,7 +18286,11 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-aliasUploadPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/alias/upload"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v2/alias/upload"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-aliasUploadPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -18499,7 +18652,11 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadIdFilesAddPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload/{id}/files/add"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v2/sec/upload/{id}/files/add"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadIdFilesAddPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -18876,7 +19033,9 @@ specification for more details.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadIdFilesTusFidHead-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X HEAD -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload/{id}/files/tus/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X HEAD\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/sec/upload/{id}/files/tus/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadIdFilesTusFidHead-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -19234,7 +19393,10 @@ specification for more details.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadIdFilesTusFidPatch-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X PATCH -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload/{id}/files/tus/{fid}"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X PATCH\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Content-Type: application/offset+octet-stream"\
+"/api/v2/sec/upload/{id}/files/tus/{fid}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadIdFilesTusFidPatch-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -19683,7 +19845,9 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadIdFilesTusOptions-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X OPTIONS -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload/{id}/files/tus"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X OPTIONS\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/sec/upload/{id}/files/tus"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadIdFilesTusOptions-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -20018,7 +20182,9 @@ specification for more details.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadIdFilesTusPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload/{id}/files/tus"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+"/api/v2/sec/upload/{id}/files/tus"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadIdFilesTusPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -20453,7 +20619,11 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadNewPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload/new"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"/api/v2/sec/upload/new"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadNewPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -20815,7 +20985,11 @@ required.
 
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-SharesUpload-secUploadPost-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST -H "Sharry-Auth: [[apiKey]]" "/api/v2/sec/upload"</code></pre>
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+-H "Content-Type: multipart/form-data"\
+"/api/v2/sec/upload"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SharesUpload-secUploadPost-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
