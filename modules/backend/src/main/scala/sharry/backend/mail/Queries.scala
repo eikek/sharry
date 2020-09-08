@@ -58,7 +58,7 @@ object Queries {
   def getEmail(accId: Ident): ConnectionIO[Option[MailAddress]] =
     Sql
       .selectSimple(
-        Seq(RAccount.Columns.email),
+        Seq(RAccount.Columns.login, RAccount.Columns.email),
         RAccount.table,
         RAccount.Columns.id.is(accId)
       )

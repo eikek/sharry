@@ -26,7 +26,7 @@ val sharedSettings = Seq(
 
 val testSettings = Seq(
   testFrameworks += new TestFramework("minitest.runner.Framework"),
-  libraryDependencies ++= Dependencies.miniTest
+  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging
 )
 
 val elmSettings = Seq(
