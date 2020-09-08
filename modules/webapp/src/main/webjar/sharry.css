@@ -33,17 +33,35 @@
     width: 290px;
 }
 
-.default-layout embed.full-embed {
-    width: 100%;
-    height: 90%;
+.default-layout div.zoom-container {
+    max-height: 95%;
 }
-.default-layout img.full-width {
-    width: 100%;
-    height: auto;
+.default-layout div.zoom-container.white {
+    background: #fff;
+}
+.default-layout div.zoom-container.fixed-height {
+    height: 95%;
 }
 
-.default-layout .full-height {
-    height: 100%;
+.default-layout iframe.zoom-iframe {
+    width: 100%;
+    height: 97%;
+    background: #fff;
+    border: 0;
+}
+.default-layout img.zoom-image {
+    max-width: 100%; /* must work for portrait and landscape images */
+    height: auto;
+    max-height: 96%;
+}
+.default-layout video.zoom-video {
+    width: 100%;
+    height: auto;
+    max-height: 96%;
+}
+.default-layout div.zoom-controls {
+    position: absolute;
+    top: 0.5em;
 }
 
 .default-layout .documentation-link {
