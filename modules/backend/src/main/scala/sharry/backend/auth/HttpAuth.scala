@@ -109,7 +109,7 @@ object HttpAuth {
       id <-
         oacc
           .createIfMissing(acc)
-          .map(id => AccountId(id, user, true, None))
+          .map(id => AccountId(id, user, acc.admin, None))
           .flatTap(accId => oacc.updateLoginStats(accId))
 
     } yield id
