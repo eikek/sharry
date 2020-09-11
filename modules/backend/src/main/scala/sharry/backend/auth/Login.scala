@@ -57,12 +57,13 @@ object Login {
       cfg: AuthConfig,
       account: OAccount[F]
   ): Kleisli[F, UserPassData, LoginResult] = {
+    val ops = AddAccount.AccountOps.from(account)
     val modules = List(
       FixedAuth[F](cfg, account).withPosition,
       InternalAuth[F](cfg, account).withPosition,
-      HttpBasicAuth[F](cfg, account).withPosition,
-      HttpAuth[F](cfg, account).withPosition,
-      CommandAuth[F](cfg, account).withPosition
+      HttpBasicAuth[F](cfg, ops, HttpBasicAuth.RunRequest.javaConn[F]).withPosition,
+      HttpAuth[F](cfg, ops, HttpAuth.RunRequest.javaConn[F]).withPosition,
+      CommandAuth[F](cfg, ops, CommandAuth.RunCommand.systemProcess[F]).withPosition
     ).sortBy(_._1).map(_._2)
 
     LoginModule.combine[F](modules: _*)

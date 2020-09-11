@@ -10,9 +10,12 @@ import scala.sys.process._
 
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.backend.account.OAccount
 
-final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
+final class CommandAuth[F[_]: Effect](
+    cfg: AuthConfig,
+    ops: AddAccount.AccountOps[F],
+    runner: CommandAuth.RunCommand[F]
+) {
 
   private[this] val logger = getLogger
 
@@ -22,8 +25,7 @@ final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
         Ident.fromString(up.user) match {
           case Right(login) =>
             def okResult: F[LoginResult] =
-              HttpAuth
-                .addAccount(login, oacc)
+              AddAccount(login, ops)
                 .flatMap(accId =>
                   AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
                 )
@@ -43,21 +45,7 @@ final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
     )
 
   def runCommand(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] =
-    Effect[F].delay {
-      val prg = cfg.program.map(s =>
-        mustache.parse(s) match {
-          case Right(tpl) =>
-            up.render(tpl)
-          case Left(err) =>
-            logger.warn(s"Error in command template '$s': $err")
-            s
-        }
-      )
-
-      val result = Either.catchNonFatal(Process(prg).!)
-      logger.debug(s"Result of external auth command: $result")
-      result == Right(cfg.success)
-    }
+    runner.exec(up, cfg)
 
   def withPosition: (Int, LoginModule[F]) = (cfg.command.order, login)
 
@@ -65,6 +53,43 @@ final class CommandAuth[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]) {
 
 object CommandAuth {
 
-  def apply[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]): CommandAuth[F] =
-    new CommandAuth[F](cfg, oacc)
+  def apply[F[_]: Effect](
+      cfg: AuthConfig,
+      ops: AddAccount.AccountOps[F],
+      runner: RunCommand[F]
+  ): CommandAuth[F] =
+    new CommandAuth[F](cfg, ops, runner)
+
+  trait RunCommand[F[_]] {
+    def exec(up: UserPassData, cfg: AuthConfig.Command): F[Boolean]
+  }
+
+  object RunCommand {
+    private[this] val logger = getLogger
+
+    def apply[F[_]](f: (UserPassData, AuthConfig.Command) => F[Boolean]): RunCommand[F] =
+      new RunCommand[F] {
+        def exec(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] = f(up, cfg)
+      }
+
+    def systemProcess[F[_]: Sync]: RunCommand[F] =
+      new RunCommand[F] {
+        def exec(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] =
+          Sync[F].delay {
+            val prg = cfg.program.map(s =>
+              mustache.parse(s) match {
+                case Right(tpl) =>
+                  up.render(tpl)
+                case Left(err) =>
+                  logger.warn(s"Error in command template '$s': $err")
+                  s
+              }
+            )
+
+            val result = Either.catchNonFatal(Process(prg).!)
+            logger.debug(s"Result of external auth command: $result")
+            result == Right(cfg.success)
+          }
+      }
+  }
 }
