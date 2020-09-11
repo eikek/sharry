@@ -193,7 +193,7 @@ val backend = project
         Dependencies.yamusca ++
         Dependencies.emil
   )
-  .dependsOn(common, store)
+  .dependsOn(common, store % "compile->compile;test->test")
 
 val webapp = project
   .in(file("modules/webapp"))
