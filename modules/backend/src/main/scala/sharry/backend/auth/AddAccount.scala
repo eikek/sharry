@@ -1,15 +1,16 @@
 package sharry.backend.auth
 
+import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
 import sharry.common._
 import sharry.backend.account.{NewAccount, OAccount}
-import cats.data.Kleisli
+import sharry.store.records.RAccount
 
 object AddAccount {
 
   case class AccountOps[F[_]](
-      createIfMissing: Kleisli[F, NewAccount, Ident],
+      createIfMissing: Kleisli[F, NewAccount, RAccount],
       updateStats: Kleisli[F, AccountId, Unit]
   )
 
@@ -23,7 +24,7 @@ object AddAccount {
       ops: AccountOps[F]
   ): F[AccountId] =
     for {
-      acc <- NewAccount.create[F](
+      newAcc <- NewAccount.create[F](
         user,
         AccountSource.extern,
         AccountState.Active,
@@ -33,8 +34,8 @@ object AddAccount {
       )
       id <-
         ops
-          .createIfMissing(acc)
-          .map(id => AccountId(id, user, acc.admin, None))
+          .createIfMissing(newAcc)
+          .map(acc => acc.accountId(None))
           .flatTap(accId => ops.updateStats(accId))
 
     } yield id

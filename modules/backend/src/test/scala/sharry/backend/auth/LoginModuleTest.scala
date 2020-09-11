@@ -4,10 +4,19 @@ import minitest._
 import cats.effect._
 import cats.implicits._
 import scodec.bits.ByteVector
-import sharry.common._
 import cats.data.Kleisli
+import AddAccount.AccountOps
+import doobie._
+import scala.concurrent.ExecutionContext
+import sharry.common._
+import sharry.backend.account.OAccount
+import sharry.store._
+import sharry.store.doobie._
+import sharry.store.doobie.DoobieMeta._
+import sharry.store.records.RAccount
 
 object LoginModuleTest extends SimpleTestSuite {
+  implicit val CS = IO.contextShift(ExecutionContext.global)
 
   val cfg = AuthConfig(
     ByteVector.fromValidHex("caffee"),
@@ -21,19 +30,41 @@ object LoginModuleTest extends SimpleTestSuite {
   )
 
   val accId = Ident.unsafe("x123id")
-  val ops   = AddAccount.AccountOps(Kleisli(_ => IO(accId)), Kleisli(_ => IO(())))
 
-  def commandModule(success: Boolean): LoginModule[IO] = {
+  def noOps(admin: Boolean, login: Ident) =
+    AccountOps(
+      Kleisli(_ =>
+        IO(
+          RAccount(
+            accId,
+            login,
+            AccountSource.Extern,
+            AccountState.Active,
+            Password("test"),
+            None,
+            admin,
+            0,
+            None,
+            Timestamp.Epoch
+          )
+        )
+      ),
+      Kleisli(_ => IO(()))
+    )
+  def storeOps(store: Store[IO]): Resource[IO, AccountOps[IO]] =
+    OAccount[IO](store).map(AccountOps.from[IO])
+
+  def commandModule(success: Boolean, ops: AccountOps[IO]): LoginModule[IO] = {
     val runner = CommandAuth.RunCommand[IO]((up, cfg) => IO(success))
     new CommandAuth[IO](cfg, ops, runner).login
   }
 
-  def httpModule(success: Boolean): LoginModule[IO] = {
+  def httpModule(success: Boolean, ops: AccountOps[IO]): LoginModule[IO] = {
     val runner = HttpAuth.RunRequest[IO]((up, cfg) => IO(success))
     new HttpAuth[IO](cfg, ops, runner).login
   }
 
-  def httpBasicModule(success: Boolean): LoginModule[IO] = {
+  def httpBasicModule(success: Boolean, ops: AccountOps[IO]): LoginModule[IO] = {
     val runner = HttpBasicAuth.RunRequest[IO]((up, cfg) => IO(success))
     new HttpBasicAuth[IO](cfg, ops, runner).login
   }
@@ -41,9 +72,18 @@ object LoginModuleTest extends SimpleTestSuite {
   def checkNewAccount(result: Option[LoginResult]): Unit =
     result match {
       case Some(LoginResult.Ok(t)) =>
-        assertEquals(t.account.id, accId)
         assertEquals(t.account.userLogin, Ident.unsafe("jdoe"))
         assertEquals(t.account.admin, false)
+        assertEquals(t.account.alias, None)
+      case e =>
+        fail(s"unexpected result: $e")
+    }
+
+  def checkAdminAccount(result: Option[LoginResult]): Unit =
+    result match {
+      case Some(LoginResult.Ok(t)) =>
+        assertEquals(t.account.userLogin, Ident.unsafe("jdoe"))
+        assertEquals(t.account.admin, true)
         assertEquals(t.account.alias, None)
       case e =>
         fail(s"unexpected result: $e")
@@ -58,21 +98,62 @@ object LoginModuleTest extends SimpleTestSuite {
     }
 
   test("module create account on success") {
-    val modules = List(httpModule(true), commandModule(true), httpBasicModule(true))
-    val data    = UserPassData("jdoe", Password("test"))
+    val modules = List(
+      httpModule(true, noOps(false, Ident.unsafe("jdoe"))),
+      commandModule(true, noOps(false, Ident.unsafe("jdoe"))),
+      httpBasicModule(true, noOps(false, Ident.unsafe("jdoe")))
+    )
+    val data = UserPassData("jdoe", Password("test"))
 
     modules.traverse(_.apply(data).map(checkNewAccount)).map(_.combineAll).unsafeRunSync()
   }
 
   test("module invalid result on failure") {
-    val modules = List(httpModule(false), commandModule(false), httpBasicModule(false))
-    val data    = UserPassData("jdoe", Password("test"))
+    val modules = List(
+      httpModule(false, noOps(false, Ident.unsafe("jdoe"))),
+      commandModule(false, noOps(false, Ident.unsafe("jdoe"))),
+      httpBasicModule(false, noOps(false, Ident.unsafe("jdoe")))
+    )
+    val data = UserPassData("jdoe", Password("test"))
 
     modules
       .traverse(_.apply(data).map(checkInvalidAuth))
       .map(_.combineAll)
       .unsafeRunSync()
-
   }
 
+  test("external module loads existing account from db") {
+    def updateAdmin(flag: Boolean): ConnectionIO[Int] =
+      Sql
+        .updateRow(RAccount.table, Fragment.empty, RAccount.Columns.admin.setTo(flag))
+        .update
+        .run
+
+    val ops =
+      for {
+        store <- StoreFixture.makeStore[IO]
+        ops   <- storeOps(store)
+      } yield (ops, store)
+
+    val data = UserPassData("jdoe", Password("test"))
+
+    ops
+      .use({ case (op, store) =>
+        val modules = List(
+          httpModule(true, op),
+          commandModule(true, op),
+          httpBasicModule(true, op)
+        )
+        for {
+          _   <- modules.traverse(_.apply(data).map(checkNewAccount)).map(_.combineAll)
+          as1 <- store.transact(RAccount.findAll("")).compile.toVector
+          _ = as1.foreach(a => assertEquals(a.admin, false))
+          _   <- store.transact(updateAdmin(true))
+          as2 <- store.transact(RAccount.findAll("")).compile.toVector
+          _ = as2.foreach(a => assertEquals(a.admin, true))
+          acc <- modules.traverse(_.apply(data).map(checkAdminAccount)).map(_.combineAll)
+        } yield ()
+      })
+      .unsafeRunSync()
+  }
 }

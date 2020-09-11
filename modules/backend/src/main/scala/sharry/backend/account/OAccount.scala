@@ -22,7 +22,7 @@ trait OAccount[F[_]] {
 
   def updateLoginStats(acc: AccountId): F[Unit]
 
-  def createIfMissing(acc: NewAccount): F[Ident]
+  def createIfMissing(acc: NewAccount): F[RAccount]
 
   def findAccounts(loginQuery: String): Stream[F, AccountItem]
 
@@ -133,14 +133,27 @@ object OAccount {
       def updateLoginStats(acc: AccountId): F[Unit] =
         store.transact(RAccount.updateStatsById(acc.id)).map(_ => ())
 
-      def createIfMissing(acc: NewAccount): F[Ident] =
+      def createIfMissing(acc: NewAccount): F[RAccount] =
         create(acc).flatMap {
-          case AddResult.Success => acc.id.pure[F]
+          case AddResult.Success =>
+            store
+              .transact(RAccount.findByLogin(acc.login))
+              .flatMap {
+                case Some(a) => a.pure[F]
+                case None =>
+                  Effect[F]
+                    .raiseError(new Exception("Currently saved account not found!"))
+              }
           case AddResult.EntityExists(msg) =>
             logger.fdebug[F](msg) *>
               store
                 .transact(RAccount.findByLogin(acc.login))
-                .map(_.map(_.id).getOrElse(acc.id))
+                .flatMap {
+                  case Some(a) => a.pure[F]
+                  case None =>
+                    Effect[F]
+                      .raiseError(new Exception("Currently saved account not found!"))
+                }
           case AddResult.Failure(ex) =>
             Effect[F].raiseError(ex)
         }

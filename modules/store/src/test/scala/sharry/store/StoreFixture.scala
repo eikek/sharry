@@ -11,9 +11,8 @@ import sharry.store.doobie._
 
 trait StoreFixture {
 
-  def withStore(code: Store[IO] => IO[Unit])(implicit CS: ContextShift[IO]): Unit = {
+  def withStore(code: Store[IO] => IO[Unit])(implicit CS: ContextShift[IO]): Unit =
     StoreFixture.makeStore[IO].use(code).unsafeRunSync()
-  }
 }
 
 object StoreFixture {

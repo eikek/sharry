@@ -38,21 +38,7 @@ final class FixedAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
     }
 
   private def addAccount(cfg: AuthConfig.Fixed): F[AccountId] =
-    for {
-      acc <- NewAccount.create[F](
-        cfg.user,
-        AccountSource.Extern,
-        AccountState.Active,
-        Password.empty,
-        None,
-        true
-      )
-      id <-
-        op.createIfMissing(acc)
-          .map(id => AccountId(id, cfg.user, true, None))
-          .flatTap(accId => op.updateLoginStats(accId))
-
-    } yield id
+    AddAccount[F](cfg.user, AddAccount.AccountOps.from(op))
 
   def withPosition: (Int, LoginModule[F]) = (cfg.fixed.order, login)
 

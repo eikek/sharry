@@ -9,7 +9,7 @@ import sharry.store.records.RAccount
 import sharry.store._
 
 object QueriesTest extends SimpleTestSuite with StoreFixture {
-  implicit val CS          = IO.contextShift(ExecutionContext.global)
+  implicit val CS = IO.contextShift(ExecutionContext.global)
 
   test("get email from account") {
     withStore { store =>

@@ -65,11 +65,11 @@ object LoginRoutes {
           p <- prov
           c <- code
           u <- CodeFlow(client)(p, redirectUri(cfg, p).asString, c)
-          acc <- OptionT.liftF(
+          newAcc <- OptionT.liftF(
             NewAccount.create(u ++ Ident.atSign ++ p.id, AccountSource.OAuth(p.id.id))
           )
-          id <- OptionT.liftF(S.account.createIfMissing(acc))
-          accId = AccountId(id, acc.login, false, None)
+          acc <- OptionT.liftF(S.account.createIfMissing(newAcc))
+          accId = acc.accountId(None)
           _ <- OptionT.liftF(S.account.updateLoginStats(accId))
           token <- OptionT.liftF(
             AuthToken.user[F](accId, cfg.backend.auth.serverSecret)
