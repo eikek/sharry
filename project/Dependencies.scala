@@ -9,7 +9,7 @@ object Dependencies {
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "0.9.2"
   val EmilVersion             = "0.6.3"
-  val FlywayVersion           = "6.5.6"
+  val FlywayVersion           = "6.5.7"
   val Fs2Version              = "2.4.4"
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.21.7"
