@@ -1,5 +1,6 @@
 module Api exposing
     ( changePassword
+    , checkPassword
     , createAccount
     , createAlias
     , createEmptyShare
@@ -390,6 +391,18 @@ changePassword flags pwc receive =
         { url = flags.config.baseUrl ++ "/api/v2/sec/settings/password"
         , account = getAccount flags
         , body = Http.jsonBody (Api.Model.PasswordChange.encode pwc)
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
+        }
+
+
+checkPassword :
+    Flags
+    -> (Result Http.Error BasicResult -> msg)
+    -> Cmd msg
+checkPassword flags receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v2/sec/settings/password"
+        , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 

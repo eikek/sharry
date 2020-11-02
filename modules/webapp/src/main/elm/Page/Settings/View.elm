@@ -59,8 +59,21 @@ emailForm texts model =
 
 changePasswordForm : Texts -> Model -> Html Msg
 changePasswordForm texts model =
-    div [ class "ui segments" ]
-        [ div [ class "ui segment" ]
+    div
+        [ classList
+            [ ( "ui segments", True )
+            , ( "invisible", model.passwordAvailable == Just False )
+            ]
+        ]
+        [ div
+            [ classList
+                [ ( "ui active inverted loading dimmer", model.passwordAvailable == Nothing )
+                , ( "hidden invisible", model.passwordAvailable /= Nothing )
+                ]
+            ]
+            [ div [ class "ui loader" ] []
+            ]
+        , div [ class "ui segment" ]
             [ h2 [ class "ui header" ]
                 [ text texts.changePasswordHeader
                 ]
