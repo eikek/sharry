@@ -73,6 +73,72 @@ H2
 url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
 ```
 
+### Database Checks
+
+The setting `database-domain-checks` is used when inspecting errors
+that happen when uploading files. It allows to translate database
+error messages into a message that is presented to the end user.
+
+Please see [this issue](https://github.com/eikek/sharry/issues/255)
+for more information and motivation.
+
+The example provided is this:
+
+```
+sharry.restserver.backend.share {
+
+  # Allows additional database checks to be translated into some
+  # meaningful message to the user.
+  #
+  # This config is used when inspecting database error messages.
+  # If the error message from the database contains the defined
+  # `native` part, then the server returns a 422 with the error
+  # messages given here as `message`.
+  #
+  # See issue https://github.com/eikek/sharry/issues/255 – the
+  # example is a virus check via a postgresql extension "snakeoil".
+  database-domain-checks = [
+    # Example: This message originates from postgres with an
+    # enabled snakeoil extension. This extension allows to virus
+    # check byte arrays. It must be setup such that the `bytea`
+    # type of the filechunk table is changed to the type
+    # `safe_bytea`:
+    #
+    # CREATE EXTENSION pg_snakeoil;
+    # CREATE DOMAIN public.safe_bytea as bytea CHECK (not so_is_infected(value));
+    # ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
+    { enabled = false
+      native = "domain safe_bytea violates check constraint"
+      message = "The uploaded file contains a virus!"
+    }
+  ]
+}
+```
+
+#### Example for Snakeoil
+
+The extension [snakeoil](https://github.com/credativ/pg_snakeoil) for
+[PostgreSQL](https://www.postgresql.com) allows to check uploaded
+binary data for viruses.
+
+In order to use this, you need to change the data type for the binary
+files. This *must be applied after sharry has started at least once to
+initialize its database*!
+
+The following steps must be done manually:
+
+- install pg_snakeoil - e.g. on ubuntu systems package: postgresql-12-snakeoil
+- execute the following sql commands on the sharry postgres database:
+  ```sql
+  CREATE EXTENSION pg_snakeoil;
+  CREATE DOMAIN public.safe_bytea as bytea check (not so_is_infected(value));
+  ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
+  ```
+
+Then add the above setting into your config file. Test files can be
+found [here](https://www.eicar.org/?page_id=3950).
+
+
 ### Bind
 
 The host and port the http server binds to.
