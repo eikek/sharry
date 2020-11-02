@@ -346,6 +346,22 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
   /sec/settings/password:
+    get:
+      tags: [ Account Management ]
+      summary: Check for password change.
+      description: |
+        Returns wether the current account is available for a password
+        change. If this returns `false`, the POST request to this url
+        will always fail.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
     post:
       tags: [ Account Management ]
       summary: Change your password.
