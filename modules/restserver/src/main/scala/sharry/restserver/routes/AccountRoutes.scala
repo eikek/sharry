@@ -24,12 +24,15 @@ object AccountRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    val r1 = HttpRoutes[F]({ case GET -> Root / Ident(id) =>
-      for {
-        _    <- OptionT.liftF(logger.fdebug(s"Loading accout $id"))
-        acc  <- OptionT(backend.account.findDetailById(id))
-        resp <- OptionT.liftF(Ok(accountDetail(acc)))
-      } yield resp
+    val r1 = HttpRoutes[F]({
+      case GET -> Root / Ident(id) =>
+        for {
+          _    <- OptionT.liftF(logger.fdebug(s"Loading accout $id"))
+          acc  <- OptionT(backend.account.findDetailById(id))
+          resp <- OptionT.liftF(Ok(accountDetail(acc)))
+        } yield resp
+      case _ =>
+        OptionT.liftF(NotFound())
     })
     val r2 = HttpRoutes.of[F] {
       case req @ POST -> Root / Ident(id) =>
