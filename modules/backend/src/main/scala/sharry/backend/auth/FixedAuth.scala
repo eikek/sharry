@@ -38,7 +38,7 @@ final class FixedAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
     }
 
   private def addAccount(cfg: AuthConfig.Fixed): F[AccountId] =
-    AddAccount[F](cfg.user, AddAccount.AccountOps.from(op))
+    AddAccount[F](cfg.user, true, AddAccount.AccountOps.from(op))
 
   def withPosition: (Int, LoginModule[F]) = (cfg.fixed.order, login)
 
