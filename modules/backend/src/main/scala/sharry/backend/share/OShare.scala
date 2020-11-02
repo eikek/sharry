@@ -20,6 +20,7 @@ import sharry.store.AddResult
 import sharry.store.records.RPublishShare
 import bitpeace.RangeDef
 import bitpeace.Outcome
+import sharry.store.PermanentError
 
 trait OShare[F[_]] {
 
@@ -272,15 +273,15 @@ object OShare {
           offset: ByteSize,
           data: Stream[F, Byte]
       ): OptionT[F, UploadResult[ByteSize]] = {
-        val startChunk = (offset.bytes / cfg.chunkSize.bytes).toInt
-        val reqLen     = length.getOrElse(ByteSize.zero)
-
+        val startChunk     = (offset.bytes / cfg.chunkSize.bytes).toInt
+        val reqLen         = length.getOrElse(ByteSize.zero)
+        val permanentError = PermanentError.create(cfg.databaseDomainChecks)
         def storeChunk(
             fileMetaId: Ident,
             length: ByteSize,
             mimeHint: MimetypeHint,
             sizeLeft: ByteSize
-        ) =
+        ): F[UploadResult[ByteSize]] =
           logger.fdebug(s"Start storing request of size ${reqLen.toHuman}") *>
             data
               .take(sizeLeft.bytes + 1)
@@ -316,7 +317,16 @@ object OShare {
               .map(_.getOrElse(0L))
               .flatMap { bytesSaved =>
                 val len = offset + ByteSize(bytesSaved)
-                store.transact(RShareFile.setRealSize(fileId, len)).map(_ => len)
+                store
+                  .transact(RShareFile.setRealSize(fileId, len))
+                  .map(_ => UploadResult.success(len))
+              }
+              .attempt
+              .flatMap {
+                case Right(res) => res.pure[F]
+                case Left(permanentError(msg)) =>
+                  UploadResult.permanentError[ByteSize](msg).pure[F]
+                case Left(ex) => Sync[F].raiseError(ex)
               }
 
         val deleteFile = store
@@ -334,7 +344,7 @@ object OShare {
           )
           desc <- OptionT(store.transact(Queries.fileDesc(fileId)))
           next <- OptionT.liftF(
-            res.mapF(rem =>
+            res.flatMapF(rem =>
               storeChunk(
                 desc.metaId,
                 desc.length,

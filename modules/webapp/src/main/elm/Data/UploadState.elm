@@ -23,6 +23,33 @@ type FileProgress
     | Failed String
 
 
+errorMessage : FileProgress -> Maybe String
+errorMessage fp =
+    case fp of
+        Complete ->
+            Nothing
+
+        Progress _ _ ->
+            Nothing
+
+        Failed str ->
+            Just (convertErrorMessage str)
+
+
+convertErrorMessage : String -> String
+convertErrorMessage str =
+    if String.contains "response code: 422" str then
+        String.indexes "response text:" str
+            |> List.head
+            |> Maybe.map ((+) 14)
+            |> Maybe.map (\n -> String.slice n (String.length str - 1) str)
+            |> Maybe.map String.trim
+            |> Maybe.withDefault str
+
+    else
+        str
+
+
 decode : D.Value -> Result String UploadState
 decode json =
     D.decodeValue decoder json
@@ -46,7 +73,7 @@ progressDecoder =
 
         failed =
             D.map2 (\e -> \_ -> Failed e)
-                (D.field "error" D.string)
+                (D.map convertErrorMessage (D.field "error" D.string))
                 (D.field "state" (constant "failed"))
 
         progress =

@@ -32,6 +32,8 @@ object Conv {
         IdResult(false, s"Maximum validity ($max) exceeded", Ident.empty)
       case UploadResult.SizeExceeded(max) =>
         IdResult(false, s"Maximum size ($max) exceeded", Ident.empty)
+      case UploadResult.PermanentError(msg) =>
+        IdResult(false, msg, Ident.empty)
     }
 
   def uploadBasicResult[A](successMsg: String)(ur: UploadResult[A]): BasicResult =
@@ -42,5 +44,7 @@ object Conv {
         BasicResult(false, s"Maximum validity ($max) exceeded")
       case UploadResult.SizeExceeded(max) =>
         BasicResult(false, s"Maximum size ($max) exceeded")
+      case UploadResult.PermanentError(msg) =>
+        BasicResult(false, msg)
     }
 }
