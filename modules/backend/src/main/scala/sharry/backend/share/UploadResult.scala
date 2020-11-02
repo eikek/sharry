@@ -46,6 +46,9 @@ object UploadResult {
   def sizeExceeded[A](max: ByteSize): UploadResult[A] =
     SizeExceeded(max)
 
+  def permanentError[A](msg: String): UploadResult[A] =
+    PermanentError(msg)
+
   case class Success[A](value: A) extends UploadResult[A] {
     def flatMap[B](f: A => UploadResult[B]): UploadResult[B] =
       f(value)
@@ -69,6 +72,18 @@ object UploadResult {
   }
 
   case class SizeExceeded(max: ByteSize) extends UploadResult[Nothing] {
+    def flatMap[B](f: Nothing => UploadResult[B]): UploadResult[B] =
+      this
+
+    def flatMapF[F[_]: Applicative, B](
+        f: Nothing => F[UploadResult[B]]
+    ): F[UploadResult[B]] =
+      (this: UploadResult[B]).pure[F]
+
+    def toOption: Option[Nothing] = None
+  }
+
+  case class PermanentError(msg: String) extends UploadResult[Nothing] {
     def flatMap[B](f: Nothing => UploadResult[B]): UploadResult[B] =
       this
 

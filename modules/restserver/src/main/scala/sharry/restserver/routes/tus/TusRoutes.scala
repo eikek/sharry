@@ -51,6 +51,8 @@ object TusRoutes {
                 case UploadResult.SizeExceeded(_) =>
                   PayloadTooLarge("max size exceeded")
                     .map(_.withHeaders(TusMaxSize(cfg.backend.share.maxSize)))
+                case UploadResult.PermanentError(msg) =>
+                  UnprocessableEntity(msg)
               })
               .getOrElseF(NotFound())
 
@@ -67,9 +69,11 @@ object TusRoutes {
             case UploadResult.Success(saved) =>
               OptionT.liftF(NoContent(TusHeader.resumable, UploadOffset(saved)))
             case UploadResult.ValidityExceeded(_) =>
-              OptionT.liftF(BadRequest())
+              OptionT.liftF(BadRequest("Validity exceeded"))
             case UploadResult.SizeExceeded(_) =>
-              OptionT.liftF(PayloadTooLarge("max size exceeded"))
+              OptionT.liftF(PayloadTooLarge("Max size exceeded"))
+            case UploadResult.PermanentError(msg) =>
+              OptionT.liftF(UnprocessableEntity(msg))
           })
           .getOrElseF(NotFound())
 
