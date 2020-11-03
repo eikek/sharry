@@ -13,6 +13,7 @@ import sharry.backend.auth.AuthToken
 import sharry.restapi.model._
 import sharry.restserver.Config
 import sharry.common.syntax.all._
+import sharry.common.AccountSource
 
 object SettingRoutes {
   private[this] val logger = getLogger
@@ -58,6 +59,15 @@ object SettingRoutes {
             in.newPassword
           )
           resp <- Ok(Conv.basicResult(res, "Password successfully changed."))
+        } yield resp
+
+      case GET -> Root / "password" =>
+        for {
+          a <- backend.account.findById(token.account.id)
+          res = a.exists(_.source == AccountSource.Intern)
+          resp <- Ok(
+            BasicResult(res, if (res) "Account available" else "Account not available")
+          )
         } yield resp
     }
   }

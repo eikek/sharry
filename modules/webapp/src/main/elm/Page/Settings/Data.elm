@@ -27,6 +27,7 @@ type alias Model =
     , emailField : Maybe String
     , currentEmail : Maybe String
     , banner : Maybe Banner
+    , passwordAvailable : Maybe Bool
     }
 
 
@@ -41,6 +42,7 @@ emptyModel =
     , emailField = Nothing
     , currentEmail = Nothing
     , banner = Nothing
+    , passwordAvailable = Nothing
     }
 
 
@@ -54,3 +56,4 @@ type Msg
     | SubmitPassword
     | GetEmailResp (Result Http.Error EmailInfo)
     | SaveResp (Result Http.Error BasicResult)
+    | CheckPassResp (Result Http.Error BasicResult)

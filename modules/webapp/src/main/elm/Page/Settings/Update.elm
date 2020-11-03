@@ -14,7 +14,20 @@ update flags msg model =
     case msg of
         Init ->
             ( { model | banner = Nothing }
-            , Api.getEmail flags GetEmailResp
+            , Cmd.batch
+                [ Api.getEmail flags GetEmailResp
+                , Api.checkPassword flags CheckPassResp
+                ]
+            )
+
+        CheckPassResp res ->
+            let
+                flag =
+                    Result.map .success res
+                        |> Result.withDefault False
+            in
+            ( { model | passwordAvailable = Just flag }
+            , Cmd.none
             )
 
         GetEmailResp (Ok r) ->
