@@ -18,6 +18,7 @@ import sharry.restapi.model._
 import sharry.restserver._
 import sharry.restserver.oauth.CodeFlow
 import org.http4s.client.Client
+import sharry.restserver.http4s.ClientRequestInfo
 
 object LoginRoutes {
   private[this] val logger = getLogger
@@ -37,7 +38,7 @@ object LoginRoutes {
           res <- S.login.loginUserPass(cfg.backend.auth)(
             UserPassData(up.account, Password(up.password))
           )
-          resp <- makeResponse(dsl, cfg, res)
+          resp <- makeResponse(dsl, cfg, req, res)
         } yield resp
 
       case req @ GET -> Root / "oauth" / id =>
@@ -47,7 +48,7 @@ object LoginRoutes {
               .withQuery("client_id", p.clientId)
               .withQuery(
                 "redirect_uri",
-                redirectUri(cfg, p).asString
+                redirectUri(cfg, req, p).asString
               )
               .withQuery("response_type", "code")
             logger.debug(s"Redirecting to OAuth provider ${p.id.id}: ${uri.asString}")
@@ -64,7 +65,7 @@ object LoginRoutes {
         val userId = for {
           p <- prov
           c <- code
-          u <- CodeFlow(client)(p, redirectUri(cfg, p).asString, c)
+          u <- CodeFlow(client)(p, redirectUri(cfg, req, p).asString, c)
           newAcc <- OptionT.liftF(
             NewAccount.create(u ++ Ident.atSign ++ p.id, AccountSource.OAuth(p.id.id))
           )
@@ -76,19 +77,26 @@ object LoginRoutes {
           )
         } yield token
 
-        val uri      = cfg.baseUrl.withQuery("oauth", "1") / "app" / "login"
+        val uri      = getBaseUrl(cfg, req).withQuery("oauth", "1") / "app" / "login"
         val location = Location(Uri.unsafeFromString(uri.asString))
         userId.value.flatMap {
           case Some(t) =>
             TemporaryRedirect(location)
-              .map(_.addCookie(CookieData(t).asCookie(cfg)))
+              .map(_.addCookie(CookieData(t).asCookie(getBaseUrl(cfg, req))))
           case None => TemporaryRedirect(location)
         }
     }
   }
 
-  private def redirectUri(cfg: Config, prov: AuthConfig.OAuth): LenientUri =
-    cfg.baseUrl / "api" / "v2" / "open" / "auth" / "oauth" / prov.id.id / "resume"
+  private def redirectUri[F[_]](
+      cfg: Config,
+      req: Request[F],
+      prov: AuthConfig.OAuth
+  ): LenientUri =
+    getBaseUrl(
+      cfg,
+      req
+    ) / "api" / "v2" / "open" / "auth" / "oauth" / prov.id.id / "resume"
 
   private def findOAuthProvider(cfg: Config, id: String): Option[AuthConfig.OAuth] =
     cfg.backend.auth.oauth.filter(_.enabled).find(_.id.id == id)
@@ -101,16 +109,20 @@ object LoginRoutes {
       case req @ POST -> Root / "session" =>
         Authenticate
           .authenticateRequest(S.loginSession(cfg.backend.auth))(req)
-          .flatMap(res => makeResponse(dsl, cfg, res))
+          .flatMap(res => makeResponse(dsl, cfg, req, res))
 
-      case POST -> Root / "logout" =>
-        Ok().map(_.addCookie(CookieData.deleteCookie(cfg)))
+      case req @ POST -> Root / "logout" =>
+        Ok().map(_.addCookie(CookieData.deleteCookie(getBaseUrl(cfg, req))))
     }
   }
+
+  private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
+    ClientRequestInfo.getBaseUrl(cfg, req)
 
   def makeResponse[F[_]: Effect](
       dsl: Http4sDsl[F],
       cfg: Config,
+      req: Request[F],
       res: LoginResult
   ): F[Response[F]] = {
     import dsl._
@@ -131,7 +143,7 @@ object LoginRoutes {
               Some(cd.asString),
               cfg.backend.auth.sessionValid.millis
             )
-          ).map(_.addCookie(cd.asCookie(cfg)))
+          ).map(_.addCookie(cd.asCookie(getBaseUrl(cfg, req))))
         } yield resp
       case _ =>
         Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))

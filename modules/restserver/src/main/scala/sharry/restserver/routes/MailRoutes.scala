@@ -21,6 +21,8 @@ import sharry.restapi.model.MailTemplate
 import sharry.restapi.model.SimpleMail
 import emil.MailAddress
 import emil.javamail.syntax._
+import org.http4s.Request
+import sharry.restserver.http4s.ClientRequestInfo
 
 object MailRoutes {
 
@@ -34,17 +36,19 @@ object MailRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    val baseurl = cfg.baseUrl / "app"
+    def baseurl(req: Request[F]) =
+      ClientRequestInfo.getBaseUrl(cfg, req) / "app"
+
     HttpRoutes.of {
-      case GET -> Root / "template" / "alias" / Ident(id) =>
+      case req @ GET -> Root / "template" / "alias" / Ident(id) =>
         for {
-          md   <- backend.mail.getAliasTemplate(token.account, id, baseurl / "share")
+          md   <- backend.mail.getAliasTemplate(token.account, id, baseurl(req) / "share")
           resp <- Ok(MailTemplate(md.subject, md.body))
         } yield resp
 
-      case GET -> Root / "template" / "share" / Ident(id) =>
+      case req @ GET -> Root / "template" / "share" / Ident(id) =>
         (for {
-          md   <- backend.mail.getShareTemplate(token.account, id, baseurl / "open")
+          md   <- backend.mail.getShareTemplate(token.account, id, baseurl(req) / "open")
           resp <- OptionT.liftF(Ok(MailTemplate(md.subject, md.body)))
         } yield resp).getOrElseF(NotFound())
 

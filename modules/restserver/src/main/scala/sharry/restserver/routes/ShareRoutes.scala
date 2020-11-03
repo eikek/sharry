@@ -43,7 +43,14 @@ object ShareRoutes {
 
       case req @ GET -> Root / Ident(id) =>
         val pw = SharryPassword(req)
-        ShareDetailResponse(dsl, backend, cfg, ShareId.secured(id, token.account), pw)
+        ShareDetailResponse(
+          dsl,
+          req,
+          backend,
+          cfg,
+          ShareId.secured(id, token.account),
+          pw
+        )
 
       case req @ POST -> Root / Ident(id) / "publish" =>
         (for {

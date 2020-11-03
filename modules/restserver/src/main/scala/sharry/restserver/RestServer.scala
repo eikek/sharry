@@ -21,6 +21,7 @@ import sharry.common.syntax.all._
 import sharry.backend.auth.AuthToken
 import sharry.restserver.routes._
 import sharry.restserver.webapp._
+import sharry.common.LenientUri
 
 object RestServer {
   private[this] val logger = getLogger
@@ -89,7 +90,7 @@ object RestServer {
         restApp.backend,
         token,
         cfg,
-        cfg.baseUrl / "api" / "v2" / "alias" / "upload"
+        LenientUri.EmptyPath / "api" / "v2" / "alias" / "upload"
       ),
       "mail" -> NotifyRoutes(restApp.backend, token, cfg)
     )
@@ -108,7 +109,7 @@ object RestServer {
         restApp.backend,
         token,
         cfg,
-        cfg.baseUrl / "api" / "v2" / "sec" / "upload"
+        LenientUri.EmptyPath / "api" / "v2" / "sec" / "upload"
       ),
       "mail" -> MailRoutes(restApp.backend, token, cfg)
     )

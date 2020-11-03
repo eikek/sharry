@@ -21,6 +21,8 @@ import org.http4s.multipart.Multipart
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import bitpeace.Mimetype
 import cats.data.OptionT
+import sharry.restserver.http4s.ClientRequestInfo
+import org.http4s.Request
 
 object ShareUploadRoutes {
   private[this] val logger = getLogger
@@ -29,7 +31,7 @@ object ShareUploadRoutes {
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config,
-      rootUrl: LenientUri
+      uploadPathPrefix: LenientUri.Path
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
@@ -73,7 +75,7 @@ object ShareUploadRoutes {
             id
           ) /: "files" /: "tus" /: rest =>
         val pi      = req.pathInfo.substring(id.id.length() + 10)
-        val rootUri = rootUrl / id.id / "files" / "tus"
+        val rootUri = getBaseUrl(cfg, req) ++ uploadPathPrefix / id.id / "files" / "tus"
         TusRoutes(id, backend, token, cfg, rootUri)
           .run(req.withPathInfo(pi))
           .getOrElseF(NotFound())
@@ -127,5 +129,8 @@ object ShareUploadRoutes {
       )
     } yield shd
   }
+
+  private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
+    ClientRequestInfo.getBaseUrl(cfg, req)
 
 }

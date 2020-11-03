@@ -1680,7 +1680,6 @@ components:
           type: string
         baseUrl:
           type: string
-          format: uri
         logoUrl:
           type: string
         iconUrl:

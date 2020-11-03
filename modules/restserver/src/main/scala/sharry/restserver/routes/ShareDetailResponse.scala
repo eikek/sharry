@@ -12,11 +12,15 @@ import sharry.backend.share._
 import sharry.backend.BackendApp
 import sharry.restapi.model.{ShareDetail => ShareDetailDto, _}
 import sharry.restserver.Config
+import sharry.restserver.http4s.ClientRequestInfo
 
 object ShareDetailResponse {
+  private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
+    ClientRequestInfo.getBaseUrl(cfg, req)
 
   def apply[F[_]: Sync](
       dsl: Http4sDsl[F],
+      req: Request[F],
       backend: BackendApp[F],
       cfg: Config,
       shareId: ShareId,
@@ -25,8 +29,8 @@ object ShareDetailResponse {
     import dsl._
 
     val baseUri = shareId.fold(
-      pub => cfg.baseUrl / "api" / "v2" / "open" / "share" / pub.id.id / "file",
-      priv => cfg.baseUrl / "api" / "v2" / "sec" / "share" / priv.id.id / "file"
+      pub => getBaseUrl(cfg, req) / "api" / "v2" / "open" / "share" / pub.id.id / "file",
+      priv => getBaseUrl(cfg, req) / "api" / "v2" / "sec" / "share" / priv.id.id / "file"
     )
 
     val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))

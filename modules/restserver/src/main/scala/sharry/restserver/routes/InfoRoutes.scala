@@ -29,6 +29,10 @@ object InfoRoutes {
     }
   }
 
+  private def getBaseUrl(cfg: Config): String =
+    if (cfg.baseUrl.isLocal) cfg.baseUrl.path.asString
+    else cfg.baseUrl.asString
+
   def appConfig(cfg: Config): AppConfig = {
     val assetPath = s"/app/assets/sharry-webapp/${BuildInfo.version}"
     val logoUrl =
@@ -39,7 +43,7 @@ object InfoRoutes {
       else s"$assetPath/img/icon.svg"
     AppConfig(
       cfg.webapp.appName,
-      cfg.baseUrl,
+      getBaseUrl(cfg),
       logoUrl,
       iconUrl,
       cfg.webapp.appFooter,
