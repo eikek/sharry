@@ -19,7 +19,7 @@ object OpenShareRoutes {
     HttpRoutes.of[F] {
       case req @ GET -> Root / Ident(id) =>
         val pw = SharryPassword(req)
-        ShareDetailResponse(dsl, backend, cfg, ShareId.publish(id), pw)
+        ShareDetailResponse(dsl, req, backend, cfg, ShareId.publish(id), pw)
 
       case req @ GET -> Root / Ident(id) / file / Ident(fid) =>
         val pw = SharryPassword(req)

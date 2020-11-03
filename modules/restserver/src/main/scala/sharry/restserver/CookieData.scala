@@ -3,20 +3,19 @@ package sharry.restserver
 import org.http4s._
 import org.http4s.util._
 import sharry.backend.auth._
-import sharry.common.AccountId
+import sharry.common._
 
 case class CookieData(auth: AuthToken) {
   def accountId: AccountId = auth.account
   def asString: String     = auth.asString
 
-  def asCookie(cfg: Config): ResponseCookie = {
-    val domain = cfg.baseUrl.host
-    val sec    = cfg.baseUrl.scheme.exists(_.endsWith("s"))
-    val path   = cfg.baseUrl.path / "api" / "v2"
+  def asCookie(baseUrl: LenientUri): ResponseCookie = {
+    val sec  = baseUrl.scheme.exists(_.endsWith("s"))
+    val path = baseUrl.path / "api" / "v2"
     ResponseCookie(
       CookieData.cookieName,
       asString,
-      domain = domain,
+      domain = None,
       path = Some(path.asString),
       httpOnly = true,
       secure = sec
@@ -45,14 +44,14 @@ object CookieData {
       .map(_.value)
       .toRight("Couldn't find an authenticator")
 
-  def deleteCookie(cfg: Config): ResponseCookie =
+  def deleteCookie(baseUrl: LenientUri): ResponseCookie =
     ResponseCookie(
       cookieName,
       "",
-      domain = cfg.baseUrl.host,
-      path = Some(cfg.baseUrl.path / "api" / "v2").map(_.asString),
+      domain = None,
+      path = Some(baseUrl.path / "api" / "v2").map(_.asString),
       httpOnly = true,
-      secure = cfg.baseUrl.scheme.exists(_.endsWith("s")),
+      secure = baseUrl.scheme.exists(_.endsWith("s")),
       maxAge = Some(-1)
     )
 }

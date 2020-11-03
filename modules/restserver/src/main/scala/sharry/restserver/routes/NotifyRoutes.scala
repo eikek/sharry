@@ -14,6 +14,7 @@ import sharry.backend.mail.NotifyResult
 import sharry.backend.BackendApp
 import sharry.restserver.Config
 import sharry.restapi.model.BasicResult
+import sharry.restserver.http4s.ClientRequestInfo
 
 object NotifyRoutes {
 
@@ -30,7 +31,7 @@ object NotifyRoutes {
     HttpRoutes.of { case req @ POST -> Root / "notify" / Ident(id) =>
       token.account.alias match {
         case Some(alias) =>
-          val baseurl = cfg.baseUrl / "app" / "upload"
+          val baseurl = ClientRequestInfo.getBaseUrl(cfg, req) / "app" / "upload"
           for {
             _    <- logger.fdebug("Notify about alias upload")
             res  <- backend.mail.notifyAliasUpload(alias, id, baseurl)

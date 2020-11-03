@@ -50,8 +50,11 @@ type alias Model =
 
 
 init : Key -> Url -> Flags -> Model
-init key url flags =
+init key url flags_ =
     let
+        flags =
+            initBaseUrl url flags_
+
         page =
             Page.fromUrl url |> Maybe.withDefault HomePage
     in
@@ -103,6 +106,26 @@ type Msg
     | UploadStoppedMsg (Maybe String)
     | ReceiveLanguage String
     | LangChooseMsg Comp.LanguageChoose.Msg
+
+
+initBaseUrl : Url -> Flags -> Flags
+initBaseUrl url flags_ =
+    let
+        cfg =
+            flags_.config
+
+        baseUrl =
+            if cfg.baseUrl == "" then
+                Url.toString
+                    { url | path = "", query = Nothing, fragment = Nothing }
+
+            else
+                cfg.baseUrl
+
+        cfgNew =
+            { cfg | baseUrl = baseUrl }
+    in
+    { flags_ | config = cfgNew }
 
 
 isSignedIn : Flags -> Bool
