@@ -21,16 +21,17 @@ object AddAccount {
 
   def apply[F[_]: Sync](
       user: Ident,
+      admin: Boolean,
       ops: AccountOps[F]
   ): F[AccountId] =
     for {
       newAcc <- NewAccount.create[F](
-        user,
-        AccountSource.extern,
-        AccountState.Active,
-        Password.empty,
-        None,
-        false
+        login = user,
+        source = AccountSource.extern,
+        state = AccountState.Active,
+        password = Password.empty,
+        email = None,
+        admin = admin
       )
       id <-
         ops
