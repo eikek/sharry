@@ -397,7 +397,7 @@ update flags msg model =
         Uploading state ->
             if state.id == model.share.id then
                 let
-                    ( nm, nc ) =
+                    nm =
                         trackUpload model state
 
                     ( _, err ) =
@@ -415,13 +415,13 @@ update flags msg model =
                 in
                 if Data.UploadDict.allDone nm.uploads then
                     if err == 0 then
-                        ( im, Cmd.batch [ nc, ic ] )
+                        ( im, ic )
 
                     else
-                        ( rm, nc )
+                        ( rm, Cmd.none )
 
                 else
-                    ( nm, nc )
+                    ( nm, Cmd.none )
 
             else
                 ( model, Cmd.none )
@@ -478,23 +478,11 @@ update flags msg model =
             ( model, Cmd.none )
 
 
-trackUpload : Model -> UploadState -> ( Model, Cmd Msg )
+trackUpload : Model -> UploadState -> Model
 trackUpload model state =
     let
-        ( next, progress ) =
+        next =
             Data.UploadDict.trackUpload model.uploads state
-
-        progressCmd p =
-            case p of
-                Data.UploadDict.FileProgress index perc ->
-                    [ ( "file-progress-" ++ String.fromInt index
-                      , perc
-                      )
-                    ]
-
-                Data.UploadDict.AllProgress perc ->
-                    [ ( "all-progress", perc )
-                    ]
 
         infoMsg =
             case state.state of
@@ -504,10 +492,8 @@ trackUpload model state =
                 _ ->
                     model.uploadFormState
     in
-    ( { model
+    { model
         | uploads = next
         , uploadPaused = False
         , uploadFormState = infoMsg
-      }
-    , Ports.setProgress (List.concatMap progressCmd progress)
-    )
+    }

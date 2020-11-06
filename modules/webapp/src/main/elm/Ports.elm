@@ -25,16 +25,6 @@ type.
 port uploadState : (D.Value -> msg) -> Sub msg
 
 
-{-| Run JS code to set the progress of a Semantic-UI progress div to
-some value.
-
-The string in the tuple is the element id, the second part the value
-in percent from 0 to 100.
-
--}
-port setProgress : List ( String, Int ) -> Cmd msg
-
-
 {-| Requests to stop the current upload.
 -}
 port stopUpload : String -> Cmd msg

@@ -3,6 +3,10 @@
     max-width: 300px;
 }
 
+.default-layout .ui.placeholder .header:not(first-child)::before {
+    background: inherit;
+}
+
 .default-layout {
     background: #fff;
     height: 100vh;

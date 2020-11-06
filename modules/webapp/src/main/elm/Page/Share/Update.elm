@@ -108,7 +108,7 @@ update flags msg model =
 
         CreateShareResp (Ok idres) ->
             let
-                ( native, files ) =
+                ( native, _ ) =
                     List.unzip model.uploads.selectedFiles
 
                 uploadUrl =
@@ -187,20 +187,8 @@ update flags msg model =
 trackUpload : Model -> UploadState -> ( Model, Cmd Msg )
 trackUpload model state =
     let
-        ( next, progress ) =
+        next =
             Data.UploadDict.trackUpload model.uploads state
-
-        progressCmd p =
-            case p of
-                Data.UploadDict.FileProgress index perc ->
-                    [ ( "file-progress-" ++ String.fromInt index
-                      , perc
-                      )
-                    ]
-
-                Data.UploadDict.AllProgress perc ->
-                    [ ( "all-progress", perc )
-                    ]
 
         infoMsg =
             case state.state of
@@ -215,5 +203,5 @@ trackUpload model state =
         , uploadPaused = False
         , formState = infoMsg
       }
-    , Ports.setProgress (List.concatMap progressCmd progress)
+    , Cmd.none
     )

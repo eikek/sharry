@@ -10,6 +10,7 @@ object Dependencies {
   val DoobieVersion           = "0.9.2"
   val EmilVersion             = "0.6.3"
   val FlywayVersion           = "7.1.1"
+  val FomanticUIVersion       = "2.8.7-3"
   val Fs2Version              = "2.4.4"
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.21.8"
@@ -21,7 +22,6 @@ object Dependencies {
   val MiniTestVersion         = "2.8.2"
   val PostgresVersion         = "42.2.18"
   val PureConfigVersion       = "0.14.0"
-  val SemanticUIVersion       = "2.4.1"
   val SwaggerVersion          = "3.36.2"
   val TikaVersion             = "1.24.1"
   val TusClientVersion        = "1.8.0-1"
@@ -123,11 +123,10 @@ object Dependencies {
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars"     % "swagger-ui"    % SwaggerVersion,
-    "org.webjars"     % "Semantic-UI"   % SemanticUIVersion,
-    "org.webjars"     % "jquery"        % JQueryVersion,
-    "org.webjars.npm" % "tus-js-client" % TusClientVersion,
-    "org.webjars"     % "clipboard.js"  % ClipboardJsVersion
+    "org.webjars"      % "swagger-ui"            % SwaggerVersion,
+    "com.github.eikek" % "fomantic-slim-default" % FomanticUIVersion,
+    "org.webjars.npm"  % "tus-js-client"         % TusClientVersion,
+    "org.webjars"      % "clipboard.js"          % ClipboardJsVersion
   )
 
 }

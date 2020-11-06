@@ -6,10 +6,7 @@ import Comp.Dropzone2
 import Comp.MarkdownInput
 import Data.UploadDict exposing (UploadDict)
 import Data.UploadState exposing (UploadState)
-import Dict exposing (Dict)
-import File exposing (File)
 import Http
-import Json.Decode as D
 
 
 type alias Model =

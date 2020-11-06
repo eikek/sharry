@@ -1,4 +1,24 @@
 /* Sharry JS */
+function forEachIn(obj, fn) {
+    var index = 0;
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            fn(obj[key], key, index++);
+        }
+    }
+}
+
+function extend() {
+    var result = {};
+    for (var i = 0; i < arguments.length; i++) {
+        forEachIn(arguments[i],
+            function(obj, key) {
+                result[key] = obj;
+            });
+    }
+    return result;
+}
+
 
 var elmApp = Elm.Main.init({
     node: document.getElementById("sharry-app"),
@@ -16,22 +36,6 @@ elmApp.ports.setAccount.subscribe(function(authResult) {
 
 elmApp.ports.removeAccount.subscribe(function() {
     localStorage.removeItem("account");
-});
-
-elmApp.ports.setProgress.subscribe(function(data) {
-    for (var i = 0; i < data.length; i++) {
-        var id = data[i][0];
-        var perc = data[i][1];
-        if (perc < 0) {
-            perc = 0;
-        }
-        if (perc > 100) {
-            perc = 100;
-        }
-        $("#" + id).progress({
-            percent: perc
-        });
-    }
 });
 
 elmApp.ports.scrollTop.subscribe(function(data) {
@@ -70,7 +74,7 @@ elmApp.ports.submitFiles.subscribe(function(data) {
               chunkSize: sharryFlags.chunkSize,
               retryDelays: sharryFlags.retryDelays,
               removeFingerprintOnSuccess: true,
-              headers: $.extend(myHeaders, {
+              headers: extend(myHeaders, {
                   "Sharry-File-Name": encodeURIComponent(file.name),
                   "Sharry-File-Length": file.size,
                   "Sharry-File-Type": file.type

@@ -141,12 +141,10 @@ object TemplateRoutes {
         InfoRoutes.appConfig(cfg),
         s"/app/assets/sharry-webapp/${BuildInfo.version}/favicon",
         Seq(
-          "/app/assets" + Webjars.semanticui + "/semantic.min.css",
+          "/app/assets" + Webjars.fomanticslimdefault + "/semantic.min.css",
           s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry.css"
         ),
         Seq(
-          "/app/assets" + Webjars.jquery + "/jquery.min.js",
-          "/app/assets" + Webjars.semanticui + "/semantic.min.js",
           "/app/assets" + Webjars.tusjsclient + "/dist/tus.min.js",
           "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
           s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry-app.js"
