@@ -176,8 +176,8 @@ shareLinkPublished texts flags model =
 
         qrCodeView : String -> Html msg
         qrCodeView message =
-            QRCode.encode message
-                |> Result.map QRCode.toSvg
+            QRCode.fromString message
+                |> Result.map (QRCode.toSvg [])
                 |> Result.withDefault
                     (Html.text texts.errorQrCode)
     in

@@ -1,4 +1,7 @@
 /* Sharry CSS */
+.default-layout svg {
+    max-width: 300px;
+}
 
 .default-layout {
     background: #fff;
