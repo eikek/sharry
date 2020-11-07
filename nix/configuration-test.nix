@@ -37,6 +37,14 @@ in
       auth = {
         oauth = [];
       };
+      share = {
+        database-domain-checks = [
+          { enabled = true;
+            native = "domain safe_bytea violates check constraint";
+            message = "The uploaded file contains a virus!";
+          }
+        ];
+      };
     };
   };
 

@@ -6,11 +6,11 @@ RUN apk add --no-cache openjdk11-jre unzip curl bash
 
 RUN mkdir -p /opt \
   && cd /opt \
-  && curl -L -o sharry.zip https://github.com/eikek/sharry/releases/download/release%2F1.4.3/sharry-restserver-1.4.3.zip \
+  && curl -L -o sharry.zip https://github.com/eikek/sharry/releases/download/release%2F1.5.0/sharry-restserver-1.5.0.zip \
   && unzip sharry.zip \
   && rm sharry.zip \
   && apk del unzip curl
 
 EXPOSE 9090
 
-ENTRYPOINT ["/opt/sharry-restserver-1.4.3/bin/sharry-restserver"]
+ENTRYPOINT ["/opt/sharry-restserver-1.5.0/bin/sharry-restserver"]

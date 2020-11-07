@@ -96,6 +96,12 @@ let
         chunk-size = "512K";
         max-size = "1.5G";
         max-validity = "365 days";
+        database-domain-checks = [
+          { enabled = false;
+            native = "domain safe_bytea violates check constraint";
+            message = "The uploaded file contains a virus!";
+          }
+        ];
       };
       cleanup = {
         enabled = true;
@@ -605,6 +611,45 @@ in {
                     type = types.str;
                     default = defaults.backend.share.max-validity;
                     description = "Maximum validity for uploads.";
+                  };
+
+                  database-domain-checks = mkOption {
+                    type = types.listOf (types.submodule {
+                      options =
+                        let
+                          d = builtins.head defaults.backend.share.database-domain-checks;
+                        in
+                          {
+                            enabled = mkOption {
+                              type = types.bool;
+                              default = d.enabled;
+                              description = "Whether to enable this login module";
+                            };
+                            native = mkOption {
+                              type = types.str;
+                              default = d.native;
+                              description = "The native database error message substring.";
+                            };
+                            message = mkOption {
+                              type = types.str;
+                              default = d.message;
+                              description = "The user message to show in this error case.";
+                            };
+                          };
+                    });
+                    default = defaults.backend.share.database-domain-checks;
+                    description = ''
+                     Allows additional database checks to be translated into some
+                     meaningful message to the user.
+
+                     This config is used when inspecting database error messages.
+                     If the error message from the database contains the defined
+                     `native` part, then the server returns a 422 with the error
+                     messages given here as `message`.
+
+                     See issue https://github.com/eikek/sharry/issues/255 – the
+                     example is a virus check via a postgresql extension "snakeoil".
+                    '';
                   };
                 };
               });
