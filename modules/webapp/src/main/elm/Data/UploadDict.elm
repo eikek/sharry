@@ -2,6 +2,7 @@ module Data.UploadDict exposing
     ( UploadDict
     , UploadProgress(..)
     , allDone
+    , allProgress
     , countDone
     , empty
     , size
@@ -9,6 +10,7 @@ module Data.UploadDict exposing
     , updateFiles
     )
 
+import Data.Percent
 import Data.UploadState exposing (UploadState)
 import Dict exposing (Dict)
 import File exposing (File)
@@ -54,6 +56,41 @@ allDone up =
     succ + err == List.length up.selectedFiles
 
 
+allProgress : UploadDict -> Int
+allProgress up =
+    let
+        sizeOf index file =
+            Dict.get index up.uploads
+                |> Maybe.map .state
+                |> Maybe.map
+                    (\s ->
+                        case s of
+                            Data.UploadState.Complete ->
+                                File.size file
+
+                            Data.UploadState.Progress n _ ->
+                                n
+
+                            Data.UploadState.Failed _ ->
+                                File.size file
+                    )
+                |> Maybe.withDefault 0
+
+        allsize =
+            List.unzip up.selectedFiles
+                |> Tuple.second
+                |> List.map File.size
+                |> List.sum
+
+        currsize =
+            List.unzip up.selectedFiles
+                |> Tuple.second
+                |> List.indexedMap sizeOf
+                |> List.sum
+    in
+    Data.Percent.mkPercent currsize allsize
+
+
 countDone : UploadDict -> ( Int, Int )
 countDone { selectedFiles, uploads } =
     let
@@ -62,7 +99,7 @@ countDone { selectedFiles, uploads } =
             , Tuple.second t1 + Tuple.second t2
             )
 
-        count index file =
+        count index _ =
             Dict.get index uploads
                 |> Maybe.map .state
                 |> Maybe.map
@@ -83,60 +120,10 @@ countDone { selectedFiles, uploads } =
         |> List.foldl tupleAdd ( 0, 0 )
 
 
-trackUpload : UploadDict -> UploadState -> ( UploadDict, List UploadProgress )
+trackUpload : UploadDict -> UploadState -> UploadDict
 trackUpload model state =
     let
         next =
             Dict.insert state.file state model.uploads
-
-        sizeOf index file =
-            Dict.get index next
-                |> Maybe.map .state
-                |> Maybe.map
-                    (\s ->
-                        case s of
-                            Data.UploadState.Complete ->
-                                File.size file
-
-                            Data.UploadState.Progress n _ ->
-                                n
-
-                            Data.UploadState.Failed _ ->
-                                File.size file
-                    )
-                |> Maybe.withDefault 0
-
-        allsize =
-            List.unzip model.selectedFiles
-                |> Tuple.second
-                |> List.map File.size
-                |> List.sum
-
-        currsize =
-            List.unzip model.selectedFiles
-                |> Tuple.second
-                |> List.indexedMap sizeOf
-                |> List.sum
-
-        mkPercent : Int -> Int -> Int
-        mkPercent c t =
-            (toFloat c / toFloat t) * 100 |> round
-
-        filePerc =
-            case state.state of
-                Data.UploadState.Progress cur total ->
-                    [ FileProgress state.file (mkPercent cur total)
-                    ]
-
-                _ ->
-                    []
-
-        allPerc =
-            [ AllProgress (mkPercent currsize allsize)
-            ]
     in
-    ( { model
-        | uploads = next
-      }
-    , filePerc ++ allPerc
-    )
+    { model | uploads = next }

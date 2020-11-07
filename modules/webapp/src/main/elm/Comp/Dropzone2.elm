@@ -10,6 +10,8 @@ module Comp.Dropzone2 exposing
     , view
     )
 
+import Comp.Progress
+import Data.Percent
 import Data.UploadDict exposing (UploadDict)
 import Data.UploadState
 import Dict
@@ -48,7 +50,7 @@ type alias SelectedFiles =
 type FileState
     = Done
     | Failed
-    | Uploading
+    | Uploading Int
     | Waiting
 
 
@@ -56,6 +58,7 @@ type alias ViewSettings =
     { files : SelectedFiles
     , active : Bool
     , fileState : Int -> FileState
+    , allProgress : Int
     }
 
 
@@ -87,8 +90,8 @@ mkViewSettings active uploads =
                 Just Data.UploadState.Complete ->
                     Done
 
-                Just (Data.UploadState.Progress _ _) ->
-                    Uploading
+                Just (Data.UploadState.Progress cur total) ->
+                    Uploading (Data.Percent.mkPercent cur total)
 
                 Just (Data.UploadState.Failed _) ->
                     Failed
@@ -99,6 +102,7 @@ mkViewSettings active uploads =
     { files = uploads.selectedFiles
     , active = active
     , fileState = fileState
+    , allProgress = Data.UploadDict.allProgress uploads
     }
 
 
@@ -118,16 +122,6 @@ view texts sett model =
     div [ class "dropzone" ]
         [ div
             [ classList
-                [ ( "ui top attached indicating progress", True )
-                , ( "invisible", files == [] )
-                ]
-            , id "all-progress"
-            ]
-            [ div [ class "bar" ]
-                []
-            ]
-        , div
-            [ classList
                 [ ( "ui placeholder segment", True )
                 , ( "on-drop", model.hover )
                 , ( "attached", files /= [] )
@@ -138,11 +132,14 @@ view texts sett model =
             , hijackOn "dragleave" (D.succeed DragLeave)
             , hijackOn "drop" dropDecoder
             ]
-            [ div [ class "ui icon header" ]
+            [ if files == [] then
+                span [ class "invisible" ] []
+
+              else
+                Comp.Progress.topAttachedIndicating sett.allProgress
+            , div [ class "ui icon header" ]
                 [ i [ class "mouse pointer icon" ] []
-                , div [ class "content" ]
-                    [ text texts.dropHere
-                    ]
+                , text texts.dropHere
                 ]
             , case List.length files of
                 0 ->
@@ -206,11 +203,19 @@ renderFile sett index file =
                 Waiting ->
                     "ui file outline icon"
 
-                Uploading ->
+                Uploading _ ->
                     "ui loading spinner icon"
 
                 Failed ->
                     "ui red bolt icon"
+
+        percent =
+            case fileState of
+                Uploading p ->
+                    p
+
+                _ ->
+                    0
     in
     tr
         [ class ("file-" ++ String.fromInt index)
@@ -220,25 +225,13 @@ renderFile sett index file =
             [ i [ class icon ] []
             ]
         , td []
-            [ div
-                [ classList
-                    [ ( "ui small indicating progress", True )
-                    , ( "invisible", fileState /= Uploading )
-                    ]
-                , id ("file-progress-" ++ String.fromInt index)
-                ]
-                [ div [ class "bar" ] []
-                , div [ class "label" ]
+            [ if isUploading fileState then
+                Comp.Progress.smallIndicating percent name
+
+              else
+                span []
                     [ text name
                     ]
-                ]
-            , span
-                [ classList
-                    [ ( "invisible", fileState == Uploading )
-                    ]
-                ]
-                [ text name
-                ]
             ]
         , td [ class "collapsing" ]
             [ text size
@@ -256,6 +249,16 @@ renderFile sett index file =
                 ]
             ]
         ]
+
+
+isUploading : FileState -> Bool
+isUploading state =
+    case state of
+        Uploading _ ->
+            True
+
+        _ ->
+            False
 
 
 dropDecoder : D.Decoder Msg

@@ -41,5 +41,5 @@ update key flags msg model =
             , Cmd.none
             )
 
-        SearchResp (Err err) ->
+        SearchResp (Err _) ->
             ( model, Cmd.none )

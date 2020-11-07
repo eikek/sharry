@@ -66,7 +66,7 @@ update aliasId flags msg model =
 
         CreateShareResp (Ok idres) ->
             let
-                ( native, files ) =
+                ( native, _ ) =
                     List.unzip model.uploads.selectedFiles
 
                 uploadUrl =
@@ -136,20 +136,8 @@ update aliasId flags msg model =
 trackUpload : Flags -> String -> Model -> UploadState -> ( Model, Cmd Msg )
 trackUpload flags aliasId model state =
     let
-        ( next, progress ) =
+        next =
             Data.UploadDict.trackUpload model.uploads state
-
-        progressCmd p =
-            case p of
-                Data.UploadDict.FileProgress index perc ->
-                    [ ( "file-progress-" ++ String.fromInt index
-                      , perc
-                      )
-                    ]
-
-                Data.UploadDict.AllProgress perc ->
-                    [ ( "all-progress", perc )
-                    ]
 
         infoMsg =
             case state.state of
@@ -174,7 +162,7 @@ trackUpload flags aliasId model state =
         , uploadPaused = False
         , formState = infoMsg
       }
-    , Cmd.batch [ Ports.setProgress (List.concatMap progressCmd progress), notifyCmd ]
+    , notifyCmd
     )
 
 
