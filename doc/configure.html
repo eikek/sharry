@@ -60,6 +60,72 @@ must include these options:</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
 </code></pre></div></div>
 
+<h3 id="database-checks">Database Checks</h3>
+
+<p>The setting <code class="highlighter-rouge">database-domain-checks</code> is used when inspecting errors
+that happen when uploading files. It allows to translate database
+error messages into a message that is presented to the end user.</p>
+
+<p>Please see <a href="https://github.com/eikek/sharry/issues/255">this issue</a>
+for more information and motivation.</p>
+
+<p>The example provided is this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.share {
+
+  # Allows additional database checks to be translated into some
+  # meaningful message to the user.
+  #
+  # This config is used when inspecting database error messages.
+  # If the error message from the database contains the defined
+  # `native` part, then the server returns a 422 with the error
+  # messages given here as `message`.
+  #
+  # See issue https://github.com/eikek/sharry/issues/255 – the
+  # example is a virus check via a postgresql extension "snakeoil".
+  database-domain-checks = [
+    # Example: This message originates from postgres with an
+    # enabled snakeoil extension. This extension allows to virus
+    # check byte arrays. It must be setup such that the `bytea`
+    # type of the filechunk table is changed to the type
+    # `safe_bytea`:
+    #
+    # CREATE EXTENSION pg_snakeoil;
+    # CREATE DOMAIN public.safe_bytea as bytea CHECK (not so_is_infected(value));
+    # ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
+    { enabled = false
+      native = "domain safe_bytea violates check constraint"
+      message = "The uploaded file contains a virus!"
+    }
+  ]
+}
+</code></pre></div></div>
+
+<h4 id="example-for-snakeoil">Example for Snakeoil</h4>
+
+<p>The extension <a href="https://github.com/credativ/pg_snakeoil">snakeoil</a> for
+<a href="https://www.postgresql.com">PostgreSQL</a> allows to check uploaded
+binary data for viruses.</p>
+
+<p>In order to use this, you need to change the data type for the binary
+files. This <em>must be applied after sharry has started at least once to
+initialize its database</em>!</p>
+
+<p>The following steps must be done manually:</p>
+
+<ul>
+  <li>install pg_snakeoil - e.g. on ubuntu systems package: postgresql-12-snakeoil</li>
+  <li>execute the following sql commands on the sharry postgres database:
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">pg_snakeoil</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">DOMAIN</span> <span class="k">public</span><span class="p">.</span><span class="n">safe_bytea</span> <span class="k">as</span> <span class="n">bytea</span> <span class="k">check</span> <span class="p">(</span><span class="k">not</span> <span class="n">so_is_infected</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">public</span><span class="p">.</span><span class="n">filechunk</span> <span class="k">ALTER</span> <span class="k">COLUMN</span> <span class="n">chunkdata</span> <span class="k">TYPE</span> <span class="n">safe_bytea</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>Then add the above setting into your config file. Test files can be
+found <a href="https://www.eicar.org/?page_id=3950">here</a>.</p>
+
 <h3 id="bind">Bind</h3>
 
 <p>The host and port the http server binds to.</p>
@@ -593,6 +659,32 @@ sharry.restserver {
 
       # Maximum validity for uploads
       max-validity = 365 days
+
+      # Allows additional database checks to be translated into some
+      # meaningful message to the user.
+      #
+      # This config is used when inspecting database error messages.
+      # If the error message from the database contains the defined
+      # `native` part, then the server returns a 422 with the error
+      # messages given here as `message`.
+      #
+      # See issue https://github.com/eikek/sharry/issues/255 – the
+      # example is a virus check via a postgresql extension "snakeoil".
+      database-domain-checks = [
+        # Example: This message originates from postgres with an
+        # enabled snakeoil extension. This extension allows to virus
+        # check byte arrays. It must be setup such that the `bytea`
+        # type of the filechunk table is changed to the type
+        # `safe_bytea`:
+        #
+        # CREATE EXTENSION pg_snakeoil;
+        # CREATE DOMAIN public.safe_bytea as bytea CHECK (not so_is_infected(value));
+        # ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
+        { enabled = false
+          native = "domain safe_bytea violates check constraint"
+          message = "The uploaded file contains a virus!"
+        }
+      ]
     }
 
     cleanup {

@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Sharry
-  version: 1.4.3
+  version: 1.5.0
   description: |
     Sharry provides a way to share files with others in a convenient
     way. The core functionality is provided by a server that can be
@@ -346,6 +346,22 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
   /sec/settings/password:
+    get:
+      tags: [ Account Management ]
+      summary: Check for password change.
+      description: |
+        Returns wether the current account is available for a password
+        change. If this returns `false`, the POST request to this url
+        will always fail.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
     post:
       tags: [ Account Management ]
       summary: Change your password.
@@ -1664,7 +1680,6 @@ components:
           type: string
         baseUrl:
           type: string
-          format: uri
         logoUrl:
           type: string
         iconUrl:
