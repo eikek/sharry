@@ -60,7 +60,8 @@ object InfoRoutes {
       cfg.backend.mail.enabled,
       cfg.webapp.welcomeMessage,
       cfg.webapp.defaultLanguage,
-      cfg.webapp.authRenewal
+      cfg.webapp.authRenewal,
+      cfg.webapp.initialPage
     )
   }
 

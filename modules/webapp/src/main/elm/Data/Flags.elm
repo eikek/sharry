@@ -5,6 +5,7 @@ import Api.Model.AuthResult exposing (AuthResult)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Messages.SharePage exposing (Texts)
+import Page exposing (Page)
 import Util.Size
 
 
@@ -41,3 +42,11 @@ limitsMessage texts flags attr =
     div attr
         [ texts.uploadsUpTo size |> text
         ]
+
+
+initialPage : Flags -> Page
+initialPage flags =
+    "/app/"
+        ++ flags.config.initialPage
+        |> Page.pageFromString
+        |> Maybe.withDefault Page.HomePage
