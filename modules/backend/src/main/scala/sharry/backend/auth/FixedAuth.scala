@@ -24,7 +24,7 @@ final class FixedAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
 
   def login: LoginModule[F] =
     LoginModule { up =>
-      if (!cfg.fixed.enabled || up.user != cfg.fixed.user.id)
+      if (!cfg.fixed.enabled || !up.user.equalsIgnoreCase(cfg.fixed.user.id))
         (None: Option[LoginResult]).pure[F]
       else if (up.pass == cfg.fixed.password)
         for {

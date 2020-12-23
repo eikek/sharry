@@ -36,6 +36,9 @@ trait DoobieMeta {
   implicit val metaIdent: Meta[Ident] =
     Meta[String].timap(Ident.unsafe)(_.id)
 
+  implicit val ciIdentMeta: Meta[CIIdent] =
+    metaIdent.timap(CIIdent.apply)(_.value)
+
   implicit val metaTimestamp: Meta[Timestamp] =
     Meta[String].timap(s => Timestamp(Instant.parse(s)))(_.value.toString)
 

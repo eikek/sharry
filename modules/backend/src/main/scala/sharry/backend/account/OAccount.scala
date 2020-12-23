@@ -100,7 +100,7 @@ object OAccount {
             now <- Timestamp.current[F]
             u = RAccount(
               acc.id,
-              acc.login,
+              CIIdent(acc.login),
               acc.source,
               acc.state,
               pw,

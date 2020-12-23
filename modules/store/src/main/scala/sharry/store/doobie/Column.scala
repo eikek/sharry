@@ -1,6 +1,8 @@
 package sharry.store.doobie
 
-import doobie._, doobie.implicits._
+import doobie._
+import doobie.implicits._
+import sharry.common.CIIdent
 
 case class Column(name: String, ns: String = "", alias: String = "") {
 
@@ -20,6 +22,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
 
   def is[A: Put](value: A): Fragment =
     f ++ fr" = $value"
+
+  def is(value: CIIdent)(implicit P: Put[CIIdent]): Fragment =
+    fr"LOWER(" ++ f ++ sql") = $value"
 
   def isNot[A: Put](value: A): Fragment =
     f ++ fr"<> $value"

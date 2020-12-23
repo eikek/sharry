@@ -77,7 +77,7 @@ object OMail {
           (for {
             t <- OptionT(store.transact(Queries.resolveAlias(aliasId, shareId)))
             receiver = t._2.email.map(MailAddress.parse).flatMap(_.toOption)
-            td       = TemplateData(t._2.login, baseUrl / shareId.id, false, t._1.name)
+            td       = TemplateData(t._2.login.value, baseUrl / shareId.id, false, t._1.name)
             res <- OptionT.liftF(
               receiver
                 .map(rec => send(rec, td))
