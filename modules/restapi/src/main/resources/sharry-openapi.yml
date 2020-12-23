@@ -1676,6 +1676,7 @@ components:
         - defaultLanguage
         - authRefreshTime
         - initialPage
+        - oauthOnly
       properties:
         appName:
           type: string
@@ -1727,6 +1728,8 @@ components:
             - home
             - uploads
             - share
+        oauthOnly:
+          type: boolean
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

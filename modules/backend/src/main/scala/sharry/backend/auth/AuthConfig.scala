@@ -11,11 +11,20 @@ case class AuthConfig(
     command: AuthConfig.Command,
     internal: AuthConfig.Internal,
     oauth: Seq[AuthConfig.OAuth]
-)
+) {
+
+  def isOAuthOnly: Boolean =
+    fixed.disabled && http.disabled &&
+      httpBasic.disabled && command.disabled &&
+      internal.disabled && oauth.nonEmpty
+
+}
 
 object AuthConfig {
 
-  case class Fixed(enabled: Boolean, user: Ident, password: Password, order: Int)
+  case class Fixed(enabled: Boolean, user: Ident, password: Password, order: Int) {
+    def disabled = !enabled
+  }
 
   case class Http(
       enabled: Boolean,
@@ -24,18 +33,26 @@ object AuthConfig {
       body: String,
       contentType: String,
       order: Int
-  )
+  ) {
+    def disabled = !enabled
+  }
 
-  case class HttpBasic(enabled: Boolean, url: LenientUri, method: String, order: Int)
+  case class HttpBasic(enabled: Boolean, url: LenientUri, method: String, order: Int) {
+    def disabled: Boolean = !enabled
+  }
 
   case class Command(
       enabled: Boolean,
       program: Seq[String],
       success: Int,
       order: Int
-  )
+  ) {
+    def disabled = !enabled
+  }
 
-  case class Internal(enabled: Boolean, order: Int)
+  case class Internal(enabled: Boolean, order: Int) {
+    def disabled = !enabled
+  }
 
   case class OAuth(
       id: Ident,
