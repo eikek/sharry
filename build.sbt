@@ -285,7 +285,6 @@ lazy val microsite = project
       "white-color"     -> "#FFFFFF"
     ),
     fork in run := true,
-    micrositeCompilingDocsTool := WithMdoc,
     mdocVariables := Map(
       "VERSION"  -> version.value,
       "PVERSION" -> version.value.replace('.', '_')
