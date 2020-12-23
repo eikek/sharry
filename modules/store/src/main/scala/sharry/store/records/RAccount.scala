@@ -55,13 +55,15 @@ object RAccount {
 
   import Columns._
 
-  def insert(v: RAccount): ConnectionIO[Int] = {
+  def insert(
+      v: RAccount
+  )(implicit LH: LogHandler = DoobieMeta.sqlLogging): ConnectionIO[Int] = {
     val sql = Sql.insertRow(
       table,
       all,
       fr"${v.id},${v.login},${v.source},${v.state},${v.password},${v.email},${v.admin},${v.loginCount},${v.lastLogin},${v.created}"
     )
-    sql.update.run
+    sql.updateWithLogHandler(LH).run
   }
 
   def update(aid: Ident, v: ModAccount): ConnectionIO[Int] = {

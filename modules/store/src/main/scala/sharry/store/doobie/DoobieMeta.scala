@@ -12,12 +12,7 @@ import bitpeace.Mimetype
 
 trait DoobieMeta {
 
-  implicit val sqlLogging = LogHandler({
-    case e @ Success(_, _, _, _) =>
-      DoobieMeta.logger.trace("SQL " + e)
-    case e =>
-      DoobieMeta.logger.error(s"SQL Failure: $e")
-  })
+  implicit val sqlLogging = DoobieMeta.DefaultLogging.handler
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
     Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>
@@ -57,6 +52,25 @@ trait DoobieMeta {
 }
 
 object DoobieMeta extends DoobieMeta {
-  import org.log4s._
-  private val logger = getLogger
+  private val logger = org.log4s.getLogger
+
+  object TraceLogging {
+    implicit val handler =
+      LogHandler({
+        case e @ Success(_, _, _, _) =>
+          DoobieMeta.logger.trace("SQL success: " + e)
+        case e =>
+          DoobieMeta.logger.trace(s"SQL failure: $e")
+      })
+  }
+
+  object DefaultLogging {
+    implicit val handler =
+      LogHandler({
+        case e @ Success(_, _, _, _) =>
+          DoobieMeta.logger.trace("SQL success: " + e)
+        case e =>
+          DoobieMeta.logger.warn(s"SQL failure: $e")
+      })
+  }
 }

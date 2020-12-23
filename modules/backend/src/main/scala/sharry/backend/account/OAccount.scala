@@ -5,7 +5,6 @@ import cats.implicits._
 import doobie._
 import org.log4s._
 import fs2.Stream
-
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.backend.PasswordCrypt
@@ -13,6 +12,7 @@ import sharry.store.Store
 import sharry.store.AddResult
 import sharry.store.records.{ModAccount, RAccount}
 import cats.data.OptionT
+import sharry.store.doobie.DoobieMeta
 
 trait OAccount[F[_]] {
 
@@ -95,7 +95,7 @@ object OAccount {
       def create(acc: NewAccount): F[AddResult] = {
         val pw = PasswordCrypt.crypt(acc.password)
 
-        def record: F[RAccount] =
+        val makeRecord: F[RAccount] =
           for {
             now <- Timestamp.current[F]
             u = RAccount(
@@ -113,7 +113,7 @@ object OAccount {
           } yield u
 
         def insert(user: RAccount): ConnectionIO[Int] =
-          RAccount.insert(user)
+          RAccount.insert(user)(DoobieMeta.TraceLogging.handler)
 
         def accountExists: ConnectionIO[Boolean] =
           RAccount.existsByLogin(acc.login)
@@ -123,7 +123,7 @@ object OAccount {
           _ => {
             val msg = s"The account '${acc.login.id}' already exists."
             for {
-              acc  <- record
+              acc  <- makeRecord
               save <- store.add(insert(acc), accountExists)
             } yield save.fold(identity, _.withMsg(msg), identity)
           }
