@@ -846,7 +846,7 @@
   "description" : "A list of aliases.\n"
 };
             defs["AppConfig"] = {
-  "required" : [ "appName", "authRefreshTime", "baseUrl", "chunkSize", "defaultLanguage", "footerText", "footerVisible", "iconUrl", "logoUrl", "mailEnabled", "maxSize", "maxValidity", "oauthConfig", "retryDelays", "signupMode", "welcomeMessage" ],
+  "required" : [ "appName", "authRefreshTime", "baseUrl", "chunkSize", "defaultLanguage", "footerText", "footerVisible", "iconUrl", "initialPage", "logoUrl", "mailEnabled", "maxSize", "maxValidity", "oauthConfig", "oauthOnly", "retryDelays", "signupMode", "welcomeMessage" ],
   "properties" : {
     "appName" : {
       "type" : "string"
@@ -907,6 +907,14 @@
     "authRefreshTime" : {
       "type" : "integer",
       "format" : "duration"
+    },
+    "initialPage" : {
+      "type" : "string",
+      "description" : "The inital page to show after logging in.\n",
+      "enum" : [ "home", "uploads", "share" ]
+    },
+    "oauthOnly" : {
+      "type" : "boolean"
     }
   },
   "description" : "Initial configuration.\n"
@@ -1606,7 +1614,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 1.5.0</div>
+              <div class="app-desc">Version: 1.6.0</div>
             <hr>
             <div><p>Sharry provides a way to share files with others in a convenient
 way. The core functionality is provided by a server that can be

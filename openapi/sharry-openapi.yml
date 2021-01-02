@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Sharry
-  version: 1.5.0
+  version: 1.6.0
   description: |
     Sharry provides a way to share files with others in a convenient
     way. The core functionality is provided by a server that can be
@@ -1675,6 +1675,8 @@ components:
         - welcomeMessage
         - defaultLanguage
         - authRefreshTime
+        - initialPage
+        - oauthOnly
       properties:
         appName:
           type: string
@@ -1718,6 +1720,16 @@ components:
         authRefreshTime:
           type: integer
           format: duration
+        initialPage:
+          description: |
+            The inital page to show after logging in.
+          type: string
+          enum:
+            - home
+            - uploads
+            - share
+        oauthOnly:
+          type: boolean
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

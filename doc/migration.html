@@ -18,7 +18,7 @@ Then follow this guide.</p>
 <p>For these databases, you can start the restserver binary with a
 special option <code class="highlighter-rouge">-Dsharry.migrate-old-dbschema=true</code>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./sharry-restserver-1.5.0/bin/sharry-restserver -Dsharry.migrate-old-dbschema=true ./sharry-new.conf
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./sharry-restserver-1.6.0/bin/sharry-restserver -Dsharry.migrate-old-dbschema=true ./sharry-new.conf
 </code></pre></div></div>
 
 <p>This will not start the restserver but rather run the migration
@@ -49,7 +49,7 @@ changed afterwards.</p>
 is in the jar file that is on your disk if you have sharry installed.
 So the dump can be created like this:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.5.0/lib/com.h2database.h2-1.4.200.jar org.h2.tools.Script -url "jdbc:h2:///var/data/sharry/sharry-old-db" -user sa -password ""
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.6.0/lib/com.h2database.h2-1.4.200.jar org.h2.tools.Script -url "jdbc:h2:///var/data/sharry/sharry-old-db" -user sa -password ""
 </code></pre></div></div>
 
 <p>This will create a <code class="highlighter-rouge">backup.sql</code> file in the current directory.</p>
@@ -78,7 +78,7 @@ connection – to an unexisting file and with the required settings
 used (<code class="highlighter-rouge">RunScript</code>,
 <a href="https://h2database.com/javadoc/org/h2/tools/RunScript.html">doc</a>):</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.5.0/lib/com.h2database.h2-1.4.200.jar org.h2.tools.RunScript -url "jdbc:h2:///var/data/sharry/sharry-newdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE" -user sa -password ""
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.6.0/lib/com.h2database.h2-1.4.200.jar org.h2.tools.RunScript -url "jdbc:h2:///var/data/sharry/sharry-newdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE" -user sa -password ""
 </code></pre></div></div>
 
 <h3 id="migrate">Migrate</h3>
