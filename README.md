@@ -29,12 +29,12 @@ The download page is hard to guess, but open to everyone.
 
 ### Others → Authenticated users
 
-Anonymous can send files to registered ones. Each registered user can
-maintain alias pages. An alias page is behind a “hard-to-guess” URL
-(just like the download page) and allows everyone to upload files to the
-corresponding user. The form does not allow to specify a password or
-validation period, but a description can be given. The user belonging to
-the alias can be notified via email.
+Each registered user can maintain alias pages. An alias page is behind
+a “hard-to-guess” URL (just like the download page) and allows
+everyone to upload files to the corresponding user. The form does not
+allow to specify a password or validation period, but a description
+can be given. The user belonging to the alias can be notified via
+email. Alias pages can be disabled or deleted any time.
 
 ## Install
 
@@ -60,6 +60,21 @@ Please see the [documentation site](https://eikek.github.io/sharry).
 ![screenshot-2](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-223117.jpg)
 ![screenshot-3](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-223128.jpg)
 
+
+## Technical
+
+Sharry implements the [tus](https://tus.io) protocol and the webapp
+uses it to send files to the backend server. This allows to send even
+large files reliably through http. For example, even if the connection
+drops in the middle of an upload and you upload the same file again
+later, it starts the upload process from the last received chunk of
+data.
+
+The backend is written in Scala using a pure functional style on top
+of great [typelevel](https://typelevel.org/) libraries like
+[cats](https://typelevel.org/cats/) and
+[fs2](https://github.com/typelevel/fs2). The frontend is written in
+[elm](https://elm-lang.org).
 
 
 ## License
