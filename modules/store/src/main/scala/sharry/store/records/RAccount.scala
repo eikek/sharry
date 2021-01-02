@@ -9,7 +9,7 @@ import sharry.store.doobie.DoobieMeta._
 
 case class RAccount(
     id: Ident,
-    login: Ident,
+    login: CIIdent,
     source: AccountSource,
     state: AccountState,
     password: Password,
@@ -21,7 +21,7 @@ case class RAccount(
 ) {
 
   def accountId(alias: Option[Ident]): AccountId =
-    AccountId(id, login, admin, alias)
+    AccountId(id, login.value, admin, alias)
 }
 
 object RAccount {
@@ -55,13 +55,15 @@ object RAccount {
 
   import Columns._
 
-  def insert(v: RAccount): ConnectionIO[Int] = {
+  def insert(
+      v: RAccount
+  )(implicit LH: LogHandler = DoobieMeta.sqlLogging): ConnectionIO[Int] = {
     val sql = Sql.insertRow(
       table,
       all,
       fr"${v.id},${v.login},${v.source},${v.state},${v.password},${v.email},${v.admin},${v.loginCount},${v.lastLogin},${v.created}"
     )
-    sql.update.run
+    sql.updateWithLogHandler(LH).run
   }
 
   def update(aid: Ident, v: ModAccount): ConnectionIO[Int] = {
@@ -116,7 +118,7 @@ object RAccount {
     )
 
   def findByLogin(user: Ident): ConnectionIO[Option[RAccount]] =
-    Sql.selectSimple(all, table, login.is(user)).query[RAccount].option
+    Sql.selectSimple(all, table, login.is(CIIdent(user))).query[RAccount].option
 
   def findById(uid: Ident): ConnectionIO[Option[RAccount]] =
     Sql.selectSimple(all, table, id.is(uid)).query[RAccount].option
@@ -140,7 +142,7 @@ object RAccount {
   }
 
   def existsByLogin(user: Ident): ConnectionIO[Boolean] =
-    Sql.selectCount(login, table, login.is(user)).query[Int].map(_ > 0).unique
+    Sql.selectCount(login, table, login.is(CIIdent(user))).query[Int].map(_ > 0).unique
 
   def findAll(loginQ: String): Stream[ConnectionIO, RAccount] = {
     val q =

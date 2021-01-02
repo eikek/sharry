@@ -37,7 +37,7 @@ object LoginModuleTest extends SimpleTestSuite {
         IO(
           RAccount(
             accId,
-            login,
+            CIIdent(login),
             AccountSource.Extern,
             AccountState.Active,
             Password("test"),

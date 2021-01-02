@@ -36,7 +36,7 @@ update ( referrer, oauth ) flags msg model =
 
         AuthResp (Ok lr) ->
             if lr.success then
-                loginSuccess referrer lr model
+                loginSuccess referrer flags lr model
 
             else
                 ( { model | result = Just lr, password = "" }
@@ -70,14 +70,17 @@ update ( referrer, oauth ) flags msg model =
             ( { model | langChoose = lm }, cmd, Nothing )
 
 
-loginSuccess : Maybe Page -> AuthResult -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
-loginSuccess referrer res model =
+loginSuccess : Maybe Page -> Flags -> AuthResult -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
+loginSuccess referrer flags res model =
     let
         ar =
             Just res
 
+        defaultPage =
+            Data.Flags.initialPage flags
+
         gotoRef =
-            Maybe.withDefault HomePage referrer |> Page.goto
+            Maybe.withDefault defaultPage referrer |> Page.goto
     in
     ( { model | result = ar, password = "" }
     , Cmd.batch [ setAccount res, gotoRef ]

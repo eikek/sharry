@@ -75,7 +75,7 @@ object AccountRoutes {
   def accountDetail(a: AccountItem): AccountDetail =
     AccountDetail(
       a.acc.id,
-      a.acc.login,
+      a.acc.login.value,
       a.acc.source,
       a.acc.state,
       a.acc.admin,

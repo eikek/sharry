@@ -16,7 +16,7 @@ object QueriesTest extends SimpleTestSuite with StoreFixture {
       val accountId = Ident.unsafe("acc1")
       val account = RAccount(
         accountId,
-        Ident.unsafe("jdoe"),
+        CIIdent.unsafe("jdoe"),
         AccountSource.intern,
         AccountState.Active,
         Password("test"),

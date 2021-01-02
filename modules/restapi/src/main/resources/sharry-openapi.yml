@@ -1675,6 +1675,8 @@ components:
         - welcomeMessage
         - defaultLanguage
         - authRefreshTime
+        - initialPage
+        - oauthOnly
       properties:
         appName:
           type: string
@@ -1718,6 +1720,16 @@ components:
         authRefreshTime:
           type: integer
           format: duration
+        initialPage:
+          description: |
+            The inital page to show after logging in.
+          type: string
+          enum:
+            - home
+            - uploads
+            - share
+        oauthOnly:
+          type: boolean
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

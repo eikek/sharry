@@ -38,8 +38,12 @@ view texts flags model =
                             [ class "ui large error raised form segment"
                             , onSubmit Authenticate
                             , autocomplete False
+                            , classList
+                                [ ( "hidden invisible", flags.config.oauthOnly ) ]
                             ]
-                            [ div [ class "field" ]
+                            [ div
+                                [ class "field"
+                                ]
                                 [ label [] [ text texts.username ]
                                 , div [ class "ui left icon input" ]
                                     [ input
@@ -54,7 +58,9 @@ view texts flags model =
                                     , i [ class "user icon" ] []
                                     ]
                                 ]
-                            , div [ class "field" ]
+                            , div
+                                [ class "field"
+                                ]
                                 [ label [] [ text texts.password ]
                                 , div [ class "ui left icon input" ]
                                     [ input
@@ -131,10 +137,16 @@ renderWelcome flags =
 
 
 renderOAuthButtons : Texts -> Flags -> Model -> Html Msg
-renderOAuthButtons texts flags model =
+renderOAuthButtons texts flags _ =
     div [ class "ui very basic segment" ]
-        [ div [ class "ui horizontal divider" ]
-            [ text texts.or ]
+        [ if flags.config.oauthOnly then
+            h4 [ class "ui dividing header" ]
+                [ text "Login"
+                ]
+
+          else
+            div [ class "ui horizontal divider" ]
+                [ text texts.or ]
         , div [ class "ui buttons" ]
             (List.map (renderOAuthButton texts flags) flags.config.oauthConfig)
         ]

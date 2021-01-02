@@ -197,7 +197,7 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
         id  <- Ident.randomId[F]
       } yield RAccount(
         id,
-        login,
+        CIIdent(login),
         if (extern) AccountSource.Extern else AccountSource.Intern,
         if (enabled) AccountState.Active else AccountState.Disabled,
         password.getOrElse(Password.empty),

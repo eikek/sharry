@@ -43,7 +43,8 @@ object Config {
       retryDelays: Seq[Duration],
       welcomeMessage: String,
       defaultLanguage: String,
-      authRenewal: Duration
+      authRenewal: Duration,
+      initialPage: String
   )
 
 }
