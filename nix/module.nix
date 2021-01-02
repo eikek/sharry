@@ -28,6 +28,7 @@ let
       welcome-message = "";
       auth-renewal = "4 minutes";
       default-language = "gb";
+      initial-page = "home";
     };
     backend = {
       auth = {
@@ -312,6 +313,11 @@ in {
                 code is given (or one where no language is available), it falls
                 back to "gb".
               '';
+            };
+            initial-page = mkOption {
+              type = types.str;
+              default = defaults.webapp.initial-page;
+              description = "The initial page after login. One of: home, uploads, share";
             };
 
           };
