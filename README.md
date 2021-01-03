@@ -60,6 +60,21 @@ Please see the [documentation site](https://eikek.github.io/sharry).
 ![screenshot-2](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-223117.jpg)
 ![screenshot-3](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-223128.jpg)
 
+## Contributions/Support
+
+Feedback and other contributions are very welcome! You can [open an
+issue](https://github.com/eikek/sharry/issues/new) for questions,
+problems and other feedback; or make a mail to `eikek [at] posteo.de`.
+I'll try to answer in time.
+
+If you find this project any useful and want to support it via other
+means, giving a :star: is always encouraging and much appreciated. You
+can also support activity by donating via
+[liberapay](https://liberapay.com/eikek/) or
+[paypal](https://paypal.me/eikek0).
+
+Thank you so much!
+
 
 ## Technical
 
