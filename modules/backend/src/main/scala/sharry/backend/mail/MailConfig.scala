@@ -13,12 +13,13 @@ case class MailConfig(
 
   def toEmil: EmilConfig =
     EmilConfig(
-      s"smtp://${smtp.host}:${smtp.port}",
-      smtp.user,
-      smtp.password.pass,
-      smtp.sslType,
-      !smtp.checkCertificates,
-      smtp.timeout.toScala
+      url = s"smtp://${smtp.host}:${smtp.port}",
+      user = smtp.user,
+      password = smtp.password.pass,
+      sslType = smtp.sslType,
+      enableXOAuth2 = false,
+      disableCertificateCheck = !smtp.checkCertificates,
+      timeout = smtp.timeout.toScala
     )
 }
 
