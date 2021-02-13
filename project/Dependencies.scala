@@ -13,7 +13,7 @@ object Dependencies {
   val FomanticUIVersion       = "2.8.7-3"
   val Fs2Version              = "2.5.0"
   val H2Version               = "1.4.200"
-  val Http4sVersion           = "0.21.18"
+  val Http4sVersion           = "0.21.19"
   val JQueryVersion           = "3.5.1"
   val KindProjectorVersion    = "0.10.3"
   val Log4sVersion            = "1.9.0"
