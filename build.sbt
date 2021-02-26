@@ -6,7 +6,7 @@ val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.2",
+  scalaVersion := "2.13.5",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
