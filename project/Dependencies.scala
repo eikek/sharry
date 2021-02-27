@@ -22,7 +22,7 @@ object Dependencies {
   val MiniTestVersion         = "2.9.3"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.14.0"
-  val SwaggerVersion          = "3.43.0"
+  val SwaggerVersion          = "3.44.0"
   val TikaVersion             = "1.25"
   val TusClientVersion        = "1.8.0-1"
   val YamuscaVersion          = "0.8.0"
