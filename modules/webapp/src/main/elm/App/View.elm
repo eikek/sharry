@@ -209,7 +209,10 @@ loginInfo texts model =
                     [ text texts.app.login
                     ]
                 , a
-                    [ class "item"
+                    [ classList
+                        [ ( "item", True )
+                        , ( "invisible hidden", model.flags.config.signupMode == "closed" )
+                        ]
                     , Page.href RegisterPage
                     ]
                     [ text texts.app.register
