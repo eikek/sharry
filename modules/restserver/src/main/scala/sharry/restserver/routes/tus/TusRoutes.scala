@@ -30,7 +30,7 @@ object TusRoutes {
     import dsl._
 
     HttpRoutes.of {
-      case req @ OPTIONS -> Root =>
+      case OPTIONS -> Root =>
         NoContent.apply(TusHeader.resumable, TusHeader.extension, TusHeader.version)
 
       case req @ POST -> Root =>
@@ -77,7 +77,7 @@ object TusRoutes {
           })
           .getOrElseF(NotFound())
 
-      case req @ HEAD -> Root / Ident(fileId) =>
+      case HEAD -> Root / Ident(fileId) =>
         (for {
           _    <- OptionT.liftF(logger.fdebug(s"Return info for file ${fileId.id}"))
           data <- backend.share.getFileData(fileId, token.account)

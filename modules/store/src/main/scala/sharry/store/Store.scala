@@ -41,7 +41,7 @@ object Store {
     for {
       xa <- hxa
       st = new StoreImpl[F](jdbc, xa)
-      _ <- if (runMigration) Resource.liftF(st.migrate) else Resource.pure(())
+      _ <- if (runMigration) Resource.eval(st.migrate) else Resource.pure(())
     } yield st
   }
 }

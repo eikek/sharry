@@ -47,10 +47,10 @@ object LoginModule {
         Ident.fromString(up.user) match {
           case Right(login) =>
             (for {
-              acc <- OptionT(op.findByLogin(login)).filter(_.source == src)
+              _   <- OptionT(op.findByLogin(login)).filter(_.source == src)
               res <- OptionT.liftF(f.run(up))
             } yield res).value
-          case Left(err) =>
+          case Left(_) =>
             OptionT.some[F](LoginResult.invalidAuth).value
         }
       }

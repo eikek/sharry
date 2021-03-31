@@ -37,7 +37,7 @@ final class HttpBasicAuth[F[_]: Effect](
               _    <- logger.fdebug(s"HttpBasicAuth: $up => $resp")
             } yield resp
 
-          case Left(err) =>
+          case Left(_) =>
             logger.fdebug(s"HttpBasicAuth: failed.") *>
               LoginResult.invalidAuth.pure[F]
         }

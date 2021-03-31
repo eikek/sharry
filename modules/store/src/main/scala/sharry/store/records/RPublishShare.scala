@@ -5,7 +5,6 @@ import doobie._, doobie.implicits._
 import sharry.common._
 import sharry.store.doobie._
 import sharry.store.doobie.DoobieMeta._
-import cats.effect.Sync
 
 case class RPublishShare(
     id: Ident,
@@ -74,13 +73,13 @@ object RPublishShare {
   def findByShare(share: Ident): ConnectionIO[Option[RPublishShare]] =
     Sql.selectSimple(all, table, shareId.is(share)).query[RPublishShare].option
 
-  def initialInsert[F[_]: Sync](share: Ident): ConnectionIO[RPublishShare] =
+  def initialInsert[F[_]](share: Ident): ConnectionIO[RPublishShare] =
     for {
       now      <- Timestamp.current[ConnectionIO]
       id       <- Ident.randomId[ConnectionIO]
       validity <- RShare.getDuration(share)
       record = RPublishShare(id, share, true, 0, None, now, now.plus(validity), now)
-      n <- insert(record)
+      _ <- insert(record)
     } yield record
 
   def updateValidityTime(share: Ident, validity: Duration): ConnectionIO[Int] =

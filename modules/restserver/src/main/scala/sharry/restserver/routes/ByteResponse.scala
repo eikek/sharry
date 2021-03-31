@@ -26,13 +26,12 @@ object ByteResponse {
     req.headers
       .get(Range)
       .map(_.ranges.head)
-      .map(sr => range(dsl, sr, req, backend, shareId, pass, fid))
+      .map(sr => range(dsl, sr, backend, shareId, pass, fid))
       .getOrElse(all(dsl, req, backend, shareId, pass, fid))
 
   def range[F[_]: Sync](
       dsl: Http4sDsl[F],
       sr: Range.SubRange,
-      req: Request[F],
       backend: BackendApp[F],
       shareId: ShareId,
       pass: Option[Password],

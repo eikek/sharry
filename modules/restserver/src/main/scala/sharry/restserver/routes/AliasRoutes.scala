@@ -11,7 +11,6 @@ import org.log4s.getLogger
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.restapi.model._
-import sharry.restserver.Config
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.records.RAlias
@@ -22,8 +21,7 @@ object AliasRoutes {
 
   def apply[F[_]: Effect](
       backend: BackendApp[F],
-      token: AuthToken,
-      cfg: Config
+      token: AuthToken
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._

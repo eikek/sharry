@@ -30,7 +30,7 @@ trait BackendApp[F[_]] {
 
 object BackendApp {
 
-  def create[F[_]: ConcurrentEffect: Timer: ContextShift](
+  def create[F[_]: ConcurrentEffect: ContextShift](
       cfg: Config,
       blocker: Blocker,
       store: Store[F]

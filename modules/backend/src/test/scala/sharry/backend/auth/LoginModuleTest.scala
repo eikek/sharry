@@ -55,17 +55,17 @@ object LoginModuleTest extends SimpleTestSuite {
     OAccount[IO](store).map(AccountOps.from[IO])
 
   def commandModule(success: Boolean, ops: AccountOps[IO]): LoginModule[IO] = {
-    val runner = CommandAuth.RunCommand[IO]((up, cfg) => IO(success))
+    val runner = CommandAuth.RunCommand[IO]((_, _) => IO(success))
     new CommandAuth[IO](cfg, ops, runner).login
   }
 
   def httpModule(success: Boolean, ops: AccountOps[IO]): LoginModule[IO] = {
-    val runner = HttpAuth.RunRequest[IO]((up, cfg) => IO(success))
+    val runner = HttpAuth.RunRequest[IO]((_, _) => IO(success))
     new HttpAuth[IO](cfg, ops, runner).login
   }
 
   def httpBasicModule(success: Boolean, ops: AccountOps[IO]): LoginModule[IO] = {
-    val runner = HttpBasicAuth.RunRequest[IO]((up, cfg) => IO(success))
+    val runner = HttpBasicAuth.RunRequest[IO]((_, _) => IO(success))
     new HttpBasicAuth[IO](cfg, ops, runner).login
   }
 
@@ -151,7 +151,7 @@ object LoginModuleTest extends SimpleTestSuite {
           _   <- store.transact(updateAdmin(true))
           as2 <- store.transact(RAccount.findAll("")).compile.toVector
           _ = as2.foreach(a => assertEquals(a.admin, true))
-          acc <- modules.traverse(_.apply(data).map(checkAdminAccount)).map(_.combineAll)
+          _ <- modules.traverse(_.apply(data).map(checkAdminAccount)).map(_.combineAll)
         } yield ()
       })
       .unsafeRunSync()
