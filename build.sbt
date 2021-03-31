@@ -142,9 +142,8 @@ val restapi = project
     openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
     openapiScalaConfig := ScalaConfig()
       .withJson(ScalaJson.circeSemiauto)
-      .addMapping(CustomMapping.forType({
-        case TypeDef("LocalDateTime", _) =>
-          TypeDef("Timestamp", Imports("sharry.common.Timestamp"))
+      .addMapping(CustomMapping.forType({ case TypeDef("LocalDateTime", _) =>
+        TypeDef("Timestamp", Imports("sharry.common.Timestamp"))
       }))
       .addMapping(CustomMapping.forFormatType({
         case "ident" =>
@@ -332,13 +331,12 @@ def copyWebjarResources(
   src.flatMap { dir =>
     if (dir.isDirectory) {
       val files = (dir ** "*").filter(_.isFile).get.pair(Path.relativeTo(dir))
-      files.map {
-        case (f, name) =>
-          val target = targetDir / name
-          logger.info(s"Copy $f -> $target")
-          IO.createDirectories(Seq(target.getParentFile))
-          IO.copy(Seq(f -> target))
-          target
+      files.map { case (f, name) =>
+        val target = targetDir / name
+        logger.info(s"Copy $f -> $target")
+        IO.createDirectories(Seq(target.getParentFile))
+        IO.copy(Seq(f -> target))
+        target
       }
     } else {
       val target = targetDir / dir.name
