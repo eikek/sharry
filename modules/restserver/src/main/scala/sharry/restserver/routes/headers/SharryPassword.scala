@@ -11,7 +11,7 @@ object SharryPassword {
     req.headers
       .get("sharry-password".ci)
       .map(_.value)
-      .map(LenientUri.percentDecode)
+      .flatMap(LenientUri.percentDecode)
       .map(Password.apply)
 
 }

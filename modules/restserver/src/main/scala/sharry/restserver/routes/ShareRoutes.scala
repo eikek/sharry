@@ -70,18 +70,19 @@ object ShareRoutes {
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Share unpublished.")))
         } yield resp).getOrElseF(NotFound())
 
-      case req @ GET -> Root / Ident(id) / file / Ident(fid) =>
+      case req @ GET -> Root / Ident(id) / "file" / Ident(fid) =>
         val pw = SharryPassword(req)
         ByteResponse(dsl, req, backend, ShareId.secured(id, token.account), pw, fid)
 
-      case req @ DELETE -> Root / Ident(id) / file / Ident(fid) =>
+      //make it safer by also using the share id
+      case DELETE -> Root / Ident(_) / "file" / Ident(fid) =>
         (for {
           e <-
             backend.share.deleteFile(token.account, fid).attempt.map(AddResult.fromEither)
           resp <- OptionT.liftF(Ok(Conv.basicResult(e, "File deleted.")))
         } yield resp).getOrElseF(NotFound())
 
-      case req @ DELETE -> Root / Ident(id) =>
+      case DELETE -> Root / Ident(id) =>
         (for {
           e <-
             backend.share.deleteShare(token.account, id).attempt.map(AddResult.fromEither)
@@ -110,7 +111,7 @@ object ShareRoutes {
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Name updated.")))
         } yield resp).getOrElseF(NotFound())
 
-      case req @ DELETE -> Root / Ident(id) / "name" =>
+      case DELETE -> Root / Ident(id) / "name" =>
         (for {
           res <-
             backend.share
@@ -153,7 +154,7 @@ object ShareRoutes {
           resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password updated.")))
         } yield resp).getOrElseF(NotFound())
 
-      case req @ DELETE -> Root / Ident(id) / "password" =>
+      case DELETE -> Root / Ident(id) / "password" =>
         (for {
           res <-
             backend.share

@@ -73,7 +73,7 @@ object ShareUploadRoutes {
 
       case req @ (PATCH | POST | GET | OPTIONS | HEAD) -> Ident(
             id
-          ) /: "files" /: "tus" /: rest =>
+          ) /: "files" /: "tus" /: _ =>
         val pi      = req.pathInfo.substring(id.id.length() + 10)
         val rootUri = getBaseUrl(cfg, req) ++ uploadPathPrefix / id.id / "files" / "tus"
         TusRoutes(id, backend, token, cfg, rootUri)

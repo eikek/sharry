@@ -39,7 +39,7 @@ object StoreFixture {
 
     for {
       blocker <- Blocker[F]
-      db      <- Resource.liftF(dbname)
+      db      <- Resource.eval(dbname)
       jdbc = JdbcConfig(
         LenientUri.unsafe(s"jdbc:h2:$db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"),
         "sa",
@@ -47,7 +47,7 @@ object StoreFixture {
       )
       tx = transactor(blocker, jdbc)
       st = new StoreImpl[F](jdbc, tx)
-      _ <- Resource.liftF(st.migrate)
+      _ <- Resource.eval(st.migrate)
     } yield st
   }
 }

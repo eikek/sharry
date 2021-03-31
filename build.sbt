@@ -12,14 +12,15 @@ val sharedSettings = Seq(
     "-encoding",
     "UTF-8",
     "-language:higherKinds",
-    "-language:postfixOps",
     "-feature",
-    "-Xfatal-warnings", // fail when there are warnings
+    "-Werror", // fail when there are warnings
     "-unchecked",
-    "-Xlint",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard"
+    // remove -byname-implicit, once https://github.com/scala/bug/issues/12072 is resolved
+    "-Xlint:-byname-implicit,_",
+    "-Wdead-code",
+    "-Wunused",
+    "-Wvalue-discard",
+    "-Wnumeric-widen"
   ),
   scalacOptions in (Compile, console) := Seq()
 )

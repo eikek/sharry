@@ -6,11 +6,9 @@ import org.http4s.server.staticcontent.webjarService
 import org.http4s.server.staticcontent.NoopCacheStrategy
 import org.http4s.server.staticcontent.WebjarService.{WebjarAsset, Config => WebjarConfig}
 
-import sharry.restserver.Config
-
 object WebjarRoutes {
 
-  def appRoutes[F[_]: Effect](blocker: Blocker, cfg: Config)(implicit
+  def appRoutes[F[_]: Effect](blocker: Blocker)(implicit
       C: ContextShift[F]
   ): HttpRoutes[F] =
     webjarService(

@@ -355,7 +355,7 @@ object OShare {
           )
           // check again against db state, because of parallel uploads
           currentSize2 <- OptionT.liftF(store.transact(Queries.shareSize(shareId)))
-          ur <- OptionT.liftF(next.flatMapF { _ =>
+          _ <- OptionT.liftF(next.flatMapF { _ =>
             if (currentSize2 >= cfg.maxSize) deleteFile
             else next.pure[F]
           })
@@ -387,23 +387,23 @@ object OShare {
         val add: F[Int] = store.add(insert, exists).flatMap {
           case AddResult.Success =>
             1.pure[F]
-          case AddResult.EntityExists(m) =>
+          case AddResult.EntityExists(_) =>
             store.transact(RPublishShare.update(share, true, reuseId))
           case AddResult.Failure(ex) =>
             Effect[F].raiseError(ex)
         }
 
         for {
-          _   <- OptionT(store.transact(Queries.checkShare(share, accId)))
-          res <- OptionT.liftF(add)
+          _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
+          _ <- OptionT.liftF(add)
         } yield ()
       }
 
       def unpublish(share: Ident, accId: AccountId): OptionT[F, Unit] = {
         val remove = store.transact(RPublishShare.update(share, false, true))
         for {
-          _   <- OptionT(store.transact(Queries.checkShare(share, accId)))
-          res <- OptionT.liftF(remove)
+          _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
+          _ <- OptionT.liftF(remove)
         } yield ()
       }
 
@@ -539,7 +539,7 @@ object OShare {
             if (PasswordCrypt.check(plain, pw)) ShareResult.Success(())
             else ShareResult.PasswordMismatch
 
-          case (None, Some(pw)) =>
+          case (None, Some(_)) =>
             ShareResult.PasswordMissing
 
           case _ =>

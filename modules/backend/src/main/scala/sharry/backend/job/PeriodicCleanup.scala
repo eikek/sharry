@@ -11,14 +11,14 @@ import sharry.backend.signup._
 object PeriodicCleanup {
   private[this] val logger = getLogger
 
-  def resource[F[_]: ConcurrentEffect: Timer: ContextShift](
+  def resource[F[_]: ConcurrentEffect: Timer](
       cleanupCfg: CleanupConfig,
       signupCfg: SignupConfig,
       shareOps: OShare[F],
       signupOps: OSignup[F]
   ): Resource[F, Unit] =
     if (!cleanupCfg.enabled)
-      Resource.liftF(logger.finfo("Cleanup job not running, because it is disabled"))
+      Resource.eval(logger.finfo("Cleanup job not running, because it is disabled"))
     else {
       val main =
         (logStarting ++ loop(
@@ -34,7 +34,7 @@ object PeriodicCleanup {
         .map(_ => ())
     }
 
-  def loop[F[_]: ConcurrentEffect: Timer: ContextShift](
+  def loop[F[_]: ConcurrentEffect: Timer](
       cleanupCfg: CleanupConfig,
       signupCfg: SignupConfig,
       shareOps: OShare[F],

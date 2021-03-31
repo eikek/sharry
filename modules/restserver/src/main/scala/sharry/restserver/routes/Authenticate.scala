@@ -69,7 +69,6 @@ object Authenticate {
       S: Login[F],
       cfg: AuthConfig
   ): AuthMiddleware[F, AuthToken] = {
-    val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
     val authUser = getUser[F](S.loginSession(cfg))

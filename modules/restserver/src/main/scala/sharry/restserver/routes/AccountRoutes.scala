@@ -10,7 +10,6 @@ import org.log4s._
 
 import sharry.backend.BackendApp
 import sharry.restapi.model._
-import sharry.restserver.Config
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.records.ModAccount
@@ -20,7 +19,7 @@ import sharry.backend.account.{AccountItem, NewAccount}
 object AccountRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
+  def apply[F[_]: Effect](backend: BackendApp[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

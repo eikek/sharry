@@ -48,13 +48,13 @@ object TemplateRoutes {
           for {
             templ <- docTemplate
             resp <- Ok(
-              DocData(cfg).render(templ),
+              DocData().render(templ),
               `Content-Type`(`text/html`, Charset.`UTF-8`)
             )
           } yield resp
         }
       def app =
-        HttpRoutes.of[F] { case GET -> rest =>
+        HttpRoutes.of[F] { case GET -> _ =>
           for {
             templ <- indexTemplate
             resp <- Ok(
@@ -115,7 +115,7 @@ object TemplateRoutes {
   case class DocData(swaggerRoot: String, openapiSpec: String)
   object DocData {
 
-    def apply(cfg: Config): DocData =
+    def apply(): DocData =
       DocData(
         "/app/assets" + Webjars.swaggerui,
         s"/app/assets/${BuildInfo.name}/${BuildInfo.version}/sharry-openapi.yml"
@@ -159,7 +159,7 @@ object TemplateRoutes {
 
   private def memo[F[_]: Sync, A](fa: => F[A]): F[A] = {
     val ref = new AtomicReference[A]()
-    Sync[F].suspend {
+    Sync[F].defer {
       Option(ref.get) match {
         case Some(a) => a.pure[F]
         case None =>

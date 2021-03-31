@@ -37,7 +37,7 @@ object RestServer {
     val templates = TemplateRoutes[F](pools.blocker, cfg)
     val app = for {
       restApp <- RestAppImpl.create[F](cfg, pools.connectEC, pools.blocker)
-      _       <- Resource.liftF(restApp.init)
+      _       <- Resource.eval(restApp.init)
       client  <- BlazeClientBuilder[F](pools.httpClientEC).resource
 
       httpApp = Router(
@@ -51,11 +51,11 @@ object RestServer {
         },
         "/api/v2/admin/" -> Authenticate(restApp.backend.login, cfg.backend.auth) {
           token =>
-            if (token.account.admin) adminRoutes(cfg, restApp, token)
+            if (token.account.admin) adminRoutes(cfg, restApp)
             else notFound[F](token)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker, cfg),
+        "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
         "/app"        -> templates.app,
         "/sw.js"      -> templates.serviceWorker,
         "/"           -> redirectTo("/app")
@@ -102,8 +102,8 @@ object RestServer {
   ): HttpRoutes[F] =
     Router(
       "auth"     -> LoginRoutes.session(restApp.backend.login, cfg),
-      "settings" -> SettingRoutes(restApp.backend, token, cfg),
-      "alias"    -> AliasRoutes(restApp.backend, token, cfg),
+      "settings" -> SettingRoutes(restApp.backend, token),
+      "alias"    -> AliasRoutes(restApp.backend, token),
       "share"    -> ShareRoutes(restApp.backend, token, cfg),
       "upload" -> ShareUploadRoutes(
         restApp.backend,
@@ -116,12 +116,11 @@ object RestServer {
 
   def adminRoutes[F[_]: Effect](
       cfg: Config,
-      restApp: RestApp[F],
-      token: AuthToken
+      restApp: RestApp[F]
   ): HttpRoutes[F] =
     Router(
       "signup"  -> RegisterRoutes(restApp.backend, cfg).genInvite,
-      "account" -> AccountRoutes(restApp.backend, cfg)
+      "account" -> AccountRoutes(restApp.backend)
     )
 
   def openRoutes[F[_]: ConcurrentEffect](
@@ -137,7 +136,7 @@ object RestServer {
     )
 
   def notFound[F[_]: Effect](token: AuthToken): HttpRoutes[F] =
-    Kleisli(req =>
+    Kleisli(_ =>
       OptionT.liftF(
         logger
           .finfo[F](s"Non-admin '${token.account}' calling admin routes")

@@ -37,7 +37,7 @@ final class CommandAuth[F[_]: Effect](
               _    <- logger.fdebug(s"CommandAuth: $up => $resp")
             } yield resp
 
-          case Left(err) =>
+          case Left(_) =>
             logger.fdebug(s"CommandAuth: failed.") *>
               LoginResult.invalidAuth.pure[F]
         }

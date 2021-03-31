@@ -21,7 +21,7 @@ object OpenShareRoutes {
         val pw = SharryPassword(req)
         ShareDetailResponse(dsl, req, backend, cfg, ShareId.publish(id), pw)
 
-      case req @ GET -> Root / Ident(id) / file / Ident(fid) =>
+      case req @ GET -> Root / Ident(id) / "file" / Ident(fid) =>
         val pw = SharryPassword(req)
         ByteResponse(dsl, req, backend, ShareId.publish(id), pw, fid)
 
