@@ -1,9 +1,9 @@
 language: scala
 scala:
-  - 2.13.2
+  - 2.13.5
 
 jdk:
-  - openjdk8
+  - openjdk11
 
 cache:
   directories:
@@ -18,9 +18,17 @@ install:
   - node --version
   - npm --version
   - npm install -g elm
+  - |
+    # update this only when sbt-the-bash-script needs to be updated
+    export SBT_LAUNCHER=1.4.8
+    export SBT_OPTS="-Dfile.encoding=UTF-8"
+    curl -L --silent "https://github.com/sbt/sbt/releases/download/v$SBT_LAUNCHER/sbt-$SBT_LAUNCHER.tgz" > $HOME/sbt.tgz
+    tar zxf $HOME/sbt.tgz -C $HOME
+    sudo rm /usr/local/bin/sbt
+    sudo ln -s $HOME/sbt/bin/sbt /usr/local/bin/sbt
 
 before_script:
   - export TZ=Europe/Berlin
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION ";project root ;scalafmtCheckAll ;make"
+  - sbt ++$TRAVIS_SCALA_VERSION ";project root ;scalafmtSbtCheck ;scalafmtCheckAll ;make"
