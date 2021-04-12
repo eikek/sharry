@@ -1,7 +1,8 @@
 package sharry.restserver.routes.tus
 
-import org.http4s.Request
 import sharry.common.LenientUri
+
+import org.http4s.Request
 import org.http4s.syntax.string._
 
 object SharryFileName {

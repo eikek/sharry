@@ -1,13 +1,15 @@
 package sharry.backend.share
 
-import fs2.Stream
-import bitpeace.{Bitpeace, RangeDef}
 import cats.data.OptionT
 import cats.effect.Effect
+import fs2.Stream
+
 import sharry.common.Ident
 import sharry.store.Store
-import bitpeace.FileMeta
 import sharry.store.records.RShareFile
+
+import bitpeace.FileMeta
+import bitpeace.{Bitpeace, RangeDef}
 
 object ByteResult {
 

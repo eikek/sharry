@@ -1,19 +1,22 @@
 package sharry.backend.auth
 
-import minitest._
+import scala.concurrent.ExecutionContext
+
+import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import scodec.bits.ByteVector
-import cats.data.Kleisli
-import AddAccount.AccountOps
-import doobie._
-import scala.concurrent.ExecutionContext
-import sharry.common._
+
 import sharry.backend.account.OAccount
-import sharry.store._
-import sharry.store.doobie._
-import sharry.store.doobie.DoobieMeta._
+import sharry.backend.auth.AddAccount.AccountOps
+import sharry.common._
+import sharry.store.Store
+import sharry.store.StoreFixture
+import sharry.store.doobie.Sql
 import sharry.store.records.RAccount
+
+import _root_.doobie._
+import minitest._
+import scodec.bits.ByteVector
 
 object LoginModuleTest extends SimpleTestSuite {
   implicit val CS = IO.contextShift(ExecutionContext.global)

@@ -1,13 +1,17 @@
 package sharry.store
 
-import cats.effect._
-import org.log4s.getLogger
-import _root_.doobie.util.transactor.Transactor
-import scala.util.Random
-import scodec.bits.ByteVector
 import java.nio.file.Paths
+
+import scala.util.Random
+
+import cats.effect._
+
 import sharry.common._
 import sharry.store.doobie._
+
+import _root_.doobie.util.transactor.Transactor
+import org.log4s.getLogger
+import scodec.bits.ByteVector
 
 trait StoreFixture {
 

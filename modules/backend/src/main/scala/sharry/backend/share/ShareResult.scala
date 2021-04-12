@@ -1,7 +1,7 @@
 package sharry.backend.share
 
-import cats.implicits._
 import cats.Applicative
+import cats.implicits._
 
 sealed trait ShareResult[+A] {
 

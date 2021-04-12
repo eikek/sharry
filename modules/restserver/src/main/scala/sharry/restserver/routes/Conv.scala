@@ -1,10 +1,10 @@
 package sharry.restserver.routes
 
+import sharry.backend.share.UploadResult
 import sharry.common.Ident
-import sharry.store.AddResult
 import sharry.restapi.model.BasicResult
 import sharry.restapi.model.IdResult
-import sharry.backend.share.UploadResult
+import sharry.store.AddResult
 
 object Conv {
 

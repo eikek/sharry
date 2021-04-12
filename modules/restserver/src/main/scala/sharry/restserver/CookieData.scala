@@ -1,9 +1,10 @@
 package sharry.restserver
 
-import org.http4s._
-import org.http4s.util._
 import sharry.backend.auth._
 import sharry.common._
+
+import org.http4s._
+import org.http4s.util._
 
 case class CookieData(auth: AuthToken) {
   def accountId: AccountId = auth.account

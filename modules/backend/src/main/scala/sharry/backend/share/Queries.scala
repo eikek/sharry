@@ -1,24 +1,27 @@
 package sharry.backend.share
 
+import cats.data.OptionT
+import cats.effect.ConcurrentEffect
+import cats.effect.Effect
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
-import doobie._, doobie.implicits._
-import org.log4s.getLogger
-import sharry.store.doobie._
-import sharry.store.doobie.DoobieMeta._
+
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.store.records.RShareFile
-import sharry.store.records.RShare
-import sharry.store.records.RAccount
-import sharry.store.records.RPublishShare
-import sharry.store.records.RAlias
-import cats.data.OptionT
-import bitpeace.Mimetype
 import sharry.store.Store
-import cats.effect.ConcurrentEffect
-import cats.effect.Effect
+import sharry.store.doobie.DoobieMeta._
+import sharry.store.doobie._
+import sharry.store.records.RAccount
+import sharry.store.records.RAlias
+import sharry.store.records.RPublishShare
+import sharry.store.records.RShare
+import sharry.store.records.RShareFile
+
+import bitpeace.Mimetype
+import doobie._
+import doobie.implicits._
+import org.log4s.getLogger
 
 object Queries {
   private[this] val logger = getLogger

@@ -1,18 +1,20 @@
 package sharry.backend.account
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import doobie._
-import org.log4s._
 import fs2.Stream
+
+import sharry.backend.PasswordCrypt
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.backend.PasswordCrypt
-import sharry.store.Store
 import sharry.store.AddResult
-import sharry.store.records.{ModAccount, RAccount}
-import cats.data.OptionT
+import sharry.store.Store
 import sharry.store.doobie.DoobieMeta
+import sharry.store.records.{ModAccount, RAccount}
+
+import doobie._
+import org.log4s._
 
 trait OAccount[F[_]] {
 

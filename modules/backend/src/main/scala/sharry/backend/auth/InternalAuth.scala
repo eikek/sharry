@@ -1,15 +1,16 @@
 package sharry.backend.auth
 
+import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import cats.data.Kleisli
-import org.log4s._
 
+import sharry.backend.PasswordCrypt
+import sharry.backend.account.OAccount
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.records.RAccount
-import sharry.backend.account.OAccount
-import sharry.backend.PasswordCrypt
+
+import org.log4s._
 
 final class InternalAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
 

@@ -1,16 +1,18 @@
 package sharry.backend
 
-import cats.effect.{Blocker, ConcurrentEffect, ContextShift, Resource, Timer}
-import sharry.backend.auth.Login
-import sharry.store.Store
-
 import scala.concurrent.ExecutionContext
-import sharry.backend.signup.OSignup
+
+import cats.effect._
+
 import sharry.backend.account._
 import sharry.backend.alias.OAlias
-import sharry.backend.share.OShare
+import sharry.backend.auth.Login
 import sharry.backend.job.PeriodicCleanup
 import sharry.backend.mail.OMail
+import sharry.backend.share.OShare
+import sharry.backend.signup.OSignup
+import sharry.store.Store
+
 import emil.javamail.JavaMailEmil
 
 trait BackendApp[F[_]] {

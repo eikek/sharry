@@ -1,28 +1,29 @@
 package sharry.restserver.routes
 
-import cats.effect._
-import cats.implicits._
 import cats.data.EitherT
 import cats.data.OptionT
-import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
+import cats.effect._
+import cats.implicits._
 
+import sharry.backend.BackendApp
+import sharry.backend.auth.AuthToken
+import sharry.backend.mail.{MailData, MailSendResult}
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.backend.auth.AuthToken
-import sharry.backend.BackendApp
-import sharry.backend.mail.{MailData, MailSendResult}
-import sharry.restserver.Config
 import sharry.restapi.model.BasicResult
 import sharry.restapi.model.MailTemplate
 import sharry.restapi.model.SimpleMail
+import sharry.restserver.Config
+import sharry.restserver.http4s.ClientRequestInfo
+
 import emil.MailAddress
 import emil.javamail.syntax._
+import org.http4s.HttpRoutes
 import org.http4s.Request
-import sharry.restserver.http4s.ClientRequestInfo
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.log4s.getLogger
 
 object MailRoutes {
 

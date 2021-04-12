@@ -1,15 +1,17 @@
 package sharry.backend.auth
 
+import scala.sys.process._
+
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import org.log4s.getLogger
-import yamusca.imports._
-import yamusca.implicits._
-import scala.sys.process._
 
 import sharry.common._
 import sharry.common.syntax.all._
+
+import org.log4s.getLogger
+import yamusca.implicits._
+import yamusca.imports._
 
 final class CommandAuth[F[_]: Effect](
     cfg: AuthConfig,

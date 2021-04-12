@@ -1,17 +1,19 @@
 package sharry.restserver.routes
 
-import cats.data.OptionT
-import cats.implicits._
-import org.http4s._
-import org.http4s.headers._
-import org.http4s.dsl.Http4sDsl
-import bitpeace.FileMeta
-import sharry.common._
-import sharry.backend.share._
-import sharry.backend.BackendApp
-import bitpeace.RangeDef
 import cats.data.Ior
+import cats.data.OptionT
 import cats.effect.Sync
+import cats.implicits._
+
+import sharry.backend.BackendApp
+import sharry.backend.share._
+import sharry.common._
+
+import bitpeace.FileMeta
+import bitpeace.RangeDef
+import org.http4s._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers._
 
 object ByteResponse {
 

@@ -4,6 +4,12 @@ import com.typesafe.sbt.SbtGit.GitKeys._
 
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
+val scalafixSettings = Seq(
+  semanticdbEnabled := true,                        // enable SemanticDB
+  semanticdbVersion := scalafixSemanticdb.revision, //"4.4.0"
+  ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
+)
+
 val sharedSettings = Seq(
   organization := "com.github.eikek",
   scalaVersion := "2.13.5",
@@ -22,8 +28,8 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
-  scalacOptions in (Compile, console) := Seq()
-)
+  Compile / console / scalacOptions := Seq()
+) ++ scalafixSettings
 
 val testSettings = Seq(
   testFrameworks += new TestFramework("minitest.runner.Framework"),
@@ -52,7 +58,7 @@ val elmSettings = Seq(
 val webjarSettings = Seq(
   Compile / resourceGenerators += Def.task {
     copyWebjarResources(
-      Seq((sourceDirectory in Compile).value / "webjar"),
+      Seq((Compile / sourceDirectory).value / "webjar"),
       (Compile / resourceManaged).value,
       name.value,
       version.value,
@@ -70,7 +76,7 @@ val debianSettings = Seq(
   maintainer := "Eike Kettner <eike.kettner@posteo.de>",
   packageSummary := description.value,
   packageDescription := description.value,
-  mappings in Universal += {
+  Universal / mappings += {
     val conf = (Compile / resourceDirectory).value / "reference.conf"
     if (!conf.exists)
       sys.error(s"File $conf not found")
@@ -231,7 +237,7 @@ val restserver = project
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "sharry.restserver",
-    javaOptions in reStart ++=
+    reStart / javaOptions ++=
       Seq(
         s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}",
         "-Dsharry.migrate-old-dbschema=false",
@@ -263,7 +269,7 @@ lazy val microsite = project
   .settings(
     name := "sharry-microsite",
     publishArtifact := false,
-    skip in publish := true,
+    publish / skip := true,
     micrositeFooterText := Some(
       """
         |<p>&copy; 2020 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
@@ -284,19 +290,19 @@ lazy val microsite = project
       "brand-secondary" -> "#009ADA",
       "white-color"     -> "#FFFFFF"
     ),
-    fork in run := true,
+    run / fork := true,
     mdocVariables := Map(
       "VERSION"  -> version.value,
       "PVERSION" -> version.value.replace('.', '_')
     ),
     Compile / resourceGenerators += Def.task {
-      val conf1 = (resourceDirectory in (restserver, Compile)).value / "reference.conf"
+      val conf1 = (restserver / Compile / resourceDirectory).value / "reference.conf"
       val out1  = resourceManaged.value / "main" / "jekyll" / "_includes" / "server.conf"
       streams.value.log.info(s"Copying reference.conf: $conf1 -> $out1")
       IO.write(out1, "{% raw %}\n")
       IO.append(out1, IO.readBytes(conf1))
       IO.write(out1, "\n{% endraw %}", append = true)
-      val oa1 = (resourceDirectory in (restapi, Compile)).value / "sharry-openapi.yml"
+      val oa1 = (restapi / Compile / resourceDirectory).value / "sharry-openapi.yml"
       val oaout =
         resourceManaged.value / "main" / "jekyll" / "openapi" / "sharry-openapi.yml"
       IO.copy(Seq(oa1 -> oaout))
@@ -392,6 +398,13 @@ addCommandAlias(
   "make",
   ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile"
 )
-addCommandAlias("make-zip", ";restserver/universal:packageBin")
-addCommandAlias("make-deb", ";restserver/debian:packageBin")
+addCommandAlias("make-zip", ";restserver/Universal/packageBin")
+addCommandAlias("make-deb", ";restserver/Debian/packageBin")
 addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb")
+
+addCommandAlias("ci", "make; lint; test")
+addCommandAlias(
+  "lint",
+  "scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
+)
+addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")

@@ -3,8 +3,10 @@ package sharry.restserver.routes
 import cats.data._
 import cats.effect._
 import cats.implicits._
+
 import sharry.backend.auth._
 import sharry.restserver._
+
 import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl

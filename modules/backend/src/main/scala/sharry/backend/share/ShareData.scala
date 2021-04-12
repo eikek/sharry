@@ -1,6 +1,7 @@
 package sharry.backend.share
 
 import fs2.Stream
+
 import sharry.common._
 
 case class ShareData[F[_]](

@@ -1,9 +1,17 @@
 pull_request_rules:
+  - name: assign and label scala-steward's PRs
+    conditions:
+      - author=scala-steward
+    actions:
+      assign:
+        users: [eikek]
+      label:
+        add: ["type: dependencies"]
   - name: automatically merge Scala Steward PRs on CI success
     conditions:
       - author=scala-steward
       - base=master
-      - status-success=continuous-integration/travis-ci/pr
+      - status-success=ci
     actions:
       merge:
         method: merge
@@ -11,7 +19,7 @@ pull_request_rules:
     conditions:
       - author=eikek
       - base=master
-      - status-success=continuous-integration/travis-ci/pr
+      - status-success=ci
     actions:
       merge:
         method: merge

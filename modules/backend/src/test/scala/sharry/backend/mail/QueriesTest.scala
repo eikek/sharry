@@ -1,12 +1,15 @@
 package sharry.backend.mail
 
-import minitest._
-import cats.effect._
 import scala.concurrent.ExecutionContext
-import emil.MailAddress
+
+import cats.effect._
+
 import sharry.common._
-import sharry.store.records.RAccount
 import sharry.store._
+import sharry.store.records.RAccount
+
+import emil.MailAddress
+import minitest._
 
 object QueriesTest extends SimpleTestSuite with StoreFixture {
   implicit val CS = IO.contextShift(ExecutionContext.global)

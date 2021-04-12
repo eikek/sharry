@@ -1,12 +1,13 @@
 package sharry.restserver.routes
 
 import cats.effect._
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
 
 import sharry.restapi.model._
 import sharry.restserver.{BuildInfo, Config}
+
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
 
 object InfoRoutes {
 

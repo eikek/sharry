@@ -1,8 +1,8 @@
 package sharry.backend.share
 
-import sharry.store.records.RShare
 import sharry.common.ByteSize
 import sharry.common.Timestamp
+import sharry.store.records.RShare
 
 case class ShareItem(
     share: RShare,

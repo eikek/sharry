@@ -3,12 +3,6 @@ package sharry.restserver.routes
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import org.http4s._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.headers.Location
-import org.log4s._
 
 import sharry.backend.BackendApp
 import sharry.backend.account.NewAccount
@@ -16,9 +10,16 @@ import sharry.backend.auth._
 import sharry.common._
 import sharry.restapi.model._
 import sharry.restserver._
-import sharry.restserver.oauth.CodeFlow
-import org.http4s.client.Client
 import sharry.restserver.http4s.ClientRequestInfo
+import sharry.restserver.oauth.CodeFlow
+
+import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.client.Client
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers.Location
+import org.log4s._
 
 object LoginRoutes {
   private[this] val logger = getLogger

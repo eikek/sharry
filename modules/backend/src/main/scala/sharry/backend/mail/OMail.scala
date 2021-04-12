@@ -1,18 +1,19 @@
 package sharry.backend.mail
 
-import cats.effect._
+import cats.data.EitherT
 import cats.data.OptionT
+import cats.effect._
 import cats.implicits._
-import emil.{MailConfig => _, _}
-import emil.builder._
-import emil.javamail.syntax._
-import yamusca.implicits._
-import org.log4s.getLogger
 
+import sharry.backend.mail.MailConfig.MailTpl
 import sharry.common._
 import sharry.store.Store
-import sharry.backend.mail.MailConfig.MailTpl
-import cats.data.EitherT
+
+import emil.builder._
+import emil.javamail.syntax._
+import emil.{MailConfig => _, _}
+import org.log4s.getLogger
+import yamusca.implicits._
 
 trait OMail[F[_]] {
 

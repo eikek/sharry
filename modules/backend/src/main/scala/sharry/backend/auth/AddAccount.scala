@@ -3,8 +3,9 @@ package sharry.backend.auth
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import sharry.common._
+
 import sharry.backend.account.{NewAccount, OAccount}
+import sharry.common._
 import sharry.store.records.RAccount
 
 object AddAccount {

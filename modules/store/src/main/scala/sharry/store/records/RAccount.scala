@@ -1,11 +1,14 @@
 package sharry.store.records
 
-import fs2.Stream
 import cats.implicits._
-import doobie._, doobie.implicits._
+import fs2.Stream
+
 import sharry.common._
-import sharry.store.doobie._
 import sharry.store.doobie.DoobieMeta._
+import sharry.store.doobie._
+
+import doobie._
+import doobie.implicits._
 
 case class RAccount(
     id: Ident,

@@ -1,11 +1,13 @@
 package sharry.store.doobie
 
-import bitpeace.{Bitpeace, BitpeaceConfig, TikaMimetypeDetect}
 import cats.effect.Effect
 import cats.implicits._
+
 import sharry.common.Ident
 import sharry.store.migrate.FlywayMigrate
 import sharry.store.{AddResult, JdbcConfig, Store}
+
+import bitpeace.{Bitpeace, BitpeaceConfig, TikaMimetypeDetect}
 import doobie._
 import doobie.implicits._
 

@@ -1,13 +1,15 @@
 package sharry.backend.auth
 
+import cats.data.Kleisli
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.Kleisli
-import org.log4s._
+
+import sharry.backend.account.OAccount
 import sharry.common.Ident
 import sharry.common.syntax.all._
-import sharry.backend.account.OAccount
-import cats.data.OptionT
+
+import org.log4s._
 
 trait Login[F[_]] {
 

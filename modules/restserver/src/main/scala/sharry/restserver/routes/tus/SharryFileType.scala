@@ -1,8 +1,8 @@
 package sharry.restserver.routes.tus
 
+import bitpeace.Mimetype
 import org.http4s.Request
 import org.http4s.syntax.string._
-import bitpeace.Mimetype
 
 object SharryFileType {
 

@@ -2,6 +2,7 @@ package sharry.backend.share
 
 import cats.Applicative
 import cats.implicits._
+
 import sharry.common._
 
 sealed trait UploadResult[+A] {

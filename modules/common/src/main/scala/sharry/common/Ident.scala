@@ -4,6 +4,7 @@ import java.security.SecureRandom
 import java.util.UUID
 
 import cats.effect.Sync
+
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector
 

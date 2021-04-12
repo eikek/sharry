@@ -2,6 +2,7 @@ package sharry.common.syntax
 
 import cats.effect.Sync
 import fs2.Stream
+
 import org.log4s.Logger
 
 trait LoggerSyntax {

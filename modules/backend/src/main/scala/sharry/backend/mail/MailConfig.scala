@@ -1,9 +1,9 @@
 package sharry.backend.mail
 
+import sharry.common._
+
 import emil.{MailConfig => EmilConfig, _}
 import yamusca.imports._
-
-import sharry.common._
 
 case class MailConfig(
     enabled: Boolean,

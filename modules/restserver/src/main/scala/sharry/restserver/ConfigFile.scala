@@ -1,13 +1,15 @@
 package sharry.restserver
 
 import cats.implicits._
-import sharry.common.pureconfig.Implicits._
+
 import sharry.common.SignupMode
+import sharry.common.pureconfig.Implicits._
+
 import _root_.pureconfig._
 import _root_.pureconfig.generic.auto._
 import emil.MailAddress
-import emil.javamail.syntax._
 import emil.SSLType
+import emil.javamail.syntax._
 import yamusca.imports._
 
 object ConfigFile {

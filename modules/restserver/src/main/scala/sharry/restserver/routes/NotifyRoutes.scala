@@ -2,19 +2,20 @@ package sharry.restserver.routes
 
 import cats.effect._
 import cats.implicits._
+
+import sharry.backend.BackendApp
+import sharry.backend.auth.AuthToken
+import sharry.backend.mail.NotifyResult
+import sharry.common._
+import sharry.common.syntax.all._
+import sharry.restapi.model.BasicResult
+import sharry.restserver.Config
+import sharry.restserver.http4s.ClientRequestInfo
+
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.log4s.getLogger
-
-import sharry.common._
-import sharry.common.syntax.all._
-import sharry.backend.auth.AuthToken
-import sharry.backend.mail.NotifyResult
-import sharry.backend.BackendApp
-import sharry.restserver.Config
-import sharry.restapi.model.BasicResult
-import sharry.restserver.http4s.ClientRequestInfo
 
 object NotifyRoutes {
 
