@@ -1,8 +1,8 @@
 package sharry.store
 
-import minitest._
+import munit._
 
-object PermanentErrorTest extends SimpleTestSuite {
+class PermanentErrorTest extends FunSuite {
   val nativePart = "value for domain safe_bytea violates check constraint"
   val errorMsg =
     """value for domain safe_bytea violates check constraint "safe_bytea_check""""

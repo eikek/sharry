@@ -15,10 +15,10 @@ import sharry.store.doobie.Sql
 import sharry.store.records.RAccount
 
 import _root_.doobie._
-import minitest._
+import munit._
 import scodec.bits.ByteVector
 
-object LoginModuleTest extends SimpleTestSuite {
+class LoginModuleTest extends FunSuite {
   implicit val CS = IO.contextShift(ExecutionContext.global)
 
   val cfg = AuthConfig(

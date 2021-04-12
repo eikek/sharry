@@ -31,9 +31,9 @@ val sharedSettings = Seq(
   Compile / console / scalacOptions := Seq()
 ) ++ scalafixSettings
 
-val testSettings = Seq(
-  testFrameworks += new TestFramework("minitest.runner.Framework"),
-  libraryDependencies ++= Dependencies.miniTest ++ Dependencies.logging
+val testSettingsMUnit = Seq(
+  libraryDependencies ++= Dependencies.munit.map(_ % Test),
+  testFrameworks += new TestFramework("munit.Framework")
 )
 
 val elmSettings = Seq(
@@ -104,7 +104,7 @@ val common = project
   .in(file("modules/common"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "sharry-common",
     libraryDependencies ++=
@@ -119,7 +119,7 @@ val store = project
   .in(file("modules/store"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "sharry-store",
     libraryDependencies ++=
@@ -138,7 +138,7 @@ val restapi = project
   .disablePlugins(RevolverPlugin)
   .enablePlugins(OpenApiSchema)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "sharry-restapi",
     libraryDependencies ++=
@@ -189,7 +189,7 @@ val backend = project
   .in(file("modules/backend"))
   .disablePlugins(RevolverPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(
     name := "sharry-backend",
     libraryDependencies ++=
@@ -220,7 +220,7 @@ val restserver = project
   .in(file("modules/restserver"))
   .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
   .settings(sharedSettings)
-  .settings(testSettings)
+  .settings(testSettingsMUnit)
   .settings(debianSettings)
   .settings(buildInfoSettings)
   .settings(
