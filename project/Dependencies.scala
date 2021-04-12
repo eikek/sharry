@@ -20,6 +20,7 @@ object Dependencies {
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.2"
   val MiniTestVersion         = "2.9.4"
+  val OrganizeImportsVersion  = "0.5.0"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.14.1"
   val SwaggerVersion          = "3.46.0"
@@ -127,6 +128,10 @@ object Dependencies {
     "com.github.eikek" % "fomantic-slim-default" % FomanticUIVersion,
     "org.webjars.npm"  % "tus-js-client"         % TusClientVersion,
     "org.webjars"      % "clipboard.js"          % ClipboardJsVersion
+  )
+
+  val organizeImports = Seq(
+    "com.github.liancheng" %% "organize-imports" % OrganizeImportsVersion
   )
 
 }
