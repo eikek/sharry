@@ -1,14 +1,15 @@
 package sharry.restserver.routes
 
 import cats.effect._
+
+import sharry.backend.BackendApp
+import sharry.backend.share._
+import sharry.common._
+import sharry.restserver.Config
+import sharry.restserver.routes.headers.SharryPassword
+
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
-
-import sharry.common._
-import sharry.backend.BackendApp
-import sharry.restserver.Config
-import sharry.backend.share._
-import sharry.restserver.routes.headers.SharryPassword
 
 object OpenShareRoutes {
 

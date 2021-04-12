@@ -3,10 +3,12 @@ package sharry.backend.job
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-import sharry.common.syntax.all._
-import org.log4s.getLogger
+
 import sharry.backend.share._
 import sharry.backend.signup._
+import sharry.common.syntax.all._
+
+import org.log4s.getLogger
 
 object PeriodicCleanup {
   private[this] val logger = getLogger

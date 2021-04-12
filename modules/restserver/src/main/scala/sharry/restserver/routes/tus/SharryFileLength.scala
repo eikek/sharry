@@ -1,8 +1,9 @@
 package sharry.restserver.routes.tus
 
+import sharry.common.ByteSize
+
 import org.http4s._
 import org.http4s.syntax.string._
-import sharry.common.ByteSize
 
 object SharryFileLength {
 

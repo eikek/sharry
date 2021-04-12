@@ -1,7 +1,9 @@
 package sharry.store.migrate
 
 import cats.effect.Sync
+
 import sharry.store.JdbcConfig
+
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.log4s._

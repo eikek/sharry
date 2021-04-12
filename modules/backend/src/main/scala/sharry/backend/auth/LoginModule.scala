@@ -1,14 +1,14 @@
 package sharry.backend.auth
 
-import cats.data.Kleisli
-import cats.effect.Sync
-import cats.implicits._
 import cats.Applicative
 import cats.Monad
+import cats.data.Kleisli
 import cats.data.OptionT
+import cats.effect.Sync
+import cats.implicits._
 
-import sharry.common._
 import sharry.backend.account.OAccount
+import sharry.common._
 
 object LoginModule {
 

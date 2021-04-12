@@ -1,20 +1,21 @@
 package sharry.restserver.routes.tus
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
+
+import sharry.backend.BackendApp
+import sharry.backend.auth.AuthToken
+import sharry.backend.share.{FileInfo, UploadResult}
+import sharry.common._
+import sharry.common.syntax.all._
+import sharry.restserver.Config
+
+import bitpeace.Mimetype
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.log4s.getLogger
-
-import bitpeace.Mimetype
-import sharry.common._
-import sharry.common.syntax.all._
-import sharry.backend.BackendApp
-import sharry.backend.auth.AuthToken
-import sharry.backend.share.{FileInfo, UploadResult}
-import sharry.restserver.Config
 
 object TusRoutes {
   private[this] val logger = getLogger

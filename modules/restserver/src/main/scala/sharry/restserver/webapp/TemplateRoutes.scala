@@ -1,23 +1,25 @@
 package sharry.restserver.webapp
 
-import fs2._
-import cats.effect._
-import cats.implicits._
-import org.http4s._
-import org.http4s.headers._
-import org.http4s.HttpRoutes
-import org.http4s.dsl.Http4sDsl
-import org.slf4j._
-import _root_.io.circe.syntax._
-import yamusca.imports._
-import yamusca.implicits._
 import java.net.URL
 import java.util.concurrent.atomic.AtomicReference
 
+import cats.effect._
+import cats.implicits._
+import fs2._
+
 import sharry.restapi.model.AppConfig
-import sharry.restserver.{BuildInfo, Config}
-import sharry.restserver.webapp.YamuscaConverter._
 import sharry.restserver.routes.InfoRoutes
+import sharry.restserver.webapp.YamuscaConverter._
+import sharry.restserver.{BuildInfo, Config}
+
+import _root_.io.circe.syntax._
+import org.http4s.HttpRoutes
+import org.http4s._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers._
+import org.slf4j._
+import yamusca.implicits._
+import yamusca.imports._
 
 object TemplateRoutes {
   private[this] val logger = LoggerFactory.getLogger(getClass)

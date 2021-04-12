@@ -1,26 +1,27 @@
 package sharry.backend.share
 
-import fs2.Stream
-import bitpeace.FileMeta
-import cats.implicits._
+import cats.data.OptionT
 import cats.effect._
-import org.log4s.getLogger
+import cats.implicits._
+import fs2.Stream
 
+import sharry.backend.PasswordCrypt
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.store.Store
-import sharry.store.records.RShare
-import bitpeace.MimetypeHint
-import sharry.store.records.RShareFile
-import bitpeace.FileChunk
-import cats.data.OptionT
-import sharry.backend.PasswordCrypt
-import sharry.store.records.RAlias
 import sharry.store.AddResult
-import sharry.store.records.RPublishShare
-import bitpeace.RangeDef
-import bitpeace.Outcome
 import sharry.store.PermanentError
+import sharry.store.Store
+import sharry.store.records.RAlias
+import sharry.store.records.RPublishShare
+import sharry.store.records.RShare
+import sharry.store.records.RShareFile
+
+import bitpeace.FileChunk
+import bitpeace.FileMeta
+import bitpeace.MimetypeHint
+import bitpeace.Outcome
+import bitpeace.RangeDef
+import org.log4s.getLogger
 
 trait OShare[F[_]] {
 

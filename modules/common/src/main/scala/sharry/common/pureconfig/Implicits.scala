@@ -1,11 +1,12 @@
 package sharry.common.pureconfig
 
+import scala.reflect.ClassTag
+
 import sharry.common._
+
 import _root_.pureconfig._
 import _root_.pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
-
-import scala.reflect.ClassTag
 
 object Implicits {
   implicit val lenientUriReader: ConfigReader[LenientUri] =

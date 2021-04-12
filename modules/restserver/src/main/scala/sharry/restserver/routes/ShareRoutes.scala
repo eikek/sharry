@@ -1,23 +1,24 @@
 package sharry.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import cats.data.OptionT
-import org.http4s._
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.dsl.Http4sDsl
-import org.log4s._
 
+import sharry.backend.BackendApp
+import sharry.backend.auth.AuthToken
+import sharry.backend.share._
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.backend.BackendApp
 import sharry.restapi.model._
 import sharry.restserver.Config
-import sharry.backend.share._
-import sharry.backend.auth.AuthToken
-import sharry.store.AddResult
 import sharry.restserver.routes.headers.SharryPassword
+import sharry.store.AddResult
+
+import org.http4s._
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.log4s._
 
 object ShareRoutes {
   private[this] val logger = getLogger

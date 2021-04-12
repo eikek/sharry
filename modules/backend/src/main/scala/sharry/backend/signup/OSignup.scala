@@ -1,14 +1,15 @@
 package sharry.backend.signup
 
-import cats.implicits._
 import cats.effect.{Effect, Resource}
-import org.log4s.getLogger
+import cats.implicits._
 
 import sharry.backend.account._
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.records.RInvitation
 import sharry.store.{AddResult, Store}
+
+import org.log4s.getLogger
 
 trait OSignup[F[_]] {
 

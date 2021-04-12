@@ -1,8 +1,9 @@
 package sharry.backend.mustache
 
-import yamusca.imports._
 import sharry.common._
+
 import bitpeace.Mimetype
+import yamusca.imports._
 
 trait YamuscaCommon {
 

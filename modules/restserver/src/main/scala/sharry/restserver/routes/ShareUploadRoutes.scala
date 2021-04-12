@@ -1,28 +1,29 @@
 package sharry.restserver.routes
 
-import fs2.Stream
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
+import fs2.Stream
 
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.share.{File, ShareData}
-import sharry.restapi.model._
-import sharry.restserver.Config
-import sharry.restserver.routes.tus.TusRoutes
 import sharry.common._
 import sharry.common.syntax.all._
-import org.http4s.multipart.Multipart
-import org.http4s.headers.{`Content-Length`, `Content-Type`}
-import bitpeace.Mimetype
-import cats.data.OptionT
+import sharry.restapi.model._
+import sharry.restserver.Config
 import sharry.restserver.http4s.ClientRequestInfo
+import sharry.restserver.routes.tus.TusRoutes
+
+import bitpeace.Mimetype
+import org.http4s.HttpRoutes
 import org.http4s.Request
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers.{`Content-Length`, `Content-Type`}
+import org.http4s.multipart.Multipart
+import org.log4s.getLogger
 
 object ShareUploadRoutes {
   private[this] val logger = getLogger

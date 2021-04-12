@@ -1,27 +1,29 @@
 package sharry.restserver
 
+import scala.concurrent.duration._
+
 import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
+import sharry.backend.auth.AuthToken
+import sharry.common.LenientUri
+import sharry.common.syntax.all._
+import sharry.restserver.routes._
+import sharry.restserver.webapp._
+
 import org.http4s._
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
-import org.http4s.implicits._
+import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
+import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
-import org.http4s.dsl.Http4sDsl
 import org.log4s.getLogger
-import scala.concurrent.duration._
-
-import sharry.common.syntax.all._
-import sharry.backend.auth.AuthToken
-import sharry.restserver.routes._
-import sharry.restserver.webapp._
-import sharry.common.LenientUri
 
 object RestServer {
   private[this] val logger = getLogger

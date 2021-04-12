@@ -58,7 +58,7 @@ val elmSettings = Seq(
 val webjarSettings = Seq(
   Compile / resourceGenerators += Def.task {
     copyWebjarResources(
-      Seq((Compile/sourceDirectory).value / "webjar"),
+      Seq((Compile / sourceDirectory).value / "webjar"),
       (Compile / resourceManaged).value,
       name.value,
       version.value,
@@ -76,7 +76,7 @@ val debianSettings = Seq(
   maintainer := "Eike Kettner <eike.kettner@posteo.de>",
   packageSummary := description.value,
   packageDescription := description.value,
-  Universal/mappings += {
+  Universal / mappings += {
     val conf = (Compile / resourceDirectory).value / "reference.conf"
     if (!conf.exists)
       sys.error(s"File $conf not found")
@@ -269,7 +269,7 @@ lazy val microsite = project
   .settings(
     name := "sharry-microsite",
     publishArtifact := false,
-    publish /skip := true,
+    publish / skip := true,
     micrositeFooterText := Some(
       """
         |<p>&copy; 2020 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
@@ -290,19 +290,19 @@ lazy val microsite = project
       "brand-secondary" -> "#009ADA",
       "white-color"     -> "#FFFFFF"
     ),
-    run /fork := true,
+    run / fork := true,
     mdocVariables := Map(
       "VERSION"  -> version.value,
       "PVERSION" -> version.value.replace('.', '_')
     ),
     Compile / resourceGenerators += Def.task {
-      val conf1 = (restserver/Compile/resourceDirectory).value / "reference.conf"
+      val conf1 = (restserver / Compile / resourceDirectory).value / "reference.conf"
       val out1  = resourceManaged.value / "main" / "jekyll" / "_includes" / "server.conf"
       streams.value.log.info(s"Copying reference.conf: $conf1 -> $out1")
       IO.write(out1, "{% raw %}\n")
       IO.append(out1, IO.readBytes(conf1))
       IO.write(out1, "\n{% endraw %}", append = true)
-      val oa1 = (restapi / Compile /resourceDirectory).value / "sharry-openapi.yml"
+      val oa1 = (restapi / Compile / resourceDirectory).value / "sharry-openapi.yml"
       val oaout =
         resourceManaged.value / "main" / "jekyll" / "openapi" / "sharry-openapi.yml"
       IO.copy(Seq(oa1 -> oaout))

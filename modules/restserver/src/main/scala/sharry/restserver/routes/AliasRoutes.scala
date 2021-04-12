@@ -1,20 +1,21 @@
 package sharry.restserver.routes
 
+import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
-import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
 
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
-import sharry.restapi.model._
 import sharry.common._
 import sharry.common.syntax.all._
+import sharry.restapi.model._
 import sharry.store.records.RAlias
-import cats.data.OptionT
+
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.log4s.getLogger
 
 object AliasRoutes {
   private[this] val logger = getLogger

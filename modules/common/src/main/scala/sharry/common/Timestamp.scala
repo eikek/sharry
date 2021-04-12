@@ -3,6 +3,7 @@ package sharry.common
 import java.time.{Instant, LocalDate, ZoneId}
 
 import cats.effect.Sync
+
 import io.circe.{Decoder, Encoder}
 
 case class Timestamp(value: Instant) {

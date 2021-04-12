@@ -1,21 +1,23 @@
 package sharry.store.migrate
 
-import fs2.Stream
-import doobie._
-import doobie.implicits._
-import cats.implicits._
-import cats.effect._
-import org.log4s.getLogger
 import scala.concurrent.ExecutionContext
+
+import cats.data.OptionT
+import cats.effect._
+import cats.implicits._
+import fs2.Stream
 
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.store.Store
 import sharry.store.JdbcConfig
-import sharry.store.records._
-import sharry.store.doobie.Sql
+import sharry.store.Store
 import sharry.store.doobie.DoobieMeta._
-import cats.data.OptionT
+import sharry.store.doobie.Sql
+import sharry.store.records._
+
+import doobie._
+import doobie.implicits._
+import org.log4s.getLogger
 
 final class MigrateFrom06[F[_]: Effect: ContextShift](
     cfg: JdbcConfig,

@@ -3,21 +3,22 @@ package sharry.restserver.oauth
 import cats.data.OptionT
 import cats.effect.ConcurrentEffect
 import cats.implicits._
-import org.http4s._
+
+import sharry.backend.auth.AuthConfig
+import sharry.common.Ident
+import sharry.common.syntax.all._
+
+import io.circe.Json
 import org.http4s.Method._
+import org.http4s._
+import org.http4s.circe.CirceEntityCodec._
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.RequestLogger
+import org.http4s.client.middleware.ResponseLogger
 import org.http4s.headers.Accept
 import org.http4s.headers.Authorization
-import org.http4s.circe.CirceEntityCodec._
 import org.log4s.getLogger
-
-import sharry.common.syntax.all._
-import sharry.backend.auth.AuthConfig
-import io.circe.Json
-import org.http4s.client.middleware.ResponseLogger
-import sharry.common.Ident
 
 object CodeFlow {
   private[this] val logger = getLogger

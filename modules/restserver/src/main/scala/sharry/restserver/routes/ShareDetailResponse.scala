@@ -1,18 +1,19 @@
 package sharry.restserver.routes
 
 import cats.data.OptionT
-import org.http4s._
-import org.http4s.headers._
-import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityEncoder._
-
 import cats.effect.Sync
-import sharry.common._
-import sharry.backend.share._
+
 import sharry.backend.BackendApp
+import sharry.backend.share._
+import sharry.common._
 import sharry.restapi.model.{ShareDetail => ShareDetailDto, _}
 import sharry.restserver.Config
 import sharry.restserver.http4s.ClientRequestInfo
+
+import org.http4s._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.headers._
 
 object ShareDetailResponse {
   private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =

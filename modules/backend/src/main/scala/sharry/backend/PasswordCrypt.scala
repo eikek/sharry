@@ -1,6 +1,7 @@
 package sharry.backend
 
 import sharry.common.Password
+
 import org.mindrot.jbcrypt.BCrypt
 
 object PasswordCrypt {

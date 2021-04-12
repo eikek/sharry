@@ -2,17 +2,18 @@ package sharry.restserver.routes
 
 import cats.effect._
 import cats.implicits._
-import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.dsl.Http4sDsl
-import org.log4s._
 
 import sharry.backend.BackendApp
-import sharry.backend.signup.{NewInviteResult, SignupResult}
 import sharry.backend.signup.OSignup.RegisterData
+import sharry.backend.signup.{NewInviteResult, SignupResult}
 import sharry.restapi.model._
 import sharry.restserver.Config
+
+import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityDecoder._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.log4s._
 
 object RegisterRoutes {
   private[this] val logger = getLogger

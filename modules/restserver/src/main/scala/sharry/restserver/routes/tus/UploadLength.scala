@@ -1,8 +1,9 @@
 package sharry.restserver.routes.tus
 
-import org.http4s.Request
 import sharry.common.ByteSize
+
 import org.http4s.Header
+import org.http4s.Request
 
 object UploadLength {
 

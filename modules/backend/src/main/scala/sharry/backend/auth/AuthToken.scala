@@ -1,15 +1,17 @@
 package sharry.backend.auth
 
 import java.time.Instant
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 import cats.effect._
 import cats.implicits._
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-import scodec.bits.ByteVector
+
 import sharry.backend.Common
 import sharry.backend.auth.AuthToken._
 import sharry.common.{AccountId, Duration}
+
+import scodec.bits.ByteVector
 
 case class AuthToken(millis: Long, account: AccountId, salt: String, sig: String) {
   def asString = s"$millis-${b64enc(account.asString)}-$salt-$sig"

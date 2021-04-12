@@ -2,14 +2,15 @@ package sharry.backend.alias
 
 import cats.effect._
 import cats.implicits._
-import org.log4s._
 import fs2.Stream
 
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.store.Store
 import sharry.store.AddResult
+import sharry.store.Store
 import sharry.store.records.RAlias
+
+import org.log4s._
 
 trait OAlias[F[_]] {
 

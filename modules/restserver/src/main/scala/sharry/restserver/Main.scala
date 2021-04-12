@@ -1,13 +1,14 @@
 package sharry.restserver
 
+import java.nio.file.{Files, Paths}
+
 import cats.effect._
 import cats.implicits._
 
-import java.nio.file.{Files, Paths}
-
-import org.log4s._
 import sharry.common._
 import sharry.store.migrate.MigrateFrom06
+
+import org.log4s._
 
 object Main extends IOApp {
   private[this] val logger = getLogger

@@ -1,9 +1,10 @@
 package sharry.restserver.routes.headers
 
-import org.http4s.Request
 import sharry.common.LenientUri
-import org.http4s.syntax.string._
 import sharry.common.Password
+
+import org.http4s.Request
+import org.http4s.syntax.string._
 
 object SharryPassword {
 

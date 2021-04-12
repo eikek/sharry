@@ -1,10 +1,11 @@
 package sharry.restserver
 
-import cats.implicits._
-import cats.effect._
-import sharry.backend.BackendApp
-
 import scala.concurrent.ExecutionContext
+
+import cats.effect._
+import cats.implicits._
+
+import sharry.backend.BackendApp
 
 final class RestAppImpl[F[_]: Sync](val config: Config, val backend: BackendApp[F])
     extends RestApp[F] {

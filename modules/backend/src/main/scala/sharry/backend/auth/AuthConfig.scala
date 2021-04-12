@@ -1,6 +1,7 @@
 package sharry.backend.auth
-import scodec.bits.ByteVector
 import sharry.common._
+
+import scodec.bits.ByteVector
 
 case class AuthConfig(
     serverSecret: ByteVector,

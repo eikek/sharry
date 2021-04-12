@@ -2,10 +2,12 @@ package sharry.backend.auth
 
 import cats.effect._
 import cats.implicits._
-import org.log4s._
+
+import sharry.backend.account._
 import sharry.common._
 import sharry.common.syntax.all._
-import sharry.backend.account._
+
+import org.log4s._
 
 /** Provides authentication from the configuration.
   *

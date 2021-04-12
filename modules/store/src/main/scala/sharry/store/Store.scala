@@ -1,13 +1,15 @@
 package sharry.store
 
-import bitpeace.Bitpeace
+import scala.concurrent.ExecutionContext
+
 import cats.effect._
 import fs2._
-import _root_.doobie._
-import _root_.doobie.hikari.HikariTransactor
+
 import sharry.store.doobie.StoreImpl
 
-import scala.concurrent.ExecutionContext
+import _root_.doobie._
+import _root_.doobie.hikari.HikariTransactor
+import bitpeace.Bitpeace
 
 trait Store[F[_]] {
 

@@ -1,6 +1,7 @@
 package sharry.backend.share
 
 import fs2.Stream
+
 import bitpeace.Mimetype
 
 case class File[F[_]](

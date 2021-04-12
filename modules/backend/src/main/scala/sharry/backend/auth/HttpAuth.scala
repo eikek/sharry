@@ -1,16 +1,18 @@
 package sharry.backend.auth
 
+import java.net.HttpURLConnection
+import java.nio.charset.StandardCharsets
+
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import org.log4s.getLogger
 
 import sharry.common._
 import sharry.common.syntax.all._
-import yamusca.imports._
+
+import org.log4s.getLogger
 import yamusca.implicits._
-import java.net.HttpURLConnection
-import java.nio.charset.StandardCharsets
+import yamusca.imports._
 
 final class HttpAuth[F[_]: Effect](
     cfg: AuthConfig,

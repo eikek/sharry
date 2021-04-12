@@ -1,6 +1,7 @@
 package sharry.backend
 
 import cats.effect.Sync
+
 import org.mindrot.jbcrypt.BCrypt
 
 object Common {

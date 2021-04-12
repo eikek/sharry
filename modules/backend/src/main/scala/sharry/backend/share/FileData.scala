@@ -1,7 +1,8 @@
 package sharry.backend.share
 
-import bitpeace.Mimetype
 import sharry.common._
+
+import bitpeace.Mimetype
 
 case class FileData(
     id: Ident,
