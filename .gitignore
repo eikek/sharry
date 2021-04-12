@@ -4,3 +4,4 @@ local/
 elm-stuff/
 result
 *.qcow2
+node_modules/
