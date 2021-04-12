@@ -9,9 +9,9 @@ import sharry.store._
 import sharry.store.records.RAccount
 
 import emil.MailAddress
-import minitest._
+import munit._
 
-object QueriesTest extends SimpleTestSuite with StoreFixture {
+class QueriesTest extends FunSuite with StoreFixture {
   implicit val CS = IO.contextShift(ExecutionContext.global)
 
   test("get email from account") {

@@ -20,6 +20,7 @@ object Dependencies {
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.2"
   val MiniTestVersion         = "2.9.4"
+  val MUnitVersion            = "0.7.23"
   val OrganizeImportsVersion  = "0.5.0"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.14.1"
@@ -119,6 +120,11 @@ object Dependencies {
     "io.monix" %% "minitest"      % MiniTestVersion,
     "io.monix" %% "minitest-laws" % MiniTestVersion
   ).map(_ % Test)
+
+  val munit = Seq(
+    "org.scalameta" %% "munit"            % MUnitVersion,
+    "org.scalameta" %% "munit-scalacheck" % MUnitVersion
+  )
 
   val kindProjectorPlugin = "org.typelevel" %% "kind-projector"     % KindProjectorVersion
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
