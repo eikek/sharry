@@ -24,7 +24,7 @@ type alias Model =
 
 init : Flags -> Model
 init flags =
-    Comp.FixedDropdown.initTuple (validityOptions flags)
+    Comp.FixedDropdown.init (validityOptions flags |> List.map Tuple.second)
 
 
 type Msg
@@ -42,17 +42,12 @@ update msg model =
             ( m, sel )
 
 
-mkValidityItem : ( String, ValidityValue ) -> Comp.FixedDropdown.Item ValidityValue
-mkValidityItem ( text, id ) =
-    Comp.FixedDropdown.Item id text Nothing
-
-
 view : Texts -> ValidityValue -> Model -> Html Msg
 view texts validity model =
     let
         value =
             findValidityItem texts validity
-                |> mkValidityItem
     in
-    Html.map ValidityMsg
-        (Comp.FixedDropdown.view (Just value) texts.dropdown model)
+    -- Html.map ValidityMsg
+    --     (Comp.FixedDropdown.view (Just value) texts.dropdown model)
+    Debug.todo "implement"

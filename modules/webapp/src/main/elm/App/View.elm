@@ -8,14 +8,13 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Markdown
 import Messages exposing (Messages)
-import Messages.App
 import Page exposing (Page(..))
 import Page.Account.View
 import Page.Alias.View
 import Page.Detail.View
 import Page.Home.View
 import Page.Info.View
-import Page.Login.View
+import Page.Login.View2
 import Page.NewInvite.View
 import Page.OpenDetail.View
 import Page.OpenShare.View
@@ -23,6 +22,7 @@ import Page.Register.View
 import Page.Settings.View
 import Page.Share.View
 import Page.Upload.View
+import Styles as S
 
 
 view : Model -> Html Msg
@@ -31,196 +31,73 @@ view model =
         texts =
             Messages.fromFlags model.flags
     in
-    case model.page of
-        LoginPage _ ->
-            loginLayout texts model
-
-        RegisterPage ->
-            registerLayout texts model
-
-        _ ->
-            defaultLayout texts model
-
-
-loginLayout : Messages -> Model -> Html Msg
-loginLayout texts model =
-    div [ class "login-layout" ]
-        [ viewLogin texts model
+    div
+        [ id "main"
+        , class styleMain
+        ]
+        [ topMenu texts model
+        , mainContent texts model
         , footer model
         ]
 
 
-registerLayout : Messages -> Model -> Html Msg
-registerLayout texts model =
-    div [ class "register-layout" ]
-        [ viewRegister texts model
-        , footer model
+topMenu : Messages -> Model -> Html Msg
+topMenu texts model =
+    case model.flags.account of
+        Just acc ->
+            topMenuUser acc texts model
+
+        Nothing ->
+            topMenuAnon texts model
+
+
+topMenuAnon : Messages -> Model -> Html Msg
+topMenuAnon texts model =
+    nav
+        [ id "top-nav"
+        , class styleTopNav
         ]
-
-
-defaultLayout : Messages -> Model -> Html Msg
-defaultLayout texts model =
-    div [ class "default-layout" ]
-        [ div [ class "ui fixed top sticky attached large menu black-bg" ]
-            [ div [ class "ui fluid container" ]
-                [ a
-                    [ class "header item narrow-item"
-                    , case model.flags.account of
-                        Just _ ->
-                            Page.href HomePage
-
-                        Nothing ->
-                            href "#"
-                    ]
-                    [ img
-                        [ src <| model.flags.config.iconUrl
-                        , class "ui image logo-icon"
-                        ]
-                        []
-                    , text model.flags.config.appName
-                    ]
-                , loginInfo texts model
+        [ headerNavItem model
+        , div
+            [ class "flex flex-grow justify-end"
+            ]
+            [ a
+                [ href "#"
+                , onClick ToggleDarkMode
+                , class dropdownLink
+                ]
+                [ i [ class "fa fa-adjust w-6" ] []
                 ]
             ]
-        , div [ class "main-content" ]
-            [ case model.page of
-                HomePage ->
-                    viewHome texts model
-
-                LoginPage _ ->
-                    viewLogin texts model
-
-                RegisterPage ->
-                    viewRegister texts model
-
-                NewInvitePage ->
-                    viewNewInvite texts model
-
-                InfoPage n ->
-                    viewInfo n model
-
-                AccountPage id ->
-                    viewAccount id texts model
-
-                AliasPage id ->
-                    viewAlias id texts model
-
-                UploadPage ->
-                    viewUpload texts model
-
-                SharePage ->
-                    viewShare texts model
-
-                OpenSharePage id ->
-                    viewOpenShare id texts model
-
-                SettingsPage ->
-                    viewSettings texts model
-
-                DetailPage id ->
-                    viewDetail id texts model
-
-                OpenDetailPage id ->
-                    viewOpenDetail id texts model
-            ]
-        , footer model
         ]
 
 
-viewOpenDetail : String -> Messages -> Model -> Html Msg
-viewOpenDetail id texts model =
-    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts.detail model.flags model.openDetailModel)
+headerNavItem : Model -> Html Msg
+headerNavItem model =
+    a
+        [ class "inline-flex font-bold hover:bg-indigo-200 dark:hover:bg-warmgray-800 items-center px-4"
+        , Page.href HomePage
+        ]
+        [ img
+            [ src model.flags.config.iconUrl
+            , class "w-9 h-9 mr-2 block"
+            ]
+            []
+        , div [ class "" ]
+            [ text model.flags.config.appName
+            ]
+        ]
 
 
-viewDetail : String -> Messages -> Model -> Html Msg
-viewDetail id texts model =
-    Html.map DetailMsg (Page.Detail.View.view texts.detail model.flags model.detailModel)
-
-
-viewSettings : Messages -> Model -> Html Msg
-viewSettings texts model =
-    Html.map SettingsMsg (Page.Settings.View.view texts.settings model.settingsModel)
-
-
-viewAlias : Maybe String -> Messages -> Model -> Html Msg
-viewAlias id texts model =
-    Html.map AliasMsg (Page.Alias.View.view texts.aliasPage model.flags id model.aliasModel)
-
-
-viewUpload : Messages -> Model -> Html Msg
-viewUpload texts model =
-    Html.map UploadMsg (Page.Upload.View.view texts.upload model.uploadModel)
-
-
-viewOpenShare : String -> Messages -> Model -> Html Msg
-viewOpenShare id texts model =
-    Html.map OpenShareMsg (Page.OpenShare.View.view texts.share model.flags id model.openShareModel)
-
-
-viewShare : Messages -> Model -> Html Msg
-viewShare texts model =
-    Html.map ShareMsg (Page.Share.View.view texts.share model.flags model.shareModel)
-
-
-viewAccount : Maybe String -> Messages -> Model -> Html Msg
-viewAccount id texts model =
-    Html.map AccountMsg (Page.Account.View.view id texts.account model.accountModel)
-
-
-viewInfo : Int -> Model -> Html Msg
-viewInfo msgnum model =
-    Html.map InfoMsg (Page.Info.View.view msgnum model.infoModel)
-
-
-viewNewInvite : Messages -> Model -> Html Msg
-viewNewInvite texts model =
-    Html.map NewInviteMsg (Page.NewInvite.View.view texts.newInvite model.flags model.newInviteModel)
-
-
-viewRegister : Messages -> Model -> Html Msg
-viewRegister texts model =
-    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.registerModel)
-
-
-viewLogin : Messages -> Model -> Html Msg
-viewLogin texts model =
-    Html.map LoginMsg (Page.Login.View.view texts.login model.flags model.loginModel)
-
-
-viewHome : Messages -> Model -> Html Msg
-viewHome texts model =
-    Html.map HomeMsg (Page.Home.View.view texts.home model.homeModel)
-
-
-loginInfo : Messages -> Model -> Html Msg
-loginInfo texts model =
-    div [ class "right menu" ]
-        (case model.flags.account of
-            Just acc ->
-                [ languageMenu texts model
-                , userMenu texts model acc
-                ]
-
-            Nothing ->
-                [ a
-                    [ class "item"
-                    , Page.href (Page.loginPage model.page)
-                    ]
-                    [ text texts.app.login
-                    ]
-                , a
-                    [ classList
-                        [ ( "item", True )
-                        , ( "invisible hidden", model.flags.config.signupMode == "closed" )
-                        ]
-                    , Page.href RegisterPage
-                    ]
-                    [ text texts.app.register
-                    ]
-                , div [ class "divider" ] []
-                , languageMenu texts model
-                ]
-        )
+topMenuUser : AuthResult -> Messages -> Model -> Html Msg
+topMenuUser account texts model =
+    div [ class styleTopNav ]
+        [ headerNavItem model
+        , div [ class "flex flex-grow justify-end" ]
+            [ languageMenu texts model
+            , userMenu texts model account
+            ]
+        ]
 
 
 languageMenu : Messages -> Model -> Html Msg
@@ -315,12 +192,128 @@ menuEntry model page children =
         children
 
 
+mainContent : Messages -> Model -> Html Msg
+mainContent texts model =
+    div
+        [ id "main"
+        , class styleMain
+        ]
+        [ case model.page of
+            HomePage ->
+                viewHome texts model
+
+            LoginPage _ ->
+                viewLogin texts model
+
+            RegisterPage ->
+                viewRegister texts model
+
+            NewInvitePage ->
+                viewNewInvite texts model
+
+            InfoPage n ->
+                viewInfo n model
+
+            AccountPage id ->
+                viewAccount id texts model
+
+            AliasPage id ->
+                viewAlias id texts model
+
+            UploadPage ->
+                viewUpload texts model
+
+            SharePage ->
+                viewShare texts model
+
+            OpenSharePage id ->
+                viewOpenShare id texts model
+
+            SettingsPage ->
+                viewSettings texts model
+
+            DetailPage id ->
+                viewDetail id texts model
+
+            OpenDetailPage id ->
+                viewOpenDetail id texts model
+        ]
+
+
+viewOpenDetail : String -> Messages -> Model -> Html Msg
+viewOpenDetail _ texts model =
+    Html.map OpenDetailMsg (Page.OpenDetail.View.view texts.detail model.flags model.openDetailModel)
+
+
+viewDetail : String -> Messages -> Model -> Html Msg
+viewDetail _ texts model =
+    Html.map DetailMsg (Page.Detail.View.view texts.detail model.flags model.detailModel)
+
+
+viewSettings : Messages -> Model -> Html Msg
+viewSettings texts model =
+    Html.map SettingsMsg (Page.Settings.View.view texts.settings model.settingsModel)
+
+
+viewAlias : Maybe String -> Messages -> Model -> Html Msg
+viewAlias id texts model =
+    Html.map AliasMsg (Page.Alias.View.view texts.aliasPage model.flags id model.aliasModel)
+
+
+viewUpload : Messages -> Model -> Html Msg
+viewUpload texts model =
+    Html.map UploadMsg (Page.Upload.View.view texts.upload model.uploadModel)
+
+
+viewOpenShare : String -> Messages -> Model -> Html Msg
+viewOpenShare id texts model =
+    Html.map OpenShareMsg (Page.OpenShare.View.view texts.share model.flags id model.openShareModel)
+
+
+viewShare : Messages -> Model -> Html Msg
+viewShare texts model =
+    Html.map ShareMsg (Page.Share.View.view texts.share model.flags model.shareModel)
+
+
+viewAccount : Maybe String -> Messages -> Model -> Html Msg
+viewAccount id texts model =
+    Html.map AccountMsg (Page.Account.View.view id texts.account model.accountModel)
+
+
+viewInfo : Int -> Model -> Html Msg
+viewInfo msgnum model =
+    Html.map InfoMsg (Page.Info.View.view msgnum model.infoModel)
+
+
+viewNewInvite : Messages -> Model -> Html Msg
+viewNewInvite texts model =
+    Html.map NewInviteMsg (Page.NewInvite.View.view texts.newInvite model.flags model.newInviteModel)
+
+
+viewRegister : Messages -> Model -> Html Msg
+viewRegister texts model =
+    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.registerModel)
+
+
+viewLogin : Messages -> Model -> Html Msg
+viewLogin texts model =
+    Html.map LoginMsg (Page.Login.View2.view texts.login model.flags model.loginModel)
+
+
+viewHome : Messages -> Model -> Html Msg
+viewHome texts model =
+    Html.map HomeMsg (Page.Home.View.view texts.home model.homeModel)
+
+
 footer : Model -> Html Msg
 footer model =
     let
         defaultFooter =
-            div [ class "ui footer" ]
-                [ a [ href "https://eikek.github.io/sharry" ]
+            div [ class styleFooter ]
+                [ a
+                    [ href "https://eikek.github.io/sharry"
+                    , class S.link
+                    ]
                     [ i [ class "ui github icon" ] []
                     , text "Sharry "
                     ]
@@ -333,7 +326,7 @@ footer model =
                 ]
 
         customFooter =
-            div [ class "ui footer" ]
+            div [ class styleFooter ]
                 [ Markdown.toHtml [] model.flags.config.footerText
                 ]
     in
@@ -347,3 +340,42 @@ footer model =
 
     else
         span [ class "invisible hidden" ] []
+
+
+
+--- Helpers
+
+
+styleTopNav : String
+styleTopNav =
+    "top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-indigo-100 dark:bg-warmgray-900 text-gray-800 dark:text-warmgray-200 antialiased"
+
+
+styleMain : String
+styleMain =
+    "mt-6 flex flex-grow flex-col w-full h-screen-12 overflow-y-hidden bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+
+
+styleFooter : String
+styleFooter =
+    "py-1 text-xs items-center text-center"
+
+
+dropdownLink : String
+dropdownLink =
+    "px-4 py-2 w-12 font-bold inline-flex h-full items-center hover:bg-indigo-200 dark:hover:bg-warmgray-800"
+
+
+dropdownItem : String
+dropdownItem =
+    "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-warmgray-700 dark:hover:text-warmgray-50"
+
+
+dropdownHeadItem : String
+dropdownHeadItem =
+    "transition-colors duration-200 items-center block px-4 py-2 font-semibold uppercase"
+
+
+dropdownMenu : String
+dropdownMenu =
+    " absolute right-0 bg-white dark:bg-warmgray-800 border dark:border-warmgray-700 dark:text-warmgray-300 shadow-lg opacity-1 transition duration-200 min-w-max "

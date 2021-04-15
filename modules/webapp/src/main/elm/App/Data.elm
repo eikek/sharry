@@ -6,6 +6,7 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
 import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
+import Data.UiTheme exposing (UiTheme)
 import Data.UploadState exposing (UploadState)
 import Http
 import Page exposing (Page(..))
@@ -46,6 +47,7 @@ type alias Model =
     , settingsModel : Page.Settings.Data.Model
     , detailModel : Page.Detail.Data.Model
     , openDetailModel : Page.OpenDetail.Data.Model
+    , anonymousTheme : UiTheme
     }
 
 
@@ -77,6 +79,7 @@ init key url flags_ =
     , settingsModel = Page.Settings.Data.emptyModel
     , detailModel = Page.Detail.Data.emptyModel
     , openDetailModel = Page.OpenDetail.Data.emptyModel
+    , anonymousTheme = Data.UiTheme.Light
     }
 
 
@@ -106,6 +109,7 @@ type Msg
     | UploadStoppedMsg (Maybe String)
     | ReceiveLanguage String
     | LangChooseMsg Comp.LanguageChoose.Msg
+    | ToggleDarkMode
 
 
 initBaseUrl : Url -> Flags -> Flags

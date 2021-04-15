@@ -6,6 +6,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Comp.LanguageChoose
 import Data.Flags
+import Data.UiTheme
 import Page exposing (Page(..))
 import Page.Account.Data
 import Page.Account.Update
@@ -41,6 +42,16 @@ import Util.Update
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ToggleDarkMode ->
+            let
+                next =
+                    Data.UiTheme.cycle model.anonymousTheme
+            in
+            -- when not logged in, simply set the theme
+            ( { model | anonymousTheme = next }
+            , Ports.setUiTheme next
+            )
+
         HomeMsg lm ->
             updateHome lm model
 

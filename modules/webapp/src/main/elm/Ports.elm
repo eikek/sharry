@@ -1,6 +1,7 @@
 port module Ports exposing (..)
 
 import Api.Model.AuthResult exposing (AuthResult)
+import Data.UiTheme exposing (UiTheme)
 import Json.Decode as D
 import Language exposing (Language)
 import Messages
@@ -59,3 +60,11 @@ port receiveLanguage : (String -> msg) -> Sub msg
 
 
 port initClipboard : ( String, String ) -> Cmd msg
+
+
+port internalSetUiTheme : String -> Cmd msg
+
+
+setUiTheme : UiTheme -> Cmd msg
+setUiTheme theme =
+    internalSetUiTheme (Data.UiTheme.toString theme)

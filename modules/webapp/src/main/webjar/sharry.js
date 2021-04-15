@@ -167,3 +167,18 @@ elmApp.ports.initClipboard.subscribe(function(args) {
         sharry_clipboards[page] = new ClipboardJS(sel);
     }
 });
+
+elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
+    var body = document.getElementsByTagName("body");
+    if (body && body.length > 0) {
+        var bodyClasses = body[0].classList;
+        // seems that body attributes cannot be set from inside Elm.
+        if (themeName && themeName.toLowerCase() === 'dark') {
+            bodyClasses.add("bg-warmgray-800");
+            bodyClasses.add("dark");
+        } else {
+            bodyClasses.remove("bg-warmgray-800");
+            bodyClasses.remove("dark");
+        }
+    }
+});

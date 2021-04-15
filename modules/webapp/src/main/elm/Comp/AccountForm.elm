@@ -16,6 +16,7 @@ import Comp.FixedDropdown
 import Comp.PasswordInput
 import Comp.YesNoDimmer
 import Data.AccountState exposing (AccountState)
+import Data.DropdownStyle as DS
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -30,7 +31,7 @@ type alias Model =
     , passwordModel : Comp.PasswordInput.Model
     , passwordField : Maybe String
     , stateModel : Comp.FixedDropdown.Model AccountState
-    , stateField : Comp.FixedDropdown.Item AccountState
+    , stateField : AccountState
     , adminField : Bool
     , deleteConfirm : Comp.YesNoDimmer.Model
     }
@@ -42,14 +43,6 @@ init ma =
         |> Maybe.withDefault initNew
 
 
-mkStateItem : AccountState -> Comp.FixedDropdown.Item AccountState
-mkStateItem state =
-    Comp.FixedDropdown.Item
-        state
-        (Data.AccountState.toString state)
-        Nothing
-
-
 initNew : Model
 initNew =
     { existing = Nothing
@@ -57,8 +50,8 @@ initNew =
     , emailField = Nothing
     , passwordModel = Comp.PasswordInput.init
     , passwordField = Nothing
-    , stateModel = Comp.FixedDropdown.initMap Data.AccountState.toString Data.AccountState.all
-    , stateField = mkStateItem Data.AccountState.Active
+    , stateModel = Comp.FixedDropdown.init Data.AccountState.all
+    , stateField = Data.AccountState.Active
     , adminField = False
     , deleteConfirm = Comp.YesNoDimmer.emptyModel
     }
@@ -72,7 +65,6 @@ initModify acc =
         , emailField = acc.email
         , stateField =
             Data.AccountState.fromStringOrActive acc.state
-                |> mkStateItem
         , adminField = acc.admin
     }
 
@@ -153,8 +145,7 @@ update msg model =
             ( { model
                 | stateModel = m
                 , stateField =
-                    Maybe.map mkStateItem sel
-                        |> Maybe.withDefault model.stateField
+                    Maybe.withDefault model.stateField sel
               }
             , FormNone
             )
@@ -176,7 +167,7 @@ update msg model =
                     Just id ->
                         ( model
                         , FormModified id
-                            { state = Data.AccountState.toString model.stateField.id
+                            { state = Data.AccountState.toString model.stateField
                             , admin = model.adminField
                             , email = model.emailField
                             , password = model.passwordField
@@ -187,7 +178,7 @@ update msg model =
                         ( model
                         , FormCreated
                             { login = model.loginField
-                            , state = Data.AccountState.toString model.stateField.id
+                            , state = Data.AccountState.toString model.stateField
                             , admin = model.adminField
                             , email = model.emailField
                             , password = Maybe.withDefault "" model.passwordField
@@ -257,9 +248,14 @@ view texts model =
             , div [ class "required field" ]
                 [ label [] [ text texts.state ]
                 , Html.map StateMsg
-                    (Comp.FixedDropdown.view
+                    (Comp.FixedDropdown.viewStyled
+                        { display = Data.AccountState.toString
+                        , selectPlaceholder = texts.dropdown.select
+                        , icon = \n -> Nothing
+                        , style = DS.mainStyle
+                        }
+                        False
                         (Just model.stateField)
-                        texts.dropdown
                         model.stateModel
                     )
                 ]

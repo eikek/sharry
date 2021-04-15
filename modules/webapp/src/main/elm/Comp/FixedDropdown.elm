@@ -2,65 +2,98 @@ module Comp.FixedDropdown exposing
     ( Item
     , Model
     , Msg
+    , ViewSettings
     , init
-    , initMap
-    , initString
-    , initTuple
     , update
-    , view
-    , viewClass
-    , viewFloating
-    , viewFull
+    , viewStyled
     )
 
+import Data.DropdownStyle as DS
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Messages.FixedDropdown exposing (Texts)
+import Styles as S
+import Util.Html exposing (KeyCode(..), onKeyUpCode)
+import Util.List
 
 
 type alias Item a =
     { id : a
-    , display : String
-    , icon : Maybe String
     }
 
 
 type alias Model a =
     { options : List (Item a)
     , menuOpen : Bool
+    , selected : Maybe a
     }
 
 
 type Msg a
-    = SelectItem (Item a)
+    = SelectItem2 (Item a)
     | ToggleMenu
+    | KeyPress (Maybe KeyCode)
 
 
-init : List (Item a) -> Model a
-init options =
+initItems : List (Item a) -> Model a
+initItems options =
     { options = options
     , menuOpen = False
+    , selected = Nothing
     }
 
 
-initString : List String -> Model String
-initString strings =
-    init <| List.map (\s -> Item s s Nothing) strings
+init : List a -> Model a
+init els =
+    List.map Item els |> initItems
 
 
-initMap : (a -> String) -> List a -> Model a
-initMap elToString els =
-    init <| List.map (\a -> Item a (elToString a) Nothing) els
+isSelected : Model a -> Item a -> Bool
+isSelected model item =
+    model.selected == Just item.id
 
 
-initTuple : List ( String, a ) -> Model a
-initTuple tuples =
+movePrevious : Model a -> ( Model a, Maybe a )
+movePrevious model =
     let
-        mkItem ( txt, id ) =
-            Item id txt Nothing
+        prev =
+            Util.List.findPrev (isSelected model) model.options
     in
-    init <| List.map mkItem tuples
+    case prev of
+        Just p ->
+            ( { model | selected = Just p.id, menuOpen = True }, Nothing )
+
+        Nothing ->
+            ( { model
+                | selected =
+                    List.reverse model.options
+                        |> List.head
+                        |> Maybe.map .id
+                , menuOpen = True
+              }
+            , Nothing
+            )
+
+
+moveNext : Model a -> ( Model a, Maybe a )
+moveNext model =
+    let
+        next =
+            Util.List.findNext (isSelected model) model.options
+    in
+    case next of
+        Just n ->
+            ( { model | selected = Just n.id, menuOpen = True }, Nothing )
+
+        Nothing ->
+            ( { model
+                | selected =
+                    List.head model.options
+                        |> Maybe.map .id
+                , menuOpen = True
+              }
+            , Nothing
+            )
 
 
 update : Msg a -> Model a -> ( Model a, Maybe a )
@@ -69,85 +102,121 @@ update msg model =
         ToggleMenu ->
             ( { model | menuOpen = not model.menuOpen }, Nothing )
 
-        SelectItem item ->
-            ( model, Just item.id )
+        SelectItem2 item ->
+            ( { model | menuOpen = False }, Just item.id )
+
+        KeyPress (Just Space) ->
+            update ToggleMenu model
+
+        KeyPress (Just Enter) ->
+            let
+                selected =
+                    Util.List.find (isSelected model) model.options
+            in
+            case selected of
+                Just i ->
+                    ( { model | menuOpen = False }, Just i.id )
+
+                Nothing ->
+                    ( model, Nothing )
+
+        KeyPress (Just Up) ->
+            movePrevious model
+
+        KeyPress (Just Letter_P) ->
+            movePrevious model
+
+        KeyPress (Just Letter_K) ->
+            movePrevious model
+
+        KeyPress (Just Down) ->
+            moveNext model
+
+        KeyPress (Just Letter_N) ->
+            moveNext model
+
+        KeyPress (Just Letter_J) ->
+            moveNext model
+
+        KeyPress (Just ESC) ->
+            ( { model | menuOpen = False }, Nothing )
+
+        KeyPress _ ->
+            ( model, Nothing )
 
 
-view : Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
-view =
-    viewClass "ui selection dropdown"
+
+--- View2
 
 
-viewFloating : Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
-viewFloating =
-    viewClass "ui floating dropdown"
-
-
-viewClass : String -> Maybe (Item a) -> Texts -> Model a -> Html (Msg a)
-viewClass cls selected =
-    viewFull
-        { iconOnly = False
-        , mainClass = cls
-        , selected = selected
-        }
-
-
-viewFull :
-    { iconOnly : Bool
-    , mainClass : String
-    , selected : Maybe (Item a)
+type alias ViewSettings a =
+    { display : a -> String
+    , icon : a -> Maybe String
+    , selectPlaceholder : String
+    , style : DS.DropdownStyle
     }
-    -> Texts
-    -> Model a
-    -> Html (Msg a)
-viewFull cfg texts model =
+
+
+viewStyled : ViewSettings a -> Bool -> Maybe a -> Model a -> Html (Msg a)
+viewStyled cfg error sel model =
+    let
+        iconItem id =
+            span
+                [ classList [ ( "hidden", cfg.icon id == Nothing ) ]
+                , class (Maybe.withDefault "" (cfg.icon id))
+                , class "mr-2"
+                ]
+                []
+
+        renderItem item =
+            a
+                [ href "#"
+                , class cfg.style.item
+                , classList
+                    [ ( cfg.style.itemActive, isSelected model item )
+                    , ( "font-semibold", Just item.id == sel )
+                    ]
+                , onClick (SelectItem2 item)
+                ]
+                [ iconItem item.id
+                , text (cfg.display item.id)
+                ]
+
+        selIcon =
+            Maybe.map iconItem sel
+                |> Maybe.withDefault (span [ class "hidden" ] [])
+    in
     div
-        [ classList
-            [ ( cfg.mainClass, True )
-            , ( "open", model.menuOpen )
-            ]
-        , onClick ToggleMenu
+        [ class ("relative " ++ cfg.style.root)
+        , onKeyUpCode KeyPress
         ]
-        [ div
-            [ classList
-                [ ( "default", cfg.selected == Nothing )
-                , ( "text", True )
+        [ a
+            [ class cfg.style.link
+            , classList [ ( S.inputErrorBorder, error ) ]
+            , tabindex 0
+            , onClick ToggleMenu
+            , href "#"
+            ]
+            [ div
+                [ class "flex-grow mr-4"
+                , classList
+                    [ ( "opacity-50", sel == Nothing )
+                    ]
+                ]
+                [ selIcon
+                , Maybe.map cfg.display sel
+                    |> Maybe.withDefault cfg.selectPlaceholder
+                    |> text
+                ]
+            , div
+                [ class "rounded cursor-pointer ml-2 absolute right-2"
+                ]
+                [ i [ class "fa fa-angle-down px-2" ] []
                 ]
             ]
-            (Maybe.map (showSelected cfg.iconOnly) cfg.selected
-                |> Maybe.withDefault [ text texts.select ]
-            )
-        , i [ class "dropdown icon" ] []
         , div
-            [ classList
-                [ ( "menu transition", True )
-                , ( "hidden", not model.menuOpen )
-                , ( "visible", model.menuOpen )
-                ]
+            [ class cfg.style.menu
+            , classList [ ( "hidden", not model.menuOpen ) ]
             ]
-          <|
-            List.map renderItems model.options
+            (List.map renderItem model.options)
         ]
-
-
-showSelected : Bool -> Item a -> List (Html msg)
-showSelected iconOnly item =
-    case item.icon of
-        Just cls ->
-            if iconOnly then
-                [ i [ class cls ] [] ]
-
-            else
-                [ i [ class cls ] []
-                , text item.display
-                ]
-
-        Nothing ->
-            [ text item.display
-            ]
-
-
-renderItems : Item a -> Html (Msg a)
-renderItems item =
-    div [ class "item", onClick (SelectItem item) ]
-        (showSelected False item)
