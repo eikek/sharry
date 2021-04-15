@@ -58,6 +58,10 @@ object Main extends IOApp {
       rec <- restEC
     } yield Pools(cec, bec, blocker, rec)
 
+    if (EnvMode.current.isDev) {
+      logger.warn(">>>>>   Sharry is running in DEV mode!   <<<<<")
+    }
+
     pools.use { p =>
       if ("true" == System.getProperty("sharry.migrate-old-dbschema"))
         MigrateFrom06[IO](cfg.backend.jdbc, p.connectEC, p.blocker)

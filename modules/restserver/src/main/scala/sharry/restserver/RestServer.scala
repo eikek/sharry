@@ -11,6 +11,7 @@ import fs2.Stream
 import sharry.backend.auth.AuthToken
 import sharry.common.LenientUri
 import sharry.common.syntax.all._
+import sharry.restserver.http4s.EnvMiddleware
 import sharry.restserver.routes._
 import sharry.restserver.webapp._
 
@@ -57,9 +58,9 @@ object RestServer {
             else notFound[F](token)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> WebjarRoutes.appRoutes[F](pools.blocker),
-        "/app"        -> templates.app,
-        "/sw.js"      -> templates.serviceWorker,
+        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F](pools.blocker)),
+        "/app"        -> EnvMiddleware(templates.app),
+        "/sw.js"      -> EnvMiddleware(templates.serviceWorker),
         "/"           -> redirectTo("/app")
       ).orNotFound
 

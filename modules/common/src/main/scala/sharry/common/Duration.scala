@@ -61,6 +61,8 @@ final class Duration(val nanos: Long) extends AnyVal {
 
 object Duration {
 
+  val zero: Duration = new Duration(0L)
+
   def apply(d: SDur): Duration =
     new Duration(d.toNanos)
 
