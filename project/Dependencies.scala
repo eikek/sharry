@@ -24,7 +24,7 @@ object Dependencies {
   val OrganizeImportsVersion  = "0.5.0"
   val PostgresVersion         = "42.2.19"
   val PureConfigVersion       = "0.15.0"
-  val SwaggerVersion          = "3.46.0"
+  val SwaggerVersion          = "3.47.1"
   val TikaVersion             = "1.26"
   val TusClientVersion        = "1.8.0-1"
   val YamuscaVersion          = "0.8.0"
