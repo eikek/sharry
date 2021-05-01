@@ -18,7 +18,7 @@ import Page.Login.View2
 import Page.NewInvite.View
 import Page.OpenDetail.View
 import Page.OpenShare.View
-import Page.Register.View
+import Page.Register.View2
 import Page.Settings.View
 import Page.Share.View
 import Page.Upload.View
@@ -195,7 +195,7 @@ menuEntry model page children =
 mainContent : Messages -> Model -> Html Msg
 mainContent texts model =
     div
-        [ id "main"
+        [ id "content"
         , class styleMain
         ]
         [ case model.page of
@@ -292,7 +292,7 @@ viewNewInvite texts model =
 
 viewRegister : Messages -> Model -> Html Msg
 viewRegister texts model =
-    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.registerModel)
+    Html.map RegisterMsg (Page.Register.View2.view texts.register model.flags model.registerModel)
 
 
 viewLogin : Messages -> Model -> Html Msg
