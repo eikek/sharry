@@ -44,7 +44,11 @@ passwordDialog texts model =
             , ( "active", model.password.enabled )
             ]
         ]
-        [ div [ class "inline content" ]
+        [ Html.form
+            [ class "inline content"
+            , onClick SubmitPassword
+            , action "#"
+            ]
             [ h2 [ class "ui inverted icon header" ]
                 [ i [ class "lock icon" ] []
                 , text texts.passwordRequired
@@ -56,9 +60,10 @@ passwordDialog texts model =
                             model.password.field
                             model.password.model
                         )
-                    , a
+                    , button
                         [ class "ui primary button"
                         , href "#"
+                        , type_ "submit"
                         , onClick SubmitPassword
                         ]
                         [ text texts.submit
