@@ -89,4 +89,7 @@ object RAlias {
 
   def delete(aliasId: Ident, accId: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, Sql.and(account.is(accId), id.is(aliasId))).update.run
+
+  def deleteForAccount(accountId: Ident): ConnectionIO[Int] =
+    Sql.deleteFrom(table, account.is(accountId)).update.run
 }

@@ -45,6 +45,18 @@ object AccountRoutes {
           resp <- Ok(Conv.basicResult(res, "Account successfully modified."))
         } yield resp
 
+      case DELETE -> Root / Ident(id) =>
+        for {
+          _   <- logger.finfo(s"Requested to delete account: ${id}")
+          res <- backend.account.delete(id).value
+          resp <- res match {
+            case Some(_) =>
+              Ok(BasicResult(true, "Account successfully deleted."))
+            case None =>
+              NotFound(BasicResult(false, "Account not found"))
+          }
+        } yield resp
+
       case req @ GET -> Root =>
         val q = req.params.getOrElse("q", "")
         for {

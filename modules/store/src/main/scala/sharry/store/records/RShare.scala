@@ -67,4 +67,11 @@ object RShare {
 
   def delete(sid: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, id.is(sid)).update.run
+
+  def getAllByAccount(accId: Ident): ConnectionIO[Vector[Ident]] =
+    Sql
+      .selectSimple(Seq(id), table, accountId.is(accId))
+      .query[Ident]
+      .to[Vector]
+
 }

@@ -1,6 +1,6 @@
 package sharry.backend.signup
 
-import cats.effect.{Effect, Resource}
+import cats.effect._
 import cats.implicits._
 
 import sharry.backend.account._
@@ -27,7 +27,7 @@ object OSignup {
 
   case class RegisterData(login: Ident, password: Password, invite: Option[Ident])
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OSignup[F]] =
+  def apply[F[_]: ConcurrentEffect](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult] =
