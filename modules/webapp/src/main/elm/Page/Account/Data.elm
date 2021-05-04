@@ -41,3 +41,4 @@ type Msg
     | AccountTableMsg Comp.AccountTable.Msg
     | AccountFormMsg Comp.AccountForm.Msg
     | SaveResp (Result Http.Error BasicResult)
+    | DeleteResp (Result Http.Error BasicResult)

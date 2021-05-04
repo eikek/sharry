@@ -5,6 +5,7 @@ module Api exposing
     , createAlias
     , createEmptyShare
     , createEmptyShareAlias
+    , deleteAccount
     , deleteAlias
     , deleteFile
     , deleteShare
@@ -476,6 +477,15 @@ loadAccount flags id receive =
         { url = flags.config.baseUrl ++ "/api/v2/admin/account/" ++ id
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.AccountDetail.decoder
+        }
+
+
+deleteAccount : Flags -> String -> (Result Http.Error BasicResult -> msg) -> Cmd msg
+deleteAccount flags id receive =
+    Http2.authDelete
+        { url = flags.config.baseUrl ++ "/api/v2/admin/account/" ++ id
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.BasicResult.decoder
         }
 
 

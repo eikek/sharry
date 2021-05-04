@@ -1,11 +1,12 @@
 module Messages.AccountForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Messages.FixedDropdown
+import Messages.YesNoDimmer
 
 
 type alias Texts =
@@ -16,6 +17,8 @@ type alias Texts =
     , password : String
     , submit : String
     , back : String
+    , delete : String
+    , yesNo : Messages.YesNoDimmer.Texts
     , dropdown : Messages.FixedDropdown.Texts
     }
 
@@ -29,6 +32,8 @@ gb =
     , password = "Password"
     , submit = "Submit"
     , back = "Back"
+    , delete = "Delete"
+    , yesNo = Messages.YesNoDimmer.gb
     , dropdown = Messages.FixedDropdown.gb
     }
 
@@ -42,8 +47,11 @@ de =
     , password = "Passwort"
     , submit = "Speichern"
     , back = "Zurück"
+    , delete = "Löschen"
+    , yesNo = Messages.YesNoDimmer.de
     , dropdown = Messages.FixedDropdown.de
     }
+
 
 fr : Texts
 fr =
@@ -54,5 +62,7 @@ fr =
     , password = "Mot de passe"
     , submit = "Envoyer"
     , back = "Retour"
+    , delete = "Supprimer"
+    , yesNo = Messages.YesNoDimmer.gb
     , dropdown = Messages.FixedDropdown.fr
     }
