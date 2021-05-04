@@ -46,7 +46,7 @@ update key flags msg model =
         SearchResp (Ok list) ->
             ( { model | searchResult = list.items }, Cmd.none )
 
-        SearchResp (Err err) ->
+        SearchResp (Err _) ->
             ( model, Cmd.none )
 
         LoadResp (Ok acc) ->
@@ -97,6 +97,9 @@ update key flags msg model =
                         FormCancelled ->
                             Page.set key (AccountPage Nothing)
 
+                        FormDelete id ->
+                            Api.deleteAccount flags id DeleteResp
+
                         FormNone ->
                             Cmd.none
             in
@@ -111,6 +114,22 @@ update key flags msg model =
             ( { model | saveResult = Just r }, Cmd.none )
 
         SaveResp (Err err) ->
+            let
+                errmsg =
+                    Util.Http.errorToString err
+            in
+            ( { model | saveResult = Just <| BasicResult False errmsg }
+            , Cmd.none
+            )
+
+        DeleteResp (Ok r) ->
+            if r.success then
+                ( model, Page.set key (AccountPage Nothing) )
+
+            else
+                ( { model | saveResult = Just r }, Cmd.none )
+
+        DeleteResp (Err err) ->
             let
                 errmsg =
                     Util.Http.errorToString err

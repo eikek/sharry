@@ -153,4 +153,7 @@ object RAccount {
       else login.like("%" + loginQ + "%")
     Sql.selectSimple(all, table, q).query[RAccount].stream
   }
+
+  def delete(accountId: Ident): ConnectionIO[Int] =
+    Sql.deleteFrom(table, id.is(accountId)).update.run
 }

@@ -296,6 +296,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Account Management ]
+      summary: Deletes an account.
+      description: |
+        Deletes the account and all its related data.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
   /sec/settings/email:
     get:
       tags: [ Account Management ]

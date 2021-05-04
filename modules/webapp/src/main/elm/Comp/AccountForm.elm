@@ -14,6 +14,7 @@ import Api.Model.AccountDetail exposing (AccountDetail)
 import Api.Model.AccountModify exposing (AccountModify)
 import Comp.FixedDropdown
 import Comp.PasswordInput
+import Comp.YesNoDimmer
 import Data.AccountState exposing (AccountState)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -31,6 +32,7 @@ type alias Model =
     , stateModel : Comp.FixedDropdown.Model AccountState
     , stateField : Comp.FixedDropdown.Item AccountState
     , adminField : Bool
+    , deleteConfirm : Comp.YesNoDimmer.Model
     }
 
 
@@ -58,6 +60,7 @@ initNew =
     , stateModel = Comp.FixedDropdown.initMap Data.AccountState.toString Data.AccountState.all
     , stateField = mkStateItem Data.AccountState.Active
     , adminField = False
+    , deleteConfirm = Comp.YesNoDimmer.emptyModel
     }
 
 
@@ -82,6 +85,8 @@ type Msg
     | ToggleAdmin
     | Cancel
     | Submit
+    | DeleteConfirmMsg Comp.YesNoDimmer.Msg
+    | RequestDelete
 
 
 type FormAction
@@ -89,6 +94,7 @@ type FormAction
     | FormCreated AccountCreate
     | FormCancelled
     | FormNone
+    | FormDelete String
 
 
 isCreate : Model -> Bool
@@ -188,11 +194,36 @@ update msg model =
                             }
                         )
 
+        RequestDelete ->
+            let
+                m =
+                    Comp.YesNoDimmer.activate model.deleteConfirm
+            in
+            ( { model | deleteConfirm = m }, FormNone )
+
+        DeleteConfirmMsg lmsg ->
+            let
+                ( m, confirmed ) =
+                    Comp.YesNoDimmer.update lmsg model.deleteConfirm
+
+                id =
+                    Maybe.map .id model.existing
+            in
+            ( { model | deleteConfirm = m }
+            , if confirmed then
+                Maybe.map FormDelete id
+                    |> Maybe.withDefault FormNone
+
+              else
+                FormNone
+            )
+
 
 view : Texts -> Model -> Html Msg
 view texts model =
     div [ class "ui segments" ]
-        [ Html.form [ class "ui form segment" ]
+        [ Html.map DeleteConfirmMsg (Comp.YesNoDimmer.view texts.yesNo model.deleteConfirm)
+        , Html.form [ class "ui form segment" ]
             [ div
                 [ classList
                     [ ( "disabled field", True )
@@ -281,6 +312,16 @@ view texts model =
                 , onClick Cancel
                 ]
                 [ text texts.back
+                ]
+            , button
+                [ class "ui right floated red button"
+                , classList
+                    [ ( "hidden invisible", Maybe.map .id model.existing == Nothing )
+                    ]
+                , type_ "button"
+                , onClick RequestDelete
+                ]
+                [ text texts.delete
                 ]
             ]
         ]

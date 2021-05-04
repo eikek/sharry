@@ -6,12 +6,13 @@ import cats.implicits._
 import fs2.Stream
 
 import sharry.backend.PasswordCrypt
+import sharry.backend.share.{Queries => ShareQueries}
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.AddResult
 import sharry.store.Store
 import sharry.store.doobie.DoobieMeta
-import sharry.store.records.{ModAccount, RAccount}
+import sharry.store.records._
 
 import doobie._
 import org.log4s._
@@ -19,6 +20,8 @@ import org.log4s._
 trait OAccount[F[_]] {
 
   def create(acc: NewAccount): F[AddResult]
+
+  def delete(id: Ident): OptionT[F, RAccount]
 
   def modify(id: Ident, acc: ModAccount): F[AddResult]
 
@@ -44,7 +47,7 @@ trait OAccount[F[_]] {
 object OAccount {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OAccount[F]] =
+  def apply[F[_]: ConcurrentEffect](store: Store[F]): Resource[F, OAccount[F]] =
     Resource.pure[F, OAccount[F]](new OAccount[F] {
 
       def changePassword(id: Ident, oldPw: Password, newPw: Password): F[AddResult] = {
@@ -72,6 +75,18 @@ object OAccount {
 
         change.getOrElse(AddResult.Failure(new Exception("Account not found")))
       }
+
+      def delete(id: Ident): OptionT[F, RAccount] =
+        for {
+          _      <- OptionT.liftF(logger.finfo(s"Delete account $id"))
+          acc    <- OptionT(store.transact(RAccount.findById(id)))
+          shares <- OptionT.liftF(store.transact(RShare.getAllByAccount(id)))
+          _      <- OptionT.liftF(logger.finfo(s"Delete ${shares.size} shares of account $id"))
+          _ <- OptionT.liftF(
+            shares.traverse(shareId => ShareQueries.deleteShare(shareId, false)(store))
+          )
+          _ <- OptionT.liftF(store.transact(RAccount.delete(id)))
+        } yield acc
 
       def setEmail(id: Ident, email: Option[String]): F[AddResult] =
         store.transact(RAccount.setEmail(id, email)).attempt.map(AddResult.fromEither)
