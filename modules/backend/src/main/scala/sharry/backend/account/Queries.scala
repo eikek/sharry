@@ -32,7 +32,7 @@ object Queries {
     findAccountFragment(aLogin.is(login)).option
   }
 
-  private def findAccountFragment(where: Fragment): Query0[AccountItem] = {
+  private def findAccountFragment(where1: Fragment): Query0[AccountItem] = {
     val aId  = "a" :: RAccount.Columns.id
     val sAcc = "s" :: RShare.Columns.accountId
     val sId  = "s" :: RShare.Columns.id
@@ -40,12 +40,18 @@ object Queries {
     val cols = RAccount.Columns.all
       .map("a" :: _)
       .map(_.f) :+ fr"COUNT(" ++ sId.f ++ fr") as shares"
-    val from =
-      RAccount.table ++ fr"a LEFT OUTER JOIN" ++ RShare.table ++ fr"s ON" ++ aId.is(
-        sAcc
-      ) ++ fr"GROUP BY" ++ aId.f
+    val from1 =
+      RAccount.table ++ fr"a LEFT OUTER JOIN" ++ RShare.table ++ fr"s ON" ++ aId.is(sAcc)
 
-    Sql.selectSimple(Sql.commas(cols), from, where).query[AccountItem]
+    val group = fr"GROUP BY" ++ aId.f
+
+    val (from, where) =
+      if (where1 == Fragment.empty) (from1 ++ group, where1)
+      else (from1, where1 ++ group)
+
+    Sql
+      .selectSimple(Sql.commas(cols), from, where)
+      .query[AccountItem]
   }
 
 }
