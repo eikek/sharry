@@ -130,7 +130,7 @@ found <a href="https://www.eicar.org/?page_id=3950">here</a>.</p>
 
 <p>The host and port the http server binds to.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restsserver.bind {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.bind {
   address = localhost
   port = 9090
 }
@@ -149,12 +149,9 @@ this setting is probably not correct.</p>
 
 <p>By default it is build using the information from the <code class="highlighter-rouge">bind</code> setting.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.baseurl = ...
-</code></pre></div></div>
-
 <h4 id="examples-1">Examples</h4>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.baseurl = "https://sharry.example.com"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.base-url = "https://sharry.example.com"
 </code></pre></div></div>
 
 <h3 id="registration-options">registration options</h3>
@@ -168,12 +165,12 @@ options:</p>
   <li><em>invite</em> new users can sign up but require an invitation key</li>
 </ul>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.signup {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.signup {
   mode = "open"
 
   # If mode == 'invite', a password must be provided to generate
   # invitation keys. It must not be empty.
-  new-invite-password = ""
+  invite-password = ""
 
   # If mode == 'invite', this is the period an invitation token is
   # considered valid.
@@ -184,9 +181,9 @@ options:</p>
 <p>The mode <code class="highlighter-rouge">invite</code> is intended to open the application only to some
 users. An admin user can create invitation keys and distribute them to
 the desired people. While the user must be admin, it is also necessary
-to provide the <code class="highlighter-rouge">new-invite-password</code>. The idea is that only the person
-who installs sharry knows this. If it is not set (must be non-empty),
-then invitation won’t work. New invitation keys can be generated from
+to provide the <code class="highlighter-rouge">invite-password</code>. The idea is that only the person who
+installs sharry knows this. If it is not set (must be non-empty), then
+invitation won’t work. New invitation keys can be generated from
 within the web application or via REST calls (using <code class="highlighter-rouge">curl</code>, for
 example).</p>
 
@@ -202,7 +199,7 @@ cookie header.</p>
 
 <p>The following options configure this token:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.auth {
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.auth {
   server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
   session-valid = "8 minutes"
 }
