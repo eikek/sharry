@@ -1425,6 +1425,9 @@
                     <li data-group="AccountManagement" data-name="adminAccountGet" class="">
                       <a href="#api-AccountManagement-adminAccountGet">adminAccountGet</a>
                     </li>
+                    <li data-group="AccountManagement" data-name="adminAccountIdDelete" class="">
+                      <a href="#api-AccountManagement-adminAccountIdDelete">adminAccountIdDelete</a>
+                    </li>
                     <li data-group="AccountManagement" data-name="adminAccountIdGet" class="">
                       <a href="#api-AccountManagement-adminAccountIdGet">adminAccountIdGet</a>
                     </li>
@@ -1614,7 +1617,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 1.6.0</div>
+              <div class="app-desc">Version: 1.7.0</div>
             <hr>
             <div><p>Sharry provides a way to share files with others in a convenient
 way. The core functionality is provided by a server that can be
@@ -1974,6 +1977,343 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-adminAccountGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-AccountManagement-adminAccountIdDelete">
+                      <article id="api-AccountManagement-adminAccountIdDelete-0" data-group="User" data-name="adminAccountIdDelete" data-version="0">
+                        <div class="pull-left">
+                          <h1>adminAccountIdDelete</h1>
+                          <p>Deletes an account.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Deletes the account and all its related data.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/admin/account/{id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-AccountManagement-adminAccountIdDelete-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-java">Java</a></li>
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-AccountManagement-adminAccountIdDelete-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-AccountManagement-adminAccountIdDelete-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/admin/account/{id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AccountManagementApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AccountManagementApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        AccountManagementApi apiInstance = new AccountManagementApi();
+        String id = id_example; // String | A share identifier
+        try {
+            BasicResult result = apiInstance.adminAccountIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AccountManagementApi#adminAccountIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AccountManagementApi;
+
+public class AccountManagementApiExample {
+
+    public static void main(String[] args) {
+        AccountManagementApi apiInstance = new AccountManagementApi();
+        String id = id_example; // String | A share identifier
+        try {
+            BasicResult result = apiInstance.adminAccountIdDelete(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AccountManagementApi#adminAccountIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"Sharry-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"Sharry-Auth"];
+String *id = id_example; // A share identifier
+
+AccountManagementApi *apiInstance = [[AccountManagementApi alloc] init];
+
+// Deletes an account.
+[apiInstance adminAccountIdDeleteWith:id
+              completionHandler: ^(BasicResult output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Sharry = require('sharry');
+var defaultClient = Sharry.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
+
+var api = new Sharry.AccountManagementApi()
+var id = id_example; // {{String}} A share identifier
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.adminAccountIdDelete(id, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class adminAccountIdDeleteExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("Sharry-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("Sharry-Auth", "Bearer");
+
+            var apiInstance = new AccountManagementApi();
+            var id = id_example;  // String | A share identifier
+
+            try
+            {
+                // Deletes an account.
+                BasicResult result = apiInstance.adminAccountIdDelete(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AccountManagementApi.adminAccountIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('Sharry-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Sharry-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAccountManagementApi();
+$id = id_example; // String | A share identifier
+
+try {
+    $result = $api_instance->adminAccountIdDelete($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AccountManagementApi->adminAccountIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AccountManagementApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'Sharry-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'Sharry-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AccountManagementApi->new();
+my $id = id_example; # String | A share identifier
+
+eval { 
+    my $result = $api_instance->adminAccountIdDelete(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AccountManagementApi->adminAccountIdDelete: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-AccountManagement-adminAccountIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['Sharry-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['Sharry-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AccountManagementApi()
+id = id_example # String | A share identifier
+
+try: 
+    # Deletes an account.
+    api_response = api_instance.admin_account_id_delete(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AccountManagementApi->adminAccountIdDelete: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_adminAccountIdDelete_id">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          A share identifier
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-adminAccountIdDelete-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-adminAccountIdDelete-200-schema">
+                                  <div id='responses-adminAccountIdDelete-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/BasicResult"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-adminAccountIdDelete-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-adminAccountIdDelete-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-adminAccountIdDelete-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
