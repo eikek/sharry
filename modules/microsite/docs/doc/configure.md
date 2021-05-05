@@ -144,7 +144,7 @@ found [here](https://www.eicar.org/?page_id=3950).
 The host and port the http server binds to.
 
 ```
-sharry.restsserver.bind {
+sharry.restserver.bind {
   address = localhost
   port = 9090
 }
@@ -163,15 +163,10 @@ this setting is probably not correct.
 
 By default it is build using the information from the `bind` setting.
 
-
-```
-sharry.restserver.baseurl = ...
-```
-
 #### Examples
 
 ```
-sharry.restserver.baseurl = "https://sharry.example.com"
+sharry.restserver.base-url = "https://sharry.example.com"
 ```
 
 
@@ -186,12 +181,12 @@ options:
 
 
 ```
-sharry.restserver.signup {
+sharry.restserver.backend.signup {
   mode = "open"
 
   # If mode == 'invite', a password must be provided to generate
   # invitation keys. It must not be empty.
-  new-invite-password = ""
+  invite-password = ""
 
   # If mode == 'invite', this is the period an invitation token is
   # considered valid.
@@ -202,9 +197,9 @@ sharry.restserver.signup {
 The mode `invite` is intended to open the application only to some
 users. An admin user can create invitation keys and distribute them to
 the desired people. While the user must be admin, it is also necessary
-to provide the `new-invite-password`. The idea is that only the person
-who installs sharry knows this. If it is not set (must be non-empty),
-then invitation won't work. New invitation keys can be generated from
+to provide the `invite-password`. The idea is that only the person who
+installs sharry knows this. If it is not set (must be non-empty), then
+invitation won't work. New invitation keys can be generated from
 within the web application or via REST calls (using `curl`, for
 example).
 
@@ -222,7 +217,7 @@ cookie header.
 The following options configure this token:
 
 ```
-sharry.restserver.auth {
+sharry.restserver.backend.auth {
   server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
   session-valid = "8 minutes"
 }
