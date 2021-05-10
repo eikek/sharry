@@ -216,21 +216,14 @@ update msg model =
             , Cmd.none
             )
 
-        LangChooseMsg lmsg ->
-            let
-                ( lm, ll ) =
-                    Comp.LanguageChoose.update lmsg model.langChoose
+        ToggleLangMenu ->
+            ( { model | langMenuOpen = not model.langMenuOpen }
+            , Cmd.none
+            )
 
-                cmd =
-                    case ll of
-                        Just lang ->
-                            Ports.setLang lang
-
-                        Nothing ->
-                            Cmd.none
-            in
-            ( { model | langChoose = lm }
-            , cmd
+        SetLanguage lang ->
+            ( { model | langMenuOpen = False }
+            , Ports.setLang lang
             )
 
 

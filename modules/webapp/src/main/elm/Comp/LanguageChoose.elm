@@ -4,7 +4,6 @@ module Comp.LanguageChoose exposing
     , init
     , update
     , view
-    , viewItem
     )
 
 import Comp.FixedDropdown
@@ -39,14 +38,9 @@ view texts selected model =
     Comp.FixedDropdown.viewStyled
         { display = \lang -> Messages.get lang |> .label
         , icon = \lang -> Messages.get lang |> .flagIcon |> Just
-        , selectPlaceholder = ""
+        , selectPlaceholder = texts.select
         , style = DS.mainStyle
         }
         False
         (Just selected)
         model
-
-
-viewItem : Texts -> Language -> Model -> Html Msg
-viewItem =
-    view

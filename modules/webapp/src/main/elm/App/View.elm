@@ -6,6 +6,7 @@ import Comp.LanguageChoose
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Language
 import Markdown
 import Messages exposing (Messages)
 import Page exposing (Page(..))
@@ -102,12 +103,41 @@ topMenuUser account texts model =
 
 languageMenu : Messages -> Model -> Html Msg
 languageMenu texts model =
-    Html.map LangChooseMsg
-        (Comp.LanguageChoose.viewItem
-            texts.login.dropdown
-            texts.lang
-            model.langChoose
-        )
+    let
+        langItem lang =
+            let
+                langMsg =
+                    Messages.get lang
+            in
+            a
+                [ classList
+                    [ ( dropdownItem, True )
+                    , ( "bg-gray-200 dark:bg-warmgray-700", lang == texts.lang )
+                    ]
+                , onClick (SetLanguage lang)
+                , href "#"
+                ]
+                [ i [ langMsg |> .flagIcon |> class ] []
+                , span [ class "ml-2" ] [ text langMsg.label ]
+                ]
+    in
+    div
+        [ class "relative"
+        , classList [ ( "hidden", List.length Language.allLanguages == 1 ) ]
+        ]
+        [ a
+            [ class dropdownLink
+            , onClick ToggleLangMenu
+            , href "#"
+            ]
+            [ i [ class texts.flagIcon ] []
+            ]
+        , div
+            [ class dropdownMenu
+            , classList [ ( "hidden", not model.langMenuOpen ) ]
+            ]
+            (List.map langItem Language.allLanguages)
+        ]
 
 
 userMenu : Messages -> Model -> AuthResult -> Html Msg
