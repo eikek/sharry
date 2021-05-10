@@ -27,7 +27,7 @@ object Dependencies {
   val SwaggerVersion          = "3.48.0"
   val TikaVersion             = "1.26"
   val TusClientVersion        = "1.8.0-1"
-  val YamuscaVersion          = "0.8.0"
+  val YamuscaVersion          = "0.8.1"
 
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % Fs2Version
