@@ -23,7 +23,7 @@ submitting won’t work.</p>
 <p>A share may have a name. This name is mainly meant for the owner to
 helps finding shares easier in the list view. The name will also be
 used as the head line, if the description doesn’t contain a markdown
-headline (a line starting with <code class="highlighter-rouge">#</code>). In that case, users who access
+headline (a line starting with <code class="language-plaintext highlighter-rouge">#</code>). In that case, users who access
 the published site, will see it.</p>
 
 <h3 id="description">Description</h3>
@@ -39,38 +39,38 @@ allows to refer to the attached files. You can access the following
 properties of any uploaded file:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">id</code></li>
-  <li><code class="highlighter-rouge">filename</code></li>
-  <li><code class="highlighter-rouge">url</code></li>
-  <li><code class="highlighter-rouge">mimetype</code></li>
-  <li><code class="highlighter-rouge">size</code></li>
-  <li><code class="highlighter-rouge">length</code></li>
-  <li><code class="highlighter-rouge">checksum</code></li>
+  <li><code class="language-plaintext highlighter-rouge">id</code></li>
+  <li><code class="language-plaintext highlighter-rouge">filename</code></li>
+  <li><code class="language-plaintext highlighter-rouge">url</code></li>
+  <li><code class="language-plaintext highlighter-rouge">mimetype</code></li>
+  <li><code class="language-plaintext highlighter-rouge">size</code></li>
+  <li><code class="language-plaintext highlighter-rouge">length</code></li>
+  <li><code class="language-plaintext highlighter-rouge">checksum</code></li>
 </ul>
 
-<p>The <code class="highlighter-rouge">size</code> is the file size as a human readable string, while <code class="highlighter-rouge">length</code>
+<p>The <code class="language-plaintext highlighter-rouge">size</code> is the file size as a human readable string, while <code class="language-plaintext highlighter-rouge">length</code>
 is the number in bytes. You can refer to files using their name or
 index in the list. When using the file name, all dots in there must be
 removed.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{#file.0}}{{url}}{{/file.0}}
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{#file.0}}{{url}}{{/file.0}}
 </code></pre></div></div>
 
 <p>or</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{filename.dsc0100JPG.url}}
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{filename.dsc0100JPG.url}}
 </code></pre></div></div>
 
 <p>This makes it possible to embed files in the description, for example
 to display an image file, you could write the following description:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![an image]({{filename.DSCF0343JPG.url}})
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>![an image]({{filename.DSCF0343JPG.url}})
 </code></pre></div></div>
 
-<p>There is also a <code class="highlighter-rouge">files</code> property that can be used to iterate through
+<p>There is also a <code class="language-plaintext highlighter-rouge">files</code> property that can be used to iterate through
 all uploaded files. So this would render the id and url of all files:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{#files}}
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{{#files}}
 - {{id}}: {{url}}
 {{/files}}
 </code></pre></div></div>
@@ -103,7 +103,7 @@ anymore.</p>
 <h2 id="publish--unpublish--republish">Publish / Unpublish / Republish</h2>
 
 <p>A share that has not been published can only be accessed by its owner.
-In order to create a link for everyone else, click the <code class="highlighter-rouge">Publish</code>
+In order to create a link for everyone else, click the <code class="language-plaintext highlighter-rouge">Publish</code>
 button in the top right of the detail view of a share.</p>
 
 <p><img src="../screenshots/publish_empty.jpg" class="roundend screenshot" /></p>
@@ -148,7 +148,7 @@ the file list menu and finally the list of files.</p>
 can be changed by clicking that icon.</p>
 
 <p>The description can be edited by clicking the edit icon next to the
-<code class="highlighter-rouge">Publish</code> button in the top right corner.</p>
+<code class="language-plaintext highlighter-rouge">Publish</code> button in the top right corner.</p>
 
 <p>It is also possible to add or remove files of that share. Click the
 right menu item of the file list menu and the upload form appears.</p>
@@ -167,7 +167,7 @@ associated to the owner of that alias page.</p>
 yourself, as they don’t require any authentication. For example, using
 curl you could do:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -H'Sharry-Alias: E5EohHtJHxN' -F file=@test.jpg -F file=@logo.jpg http://localhost:9090/api/v2/alias/upload
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -H'Sharry-Alias: E5EohHtJHxN' -F file=@test.jpg -F file=@logo.jpg http://localhost:9090/api/v2/alias/upload
 {"success":true,"message":"Share created.","id":"FDQvHK2LVGe-SjkDjQxMiSo-8fPyBqKX3AY-nmWWnDsrRX3"}
 </code></pre></div></div>
 

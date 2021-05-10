@@ -16,9 +16,9 @@ Then follow this guide.</p>
 <h2 id="postgres-and-mariadb">Postgres and MariaDB</h2>
 
 <p>For these databases, you can start the restserver binary with a
-special option <code class="highlighter-rouge">-Dsharry.migrate-old-dbschema=true</code>.</p>
+special option <code class="language-plaintext highlighter-rouge">-Dsharry.migrate-old-dbschema=true</code>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./sharry-restserver-1.7.0/bin/sharry-restserver -Dsharry.migrate-old-dbschema=true ./sharry-new.conf
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./sharry-restserver-1.7.1/bin/sharry-restserver -Dsharry.migrate-old-dbschema=true ./sharry-new.conf
 </code></pre></div></div>
 
 <p>This will not start the restserver but rather run the migration
@@ -44,15 +44,15 @@ changed afterwards.</p>
 
 <h3 id="dump">Dump</h3>
 
-<p>The dump can be created using a tool provided by h2: <code class="highlighter-rouge">Script</code>
+<p>The dump can be created using a tool provided by h2: <code class="language-plaintext highlighter-rouge">Script</code>
 (<a href="https://h2database.com/javadoc/org/h2/tools/Script.html">doc</a>). It
 is in the jar file that is on your disk if you have sharry installed.
 So the dump can be created like this:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.7.0/lib/com.h2database.h2-1.4.200.jar org.h2.tools.Script -url "jdbc:h2:///var/data/sharry/sharry-old-db" -user sa -password ""
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.7.1/lib/com.h2database.h2-1.4.200.jar org.h2.tools.Script -url "jdbc:h2:///var/data/sharry/sharry-old-db" -user sa -password ""
 </code></pre></div></div>
 
-<p>This will create a <code class="highlighter-rouge">backup.sql</code> file in the current directory.</p>
+<p>This will create a <code class="language-plaintext highlighter-rouge">backup.sql</code> file in the current directory.</p>
 
 <h3 id="change-the-dump">Change the Dump</h3>
 
@@ -60,7 +60,7 @@ So the dump can be created like this:</p>
 case and the datatype for a blob is called bytea in postgres. This can
 be changed with GNU Sed:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sed -i 's,"CHUNKDATA" BLOB NOT NULL,"CHUNKDATA" BYTEA NOT NULL,g' backup.sql
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sed -i 's,"CHUNKDATA" BLOB NOT NULL,"CHUNKDATA" BYTEA NOT NULL,g' backup.sql
 sed -i 's,"[_A-Z]*",\L&amp;,g' backup.sql
 </code></pre></div></div>
 
@@ -74,11 +74,11 @@ words in quotes into lowercase.</p>
 <p>Now the changed dump must be imported into a new database. Since h2
 creates one on demand, just run the command and specify now the new
 connection – to an unexisting file and with the required settings
-<code class="highlighter-rouge">MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE</code>. Again, a tool from h2 can be
-used (<code class="highlighter-rouge">RunScript</code>,
+<code class="language-plaintext highlighter-rouge">MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE</code>. Again, a tool from h2 can be
+used (<code class="language-plaintext highlighter-rouge">RunScript</code>,
 <a href="https://h2database.com/javadoc/org/h2/tools/RunScript.html">doc</a>):</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.7.0/lib/com.h2database.h2-1.4.200.jar org.h2.tools.RunScript -url "jdbc:h2:///var/data/sharry/sharry-newdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE" -user sa -password ""
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java -cp sharry-restserver-1.7.1/lib/com.h2database.h2-1.4.200.jar org.h2.tools.RunScript -url "jdbc:h2:///var/data/sharry/sharry-newdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE" -user sa -password ""
 </code></pre></div></div>
 
 <h3 id="migrate">Migrate</h3>

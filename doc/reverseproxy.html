@@ -5,8 +5,8 @@
 <p>For the examples below, assume the following:</p>
 
 <ul>
-  <li>Sharry app is available at <code class="highlighter-rouge">192.168.1.11:9090</code>.</li>
-  <li>The external domain/hostname is <code class="highlighter-rouge">sharry.example.com</code></li>
+  <li>Sharry app is available at <code class="language-plaintext highlighter-rouge">192.168.1.11:9090</code>.</li>
+  <li>The external domain/hostname is <code class="language-plaintext highlighter-rouge">sharry.example.com</code></li>
 </ul>
 
 <h2 id="configuring-sharry">Configuring Sharry</h2>
@@ -17,11 +17,11 @@ configuration file:</p>
 <ul>
   <li>
     <p>First, if Sharry REST server is on a different machine, you need to
-change the <code class="highlighter-rouge">bind.address</code> setting to be either <code class="highlighter-rouge">0.0.0.0</code> or the ip
+change the <code class="language-plaintext highlighter-rouge">bind.address</code> setting to be either <code class="language-plaintext highlighter-rouge">0.0.0.0</code> or the ip
 address of the network interface that the reverse proxy server
 connects to.</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver {
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver {
   # Where the server binds to.
   bind {
     address = "192.168.1.11"
@@ -30,17 +30,17 @@ connects to.</p>
 }
 </code></pre></div>    </div>
 
-    <p>Note that a value of <code class="highlighter-rouge">0.0.0.0</code> instead of <code class="highlighter-rouge">192.168.1.11</code> will bind
+    <p>Note that a value of <code class="language-plaintext highlighter-rouge">0.0.0.0</code> instead of <code class="language-plaintext highlighter-rouge">192.168.1.11</code> will bind
 the server to every network interface. If it is running on the same
-machine as the reverse proxy server, you can set <code class="highlighter-rouge">localhost</code>
+machine as the reverse proxy server, you can set <code class="language-plaintext highlighter-rouge">localhost</code>
 instead.</p>
   </li>
   <li>
-    <p>Sharry needs to know the external url. The <code class="highlighter-rouge">base-url</code> setting must
+    <p>Sharry needs to know the external url. The <code class="language-plaintext highlighter-rouge">base-url</code> setting must
 point to the external address. Using above values, it must be set to
-<code class="highlighter-rouge">https://sharry.example.com</code>.</p>
+<code class="language-plaintext highlighter-rouge">https://sharry.example.com</code>.</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver {
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver {
 
   # This is the base URL this application is deployed to. This is used
   # to create absolute URLs and to configure the cookie.
@@ -55,10 +55,10 @@ point to the external address. Using above values, it must be set to
   <li>
     <p>The maximum request size should probably be increased at the reverse
 proxy. This depends on your machine, of course. The sharry related
-setting is <code class="highlighter-rouge">sharry.restserver.webapp.chunk-size</code>. This defines the
+setting is <code class="language-plaintext highlighter-rouge">sharry.restserver.webapp.chunk-size</code>. This defines the
 size that is used for uploading chunks of data in one request.</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver {
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver {
   webapp {
     # Chunk size used for one request. The server will re-chunk the
     # stream into smaller chunks. But the client can transfer more in
@@ -82,17 +82,17 @@ this site.</p>
 
 <p>This defines two servers: one listens for http traffic and redirects
 to the https variant. Additionally it defines the let’s encrypt
-<code class="highlighter-rouge">.well-known</code> folder name.</p>
+<code class="language-plaintext highlighter-rouge">.well-known</code> folder name.</p>
 
 <p>The https server endpoint is configured with the let’s encrypt
 certificates and acts as a proxy for the application at
-<code class="highlighter-rouge">192.168.1.11:9090</code>.</p>
+<code class="language-plaintext highlighter-rouge">192.168.1.11:9090</code>.</p>
 
-<p>The setting <code class="highlighter-rouge">client_max_body_size</code> is relevant, too. This is the
+<p>The setting <code class="language-plaintext highlighter-rouge">client_max_body_size</code> is relevant, too. This is the
 maximum size of a single requests. This must be greater than sharry’s
-<code class="highlighter-rouge">webapp.chunk-size</code> setting.</p>
+<code class="language-plaintext highlighter-rouge">webapp.chunk-size</code> setting.</p>
 
-<p>The setting <code class="highlighter-rouge">proxy_buffering off;</code> disables buffering responses from
+<p>The setting <code class="language-plaintext highlighter-rouge">proxy_buffering off;</code> disables buffering responses from
 the application coming to nginx. Buffering may introduce backpressure
 problems if the client is not reading fast enough. The response coming
 from the application may quickly be too large to fit in memory and
@@ -101,7 +101,7 @@ default). If this limit is reached, nginx waits until the client has
 received all disk buffered data which in turn can result in send
 timeouts.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http {
     map $http_upgrade $connection_upgrade {
         default upgrade;
         '' close;

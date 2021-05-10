@@ -4,56 +4,56 @@
 
 <p>Clone the repository using <a href="https://git-scm.org">git</a>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/eikek/sharry
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/eikek/sharry
 </code></pre></div></div>
 
 <p>Install <a href="https://elm-lang.org">Elm</a> and <a href="https://scala-sbt.org">Sbt</a>,
-which is used to build the application. Start <code class="highlighter-rouge">sbt</code> in the source root
+which is used to build the application. Start <code class="language-plaintext highlighter-rouge">sbt</code> in the source root
 and run inside the sbt shell:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">make</code> to compile all sources (Elm + Scala)</li>
-  <li><code class="highlighter-rouge">make-zip</code> to create zip packages</li>
-  <li><code class="highlighter-rouge">make-deb</code> to create debian packages</li>
-  <li><code class="highlighter-rouge">make-pkg</code> to run a clean compile and create both packages</li>
+  <li><code class="language-plaintext highlighter-rouge">make</code> to compile all sources (Elm + Scala)</li>
+  <li><code class="language-plaintext highlighter-rouge">make-zip</code> to create zip packages</li>
+  <li><code class="language-plaintext highlighter-rouge">make-deb</code> to create debian packages</li>
+  <li><code class="language-plaintext highlighter-rouge">make-pkg</code> to run a clean compile and create both packages</li>
 </ul>
 
 <p>The zip file can be found afterwards in:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modules/restserver/target/universal/
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modules/restserver/target/universal/
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">deb</code> file is in</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modules/restserver/target/
+<p>The <code class="language-plaintext highlighter-rouge">deb</code> file is in</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modules/restserver/target/
 </code></pre></div></div>
 
-<h2 id="starting-servers-with-restart">Starting Servers with <code class="highlighter-rouge">reStart</code></h2>
+<h2 id="starting-servers-with-restart">Starting Servers with <code class="language-plaintext highlighter-rouge">reStart</code></h2>
 
 <p>When developing, it’s very convenient to use the <a href="https://github.com/spray/sbt-revolver">revolver sbt
 plugin</a>. Start the sbt console
 and then run:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sbt:sharry-root&gt; restserver/reStart
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sbt:sharry-root&gt; restserver/reStart
 </code></pre></div></div>
 
-<p>This starts a REST server. Prefixing the commads with <code class="highlighter-rouge">~</code>, results in
+<p>This starts a REST server. Prefixing the commads with <code class="language-plaintext highlighter-rouge">~</code>, results in
 recompile+restart once a source file is modified.</p>
 
 <p>Note that with current sbt the revolver plugin will not restart the
 server if elm files are changed. But this is not really necessary:
-just run a second sbt shell with <code class="highlighter-rouge">~ compile</code> and sbt will <em>compile</em>
+just run a second sbt shell with <code class="language-plaintext highlighter-rouge">~ compile</code> and sbt will <em>compile</em>
 all elm files on change and the final js file is immediately
 available. Only a browser refresh is necessary to load the new web
 app.</p>
 
 <h2 id="custom-config-file">Custom config file</h2>
 
-<p>The sbt build is setup such that a file <code class="highlighter-rouge">local/dev.conf</code> (from the
+<p>The sbt build is setup such that a file <code class="language-plaintext highlighter-rouge">local/dev.conf</code> (from the
 root of the source tree) is picked up as config file, if it exists. So
 you can create a custom config file for development. For example, a
 custom database for development may be setup this way:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#jdbcurl = "jdbc:h2:///home/dev/workspace/projects/sharry/local/sharry-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#jdbcurl = "jdbc:h2:///home/dev/workspace/projects/sharry/local/sharry-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
 #jdbcurl = "jdbc:mariadb://localhost:3306/sharrydev"
 jdbcurl = "jdbc:postgresql://localhost:5432/sharrydev"
 
@@ -70,23 +70,23 @@ sharry.restserver {
 
 <h2 id="nix-expressions">Nix Expressions</h2>
 
-<p>The directory <code class="highlighter-rouge">/nix</code> contains nix expressions to install sharry via
+<p>The directory <code class="language-plaintext highlighter-rouge">/nix</code> contains nix expressions to install sharry via
 the nix package manager and to integrate it into NixOS as a system
 service.</p>
 
 <h3 id="testing-nixos-modules">Testing NixOS Modules</h3>
 
-<p>The modules can be build by building the <code class="highlighter-rouge">configuration-test.nix</code> file
+<p>The modules can be build by building the <code class="language-plaintext highlighter-rouge">configuration-test.nix</code> file
 together with some nixpkgs version. For example:</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nixos-rebuild build-vm <span class="nt">-I</span> nixos-config<span class="o">=</span>./configuration-test.nix <span class="se">\</span>
   <span class="nt">-I</span> <span class="nv">nixpkgs</span><span class="o">=</span>https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
 </code></pre></div></div>
 
-<p>This will build all modules imported in <code class="highlighter-rouge">configuration-test.nix</code> and
+<p>This will build all modules imported in <code class="language-plaintext highlighter-rouge">configuration-test.nix</code> and
 create a virtual machine containing the system, including sharry.
 After that completes, the system configuration can be found behind the
-<code class="highlighter-rouge">./result/system</code> symlink. So it is possible to look at the generated
+<code class="language-plaintext highlighter-rouge">./result/system</code> symlink. So it is possible to look at the generated
 systemd config for example:</p>
 
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat </span>result/system/etc/systemd/system/sharry.service

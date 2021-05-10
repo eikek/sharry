@@ -18,51 +18,51 @@ refer to their documentation for more on this.</p>
 
 <h2 id="important-config-options">Important Config Options</h2>
 
-<p>The configuration for the REST server is below <code class="highlighter-rouge">sharry.restserver</code>.</p>
+<p>The configuration for the REST server is below <code class="language-plaintext highlighter-rouge">sharry.restserver</code>.</p>
 
 <h3 id="jdbc">JDBC</h3>
 
 <p>This configures the connection to the database. By default, a H2
-database in the current <code class="highlighter-rouge">/tmp</code> directory is configured. This will
+database in the current <code class="language-plaintext highlighter-rouge">/tmp</code> directory is configured. This will
 create the database on demand in this directory.</p>
 
 <p>The config looks like this:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.jdbc {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.jdbc {
   url = ...
   user = ...
   password = ...
 }
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">url</code> is the connection to the database. It must start with
-<code class="highlighter-rouge">jdbc</code>, followed by name of the database. The rest is specific to the
+<p>The <code class="language-plaintext highlighter-rouge">url</code> is the connection to the database. It must start with
+<code class="language-plaintext highlighter-rouge">jdbc</code>, followed by name of the database. The rest is specific to the
 database used: it is either a path to a file for H2 or a host/database
 url for MariaDB and PostgreSQL.</p>
 
-<p>When using H2, the user is <code class="highlighter-rouge">sa</code>, the password can be empty and the url
+<p>When using H2, the user is <code class="language-plaintext highlighter-rouge">sa</code>, the password can be empty and the url
 must include these options:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
 </code></pre></div></div>
 
 <h4 id="examples">Examples</h4>
 
 <p>PostgreSQL:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:postgresql://localhost:5432/sharrydb"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:postgresql://localhost:5432/sharrydb"
 </code></pre></div></div>
 
 <p>MariaDB:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:mariadb://localhost:3306/sharrydb"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:mariadb://localhost:3306/sharrydb"
 </code></pre></div></div>
 
 <p>H2</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
 </code></pre></div></div>
 
 <h3 id="database-checks">Database Checks</h3>
 
-<p>The setting <code class="highlighter-rouge">database-domain-checks</code> is used when inspecting errors
+<p>The setting <code class="language-plaintext highlighter-rouge">database-domain-checks</code> is used when inspecting errors
 that happen when uploading files. It allows to translate database
 error messages into a message that is presented to the end user.</p>
 
@@ -71,7 +71,7 @@ for more information and motivation.</p>
 
 <p>The example provided is this:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.share {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.share {
 
   # Allows additional database checks to be translated into some
   # meaningful message to the user.
@@ -130,13 +130,13 @@ found <a href="https://www.eicar.org/?page_id=3950">here</a>.</p>
 
 <p>The host and port the http server binds to.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.bind {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.bind {
   address = localhost
   port = 9090
 }
 </code></pre></div></div>
 
-<p>By default, it binds to <code class="highlighter-rouge">localhost</code> and some predefined port.</p>
+<p>By default, it binds to <code class="language-plaintext highlighter-rouge">localhost</code> and some predefined port.</p>
 
 <h3 id="baseurl">baseurl</h3>
 
@@ -147,11 +147,11 @@ are sent to the client, so they must resolve back to the sharry
 server. If you see “network error” error messages in the browser, then
 this setting is probably not correct.</p>
 
-<p>By default it is build using the information from the <code class="highlighter-rouge">bind</code> setting.</p>
+<p>By default it is build using the information from the <code class="language-plaintext highlighter-rouge">bind</code> setting.</p>
 
 <h4 id="examples-1">Examples</h4>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.base-url = "https://sharry.example.com"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.base-url = "https://sharry.example.com"
 </code></pre></div></div>
 
 <h3 id="registration-options">registration options</h3>
@@ -165,7 +165,7 @@ options:</p>
   <li><em>invite</em> new users can sign up but require an invitation key</li>
 </ul>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.signup {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.signup {
   mode = "open"
 
   # If mode == 'invite', a password must be provided to generate
@@ -178,16 +178,16 @@ options:</p>
 }
 </code></pre></div></div>
 
-<p>The mode <code class="highlighter-rouge">invite</code> is intended to open the application only to some
+<p>The mode <code class="language-plaintext highlighter-rouge">invite</code> is intended to open the application only to some
 users. An admin user can create invitation keys and distribute them to
 the desired people. While the user must be admin, it is also necessary
-to provide the <code class="highlighter-rouge">invite-password</code>. The idea is that only the person who
+to provide the <code class="language-plaintext highlighter-rouge">invite-password</code>. The idea is that only the person who
 installs sharry knows this. If it is not set (must be non-empty), then
 invitation won’t work. New invitation keys can be generated from
-within the web application or via REST calls (using <code class="highlighter-rouge">curl</code>, for
+within the web application or via REST calls (using <code class="language-plaintext highlighter-rouge">curl</code>, for
 example).</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -X POST -H 'Sharry-Auth: ' -d '{"password":"blabla"}' "http://localhost:7880/api/v1/open/signup/newinvite"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -X POST -H 'Sharry-Auth: ' -d '{"password":"blabla"}' "http://localhost:7880/api/v1/open/signup/newinvite"
 </code></pre></div></div>
 
 <h2 id="authentication">Authentication</h2>
@@ -199,27 +199,27 @@ cookie header.</p>
 
 <p>The following options configure this token:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.auth {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.auth {
   server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
   session-valid = "8 minutes"
 }
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">server-secret</code> is used to sign the token. If multiple REST
+<p>The <code class="language-plaintext highlighter-rouge">server-secret</code> is used to sign the token. If multiple REST
 servers are deployed, all must share the same server secret. Otherwise
 tokens from one instance are not valid on another instance. The secret
 can be given as Base64 encoded string or in hex form. Use the prefix
-<code class="highlighter-rouge">hex:</code> and <code class="highlighter-rouge">b64:</code>, respectively. If these prefixes are missing, the
+<code class="language-plaintext highlighter-rouge">hex:</code> and <code class="language-plaintext highlighter-rouge">b64:</code>, respectively. If these prefixes are missing, the
 string’s utf8 bytes are used.</p>
 
-<p>The <code class="highlighter-rouge">session-valid</code> deterimens how long a token is valid. This can be
+<p>The <code class="language-plaintext highlighter-rouge">session-valid</code> deterimens how long a token is valid. This can be
 just some minutes, the web application obtains new ones
 periodically. So a rather short time is recommended.</p>
 
 <p>The interval the webapp retrieves a new token can be configured, too.
-It must be at least 30s below the <code class="highlighter-rouge">session-valid</code> time.</p>
+It must be at least 30s below the <code class="language-plaintext highlighter-rouge">session-valid</code> time.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.webapp {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.webapp {
   auth-renewal = "4 minutes"
 }
 </code></pre></div></div>
@@ -230,10 +230,10 @@ It must be at least 30s below the <code class="highlighter-rouge">session-valid<
 credentials. There are some modules that take a username/password pair
 and hand it to an external service or program for verification. If
 valid, sharry creates an account transparently. Then there is the
-<code class="highlighter-rouge">oauth</code> setting which supports authentication via OAuth using “OAuth
+<code class="language-plaintext highlighter-rouge">oauth</code> setting which supports authentication via OAuth using “OAuth
 Code Flow”.</p>
 
-<p>All login modules can be enabled/disabled and have an <code class="highlighter-rouge">order</code> property
+<p>All login modules can be enabled/disabled and have an <code class="language-plaintext highlighter-rouge">order</code> property
 that defines the order the login modules are tried. The modules are
 tried in the specified order until one gives a response.</p>
 
@@ -243,7 +243,7 @@ tried in the specified order until one gives a response.</p>
 account using the supplied username and password (plain text) from the
 config file.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fixed {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fixed {
   enabled = false
   user = "admin"
   password = "admin"
@@ -261,7 +261,7 @@ tried.</p>
 pair as payload. The response status code determines valid
 authentication.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http {
   enabled = false
   url = "http://localhost:1234/auth?user={{user}}&amp;password={{pass}}"
   method = "POST"
@@ -271,19 +271,19 @@ authentication.</p>
 }
 </code></pre></div></div>
 
-<p>If the method is <code class="highlighter-rouge">POST</code>, the body is sent as specified using the given
+<p>If the method is <code class="language-plaintext highlighter-rouge">POST</code>, the body is sent as specified using the given
 content type. The body and url are processed before as mustache
-templates, where <code class="highlighter-rouge">{{user}}</code> and <code class="highlighter-rouge">{{pass}}</code> are replaced by their actual values. For other
-requests than <code class="highlighter-rouge">POST</code>, the body is ignored.</p>
+templates, where <code class="language-plaintext highlighter-rouge">{{user}}</code> and <code class="language-plaintext highlighter-rouge">{{pass}}</code> are replaced by their actual values. For other
+requests than <code class="language-plaintext highlighter-rouge">POST</code>, the body is ignored.</p>
 
 <h4 id="http-basic">Http Basic</h4>
 
 <p>The http-basic login module issues a http request with an
-<code class="highlighter-rouge">Authorization</code> header against some configured url. The header uses
+<code class="language-plaintext highlighter-rouge">Authorization</code> header against some configured url. The header uses
 the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">Basic</a>
 scheme to transport the username/password pair.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http-basic {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http-basic {
   enabled = false
   url = "http://somehost:2345/path"
   method = "GET"
@@ -291,14 +291,14 @@ scheme to transport the username/password pair.</p>
 }
 </code></pre></div></div>
 
-<p>If the response is successful (in <code class="highlighter-rouge">2xx</code>), the user is authenticated.</p>
+<p>If the response is successful (in <code class="language-plaintext highlighter-rouge">2xx</code>), the user is authenticated.</p>
 
 <h4 id="command">Command</h4>
 
 <p>Allows to validate a username/password pair using some external system
 command. This is the most flexible approach.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command {
   enabled = false
   program = [
     "/path/to/someprogram"
@@ -312,11 +312,11 @@ command. This is the most flexible approach.</p>
 </code></pre></div></div>
 
 <p>The return code of the command is used to determine valid
-authentication. The <code class="highlighter-rouge">program</code> value is an array where the first item
+authentication. The <code class="language-plaintext highlighter-rouge">program</code> value is an array where the first item
 is the path to the program and subsequent elements define its
 arguments.</p>
 
-<p>All arguments are processed as a mustache template and variables <code class="highlighter-rouge">{{user}}</code> and <code class="highlighter-rouge">{{pass}}</code> are
+<p>All arguments are processed as a mustache template and variables <code class="language-plaintext highlighter-rouge">{{user}}</code> and <code class="language-plaintext highlighter-rouge">{{pass}}</code> are
 replaced by their actual values.</p>
 
 <h4 id="internal">Internal</h4>
@@ -333,10 +333,10 @@ file for Github and Google. I tried to generalise it as much as
 possible, but (it seems to me) OAuth is not really a protocol, every
 provider may choose to do it little differently.</p>
 
-<p>The <code class="highlighter-rouge">oauth</code> login module can be configured with multiple such
+<p>The <code class="language-plaintext highlighter-rouge">oauth</code> login module can be configured with multiple such
 providers. Here is an example:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>oauth = [
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>oauth = [
     {
        enabled = false
        id = "github"
@@ -368,43 +368,43 @@ name.</p>
 <p>Let’s go through the config values of one entry:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">enabled</code>: allows to disable this entry without removing it from the
+  <li><code class="language-plaintext highlighter-rouge">enabled</code>: allows to disable this entry without removing it from the
 file.</li>
-  <li><code class="highlighter-rouge">id</code>: the id that is used in the url behind the button on the login
+  <li><code class="language-plaintext highlighter-rouge">id</code>: the id that is used in the url behind the button on the login
 screen. It is also used to amend the account name.</li>
-  <li><code class="highlighter-rouge">name</code>: The name rendered as button text.</li>
-  <li><code class="highlighter-rouge">icon</code>: a <a href="https://semantic-ui.com/elements/icon.html">semantic-ui icon
+  <li><code class="language-plaintext highlighter-rouge">name</code>: The name rendered as button text.</li>
+  <li><code class="language-plaintext highlighter-rouge">icon</code>: a <a href="https://semantic-ui.com/elements/icon.html">semantic-ui icon
 name</a> for the button</li>
-  <li><code class="highlighter-rouge">authorize-url</code> this is the URL of the provider where sharry
-redirects to at first, attaching <code class="highlighter-rouge">client_id</code> and the redirect uri
+  <li><code class="language-plaintext highlighter-rouge">authorize-url</code> this is the URL of the provider where sharry
+redirects to at first, attaching <code class="language-plaintext highlighter-rouge">client_id</code> and the redirect uri
 back to sharry.</li>
-  <li><code class="highlighter-rouge">token-url</code>: The url to the provdier where the response from the
-<code class="highlighter-rouge">authorize-url</code> can be turned into a token.</li>
-  <li><code class="highlighter-rouge">user-url</code>: The url to the provider that retrieves the user
-information given a token as obtained from <code class="highlighter-rouge">token-url</code>.</li>
-  <li><code class="highlighter-rouge">user-id-key</code>: Now it get’s a bit hairy…. The protocol doesn’t
+  <li><code class="language-plaintext highlighter-rouge">token-url</code>: The url to the provdier where the response from the
+<code class="language-plaintext highlighter-rouge">authorize-url</code> can be turned into a token.</li>
+  <li><code class="language-plaintext highlighter-rouge">user-url</code>: The url to the provider that retrieves the user
+information given a token as obtained from <code class="language-plaintext highlighter-rouge">token-url</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">user-id-key</code>: Now it get’s a bit hairy…. The protocol doesn’t
 define (afaik) a common way how to exchange user data. So google
 does it different from github. Sharry supports JSON responses only
-and uses the value of <code class="highlighter-rouge">user-id-key</code> to lookup a value in that
+and uses the value of <code class="language-plaintext highlighter-rouge">user-id-key</code> to lookup a value in that
 response structure. For example, the github response is a simple
-JSON object, where the login name is at field <code class="highlighter-rouge">login</code>. The path must
+JSON object, where the login name is at field <code class="language-plaintext highlighter-rouge">login</code>. The path must
 evaluate to a string. This value is used for the new account inside
 sharry.</li>
-  <li><code class="highlighter-rouge">client-id</code> and <code class="highlighter-rouge">client-secret</code> These are provider specific values
+  <li><code class="language-plaintext highlighter-rouge">client-id</code> and <code class="language-plaintext highlighter-rouge">client-secret</code> These are provider specific values
 that you need to obtain there. With github, for example, you
 register a new “app” which generates these values.</li>
 </ul>
 
 <p>Once sharry gets the account name, it creates a new account (if it not
 exists already) using the account name from the provider amended with
-<code class="highlighter-rouge">@&lt;id&gt;</code>.</p>
+<code class="language-plaintext highlighter-rouge">@&lt;id&gt;</code>.</p>
 
 <p>I only tested this with github and google, I would appreciate any
 information on how it works with other providers.</p>
 
 <h2 id="default-config">Default Config</h2>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 sharry.restserver {
 
   # This is the base URL this application is deployed to. This is used
@@ -806,7 +806,7 @@ for how to configure logging.</p>
 <p>If you created your logback config file, it can be added as argument
 to the executable using this syntax:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/path/to/sharry -Dlogback.configurationFile=/path/to/your/logging-config-file
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/path/to/sharry -Dlogback.configurationFile=/path/to/your/logging-config-file
 </code></pre></div></div>
 
 <p>To get started, the default config looks like this:</p>
@@ -827,8 +827,8 @@ to the executable using this syntax:</p>
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">&lt;root level="INFO"&gt;</code> means, that only log statements with level
-“INFO” will be printed. But the <code class="highlighter-rouge">&lt;logger name="sharry"
+<p>The <code class="language-plaintext highlighter-rouge">&lt;root level="INFO"&gt;</code> means, that only log statements with level
+“INFO” will be printed. But the <code class="language-plaintext highlighter-rouge">&lt;logger name="sharry"
 level="debug"&gt;</code> above says, that for loggers with name “sharry”
 statements from level “DEBUG” on will be printed, too.</p>
 </section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script src="/sharry/lunr/lunr.js"></script><script>

@@ -9,8 +9,8 @@ can use the derivation from this repository. This is sometimes
 referred to as <a href="https://nixos.wiki/wiki/Import_From_Derivation">import from
 derivation</a>.</p>
 
-<p>For example, the <code class="highlighter-rouge">builtins.fetchTarball</code> function can be used to
-retrieve the files; then import the <code class="highlighter-rouge">release.nix</code> file:</p>
+<p>For example, the <code class="language-plaintext highlighter-rouge">builtins.fetchTarball</code> function can be used to
+retrieve the files; then import the <code class="language-plaintext highlighter-rouge">release.nix</code> file:</p>
 
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
   <span class="nv">sharrysrc</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/eikek/sharry/archive/master.tar.gz"</span><span class="p">;</span>
@@ -20,7 +20,7 @@ retrieve the files; then import the <code class="highlighter-rouge">release.nix<
 
 <p>This creates a set containing a function for creating a derivation for
 sharry. This then needs to be called like other custom packages. For
-example, in your <code class="highlighter-rouge">~/.nixpkgs/config.nix</code> you could write this:</p>
+example, in your <code class="language-plaintext highlighter-rouge">~/.nixpkgs/config.nix</code> you could write this:</p>
 
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
   <span class="nv">sharrysrc</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/eikek/sharry/archive/master.tar.gz"</span><span class="p">;</span>
@@ -36,27 +36,27 @@ example, in your <code class="highlighter-rouge">~/.nixpkgs/config.nix</code> yo
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Then you can install sharry via <code class="highlighter-rouge">nix-shell</code> or <code class="highlighter-rouge">nix-env</code>, for example:</p>
+<p>Then you can install sharry via <code class="language-plaintext highlighter-rouge">nix-shell</code> or <code class="language-plaintext highlighter-rouge">nix-env</code>, for example:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nix-env <span class="nt">-iA</span> nixpkgs.sharry
 </code></pre></div></div>
 
-<p>You may need to replace <code class="highlighter-rouge">nixpkgs</code> with <code class="highlighter-rouge">nixos</code> when you’re on NixOS.</p>
+<p>You may need to replace <code class="language-plaintext highlighter-rouge">nixpkgs</code> with <code class="language-plaintext highlighter-rouge">nixos</code> when you’re on NixOS.</p>
 
-<p>The expression <code class="highlighter-rouge">sharry.currentPkg</code> refers to the most current release
+<p>The expression <code class="language-plaintext highlighter-rouge">sharry.currentPkg</code> refers to the most current release
 of Sharry. So even if you use the tarball of the current master
-branch, the <code class="highlighter-rouge">release.nix</code> file only contains derivations for releases.
-The expression <code class="highlighter-rouge">sharry.currentPkg</code> is a shortcut for selecting the
-most current release. For example it translates to <code class="highlighter-rouge">sharry.pkg
-sharry.cfg.v1_7_0</code> – if the current version is <code class="highlighter-rouge">1.7.0</code>.</p>
+branch, the <code class="language-plaintext highlighter-rouge">release.nix</code> file only contains derivations for releases.
+The expression <code class="language-plaintext highlighter-rouge">sharry.currentPkg</code> is a shortcut for selecting the
+most current release. For example it translates to <code class="language-plaintext highlighter-rouge">sharry.pkg
+sharry.cfg.v1_7_1</code> – if the current version is <code class="language-plaintext highlighter-rouge">1.7.1</code>.</p>
 
 <h2 id="sharry-as-a-service-on-nixos">Sharry as a service on NixOS</h2>
 
 <p>If you are running <a href="https://nixos.org">NixOS</a>, there is a module
 definition for installing Sharry as a service using systemd.</p>
 
-<p>You need to import the <code class="highlighter-rouge">release.nix</code> file as described above in your
-<code class="highlighter-rouge">configuration.nix</code> and then append the sharry module to your list of
+<p>You need to import the <code class="language-plaintext highlighter-rouge">release.nix</code> file as described above in your
+<code class="language-plaintext highlighter-rouge">configuration.nix</code> and then append the sharry module to your list of
 modules. Here is an example:</p>
 
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">config</span><span class="p">,</span> <span class="nv">pkgs</span><span class="p">,</span> <span class="o">...</span> <span class="p">}:</span>
@@ -94,7 +94,7 @@ modules. Here is an example:</p>
 
 </code></pre></div></div>
 
-<p>Please see the <code class="highlighter-rouge">nix/module.nix</code> file for the set of options. The nixos
+<p>Please see the <code class="language-plaintext highlighter-rouge">nix/module.nix</code> file for the set of options. The nixos
 options are modelled after the default configuration file.</p>
 </section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script src="/sharry/lunr/lunr.js"></script><script>
 // For all code blocks, copy the language from the containing div
