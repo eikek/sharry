@@ -48,7 +48,10 @@ update msg model =
                     Data.UiTheme.cycle model.anonymousTheme
             in
             -- when not logged in, simply set the theme
-            ( { model | anonymousTheme = next }
+            ( { model
+                | anonymousTheme = next
+                , navMenuOpen = False
+              }
             , Ports.setUiTheme next
             )
 
@@ -97,7 +100,15 @@ update msg model =
             )
 
         ToggleNavMenu ->
-            ( { model | navMenuOpen = not model.navMenuOpen }
+            ( { model
+                | navMenuOpen = not model.navMenuOpen
+                , langMenuOpen =
+                    if model.navMenuOpen then
+                        model.langMenuOpen
+
+                    else
+                        False
+              }
             , Cmd.none
             )
 
@@ -217,7 +228,15 @@ update msg model =
             )
 
         ToggleLangMenu ->
-            ( { model | langMenuOpen = not model.langMenuOpen }
+            ( { model
+                | langMenuOpen = not model.langMenuOpen
+                , navMenuOpen =
+                    if model.langMenuOpen then
+                        model.navMenuOpen
+
+                    else
+                        False
+              }
             , Cmd.none
             )
 

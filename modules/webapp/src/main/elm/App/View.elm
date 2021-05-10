@@ -96,7 +96,7 @@ topMenuUser account texts model =
         [ headerNavItem model
         , div [ class "flex flex-grow justify-end" ]
             [ languageMenu texts model
-            , userMenu texts model account
+            , userMenu2 texts model account
             ]
         ]
 
@@ -140,86 +140,108 @@ languageMenu texts model =
         ]
 
 
-userMenu : Messages -> Model -> AuthResult -> Html Msg
-userMenu texts model acc =
-    div
-        [ class "ui dropdown icon link item"
-        , onClick ToggleNavMenu
-        ]
-        [ i [ class "ui bars icon" ] []
-        , div
-            [ classList
-                [ ( "left menu", True )
-                , ( "transition visible", model.navMenuOpen )
-                , ( "transition hidden", not model.navMenuOpen )
+userMenu2 : Messages -> Model -> AuthResult -> Html Msg
+userMenu2 texts model acc =
+    let
+        activeClass page =
+            classList
+                [ ( "bg-gray-200 dark:bg-warmgray-700", model.page == page )
                 ]
+
+        pageLink page content =
+            a
+                [ Page.href page
+                , activeClass page
+                , class dropdownItem
+                , onClick ToggleNavMenu
+                ]
+                content
+    in
+    div [ class "relative" ]
+        [ a
+            [ class dropdownLink
+            , onClick ToggleNavMenu
+            , href "#"
             ]
-            [ menuEntry model
-                HomePage
+            [ i [ class "fa fa-bars w-6" ] []
+            ]
+        , div
+            [ class dropdownMenu
+            , classList [ ( "hidden", not model.navMenuOpen ) ]
+            ]
+            [ pageLink HomePage
                 [ img
-                    [ class "image icon logo-icon"
+                    [ class "h-6 w-6 mx-auto inline-block -ml-1"
                     , src model.flags.config.iconUrl
                     ]
                     []
-                , text texts.app.home
+                , span [ class "ml-2" ]
+                    [ text texts.app.home
+                    ]
                 ]
-            , div [ class "divider" ] []
-            , menuEntry model
-                UploadPage
-                [ i [ class "ui upload icon" ] []
-                , text texts.app.shares
+            , div [ class "py-1" ] [ hr [ class S.border ] [] ]
+            , pageLink UploadPage
+                [ i [ class "fa fa-upload w-6" ] []
+                , span [ class "ml-1" ]
+                    [ text texts.app.shares
+                    ]
                 ]
-            , menuEntry model
-                (AliasPage Nothing)
-                [ i [ class "ui dot circle outline icon" ] []
-                , text texts.app.aliases
+            , pageLink (AliasPage Nothing)
+                [ i [ class "fa fa-dot-circle font-thin w-6" ] []
+                , span [ class "ml-1" ]
+                    [ text texts.app.aliases
+                    ]
                 ]
             , if acc.admin then
-                menuEntry model
-                    (AccountPage Nothing)
-                    [ i [ class "ui users icon" ] []
-                    , text texts.app.accounts
+                pageLink (AccountPage Nothing)
+                    [ i [ class "fa fa-users w-6" ] []
+                    , span [ class "ml-1" ]
+                        [ text texts.app.accounts
+                        ]
                     ]
 
               else
-                span [] []
-            , menuEntry model
-                SettingsPage
-                [ i [ class "ui cog icon" ] []
-                , text texts.app.settings
+                span [ class "hidden" ] []
+            , pageLink SettingsPage
+                [ i [ class "fa fa-cog w-6" ] []
+                , span [ class "ml-1" ]
+                    [ text texts.app.settings
+                    ]
                 ]
             , if acc.admin && model.flags.config.signupMode == "invite" then
-                menuEntry model
-                    NewInvitePage
-                    [ i [ class "ui key icon" ] []
-                    , text texts.app.newInvites
+                pageLink NewInvitePage
+                    [ i [ class "fa fa-key w-6" ] []
+                    , span [ class "ml-1" ]
+                        [ text texts.app.newInvites
+                        ]
                     ]
 
               else
                 span [] []
-            , div [ class "divider" ] []
+            , div [ class "py-1" ] [ hr [ class S.border ] [] ]
             , a
-                [ class "icon item"
-                , href ""
+                [ href "#"
+                , onClick ToggleDarkMode
+                , class dropdownItem
+                ]
+                [ i [ class "fa fa-adjust w-6" ] []
+                , span [ class "ml-1" ]
+                    [ text texts.app.lightDark
+                    ]
+                ]
+            , div [ class "py-1" ] [ hr [ class S.border ] [] ]
+            , a
+                [ href "#"
+                , class dropdownItem
                 , onClick Logout
                 ]
-                [ i [ class "sign-out icon" ] []
-                , text (texts.app.logout acc.user)
+                [ i [ class "fa fa-sign-out-alt w-6" ] []
+                , span [ class "ml-1" ]
+                    [ text (texts.app.logout acc.user)
+                    ]
                 ]
             ]
         ]
-
-
-menuEntry : Model -> Page -> List (Html Msg) -> Html Msg
-menuEntry model page children =
-    a
-        [ classList
-            [ ( "icon item", True )
-            , ( "active", model.page == page )
-            ]
-        , Page.href page
-        ]
-        children
 
 
 mainContent : Messages -> Model -> Html Msg
