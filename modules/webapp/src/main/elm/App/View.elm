@@ -62,7 +62,8 @@ topMenuAnon texts model =
         , div
             [ class "flex flex-grow justify-end"
             ]
-            [ a
+            [ languageMenu texts model
+            , a
                 [ href "#"
                 , onClick ToggleDarkMode
                 , class dropdownLink
@@ -391,7 +392,7 @@ footer model =
                 customFooter
 
     else
-        span [ class "invisible hidden" ] []
+        span [ class "hidden" ] []
 
 
 
@@ -405,12 +406,12 @@ styleTopNav =
 
 styleMain : String
 styleMain =
-    "mt-6 flex flex-grow flex-col w-full h-screen-12 overflow-y-hidden bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+    "mt-11 flex flex-grow flex-col w-full h-screen-11 overflow-y-hidden bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
 
 
 styleFooter : String
 styleFooter =
-    "py-1 text-xs items-center text-center"
+    "pt-1 text-xs items-center text-center"
 
 
 dropdownLink : String

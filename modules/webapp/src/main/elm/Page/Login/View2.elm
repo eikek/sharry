@@ -3,14 +3,11 @@ module Page.Login.View2 exposing (view)
 import Api
 import Api.Model.OAuthItem exposing (OAuthItem)
 import Comp.Basic as Basic
-import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onSubmit)
-import Language exposing (Language)
 import Markdown
-import Messages
 import Messages.LoginPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
@@ -19,11 +16,6 @@ import Styles as S
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
-    let
-        currentLanguage =
-            Messages.fromFlags flags
-                |> .lang
-    in
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -32,7 +24,7 @@ view texts flags model =
         [ div [ class ("flex flex-col px-2 sm:px-4 py-4 rounded-md min-w-full md:min-w-0 md:w-96" ++ S.box) ]
             [ div [ class "self-center" ]
                 [ img
-                    [ class "max-w-xs mx-auto max-h-24"
+                    [ class "max-w-xs mx-auto max-h-20"
                     , src flags.config.iconUrl
                     ]
                     []
@@ -108,22 +100,16 @@ view texts flags model =
               else
                 renderOAuthButtons texts flags model
             , resultMessage texts model
-            , renderLangAndSignup currentLanguage texts flags model
+            , renderLangAndSignup texts flags
             ]
         , renderWelcome flags
         ]
 
 
-renderLangAndSignup : Language -> Texts -> Flags -> Model -> Html Msg
-renderLangAndSignup current texts flags model =
+renderLangAndSignup : Texts -> Flags -> Html Msg
+renderLangAndSignup texts flags =
     div [ class "flex flex-row mt-6 items-center" ]
-        [ Html.map LangChooseMsg
-            (Comp.LanguageChoose.view
-                texts.dropdown
-                current
-                model.langChoose
-            )
-        , div
+        [ div
             [ classList
                 [ ( "hidden", flags.config.signupMode == "closed" )
                 ]

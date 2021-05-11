@@ -1,13 +1,10 @@
 module Page.Register.View2 exposing (view)
 
 import Comp.Basic as B
-import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Language exposing (Language)
-import Messages
 import Messages.RegisterPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
@@ -16,11 +13,6 @@ import Styles as S
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
-    let
-        currentLanguage =
-            Messages.fromFlags flags
-                |> .lang
-    in
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -29,7 +21,7 @@ view texts flags model =
         [ div [ class ("flex flex-col px-2 sm:px-4 py-4 rounded-md min-w-full md:min-w-0 md:w-96" ++ S.box) ]
             [ div [ class "self-center" ]
                 [ img
-                    [ class "max-w-xs mx-auto max-h-24"
+                    [ class "max-w-xs mx-auto max-h-20"
                     , src flags.config.iconUrl
                     ]
                     []
@@ -191,22 +183,16 @@ view texts flags model =
                         ]
                     ]
                 , resultMessage texts model
-                , renderLangAndSignin currentLanguage texts model
+                , renderLangAndSignin texts
                 ]
             ]
         ]
 
 
-renderLangAndSignin : Language -> Texts -> Model -> Html Msg
-renderLangAndSignin current texts model =
+renderLangAndSignin : Texts -> Html Msg
+renderLangAndSignin texts =
     div [ class "flex flex-row mt-6 items-center" ]
-        [ Html.map LangChooseMsg
-            (Comp.LanguageChoose.view
-                texts.dropdown
-                current
-                model.langChoose
-            )
-        , div
+        [ div
             [ class "flex flex-col flex-grow justify-end text-right text-sm opacity-75"
             ]
             [ span [ class "" ]
