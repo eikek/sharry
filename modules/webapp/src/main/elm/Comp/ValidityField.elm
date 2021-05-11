@@ -48,6 +48,9 @@ view texts validity model =
         value =
             findValidityItem texts validity
     in
-    -- Html.map ValidityMsg
-    --     (Comp.FixedDropdown.view (Just value) texts.dropdown model)
-    Debug.todo "implement"
+    div [] []
+
+
+
+-- Html.map ValidityMsg
+--     (Comp.FixedDropdown.view (Just value) texts.dropdown model)
