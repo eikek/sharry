@@ -2,7 +2,6 @@ module App.View exposing (view)
 
 import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
-import Comp.LanguageChoose
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -249,7 +248,7 @@ mainContent : Messages -> Model -> Html Msg
 mainContent texts model =
     div
         [ id "content"
-        , class styleMain
+        , class styleContent
         ]
         [ case model.page of
             HomePage ->
@@ -406,7 +405,12 @@ styleTopNav =
 
 styleMain : String
 styleMain =
-    "mt-11 flex flex-grow flex-col w-full h-screen-11 overflow-y-hidden bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+    "pt-12 flex flex-grow flex-col w-full h-screen overflow-y-hidden bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+
+
+styleContent : String
+styleContent =
+    "h-full"
 
 
 styleFooter : String
