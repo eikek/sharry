@@ -25,11 +25,11 @@ view texts _ =
                     [ text texts.shareFilesWithOthers
                     ]
                 ]
-            , div [ class "w-full flex flex-row justify-center mt-8" ]
+            , div [ class "w-full flex flex-col sm:flex-row sm:justify-center mt-8" ]
                 [ B.primaryButton
                     { label = texts.createShare
                     , icon = "fa fa-upload"
-                    , handler = class ""
+                    , handler = class "text-xl sm:text-base"
                     , disabled = False
                     , attrs =
                         [ Page.href SharePage
@@ -38,7 +38,7 @@ view texts _ =
                 , B.secondaryButton
                     { label = texts.viewShares
                     , icon = "fa fa-eye"
-                    , handler = class "ml-2"
+                    , handler = class "mt-2 text-xl sm:text-base sm:mt-0 sm:ml-2"
                     , disabled = False
                     , attrs =
                         [ Page.href UploadPage
