@@ -1,5 +1,6 @@
 module Comp.Basic exposing
-    ( editLinkTableCell2
+    ( editLinkLabel
+    , editLinkTableCell
     , genericButton
     , horizontalDivider
     , inputRequired
@@ -9,6 +10,7 @@ module Comp.Basic exposing
     , primaryButton
     , secondaryBasicButton
     , secondaryButton
+    , stats
     )
 
 import Html exposing (..)
@@ -188,8 +190,8 @@ loadingDimmer cfg =
         ]
 
 
-editLinkLabel2 : String -> msg -> Html msg
-editLinkLabel2 label click =
+editLinkLabel : String -> msg -> Html msg
+editLinkLabel label click =
     linkLabel
         { label = label
         , icon = "fa fa-edit"
@@ -198,10 +200,35 @@ editLinkLabel2 label click =
         }
 
 
-editLinkTableCell2 : String -> msg -> Html msg
-editLinkTableCell2 label m =
+editLinkTableCell : String -> msg -> Html msg
+editLinkTableCell label m =
     td [ class S.editLinkTableCellStyle ]
-        [ editLinkLabel2 label m
+        [ editLinkLabel label m
+        ]
+
+
+stats :
+    { x
+        | valueClass : String
+        , rootClass : String
+        , value : String
+        , label : String
+    }
+    -> Html msg
+stats model =
+    div
+        [ class "flex flex-col mx-6"
+        , class model.rootClass
+        ]
+        [ div
+            [ class "uppercase text-center"
+            , class model.valueClass
+            ]
+            [ text model.value
+            ]
+        , div [ class "text-center uppercase font-semibold" ]
+            [ text model.label
+            ]
         ]
 
 

@@ -405,7 +405,7 @@ styleTopNav =
 
 styleMain : String
 styleMain =
-    "pt-12 flex flex-grow flex-col w-full h-screen overflow-y-hidden bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+    "pt-12 flex flex-grow flex-col w-full h-screen bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
 
 
 styleContent : String

@@ -11,12 +11,14 @@ module Comp.MailSend exposing
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.MailTemplate exposing (MailTemplate)
+import Comp.Basic as B
 import Comp.MailForm exposing (FormAction(..))
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
 import Messages.MailSend exposing (Texts)
+import Styles as S
 import Util.Http
 
 
@@ -146,22 +148,18 @@ update flags msg model =
 
 view : Texts -> List ( String, Bool ) -> Model -> Html Msg
 view texts classes model =
-    div [ classList classes ]
-        [ div
-            [ classList
-                [ ( "ui dimmer", True )
-                , ( "active", model.loader.active )
-                ]
-            ]
-            [ div [ class "ui text loader" ]
-                [ text (model.loader.message texts)
-                ]
-            ]
+    div
+        [ classList classes
+        , class "relative"
+        ]
+        [ B.loadingDimmer
+            { active = model.loader.active
+            , label = model.loader.message texts
+            }
         , div
             [ classList
-                [ ( "ui message", True )
-                , ( "hidden invisible", model.result == Nothing )
-                , ( "error"
+                [ ( "hidden", model.result == Nothing )
+                , ( S.errorMessage
                   , Maybe.map .success model.result
                         |> Maybe.map not
                         |> Maybe.withDefault False

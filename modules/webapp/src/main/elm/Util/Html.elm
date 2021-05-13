@@ -14,16 +14,17 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (keyCode, on, preventDefaultOn)
 import Json.Decode as D
+import Styles as S
 
 
 checkboxChecked : Html msg
 checkboxChecked =
-    i [ class "ui check square outline icon" ] []
+    i [ class "fa fa-check-square font-thin" ] []
 
 
 checkboxUnchecked : Html msg
 checkboxUnchecked =
-    i [ class "ui square outline icon" ] []
+    i [ class "fa fa-minus-square font-thin" ] []
 
 
 checkbox : Bool -> Html msg
@@ -49,10 +50,9 @@ resultMsgMaybe : Maybe BasicResult -> Html msg
 resultMsgMaybe mres =
     div
         [ classList
-            [ ( "ui message", True )
-            , ( "invisible hidden", mres == Nothing )
-            , ( "error", Maybe.map .success mres == Just False )
-            , ( "success", Maybe.map .success mres == Just True )
+            [ ( " hidden", mres == Nothing )
+            , ( S.errorMessage, Maybe.map .success mres == Just False )
+            , ( S.successMessage, Maybe.map .success mres == Just True )
             ]
         ]
         [ Maybe.map .message mres

@@ -59,7 +59,7 @@ infoMessage =
 message : String
 message =
     " border border-gray-600 bg-gray-50 text-gray-600 "
-        ++ "dark:border-warmgray-400 dark:bg-warmgray-600 dark:bg-opacity-80 dark:text-warmgray-400 "
+        ++ "dark:border-warmgray-500 dark:bg-warmgray-700 dark:bg-opacity-80 dark:text-warmgray-400 "
         ++ "px-4 py-2 rounded "
 
 
@@ -234,7 +234,7 @@ textAreaInput =
 
 inputIcon : String
 inputIcon =
-    "absolute left-3 top-3 w-10 text-gray-400 dark:text-warmgray-400  "
+    "absolute left-3 top-2 w-10 text-gray-400 dark:text-warmgray-400  "
 
 
 dateInputIcon : String
@@ -328,7 +328,7 @@ dimmerCard =
 
 tableMain : String
 tableMain =
-    "border-collapse table w-full"
+    "border-collapse table w-full dark:text-warmgray-300"
 
 
 tableRow : String

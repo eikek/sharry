@@ -11,14 +11,16 @@ module Comp.AliasForm exposing
 
 import Api.Model.AliasChange exposing (AliasChange)
 import Api.Model.AliasDetail exposing (AliasDetail)
+import Comp.Basic as B
+import Comp.ConfirmModal
 import Comp.ValidityField
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.ValidityValue exposing (ValidityValue(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Messages.AliasForm exposing (Texts)
+import Styles as S
 import Util.Maybe
 
 
@@ -29,7 +31,7 @@ type alias Model =
     , validityModel : Comp.ValidityField.Model
     , validityField : ValidityValue
     , enabledField : Bool
-    , yesNoModel : Comp.YesNoDimmer.Model
+    , deleteRequested : Bool
     }
 
 
@@ -47,7 +49,7 @@ initNew flags =
     , validityModel = Comp.ValidityField.init flags
     , validityField = Data.ValidityValue.Days 2
     , enabledField = True
-    , yesNoModel = Comp.YesNoDimmer.emptyModel
+    , deleteRequested = False
     }
 
 
@@ -74,7 +76,8 @@ type Msg
     | Cancel
     | Submit
     | RequestDelete
-    | YesNoMsg Comp.YesNoDimmer.Msg
+    | DeleteConfirm
+    | DeleteCancel
 
 
 type FormAction
@@ -93,6 +96,10 @@ isCreate model =
 formInvalid : Model -> Bool
 formInvalid model =
     Util.Maybe.fromString model.nameField == Nothing
+
+
+
+--- Update
 
 
 update : Msg -> Model -> ( Model, FormAction )
@@ -121,29 +128,23 @@ update msg model =
             , FormNone
             )
 
-        YesNoMsg lmsg ->
-            let
-                ( m, confirmed ) =
-                    Comp.YesNoDimmer.update lmsg model.yesNoModel
+        DeleteConfirm ->
+            case Maybe.map .id model.existing of
+                Just id ->
+                    ( model
+                    , FormDelete id
+                    )
 
-                id =
-                    Maybe.map .id model.existing
-            in
-            ( { model | yesNoModel = m }
-            , if confirmed then
-                Maybe.map FormDelete id
-                    |> Maybe.withDefault FormNone
+                Nothing ->
+                    ( model, FormNone )
 
-              else
-                FormNone
+        DeleteCancel ->
+            ( { model | deleteRequested = False }
+            , FormNone
             )
 
         RequestDelete ->
-            let
-                m =
-                    Comp.YesNoDimmer.activate model.yesNoModel
-            in
-            ( { model | yesNoModel = m }, FormNone )
+            ( { model | deleteRequested = True }, FormNone )
 
         Cancel ->
             ( model, FormCancelled )
@@ -174,32 +175,53 @@ update msg model =
                         ( model, FormCreated ac )
 
 
+
+--- View
+
+
 view : Texts -> Model -> Html Msg
 view texts model =
-    div []
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view texts.yesNo model.yesNoModel)
-        , Html.form [ class "ui top attached form segment" ]
+    let
+        modalSettings =
+            Comp.ConfirmModal.defaultSettings
+                DeleteConfirm
+                DeleteCancel
+                texts.yesNo.confirmButton
+                texts.yesNo.cancelButton
+                texts.yesNo.message
+    in
+    div [ class "flex flex-col relative" ]
+        [ Comp.ConfirmModal.view { modalSettings | enabled = model.deleteRequested }
+        , Html.form [ class "" ]
             [ div
                 [ classList
-                    [ ( "field", True )
-                    , ( "invisible", isCreate model )
+                    [ ( "hidden", isCreate model )
                     ]
+                , class "mb-4"
                 ]
-                [ label [] [ text texts.id ]
+                [ label
+                    [ class S.inputLabel
+                    , for "alias-id"
+                    ]
+                    [ text texts.id
+                    ]
                 , input
                     [ type_ "text"
+                    , id "alias-id"
+                    , onInput SetId
                     , Maybe.withDefault "" model.idField
                         |> value
-                    , onInput SetId
+                    , class S.textInput
                     ]
                     []
                 , div
                     [ classList
-                        [ ( "ui message", True )
-                        , ( "invisible hidden", isCreate model )
+                        [ ( "hidden", isCreate model )
                         ]
+                    , class S.warnMessage
+                    , class "mt-2"
                     ]
-                    [ div [ class "header" ]
+                    [ div [ class S.header3 ]
                         [ text texts.noteToIdsHead
                         ]
                     , Html.map (\_ -> Cancel) texts.noteToIds
@@ -210,17 +232,34 @@ view texts model =
                     [ ( "required field", True )
                     , ( "error", String.isEmpty model.nameField )
                     ]
+                , class "mb-4"
                 ]
-                [ label [] [ text texts.name ]
+                [ label
+                    [ class S.inputLabel
+                    , for "alias-name"
+                    ]
+                    [ text texts.name
+                    , B.inputRequired
+                    ]
                 , input
                     [ type_ "text"
                     , value model.nameField
                     , onInput SetName
+                    , class S.textInput
+                    , classList
+                        [ ( S.inputErrorBorder, String.isEmpty model.nameField )
+                        ]
+                    , id "alias-name"
                     ]
                     []
                 ]
-            , div [ class "required field" ]
-                [ label [] [ text texts.validity ]
+            , div [ class "mb-4" ]
+                [ label
+                    [ class S.inputLabel
+                    ]
+                    [ text texts.validity
+                    , B.inputRequired
+                    ]
                 , Html.map ValidityMsg
                     (Comp.ValidityField.view
                         texts.validityField
@@ -228,35 +267,47 @@ view texts model =
                         model.validityModel
                     )
                 ]
-            , div [ class "inline required field" ]
-                [ div [ class "ui checkbox" ]
+            , div [ class "mb-4" ]
+                [ label
+                    [ class "inline-flex items-center"
+                    , for "alias-enabled"
+                    ]
                     [ input
                         [ type_ "checkbox"
                         , onCheck (\_ -> ToggleEnabled)
                         , checked model.enabledField
+                        , class S.checkboxInput
+                        , id "alias-enabled"
                         ]
                         []
-                    , label [] [ text texts.enabled ]
+                    , span [ class "ml-2" ]
+                        [ text texts.enabled
+                        ]
                     ]
                 ]
             ]
-        , div [ class "ui secondary bottom attached segment" ]
+        , div
+            [ class "mb-4"
+            ]
             [ button
                 [ type_ "button"
-                , class "ui primary button"
+                , class S.primaryButton
+                , class "mr-2"
                 , onClick Submit
                 ]
                 [ text texts.submit
                 ]
             , button
-                [ class "ui button"
+                [ class S.secondaryButton
                 , type_ "button"
                 , onClick Cancel
                 ]
                 [ text texts.back
                 ]
             , button
-                [ class "ui right floated red button"
+                [ class "float-right"
+                , class S.deleteButton
+                , classList [ ( "hidden", isCreate model ) ]
                 , type_ "button"
                 , onClick RequestDelete
                 ]

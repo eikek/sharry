@@ -7,6 +7,7 @@ module Comp.ValidityField exposing
     )
 
 import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.ValidityOptions
     exposing
@@ -46,11 +47,18 @@ view : Texts -> ValidityValue -> Model -> Html Msg
 view texts validity model =
     let
         value =
-            findValidityItem texts validity
+            findValidityItem texts validity |> Tuple.second
+
+        dropdownCfg =
+            { display = \vv -> findValidityItem texts vv |> Tuple.first
+            , icon = \_ -> Nothing
+            , style = DS.mainStyle
+            , selectPlaceholder = texts.dropdown.select
+            }
     in
-    div [] []
-
-
-
--- Html.map ValidityMsg
---     (Comp.FixedDropdown.view (Just value) texts.dropdown model)
+    Html.map ValidityMsg
+        (Comp.FixedDropdown.viewStyled dropdownCfg
+            False
+            (Just value)
+            model
+        )

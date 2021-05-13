@@ -198,7 +198,7 @@ viewStyled cfg error sel model =
             , href "#"
             ]
             [ div
-                [ class "flex-grow mr-4"
+                [ class "flex-grow"
                 , classList
                     [ ( "opacity-50", sel == Nothing )
                     ]
