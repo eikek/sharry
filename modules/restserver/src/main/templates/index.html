@@ -27,11 +27,13 @@
         <script type="application/javascript">
          var storedAccount = localStorage.getItem('account');
          var lang = localStorage.getItem('language');
+         var theme = localStorage.getItem('uiTheme');
          var account = storedAccount ? JSON.parse(storedAccount) : null;
          var sharryFlags = {{{flagsJson}}};
          var elmFlags = {
              "account": account,
              "language": lang,
+             "uiTheme": theme,
              "config": sharryFlags
          };
         </script>

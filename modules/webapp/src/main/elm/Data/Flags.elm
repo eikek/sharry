@@ -12,6 +12,7 @@ import Util.Size
 type alias Flags =
     { account : Maybe AuthResult
     , language : Maybe String
+    , uiTheme : Maybe String
     , config : AppConfig
     }
 

@@ -47,7 +47,7 @@ type alias Model =
     , settingsModel : Page.Settings.Data.Model
     , detailModel : Page.Detail.Data.Model
     , openDetailModel : Page.OpenDetail.Data.Model
-    , anonymousTheme : UiTheme
+    , uiTheme : UiTheme
     }
 
 
@@ -79,7 +79,10 @@ init key url flags_ =
     , settingsModel = Page.Settings.Data.emptyModel
     , detailModel = Page.Detail.Data.emptyModel
     , openDetailModel = Page.OpenDetail.Data.emptyModel
-    , anonymousTheme = Data.UiTheme.Light
+    , uiTheme =
+        Maybe.andThen Data.UiTheme.fromString
+            flags.uiTheme
+            |> Maybe.withDefault Data.UiTheme.Light
     }
 
 

@@ -19,6 +19,21 @@ function extend() {
     return result;
 }
 
+function applyUiTheme(themeName) {
+    var body = document.getElementsByTagName("body");
+    if (themeName && body && body.length > 0) {
+        var bodyClasses = body[0].classList;
+        // seems that body attributes cannot be set from inside Elm.
+        if (themeName.toLowerCase() === 'dark') {
+            bodyClasses.add("bg-warmgray-800");
+            bodyClasses.add("dark");
+        } else {
+            bodyClasses.remove("bg-warmgray-800");
+            bodyClasses.remove("dark");
+        }
+    }
+}
+
 
 var elmApp = Elm.Main.init({
     node: document.getElementById("sharry-app"),
@@ -169,16 +184,11 @@ elmApp.ports.initClipboard.subscribe(function(args) {
 });
 
 elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
-    var body = document.getElementsByTagName("body");
-    if (body && body.length > 0) {
-        var bodyClasses = body[0].classList;
-        // seems that body attributes cannot be set from inside Elm.
-        if (themeName && themeName.toLowerCase() === 'dark') {
-            bodyClasses.add("bg-warmgray-800");
-            bodyClasses.add("dark");
-        } else {
-            bodyClasses.remove("bg-warmgray-800");
-            bodyClasses.remove("dark");
-        }
+    if (themeName) {
+        localStorage.setItem("uiTheme", themeName);
+        applyUiTheme(themeName);
     }
 });
+
+
+applyUiTheme(localStorage.getItem('uiTheme'));

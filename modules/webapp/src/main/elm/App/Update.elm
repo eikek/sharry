@@ -45,11 +45,10 @@ update msg model =
         ToggleDarkMode ->
             let
                 next =
-                    Data.UiTheme.cycle model.anonymousTheme
+                    Data.UiTheme.cycle model.uiTheme
             in
-            -- when not logged in, simply set the theme
             ( { model
-                | anonymousTheme = next
+                | uiTheme = next
                 , navMenuOpen = False
               }
             , Ports.setUiTheme next
