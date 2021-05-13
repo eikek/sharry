@@ -431,6 +431,23 @@ I only tested this with github and google, I would appreciate any
 information on how it works with other providers.
 
 
+## Cleanup
+
+Sharry has a periodic cleanup job that will delete 'invalid'
+resources. This cleanup job runs in the backend and is triggered
+by a timer every `interval` as defined in the `cleanup` block. It
+cleans up the following resources:
+
+- Expired, published shares and their files are removed once the
+  expiration datetime is older than `invalid-age` defined in the
+  `cleanup` block.
+- Expired invites are removed based on the `invite-time` from the
+  `signup` block.
+- Orphaned files are removed. However, orphaned files should not
+  happen as long as all shares and files are maintained by only
+  sharry and not any external modifications.
+
+
 ## Default Config
 
 
