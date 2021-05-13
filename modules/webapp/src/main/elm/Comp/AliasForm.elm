@@ -13,6 +13,7 @@ import Api.Model.AliasChange exposing (AliasChange)
 import Api.Model.AliasDetail exposing (AliasDetail)
 import Comp.Basic as B
 import Comp.ConfirmModal
+import Comp.MenuBar as MB
 import Comp.ValidityField
 import Data.Flags exposing (Flags)
 import Data.ValidityValue exposing (ValidityValue(..))
@@ -268,22 +269,13 @@ view texts model =
                     )
                 ]
             , div [ class "mb-4" ]
-                [ label
-                    [ class "inline-flex items-center"
-                    , for "alias-enabled"
-                    ]
-                    [ input
-                        [ type_ "checkbox"
-                        , onCheck (\_ -> ToggleEnabled)
-                        , checked model.enabledField
-                        , class S.checkboxInput
-                        , id "alias-enabled"
-                        ]
-                        []
-                    , span [ class "ml-2" ]
-                        [ text texts.enabled
-                        ]
-                    ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "alias-enabled"
+                        , value = model.enabledField
+                        , tagger = \_ -> ToggleEnabled
+                        , label = texts.enabled
+                        }
                 ]
             ]
         , div

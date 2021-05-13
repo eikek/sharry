@@ -113,7 +113,10 @@ view texts flags model =
                             , div [ class "field" ]
                                 [ label [] [ text texts.password ]
                                 , Html.map PasswordMsg
-                                    (Comp.PasswordInput.view model.passwordField
+                                    (Comp.PasswordInput.view
+                                        { placeholder = "" }
+                                        model.passwordField
+                                        False
                                         model.passwordModel
                                     )
                                 ]

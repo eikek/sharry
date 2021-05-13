@@ -82,7 +82,9 @@ changePasswordForm texts model =
                     [ label [] [ text texts.currentPassword ]
                     , Html.map SetOldPassword
                         (Comp.PasswordInput.view
+                            { placeholder = "" }
                             model.oldPasswordField
+                            False
                             model.oldPasswordModel
                         )
                     ]
@@ -90,7 +92,9 @@ changePasswordForm texts model =
                     [ label [] [ text texts.newPassword ]
                     , Html.map SetNewPassword1
                         (Comp.PasswordInput.view
+                            { placeholder = "" }
                             model.newPasswordField1
+                            False
                             model.newPasswordModel1
                         )
                     ]
@@ -98,7 +102,9 @@ changePasswordForm texts model =
                     [ label [] [ text texts.newPasswordRepeat ]
                     , Html.map SetNewPassword2
                         (Comp.PasswordInput.view
+                            { placeholder = "" }
                             model.newPasswordField2
+                            False
                             model.newPasswordModel2
                         )
                     ]

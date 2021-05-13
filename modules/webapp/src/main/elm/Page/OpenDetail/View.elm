@@ -57,7 +57,9 @@ passwordDialog texts model =
                 [ div [ class "ui action input" ]
                     [ Html.map PasswordMsg
                         (Comp.PasswordInput.view
+                            { placeholder = "" }
                             model.password.field
+                            False
                             model.password.model
                         )
                     , button

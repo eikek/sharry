@@ -12,15 +12,18 @@ module Comp.AccountForm exposing
 import Api.Model.AccountCreate exposing (AccountCreate)
 import Api.Model.AccountDetail exposing (AccountDetail)
 import Api.Model.AccountModify exposing (AccountModify)
+import Comp.Basic as B
+import Comp.ConfirmModal
 import Comp.FixedDropdown
+import Comp.MenuBar as MB
 import Comp.PasswordInput
-import Comp.YesNoDimmer
 import Data.AccountState exposing (AccountState)
 import Data.DropdownStyle as DS
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Messages.AccountForm exposing (Texts)
+import Styles as S
 import Util.Maybe
 
 
@@ -33,7 +36,7 @@ type alias Model =
     , stateModel : Comp.FixedDropdown.Model AccountState
     , stateField : AccountState
     , adminField : Bool
-    , deleteConfirm : Comp.YesNoDimmer.Model
+    , deleteRequested : Bool
     }
 
 
@@ -53,7 +56,7 @@ initNew =
     , stateModel = Comp.FixedDropdown.init Data.AccountState.all
     , stateField = Data.AccountState.Active
     , adminField = False
-    , deleteConfirm = Comp.YesNoDimmer.emptyModel
+    , deleteRequested = False
     }
 
 
@@ -77,8 +80,9 @@ type Msg
     | ToggleAdmin
     | Cancel
     | Submit
-    | DeleteConfirmMsg Comp.YesNoDimmer.Msg
     | RequestDelete
+    | DeleteConfirm
+    | DeleteCancel
 
 
 type FormAction
@@ -186,72 +190,74 @@ update msg model =
                         )
 
         RequestDelete ->
-            let
-                m =
-                    Comp.YesNoDimmer.activate model.deleteConfirm
-            in
-            ( { model | deleteConfirm = m }, FormNone )
+            ( { model | deleteRequested = True }, FormNone )
 
-        DeleteConfirmMsg lmsg ->
-            let
-                ( m, confirmed ) =
-                    Comp.YesNoDimmer.update lmsg model.deleteConfirm
-
-                id =
-                    Maybe.map .id model.existing
-            in
-            ( { model | deleteConfirm = m }
-            , if confirmed then
-                Maybe.map FormDelete id
-                    |> Maybe.withDefault FormNone
-
-              else
-                FormNone
+        DeleteConfirm ->
+            ( { model | deleteRequested = False }
+            , Maybe.map .id model.existing
+                |> Maybe.map FormDelete
+                |> Maybe.withDefault FormNone
             )
+
+        DeleteCancel ->
+            ( { model | deleteRequested = False }, FormNone )
+
+
+
+--- View
 
 
 view : Texts -> Model -> Html Msg
 view texts model =
-    div [ class "ui segments" ]
-        [ Html.map DeleteConfirmMsg (Comp.YesNoDimmer.view texts.yesNo model.deleteConfirm)
-        , Html.form [ class "ui form segment" ]
+    let
+        modalSettings =
+            Comp.ConfirmModal.defaultSettings
+                DeleteConfirm
+                DeleteCancel
+                texts.yesNo.confirmButton
+                texts.yesNo.cancelButton
+                texts.yesNo.message
+    in
+    div [ class "flex flex-col relative" ]
+        [ Comp.ConfirmModal.view { modalSettings | enabled = model.deleteRequested }
+        , Html.form [ class "" ]
             [ div
-                [ classList
-                    [ ( "disabled field", True )
-                    , ( "invisible", isCreate model )
-                    ]
+                [ class "mb-4"
                 ]
-                [ label [] [ text texts.id ]
+                [ label
+                    [ class S.inputLabel
+                    ]
+                    [ text texts.login
+                    , B.inputRequired
+                    ]
                 , input
                     [ type_ "text"
-                    , Maybe.map .id model.existing
-                        |> Maybe.withDefault "-"
-                        |> value
-                    ]
-                    []
-                ]
-            , div
-                [ classList
-                    [ ( "required field", True )
-                    , ( "disabled", isModify model )
-                    , ( "error", String.isEmpty model.loginField )
-                    ]
-                ]
-                [ label [] [ text texts.login ]
-                , input
-                    [ type_ "text"
+                    , disabled (isModify model)
                     , value model.loginField
-                    , onInput SetLogin
+                    , if isModify model then
+                        class "disabled"
+
+                      else
+                        onInput SetLogin
+                    , class S.textInput
+                    , classList
+                        [ ( S.inputErrorBorder, String.isEmpty model.loginField )
+                        ]
                     ]
                     []
                 ]
-            , div [ class "required field" ]
-                [ label [] [ text texts.state ]
+            , div [ class "mb-4" ]
+                [ label
+                    [ class S.inputLabel
+                    ]
+                    [ text texts.state
+                    , B.inputRequired
+                    ]
                 , Html.map StateMsg
                     (Comp.FixedDropdown.viewStyled
                         { display = Data.AccountState.toString
                         , selectPlaceholder = texts.dropdown.select
-                        , icon = \n -> Nothing
+                        , icon = \_ -> Nothing
                         , style = DS.mainStyle
                         }
                         False
@@ -259,65 +265,77 @@ view texts model =
                         model.stateModel
                     )
                 ]
-            , div [ class "inline required field" ]
-                [ div [ class "ui checkbox" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , onCheck (\_ -> ToggleAdmin)
-                        , checked model.adminField
-                        ]
-                        []
-                    , label [] [ text texts.admin ]
-                    ]
+            , div [ class "mb-4" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "is-admin"
+                        , value = model.adminField
+                        , tagger = \_ -> ToggleAdmin
+                        , label = texts.admin
+                        }
                 ]
-            , div [ class "field" ]
-                [ label [] [ text "E-Mail" ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.email
+                    ]
                 , input
                     [ type_ "text"
                     , Maybe.withDefault "" model.emailField |> value
                     , onInput SetEmail
+                    , class S.textInput
                     ]
                     []
                 ]
             , div
-                [ classList
-                    [ ( "field", True )
-                    , ( "error", isCreate model && model.passwordField == Nothing )
-                    , ( "required", isCreate model )
-                    , ( "disabled", not (isCreate model || isIntern model) )
+                [ class "mb-4"
+                , classList
+                    [ ( "hidden", not (isCreate model || isIntern model) )
                     ]
                 ]
-                [ label [] [ text texts.password ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.password
+                    , if isCreate model then
+                        B.inputRequired
+
+                      else
+                        span [ class "hidden" ] []
+                    ]
                 , Html.map PasswordMsg
-                    (Comp.PasswordInput.view model.passwordField
+                    (Comp.PasswordInput.view
+                        { placeholder = "" }
+                        model.passwordField
+                        (isCreate model && model.passwordField == Nothing)
                         model.passwordModel
                     )
                 ]
             ]
-        , div [ class "ui secondary segment" ]
-            [ button
-                [ type_ "button"
-                , class "ui primary button"
-                , onClick Submit
+        , MB.view
+            { start =
+                [ MB.PrimaryButton
+                    { tagger = Submit
+                    , title = texts.submit
+                    , icon = Just "fa fa-save"
+                    , label = texts.submit
+                    }
+                , MB.SecondaryButton
+                    { tagger = Cancel
+                    , title = texts.back
+                    , label = texts.back
+                    , icon = Just "fa fa-arrow-left"
+                    }
                 ]
-                [ text texts.submit
+            , end =
+                [ MB.CustomButton
+                    { tagger = RequestDelete
+                    , label = texts.delete
+                    , title = texts.delete
+                    , icon = Just "fa fa-trash"
+                    , inputClass =
+                        [ ( "hidden", Maybe.map .id model.existing == Nothing )
+                        , ( S.deleteButton, True )
+                        ]
+                    }
                 ]
-            , button
-                [ class "ui button"
-                , type_ "button"
-                , onClick Cancel
-                ]
-                [ text texts.back
-                ]
-            , button
-                [ class "ui right floated red button"
-                , classList
-                    [ ( "hidden invisible", Maybe.map .id model.existing == Nothing )
-                    ]
-                , type_ "button"
-                , onClick RequestDelete
-                ]
-                [ text texts.delete
-                ]
-            ]
+            , rootClasses = ""
+            }
         ]

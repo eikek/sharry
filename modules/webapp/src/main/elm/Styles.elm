@@ -234,7 +234,7 @@ textAreaInput =
 
 inputIcon : String
 inputIcon =
-    "absolute left-3 top-2 w-10 text-gray-400 dark:text-warmgray-400  "
+    "absolute left-3 top-3 w-10 text-gray-400 dark:text-warmgray-400  "
 
 
 dateInputIcon : String

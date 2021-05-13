@@ -18,6 +18,7 @@ type alias Texts =
     , submit : String
     , back : String
     , delete : String
+    , email : String
     , yesNo : Messages.YesNoDimmer.Texts
     , dropdown : Messages.FixedDropdown.Texts
     }
@@ -33,6 +34,7 @@ gb =
     , submit = "Submit"
     , back = "Back"
     , delete = "Delete"
+    , email = "E-Mail"
     , yesNo = Messages.YesNoDimmer.gb
     , dropdown = Messages.FixedDropdown.gb
     }
@@ -48,6 +50,7 @@ de =
     , submit = "Speichern"
     , back = "Zurück"
     , delete = "Löschen"
+    , email = "E-Mail"
     , yesNo = Messages.YesNoDimmer.de
     , dropdown = Messages.FixedDropdown.de
     }
@@ -63,6 +66,7 @@ fr =
     , submit = "Envoyer"
     , back = "Retour"
     , delete = "Supprimer"
+    , email = "e-mail"
     , yesNo = Messages.YesNoDimmer.gb
     , dropdown = Messages.FixedDropdown.fr
     }

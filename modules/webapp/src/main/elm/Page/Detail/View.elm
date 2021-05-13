@@ -550,7 +550,13 @@ propertyEdit texts ef =
 
         EditPassword ( pm, p ) ->
             [ div [ class "ui mini action input" ]
-                [ Html.map PasswordEditMsg (Comp.PasswordInput.view p pm)
+                [ Html.map PasswordEditMsg
+                    (Comp.PasswordInput.view
+                        { placeholder = "" }
+                        p
+                        False
+                        pm
+                    )
                 , saveButton
                 , cancelButton
                 ]
