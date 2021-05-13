@@ -11,9 +11,9 @@ import Styles as S
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
-    div [ class "container mx-auto flex flex-col px-2 sm:px-0 mt-2" ]
-        [ div [ class "text-2xl font-bold" ]
-            [ i [ class "fa fa-pencil-alt mr-2 mb-4" ]
+    div [ class S.content ]
+        [ h1 [ class S.header1 ]
+            [ i [ class "fa fa-pencil-alt mr-2" ]
                 []
             , text texts.createNewTitle
             ]
@@ -41,8 +41,7 @@ view texts flags model =
                         [ i [ class "fa fa-key" ] []
                         ]
                     , input
-                        [ id "email"
-                        , type_ "password"
+                        [ type_ "password"
                         , name "invitekey"
                         , autocomplete False
                         , onInput SetPassword
@@ -57,7 +56,7 @@ view texts flags model =
                 [ div [ class "flex flex-row space-x-2" ]
                     [ button
                         [ type_ "submit"
-                        , class (S.primaryButton ++ "inline-flex")
+                        , class S.primaryButton
                         ]
                         [ text texts.submit
                         ]

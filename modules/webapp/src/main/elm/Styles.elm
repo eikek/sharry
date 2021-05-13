@@ -1,29 +1,9 @@
 module Styles exposing (..)
 
 
-sidebar : String
-sidebar =
-    " flex flex-col flex-none md:w-80 w-full min-h-max px-4 dark:text-gray-200 shadow overflow-y-auto h-full transition-opacity transition-duration-200 scrollbar-thin scrollbar-light-sidebar dark:scrollbar-dark-sidebar"
-
-
-sidebarBg : String
-sidebarBg =
-    " bg-blue-50 dark:bg-warmgray-700 "
-
-
-sidebarMenuItemActive : String
-sidebarMenuItemActive =
-    "bg-blue-100 dark:bg-warmgray-600"
-
-
 content : String
 content =
-    "w-full mx-auto px-2 h-screen-12 overflow-y-auto scrollbar-main scrollbar-thin"
-
-
-sidebarLink : String
-sidebarLink =
-    " mb-2 px-4 py-3 flex flex-row hover:bg-blue-100 dark:hover:bg-warmgray-600 hover:font-bold rounded rounded-lg items-center "
+    "container mx-auto px-2 md:px-0 overflow-y-auto scrollbar-main scrollbar-thin"
 
 
 successMessage : String

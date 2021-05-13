@@ -16,7 +16,8 @@ import Util.Html
 view : Maybe String -> Texts -> Model -> Html Msg
 view id texts model =
     div
-        [ class "container mx-auto flex flex-col px-2 md:px-0"
+        [ class S.content
+        , class "flex flex-col"
         ]
     <|
         case model.selected of

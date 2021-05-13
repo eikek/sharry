@@ -25,7 +25,10 @@ import Util.Html
 
 view : Texts -> Flags -> Maybe String -> Model -> Html Msg
 view texts flags id model =
-    div [ class "container mx-auto flex flex-col px-2 md:px-0" ]
+    div
+        [ class S.content
+        , class "flex flex-col"
+        ]
         (case model.selected of
             Just alias_ ->
                 viewModify texts flags model alias_
