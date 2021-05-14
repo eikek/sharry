@@ -10,7 +10,6 @@ import Comp.MarkdownInput
 import Comp.PasswordInput
 import Comp.ShareFileList
 import Comp.ValidityField
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.UploadData exposing (UploadData)
 import Data.UploadDict
@@ -19,20 +18,19 @@ import Data.ValidityValue
 import Page exposing (Page(..))
 import Page.Detail.Data
     exposing
-        ( EditField(..)
+        ( DeleteState(..)
+        , EditField(..)
         , Model
         , Msg(..)
         , PublishState(..)
         , TopMenuState(..)
         , clipboardData
-        , deleteLoader
-        , getLoader
         , isEdit
         , isPublished
         , mkEditField
-        , noLoader
         )
 import Ports
+import Util.Html
 import Util.Http
 import Util.Maybe
 import Util.Share
@@ -42,7 +40,7 @@ update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
         Init id ->
-            ( { model | loader = getLoader }
+            ( model
             , Cmd.batch
                 [ Api.getShare flags id DetailResp
                 , Ports.initClipboard clipboardData
@@ -54,7 +52,7 @@ update flags msg model =
                 | share = details
                 , message = Nothing
                 , descEdit = Nothing
-                , loader = noLoader
+                , deleteState = DeleteNone
               }
             , Cmd.none
             )
@@ -66,7 +64,7 @@ update flags msg model =
             in
             ( { model
                 | message = Just (BasicResult False m)
-                , loader = noLoader
+                , deleteState = DeleteNone
               }
             , Cmd.none
             )
@@ -155,46 +153,35 @@ update flags msg model =
             ( { model | zoom = Just sf }, Cmd.none )
 
         RequestDelete ->
-            ( { model
-                | yesNoModel = Comp.YesNoDimmer.activate model.yesNoModel
-              }
+            ( { model | deleteState = DeleteRequested }
             , Cmd.none
             )
 
-        YesNoMsg lmsg ->
-            let
-                ( m, flag ) =
-                    Comp.YesNoDimmer.update lmsg model.yesNoModel
+        DeleteConfirm ->
+            ( { model | deleteState = DeleteInProgress }
+            , Api.deleteShare flags model.share.id DeleteResp
+            )
 
-                cmd =
-                    if flag then
-                        Api.deleteShare flags model.share.id DeleteResp
-
-                    else
-                        Cmd.none
-
-                loading =
-                    if flag then
-                        deleteLoader
-
-                    else
-                        noLoader
-            in
-            ( { model | yesNoModel = m, loader = loading }, cmd )
+        DeleteCancel ->
+            ( { model | deleteState = DeleteNone }, Cmd.none )
 
         DeleteResp (Ok res) ->
             if res.success then
-                ( { model | loader = noLoader }, Page.goto UploadPage )
+                ( { model | deleteState = DeleteNone }
+                , Page.goto UploadPage
+                )
 
             else
-                ( { model | message = Just res, loader = noLoader }, Cmd.none )
+                ( { model | message = Just res, deleteState = DeleteNone }
+                , Cmd.none
+                )
 
         DeleteResp (Err err) ->
             let
                 m =
                     Util.Http.errorToString err
             in
-            ( { model | message = Just (BasicResult False m), loader = noLoader }
+            ( { model | message = Just (BasicResult False m), deleteState = DeleteNone }
             , Cmd.none
             )
 
@@ -231,7 +218,7 @@ update flags msg model =
 
         SaveDescription ->
             case model.descEdit of
-                Just ( dm, str ) ->
+                Just ( _, str ) ->
                     ( model, Api.setDescription flags model.share.id str BasicResp )
 
                 Nothing ->
@@ -260,7 +247,7 @@ update flags msg model =
 
         MaxViewMsg lmsg ->
             case model.editField of
-                Just ( p, EditMaxViews ( im, c ) ) ->
+                Just ( p, EditMaxViews ( im, _ ) ) ->
                     let
                         ( m, mi ) =
                             Comp.IntInput.update lmsg im
@@ -306,22 +293,30 @@ update flags msg model =
         CancelEdit ->
             ( { model | editField = Nothing }, Cmd.none )
 
+        EditKey code ->
+            case code of
+                Just Util.Html.Enter ->
+                    update flags SaveEdit model
+
+                _ ->
+                    ( model, Cmd.none )
+
         SaveEdit ->
             let
                 nm =
                     { model | editField = Nothing }
             in
             case model.editField of
-                Just ( p, EditName name ) ->
+                Just ( _, EditName name ) ->
                     ( nm, Api.setName flags model.share.id name BasicResp )
 
-                Just ( p, EditMaxViews ( _, Just value ) ) ->
+                Just ( _, EditMaxViews ( _, Just value ) ) ->
                     ( nm, Api.setMaxViews flags model.share.id value BasicResp )
 
-                Just ( p, EditMaxViews ( _, Nothing ) ) ->
+                Just ( _, EditMaxViews ( _, Nothing ) ) ->
                     ( nm, Cmd.none )
 
-                Just ( p, EditValidity ( _, value ) ) ->
+                Just ( _, EditValidity ( _, value ) ) ->
                     ( nm
                     , Api.setValidity flags
                         model.share.id
@@ -329,16 +324,11 @@ update flags msg model =
                         BasicResp
                     )
 
-                Just ( p, EditPassword ( _, pw ) ) ->
+                Just ( _, EditPassword ( _, pw ) ) ->
                     ( nm, Api.setPassword flags model.share.id pw BasicResp )
 
                 Nothing ->
                     ( nm, Cmd.none )
-
-        ToggleFilesMenu ->
-            ( { model | addFilesOpen = not model.addFilesOpen }
-            , Cmd.none
-            )
 
         DropzoneMsg lmsg ->
             let
@@ -474,7 +464,7 @@ update flags msg model =
             , Cmd.map MailFormMsg mc
             )
 
-        CopyToClipboard str ->
+        CopyToClipboard _ ->
             ( model, Cmd.none )
 
 

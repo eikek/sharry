@@ -110,10 +110,10 @@ publishedState item =
     case item.published of
         Just flag ->
             if flag then
-                Util.Html.checkbox flag
+                i [ class S.published ] []
 
             else
-                i [ class "fa fa-bolt" ] []
+                i [ class S.publishError ] []
 
         Nothing ->
-            Util.Html.checkboxUnchecked
+            i [ class S.unpublished ] []

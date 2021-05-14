@@ -163,10 +163,6 @@ shareText texts flags model alias_ =
 
 shareInfo : Texts -> Flags -> Model -> String -> Html Msg
 shareInfo texts flags model url =
-    let
-        styleQr =
-            "dark:bg-warmgray-400 bg-gray-50 mx-auto md:mx-0"
-    in
     div [ class "flex flex-col md:flex-row py-2 h-full items-center justify-center" ]
         [ div [ class "md:w-2/3" ]
             [ div [ class "flex flex-col items-center  space-y-2 py-2" ]
@@ -195,7 +191,7 @@ shareInfo texts flags model url =
         , div [ class "md:w-1/3 " ]
             [ div
                 [ class S.border
-                , class styleQr
+                , class S.styleQr
                 ]
                 [ qrCodeView texts url
                 ]

@@ -78,6 +78,7 @@ view texts flags model =
                             , Html.map DescMsg
                                 (Comp.MarkdownInput.view
                                     texts.markdownInput
+                                    []
                                     model.descField
                                     model.descModel
                                 )

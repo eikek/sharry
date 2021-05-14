@@ -72,14 +72,17 @@
   }
 
 
-  .markdown-preview h3,h4,h5,h6 {
+  .markdown-preview h4,h5,h6 {
       @apply text-lg font-semibold mb-2;
   }
-  .markdown-preview h2 {
+  .markdown-preview h3 {
       @apply text-xl font-semibold mb-2;
   }
-  .markdown-preview h1 {
+  .markdown-preview h2 {
       @apply text-2xl font-semibold mb-2;
+  }
+  .markdown-preview h1 {
+      @apply text-3xl font-semibold mt-3 mb-5 tracking-wide;
   }
   .markdown-preview ul {
       @apply list-disc py-2 ml-4;
@@ -119,6 +122,14 @@
     }
     .z-35 {
         z-index: 35;
+    }
+
+    .min-h-preview {
+        min-height: 10rem;
+    }
+
+    .h-screen-5\/6 {
+        height: 83.3333vh;
     }
 
     @variants responsive {

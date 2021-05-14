@@ -20,6 +20,7 @@ type Item msg
     | Checkbox (CheckboxData msg)
     | PrimaryButton (ButtonData msg)
     | SecondaryButton (ButtonData msg)
+    | ToggleButton (ToggleButtonData msg)
     | DeleteButton (ButtonData msg)
     | BasicButton (ButtonData msg)
     | CustomButton (CustomButtonData msg)
@@ -56,6 +57,15 @@ type alias ButtonData msg =
     , title : String
     , icon : Maybe String
     , label : String
+    }
+
+
+type alias ToggleButtonData msg =
+    { tagger : msg
+    , title : String
+    , icon : Maybe String
+    , label : String
+    , active : Bool
     }
 
 
@@ -114,7 +124,9 @@ view1 classes mb =
     in
     div
         [ class mb.rootClasses
-        , class "flex flex-col sm:flex-row space-y-1 sm:space-y-0 sticky top-0 z-40"
+        , class "flex flex-col sm:flex-row space-y-1 sm:space-y-0 "
+
+        --            ,class "sticky top-0 z-40"
         , class classes
         ]
         [ left
@@ -142,6 +154,9 @@ viewItem item =
 
         BasicButton model ->
             makeButton [ ( S.secondaryBasicButton, True ) ] model
+
+        ToggleButton model ->
+            makeButton [ ( S.secondaryBasicButtonToggle model.active, True ) ] model
 
         CustomButton model ->
             makeButton model.inputClass model
@@ -252,6 +267,11 @@ makeButton btnType model =
     in
     a
         [ classList btnType
+        , if model.label == "" then
+            class "inline-flex items-center h-full py-0"
+
+          else
+            class "h-full"
         , href "#"
         , onClick model.tagger
         , title model.title

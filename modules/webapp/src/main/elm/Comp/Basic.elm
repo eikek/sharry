@@ -77,7 +77,7 @@ secondaryButton model =
         , handler = model.handler
         , disabled = model.disabled
         , attrs = model.attrs
-        , baseStyle = S.secondaryButtonMain ++ S.secondaryButton
+        , baseStyle = S.secondaryButtonMain
         , activeStyle = S.secondaryButtonHover
         }
 

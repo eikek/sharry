@@ -10,6 +10,7 @@ module Comp.Dropzone2 exposing
     , view
     )
 
+import Comp.Basic as B
 import Comp.Progress
 import Data.Percent
 import Data.UploadDict exposing (UploadDict)
@@ -21,6 +22,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
 import Messages.Dropzone2 exposing (Texts)
+import Styles as S
+import Util.Html exposing (onDragEnter, onDragLeave, onDragOver, onDropFiles, onFiles)
 import Util.List
 import Util.Size
 
@@ -119,65 +122,77 @@ view texts sett model =
                 |> toFloat
                 |> Util.Size.bytesReadable Util.Size.B
     in
-    div [ class "dropzone" ]
+    div [ class "flex flex-col" ]
         [ div
             [ classList
-                [ ( "ui placeholder segment", True )
-                , ( "on-drop", model.hover )
-                , ( "attached", files /= [] )
+                [ ( "bg-opacity-100 bg-indigo-100 dark:bg-orange-800", model.hover )
+                , ( "bg-indigo-100 bg-opacity-50 dark:bg-orange-900 dark:bg-opacity-50", not model.hover )
                 , ( "disabled", not sett.active )
                 ]
-            , hijackOn "dragenter" (D.succeed DragEnter)
-            , hijackOn "dragover" (D.succeed DragEnter)
-            , hijackOn "dragleave" (D.succeed DragLeave)
-            , hijackOn "drop" dropDecoder
+            , class "flex flex-col justify-center items-center py-2 md:py-12 border-0 border-t-2 border-indigo-500 dark:border-orange-500 dropzone"
+            , onDragEnter DragEnter
+            , onDragOver DragEnter
+            , onDragLeave DragLeave
+            , onDropFiles GotFiles
             ]
-            [ if files == [] then
-                span [ class "invisible" ] []
-
-              else
-                Comp.Progress.topAttachedIndicating sett.allProgress
-            , div [ class "ui icon header" ]
-                [ i [ class "mouse pointer icon" ] []
-                , text texts.dropHere
+            [ div
+                [ class S.header1
+                , class "hidden md:inline-flex items-center"
+                ]
+                [ i [ class "fa fa-mouse-pointer" ] []
+                , div [ class "ml-3" ]
+                    [ text texts.dropHere
+                    ]
                 ]
             , case List.length files of
                 0 ->
                     span [] []
 
                 n ->
-                    div [ class "inline" ]
+                    span [ class "py-1" ]
                         [ String.fromInt n |> text
                         , text texts.filesSelected
                         , text allsize
                         , text ")"
                         ]
-            , div [ class "ui horizontal divider" ]
-                [ text texts.or
-                ]
-            , div [ class "custom-upload" ]
-                [ label [ class "ui basic primary button" ]
-                    [ i [ class "folder open icon" ] []
+            , B.horizontalDivider
+                { label = texts.or
+                , topCss = "w-2/3 mb-4 hidden md:inline-flex"
+                , labelCss = "px-4 bg-gray-200 bg-opacity-50"
+                , lineColor = "bg-gray-300 dark:bg-warmgray-600"
+                }
+            , div [ class "py-1" ]
+                [ label [ class S.primaryBasicButton ]
+                    [ i [ class "fa fa-folder-open mr-2" ] []
                     , text texts.selectFiles
                     , input
                         [ type_ "file"
                         , multiple True
                         , disabled <| not sett.active
                         , onFiles GotFiles
+                        , class "hidden"
                         ]
                         []
                     ]
                 ]
             ]
-        , table
+        , if files == [] then
+            span [ class "hidden" ] []
+
+          else
+            Comp.Progress.progress2
+                { parent = "h-2"
+                , bar = "h-full"
+                , label = "hidden"
+                }
+                sett.allProgress
+        , div
             [ classList
-                [ ( "ui bottom attached table", True )
-                , ( "invisible", files == [] )
+                [ ( "hidden", files == [] )
                 ]
+            , class "flex flex-col divide-y dark:divide-warmgray-600"
             ]
-            [ tbody []
-                (List.indexedMap (renderFile sett) files)
-            ]
+            (List.indexedMap (renderFile sett) files)
         ]
 
 
@@ -198,16 +213,16 @@ renderFile sett index file =
         icon =
             case fileState of
                 Done ->
-                    "ui green check icon"
+                    "fa fa-check text-green-500"
 
                 Waiting ->
-                    "ui file outline icon"
+                    "fa fa-file font-thin"
 
                 Uploading _ ->
-                    "ui loading spinner icon"
+                    "fa fa-spinner animate-spin"
 
                 Failed ->
-                    "ui red bolt icon"
+                    "fa fa-bolt text-red-500"
 
         percent =
             case fileState of
@@ -217,35 +232,42 @@ renderFile sett index file =
                 _ ->
                     0
     in
-    tr
+    div
         [ class ("file-" ++ String.fromInt index)
         , attribute "data-index" (String.fromInt index)
+        , class "flex flex-row items-center"
         ]
-        [ td [ class "collapsing" ]
+        [ div [ class "text-center py-4 w-6" ]
             [ i [ class icon ] []
             ]
-        , td []
+        , div [ class "flex-grow mx-2" ]
             [ if isUploading fileState then
-                Comp.Progress.smallIndicating percent name
+                Comp.Progress.progress2
+                    { parent = "h-6 border dark:border-warmgray-600 rounded"
+                    , bar = "h-full rounded"
+                    , label = "text-sm"
+                    }
+                    percent
 
               else
                 span []
                     [ text name
                     ]
             ]
-        , td [ class "collapsing" ]
-            [ text size
-            ]
-        , td [ class "collapsing" ]
-            [ a
+        , div [ class "text-right" ]
+            [ span [ class "text-sm font-mono mr-2" ]
+                [ text size
+                ]
+            , a
                 [ classList
-                    [ ( "ui primary mini icon button", True )
-                    , ( "disabled", not sett.active )
+                    [ ( "hidden", not sett.active )
                     ]
+                , class S.deleteButton
+                , class "text-xs"
                 , href "#"
                 , onClick (DeleteFile index)
                 ]
-                [ i [ class "ui trash icon" ] []
+                [ i [ class "fa fa-trash" ] []
                 ]
             ]
         ]
@@ -259,38 +281,3 @@ isUploading state =
 
         _ ->
             False
-
-
-dropDecoder : D.Decoder Msg
-dropDecoder =
-    D.at [ "dataTransfer", "files" ] (D.list (attach File.decoder))
-        |> D.map GotFiles
-
-
-hijackOn : String -> D.Decoder msg -> Attribute msg
-hijackOn event decoder =
-    preventDefaultOn event (D.map hijack decoder)
-
-
-hijack : msg -> ( msg, Bool )
-hijack msg =
-    ( msg, True )
-
-
-onFiles : (List ( D.Value, File ) -> msg) -> Attribute msg
-onFiles tomsg =
-    let
-        decmsg =
-            D.at [ "target", "files" ] (D.list (attach File.decoder))
-                |> D.map tomsg
-    in
-    hijackOn "change" decmsg
-
-
-attach : D.Decoder a -> D.Decoder ( D.Value, a )
-attach deca =
-    let
-        mkTuple v =
-            D.map (Tuple.pair v) deca
-    in
-    D.andThen mkTuple D.value

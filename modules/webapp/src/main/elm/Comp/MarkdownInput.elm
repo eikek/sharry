@@ -6,11 +6,13 @@ module Comp.MarkdownInput exposing
     , view
     )
 
+import Comp.MenuBar as MB
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Markdown
 import Messages.MarkdownInput exposing (Texts)
+import Styles as S
 
 
 type Display
@@ -47,67 +49,84 @@ update txt msg model =
             ( { model | display = dsp }, txt )
 
 
-view : Texts -> String -> Model -> Html Msg
-view texts txt model =
-    div []
-        [ div [ class "ui top attached tabular mini menu" ]
-            [ a
-                [ classList
-                    [ ( "ui link item", True )
-                    , ( "active", model.display == Edit )
-                    ]
-                , onClick (SetDisplay Edit)
-                , href "#"
+view : Texts -> List ( String, Bool ) -> String -> Model -> Html Msg
+view texts classes txt model =
+    -- div [ class "flex flex-row text-sm" ]
+    --    , a
+    --        [ classList
+    --            [ ( "ui link item", True )
+    --            , ( "active", model.display == Split )
+    --            ]
+    --        , onClick (SetDisplay Split)
+    --        , href "#"
+    --        ]
+    --        [ text texts.split
+    --        ]
+    --    , a
+    --        [ class "ui right floated help-link link item"
+    --        , target "_new"
+    --        , href model.cheatSheetUrl
+    --        ]
+    --        [ i [ class "ui help icon" ] []
+    --        , text texts.supportsMarkdown
+    --        ]
+    --    ]
+    div
+        [ classList classes ]
+        [ MB.view
+            { start =
+                [ MB.ToggleButton
+                    { active = model.display == Edit
+                    , tagger = SetDisplay Edit
+                    , label = texts.edit
+                    , title = texts.edit
+                    , icon = Just "fa fa-edit"
+                    }
+                , MB.ToggleButton
+                    { active = model.display == Preview
+                    , tagger = SetDisplay Preview
+                    , label = texts.preview
+                    , icon = Just "fa fa-eye"
+                    , title = texts.preview
+                    }
+                , MB.ToggleButton
+                    { active = model.display == Split
+                    , tagger = SetDisplay Split
+                    , label = texts.split
+                    , icon = Just "fa fa-columns"
+                    , title = texts.split
+                    }
                 ]
-                [ text texts.edit
+            , end =
+                [ MB.CustomElement <|
+                    a
+                        [ class S.link
+                        , class "my-auto"
+                        , href model.cheatSheetUrl
+                        ]
+                        [ i [ class "fa fa-question-circle mr-2" ] []
+                        , text texts.supportsMarkdown
+                        ]
                 ]
-            , a
-                [ classList
-                    [ ( "ui link item", True )
-                    , ( "active", model.display == Preview )
-                    ]
-                , onClick (SetDisplay Preview)
-                , href "#"
-                ]
-                [ text texts.preview
-                ]
-            , a
-                [ classList
-                    [ ( "ui link item", True )
-                    , ( "active", model.display == Split )
-                    ]
-                , onClick (SetDisplay Split)
-                , href "#"
-                ]
-                [ text texts.split
-                ]
-            , a
-                [ class "ui right floated help-link link item"
-                , target "_new"
-                , href model.cheatSheetUrl
-                ]
-                [ i [ class "ui help icon" ] []
-                , text texts.supportsMarkdown
-                ]
-            ]
-        , div [ class "ui bottom attached segment" ]
-            [ case model.display of
-                Edit ->
-                    editDisplay txt
+            , rootClasses = "text-sm"
+            }
+        , case model.display of
+            Edit ->
+                editDisplay txt
 
-                Preview ->
-                    previewDisplay txt
+            Preview ->
+                previewDisplay txt
 
-                Split ->
-                    splitDisplay txt
-            ]
+            Split ->
+                splitDisplay txt
         ]
 
 
 editDisplay : String -> Html Msg
 editDisplay txt =
     textarea
-        [ class "markdown-editor"
+        [ class (String.replace S.formFocusRing "" S.textAreaInput)
+        , class "w-full h-48 md:h-96 border-none min-h-full mt-1 focus:ring-0 focus:outline-none"
         , onInput SetText
         ]
         [ text txt ]
@@ -115,18 +134,19 @@ editDisplay txt =
 
 previewDisplay : String -> Html Msg
 previewDisplay txt =
-    Markdown.toHtml [ class "markdown-preview" ] txt
+    Markdown.toHtml [ class "markdown-preview max-h-96 overflow-y-auto" ] txt
 
 
 splitDisplay : String -> Html Msg
 splitDisplay txt =
-    div [ class "ui grid" ]
-        [ div [ class "row" ]
-            [ div [ class "eight wide column markdown-split" ]
-                [ editDisplay txt
-                ]
-            , div [ class "eight wide column markdown-split" ]
-                [ previewDisplay txt
-                ]
+    div [ class "flex flex-col md:flex-row max-h-96 overflow-y-auto" ]
+        [ div [ class "w-full md:w-1/2" ]
+            [ editDisplay txt
+            ]
+        , div
+            [ class "w-full md:w-1/2 border-t md:border-t-0 md:border-l pt-2 md:pl-1"
+            , class "dark:border-warmgray-600"
+            ]
+            [ previewDisplay txt
             ]
         ]

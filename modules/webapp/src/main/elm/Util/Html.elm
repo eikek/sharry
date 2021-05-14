@@ -4,12 +4,18 @@ module Util.Html exposing
     , checkboxChecked
     , checkboxUnchecked
     , noElement
+    , onDragEnter
+    , onDragLeave
+    , onDragOver
+    , onDropFiles
+    , onFiles
     , onKeyUpCode
     , resultMsg
     , resultMsgMaybe
     )
 
 import Api.Model.BasicResult exposing (BasicResult)
+import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (keyCode, on, preventDefaultOn)
@@ -179,4 +185,74 @@ onClickk msg =
 
 alwaysPreventDefault : msg -> ( msg, Bool )
 alwaysPreventDefault msg =
+    ( msg, True )
+
+
+onDragEnter : msg -> Attribute msg
+onDragEnter m =
+    hijackOn "dragenter" (D.succeed m)
+
+
+onDragOver : msg -> Attribute msg
+onDragOver m =
+    hijackOn "dragover" (D.succeed m)
+
+
+onDragLeave : msg -> Attribute msg
+onDragLeave m =
+    hijackOn "dragleave" (D.succeed m)
+
+
+onDrop : msg -> Attribute msg
+onDrop m =
+    hijackOn "drop" (D.succeed m)
+
+
+
+-- onDropFiles : (File -> List File -> msg) -> Attribute msg
+-- onDropFiles tagger =
+--     let
+--         dropFilesDecoder =
+--             D.at [ "dataTransfer", "files" ] (D.oneOrMore tagger File.decoder)
+--     in
+--     hijackOn "drop" dropFilesDecoder
+
+
+onFiles : (List ( D.Value, File ) -> msg) -> Attribute msg
+onFiles tomsg =
+    let
+        decmsg =
+            D.at [ "target", "files" ] (D.list (attach File.decoder))
+                |> D.map tomsg
+    in
+    hijackOn "change" decmsg
+
+
+onDropFiles : (List ( D.Value, File ) -> msg) -> Attribute msg
+onDropFiles tagger =
+    let
+        dropDecoder : D.Decoder msg
+        dropDecoder =
+            D.at [ "dataTransfer", "files" ] (D.list (attach File.decoder))
+                |> D.map tagger
+    in
+    hijackOn "drop" dropDecoder
+
+
+attach : D.Decoder a -> D.Decoder ( D.Value, a )
+attach deca =
+    let
+        mkTuple v =
+            D.map (Tuple.pair v) deca
+    in
+    D.andThen mkTuple D.value
+
+
+hijackOn : String -> D.Decoder msg -> Attribute msg
+hijackOn event decoder =
+    preventDefaultOn event (D.map hijack decoder)
+
+
+hijack : msg -> ( msg, Bool )
+hijack msg =
     ( msg, True )

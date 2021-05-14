@@ -6,6 +6,7 @@ import Comp.ShareFileList exposing (ViewMode(..), previewPossible)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Styles as S
 import Util.List
 import Util.Size
 
@@ -27,9 +28,9 @@ view fileUrl model onSelect onQuit =
     in
     div
         [ classList
-            [ ( "ui dimmer", True )
-            , ( "active", model.zoom /= Nothing )
+            [ ( "hidden", model.zoom == Nothing )
             ]
+        , class S.dimmer
         ]
     <|
         case model.zoom of
@@ -44,62 +45,58 @@ view fileUrl model onSelect onQuit =
                     next =
                         Util.List.findNext (\e -> e.id == file.id) files
                 in
-                [ div [ class "zoom-controls" ]
-                    [ div [ class "ui buttons" ]
-                        [ button
-                            [ type_ "button"
-                            , classList
-                                [ ( "ui primary button", True )
-                                , ( "disabled", prev == Nothing )
-                                ]
-                            , onClick (onSelect (Maybe.withDefault file prev))
+                [ div [ class "flex flex-row items-center justify-end w-full md:w-11/12" ]
+                    [ a
+                        [ href "#"
+                        , classList
+                            [ ( "disabled", prev == Nothing )
                             ]
-                            [ i [ class "arrow left icon" ] []
+                        , class S.primaryButtonPlain
+                        , class "rounded-l"
+                        , onClick (onSelect (Maybe.withDefault file prev))
+                        ]
+                        [ i [ class "fa fa-arrow-left" ] []
+                        ]
+                    , a
+                        [ href "#"
+                        , classList
+                            [ ( "ui primary button", True )
+                            , ( "disabled", next == Nothing )
                             ]
-                        , button
-                            [ type_ "button"
-                            , class "ui secondary icon button"
-                            , onClick onQuit
-                            ]
-                            [ i [ class "close icon" ] []
-                            ]
-                        , button
-                            [ type_ "button"
-                            , classList
-                                [ ( "ui primary button", True )
-                                , ( "disabled", next == Nothing )
-                                ]
-                            , onClick (onSelect (Maybe.withDefault file next))
-                            ]
-                            [ i [ class "arrow right icon" ] []
-                            ]
+                        , class S.primaryButtonPlain
+                        , onClick (onSelect (Maybe.withDefault file next))
+                        ]
+                        [ i [ class "fa fa-arrow-right" ] []
+                        ]
+                    , a
+                        [ href "#"
+                        , class S.secondaryButtonPlain
+                        , class "rounded-r"
+                        , onClick onQuit
+                        ]
+                        [ i [ class "fa fa-times" ] []
+                        ]
+                    ]
+                , div
+                    [ class "px-2 py-1 w-full md:w-11/12"
+                    , class S.box
+                    ]
+                    [ div [ class "text-left text-sm font-mono" ]
+                        [ text file.filename
+                        , text " ("
+                        , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
+                        , text ")"
                         ]
                     ]
                 , div
                     [ classList
-                        [ ( "ui container", True )
-                        , ( "white zoom-container", True )
-                        , ( "fixed-height", isPdf file || isText file )
+                        [ ( "", isPdf file || isText file )
                         ]
+                    , class " mx-auto flex flex-col bg-gray-800 dark:bg-warmgray-800 bg-opacity-90 h-screen-5/6 w-full md:w-11/12"
                     ]
-                    [ div [ class "ui top attached centered inverted mini menu" ]
-                        [ div [ class "text item" ]
-                            [ text file.filename
-                            , text " ("
-                            , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
-                            , text ")"
-                            ]
-                        , div [ class "right menu" ]
-                            [ a
-                                [ class "item"
-                                , href "#"
-                                , onClick onQuit
-                                ]
-                                [ i [ class "close icon" ] []
-                                ]
-                            ]
+                    [ div [ class "h-full" ]
+                        [ filePreview fileUrl model file
                         ]
-                    , filePreview fileUrl model file
                     ]
                 ]
 
@@ -116,27 +113,29 @@ filePreview fileUrl _ file =
     if isImage file then
         img
             [ src url
-            , class "zoom-image"
+            , class "block max-h-full mx-auto"
             ]
             []
 
     else if isVideo file then
         video
             [ src url
-            , class "zoom-video"
+            , class "w-full"
             , controls True
             , autoplay False
             ]
             []
 
     else
-        iframe
-            [ src url
-            , class "zoom-iframe"
-            , attribute "width" "100%"
-            , attribute "height" "100%"
+        div [ class "dark:bg-warmgray-300 bg-white" ]
+            [ iframe
+                [ src url
+                , class "w-full"
+                , attribute "width" "100%"
+                , attribute "height" "100%"
+                ]
+                []
             ]
-            []
 
 
 isVideo : ShareFile -> Bool

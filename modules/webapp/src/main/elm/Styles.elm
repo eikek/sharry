@@ -1,9 +1,14 @@
 module Styles exposing (..)
 
 
+styleQr : String
+styleQr =
+    "dark:bg-warmgray-400 bg-gray-50 mx-auto md:mx-0"
+
+
 content : String
 content =
-    "container mx-auto px-2 md:px-0 overflow-y-auto scrollbar-main scrollbar-thin"
+    "container mx-auto px-2 overflow-y-auto scrollbar-main scrollbar-thin"
 
 
 successMessage : String
@@ -84,7 +89,7 @@ primaryButtonPlain =
 
 primaryButtonMain : String
 primaryButtonMain =
-    " my-auto whitespace-nowrap bg-blue-500 dark:bg-lightblue-800 text-white text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 "
+    " my-auto whitespace-nowrap bg-blue-500 border border-blue-500 dark:border-lightblue-800 dark:bg-lightblue-800 text-white text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 "
 
 
 primaryButtonHover : String
@@ -127,12 +132,21 @@ secondaryButton =
 
 secondaryButtonMain : String
 secondaryButtonMain =
-    " rounded my-auto whitespace-nowrap bg-gray-300 dark:bg-warmgray-400 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 dark:text-gray-800 "
+    " rounded " ++ secondaryButtonPlain
+
+
+secondaryButtonPlain : String
+secondaryButtonPlain =
+    " my-auto whitespace-nowrap bg-gray-300 dark:bg-warmgray-400 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 dark:text-gray-800 "
 
 
 secondaryButtonHover : String
 secondaryButtonHover =
     " hover:bg-gray-400 dark:hover:bg-warmgray-300 "
+
+
+
+--- Secondary Basic Button
 
 
 secondaryBasicButton : String
@@ -145,13 +159,23 @@ secondaryBasicButtonPlain =
     secondaryBasicButtonMain ++ secondaryBasicButtonHover
 
 
+secondaryBasicButtonToggle : Bool -> String
+secondaryBasicButtonToggle active =
+    let
+        base =
+            secondaryBasicButtonRounded
+                ++ String.replace "text-gray-500 dark:text-warmgray-400" "" secondaryBasicButtonMain
+    in
+    if active then
+        base ++ secondaryBasicButtonActive
+
+    else
+        base ++ "text-gray-500 dark:text-warmgray-400" ++ secondaryBasicButtonHover
+
+
 secondaryBasicButtonRounded : String
 secondaryBasicButtonRounded =
     " rounded border px-4 py-2 "
-
-
-
---- Secondary Basic Button
 
 
 secondaryBasicButtonMain : String
@@ -162,6 +186,11 @@ secondaryBasicButtonMain =
 secondaryBasicButtonHover : String
 secondaryBasicButtonHover =
     " hover:bg-gray-600 hover:text-white dark:hover:text-white dark:hover:bg-warmgray-500 dark:hover:text-warmgray-100 "
+
+
+secondaryBasicButtonActive : String
+secondaryBasicButtonActive =
+    " bg-gray-600 text-white dark:text-white dark:bg-warmgray-500 dark:text-warmgray-100 "
 
 
 
@@ -314,3 +343,18 @@ tableMain =
 tableRow : String
 tableRow =
     "border-t dark:border-warmgray-600"
+
+
+published : String
+published =
+    "text-green-500 fa fa-circle"
+
+
+unpublished : String
+unpublished =
+    "fa fa-circle font-thin"
+
+
+publishError : String
+publishError =
+    "text-red-500 fa fa-bolt"
