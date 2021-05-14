@@ -38,7 +38,7 @@ checkbox flag =
 
 noElement : Html msg
 noElement =
-    span [ class "invisible" ] []
+    span [ class "hidden" ] []
 
 
 resultMsg : BasicResult -> Html msg

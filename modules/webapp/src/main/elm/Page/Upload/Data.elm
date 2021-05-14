@@ -28,3 +28,4 @@ type Msg
     | SetQuery String
     | SearchResp (Result Http.Error ShareList)
     | Init
+    | InitNewShare

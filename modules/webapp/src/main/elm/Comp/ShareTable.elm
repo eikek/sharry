@@ -7,10 +7,12 @@ module Comp.ShareTable exposing
     )
 
 import Api.Model.ShareListItem exposing (ShareListItem)
+import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages.ShareTable exposing (Texts)
+import Styles as S
 import Util.Html
 import Util.Size
 import Util.String
@@ -40,16 +42,17 @@ update msg model =
 
 view : Texts -> List ShareListItem -> Model -> Html Msg
 view texts accounts model =
-    table [ class "ui selectable table" ]
+    table [ class S.tableMain ]
         [ thead []
             [ tr []
-                [ th [] [ text texts.nameId ]
-                , th [] [ text texts.aliasLabel ]
-                , th [ class "collapsing" ] [ text texts.maxViews ]
-                , th [ class "collapsing" ] [ text texts.published ]
-                , th [ class "collapsing" ] [ text texts.nFiles ]
-                , th [ class "collapsing" ] [ text texts.size ]
-                , th [ class "collapsing" ] [ text texts.created ]
+                [ th [] []
+                , th [ class "text-left" ] [ text texts.nameId ]
+                , th [ class "text-left hidden sm:table-cell" ] [ text texts.aliasLabel ]
+                , th [ class "text-center hidden lg:table-cell" ] [ text texts.maxViews ]
+                , th [ class "text-center" ] [ text texts.published ]
+                , th [ class "text-center" ] [ text texts.nFiles ]
+                , th [ class "text-center hidden lg:table-cell" ] [ text texts.size ]
+                , th [ class "text-center hidden lg:table-cell" ] [ text texts.created ]
                 ]
             ]
         , tbody []
@@ -67,24 +70,36 @@ isSelected model item =
 viewTableLine : Texts -> Model -> ShareListItem -> Html Msg
 viewTableLine texts model item =
     tr
-        [ onClick (Select item)
-        , classList [ ( "active", isSelected model item ) ]
+        [ classList
+            [ ( "active", isSelected model item )
+            ]
+        , class S.tableRow
         ]
-        [ td [] [ Maybe.withDefault (Util.String.shorten 12 item.id) item.name |> text ]
-        , td [] [ Maybe.withDefault "-" item.aliasName |> text ]
-        , td [ class "collapsing" ] [ String.fromInt item.maxViews |> text ]
-        , td [ class "collapsing" ]
+        [ B.editLinkTableCell "Edit" (Select item)
+        , td [ class "text-left" ]
+            [ Maybe.withDefault (Util.String.shorten 12 item.id) item.name
+                |> text
+            ]
+        , td [ class "text-left hidden sm:table-cell" ]
+            [ Maybe.withDefault "-" item.aliasName
+                |> text
+            ]
+        , td [ class "text-center hidden lg:table-cell" ]
+            [ String.fromInt item.maxViews
+                |> text
+            ]
+        , td [ class "text-center" ]
             [ publishedState item
             ]
-        , td [ class "collapsing" ]
+        , td [ class "text-center" ]
             [ String.fromInt item.files |> text
             ]
-        , td [ class "collapsing" ]
+        , td [ class "text-center hidden lg:table-cell" ]
             [ toFloat item.size
                 |> Util.Size.bytesReadable Util.Size.B
                 |> text
             ]
-        , td [ class "collapsing" ]
+        , td [ class "text-center hidden lg:table-cell" ]
             [ texts.dateTime item.created |> text
             ]
         ]
@@ -98,7 +113,7 @@ publishedState item =
                 Util.Html.checkbox flag
 
             else
-                i [ class "ui bolt icon" ] []
+                i [ class "fa fa-bolt" ] []
 
         Nothing ->
             Util.Html.checkboxUnchecked
