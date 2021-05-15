@@ -352,15 +352,6 @@ fileRow texts { baseUrl, delete } _ file =
         , td [ class "" ]
             [ div [ class "text-right flex flex-row justify-end space-x-1 items-center" ]
                 [ a
-                    [ class "text-xs"
-                    , class S.primaryButton
-                    , title texts.downloadToDisk
-                    , download file.filename
-                    , href (baseUrl ++ file.id)
-                    ]
-                    [ i [ class "fa fa-download " ] []
-                    ]
-                , a
                     [ classList
                         [ ( "hidden", not <| previewPossible file.mimetype )
                         ]

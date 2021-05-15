@@ -213,7 +213,7 @@ deleteLabel =
 
 link : String
 link =
-    " text-blue-400 hover:text-blue-500 dark:text-lightblue-200 dark:hover:text-lightblue-100 cursor-pointer "
+    " text-blue-400 hover:text-blue-500 dark:text-lightblue-300 dark:hover:text-lightblue-200 cursor-pointer "
 
 
 inputErrorBorder : String

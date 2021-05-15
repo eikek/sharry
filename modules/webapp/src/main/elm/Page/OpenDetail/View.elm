@@ -1,33 +1,34 @@
 module Page.OpenDetail.View exposing (view)
 
 import Api
+import Comp.MenuBar as MB
 import Comp.PasswordInput
 import Comp.ShareFileList exposing (ViewMode(..))
 import Comp.Zoom
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onSubmit)
 import Markdown
 import Messages.DetailPage exposing (Texts)
 import Page.OpenDetail.Data exposing (Model, Msg(..))
+import Styles as S
 import Util.Html
 import Util.Share
 
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
-    div [ class "ui grid container detail-page" ]
+    div
+        [ class S.content
+        , class "mb-3"
+        ]
         [ zoomView flags model
         , passwordDialog texts model
-        , div [ class "row" ]
-            [ div [ class "sixteen wide column" ]
-                [ descriptionView texts model
-                , messageDiv model
-                , middleMenu texts model
-                , fileList texts flags model
-                ]
-            ]
+        , descriptionView texts model
+        , messageDiv model
+        , middleMenu texts model
+        , fileList texts flags model
         ]
 
 
@@ -40,45 +41,47 @@ passwordDialog : Texts -> Model -> Html Msg
 passwordDialog texts model =
     div
         [ classList
-            [ ( "ui dimmer", True )
-            , ( "active", model.password.enabled )
+            [ ( "hidden", not model.password.enabled )
             ]
+        , class S.dimmer
         ]
         [ Html.form
-            [ class "inline content"
-            , onClick SubmitPassword
+            [ class "flex flex-col space-y-2"
+            , onSubmit SubmitPassword
             , action "#"
             ]
-            [ h2 [ class "ui inverted icon header" ]
-                [ i [ class "lock icon" ] []
+            [ h2
+                [ class S.header1
+                , class "text-gray-100 flex flex-col items-center justify-center space-y-1"
+                ]
+                [ i [ class "fa fa-lock mr-2" ] []
                 , text texts.passwordRequired
                 ]
-            , div [ class "ui basic segment" ]
-                [ div [ class "ui action input" ]
-                    [ Html.map PasswordMsg
-                        (Comp.PasswordInput.view
-                            { placeholder = "" }
-                            model.password.field
-                            False
-                            model.password.model
-                        )
-                    , button
-                        [ class "ui primary button"
-                        , href "#"
-                        , type_ "submit"
-                        , onClick SubmitPassword
-                        ]
-                        [ text texts.submit
-                        ]
+            , div [ class "flex flex-row" ]
+                [ Html.map PasswordMsg
+                    (Comp.PasswordInput.view
+                        { placeholder = "" }
+                        model.password.field
+                        False
+                        model.password.model
+                    )
+                , button
+                    [ class S.primaryButton
+                    , class "ml-2 block"
+                    , href "#"
+                    , type_ "submit"
+                    , onClick SubmitPassword
                     ]
-                , div
-                    [ classList
-                        [ ( "ui error message", True )
-                        , ( "invisible hidden", not model.password.badPassword )
-                        ]
+                    [ text texts.submit
                     ]
-                    [ text texts.passwordInvalid
+                ]
+            , div
+                [ classList
+                    [ ( S.errorMessage, True )
+                    , ( "hidden", not model.password.badPassword )
                     ]
+                ]
+                [ text texts.passwordInvalid
                 ]
             ]
         ]
@@ -95,7 +98,7 @@ descriptionView texts model =
         ( title, desc ) =
             Util.Share.splitDescription model.share texts.yourShare
     in
-    div [ class "ui container share-description" ]
+    div [ class "markdown-preview" ]
         [ Markdown.toHtml [] title
         , Markdown.toHtml [] desc
         ]
@@ -103,32 +106,27 @@ descriptionView texts model =
 
 middleMenu : Texts -> Model -> Html Msg
 middleMenu texts model =
-    div
-        [ class "ui menu"
-        ]
-        [ a
-            [ classList
-                [ ( "icon link item", True )
-                , ( "active", model.fileView == ViewList )
-                ]
-            , href "#"
-            , onClick (SetFileView ViewList)
-            , title texts.listView
+    MB.view
+        { start =
+            []
+        , end =
+            [ MB.ToggleButton
+                { tagger = SetFileView ViewList
+                , active = model.fileView == ViewList
+                , label = ""
+                , icon = Just "fa fa-list"
+                , title = texts.listView
+                }
+            , MB.ToggleButton
+                { tagger = SetFileView ViewCard
+                , active = model.fileView == ViewCard
+                , label = ""
+                , icon = Just "fa fa-th"
+                , title = texts.cardView
+                }
             ]
-            [ i [ class "ui list icon" ] []
-            ]
-        , a
-            [ classList
-                [ ( "icon link item", True )
-                , ( "active", model.fileView == ViewCard )
-                ]
-            , href "#"
-            , onClick (SetFileView ViewCard)
-            , title texts.cardView
-            ]
-            [ i [ class "th icon" ] []
-            ]
-        ]
+        , rootClasses = "my-2"
+        }
 
 
 fileList : Texts -> Flags -> Model -> Html Msg

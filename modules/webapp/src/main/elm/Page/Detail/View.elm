@@ -47,25 +47,24 @@ view texts flags model =
         ( head, desc ) =
             Util.Share.splitDescription model.share texts.yourShare
     in
-    div [ class S.content ]
-        [ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
-        , deleteLoader texts model
-        , div [ class "flex flex-col mb-2" ]
-            [ div [ class "" ]
-                ([ Markdown.toHtml [ class "markdown-preview" ] head
-                 , topMenu texts model
-                 ]
-                    ++ shareProps texts model
-                    ++ shareLink texts flags model
-                    ++ [ dropzone texts flags model
-                       , messageDiv model
-                       , descriptionView texts model desc
-                       , middleMenu texts model
-                       , fileList texts flags model
-                       ]
-                )
-            ]
+    div
+        [ class S.content
+        , class "mb-2"
         ]
+        ([ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
+         , deleteLoader texts model
+         , Markdown.toHtml [ class "markdown-preview" ] head
+         , topMenu texts model
+         ]
+            ++ shareProps texts model
+            ++ shareLink texts flags model
+            ++ [ dropzone texts flags model
+               , messageDiv model
+               , descriptionView texts model desc
+               , middleMenu texts model
+               , fileList texts flags model
+               ]
+        )
 
 
 descriptionView : Texts -> Model -> String -> Html Msg
