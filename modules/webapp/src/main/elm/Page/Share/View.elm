@@ -58,11 +58,7 @@ view texts flags model =
             ]
         , div [ class "flex flex-col" ]
             [ div []
-                [ div [ class S.header2 ]
-                    [ i [ class "fa fa-dropdown" ] []
-                    , text texts.files
-                    ]
-                , Html.map DropzoneMsg
+                [ Html.map DropzoneMsg
                     (Comp.Dropzone2.view
                         texts.dropzone
                         (mkViewSettings model)
@@ -71,12 +67,6 @@ view texts flags model =
                 ]
             , div []
                 [ div
-                    [ class S.header2
-                    ]
-                    [ i [ class "dropdown icon" ] []
-                    , text texts.details
-                    ]
-                , div
                     [ classList
                         [ ( "content", True )
                         , ( "active", model.showDetails )
@@ -213,6 +203,7 @@ controls texts model =
                     , label = texts.submit
                     , icon = "fa fa-upload"
                     , attrs = [ href "#" ]
+                    , responsive = False
                     }
             , MB.CustomElement <|
                 B.secondaryButton
@@ -221,6 +212,7 @@ controls texts model =
                     , label = texts.clearFiles
                     , icon = "fa fa-undo"
                     , attrs = [ href "#" ]
+                    , responsive = True
                     }
             ]
         , end =
@@ -236,14 +228,16 @@ controls texts model =
                             texts.pause
                     , icon =
                         if model.uploadPaused then
-                            "fa fa-play mr-2"
+                            "fa fa-play sm:mr-2"
 
                         else
-                            "fa fa-pause mr-2"
+                            "fa fa-pause sm:mr-2"
                     , attrs = [ href "#" ]
+                    , responsive = True
                     }
             ]
         , rootClasses = ""
+        , sticky = True
         }
 
 

@@ -147,6 +147,7 @@ view texts model =
                 , attrs =
                     [ href "#"
                     ]
+                , responsive = False
                 }
             , B.secondaryButton
                 { disabled = False
@@ -156,54 +157,7 @@ view texts model =
                 , attrs =
                     [ href "#"
                     ]
+                , responsive = False
                 }
-            ]
-        ]
-
-
-view0 : Texts -> Model -> Html Msg
-view0 texts model =
-    div [ class "ui form" ]
-        [ div [ class "field" ]
-            [ label []
-                [ text texts.receivers
-                , span [ class "muted" ]
-                    [ text texts.separateRecipientsByComma ]
-                ]
-            , input
-                [ type_ "text"
-                , onInput SetReceiver
-                , value model.receiver
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text texts.subject ]
-            , input
-                [ type_ "text"
-                , onInput SetSubject
-                , value model.subject
-                ]
-                []
-            ]
-        , div [ class "field" ]
-            [ label [] [ text texts.body ]
-            , textarea [ onInput SetBody ]
-                [ text model.body ]
-            ]
-        , button
-            [ classList
-                [ ( "ui primary button", True )
-                , ( "disabled", model.receiver == "" )
-                ]
-            , onClick Send
-            ]
-            [ text texts.send
-            ]
-        , button
-            [ class "ui secondary button"
-            , onClick Cancel
-            ]
-            [ text texts.cancel
             ]
         ]

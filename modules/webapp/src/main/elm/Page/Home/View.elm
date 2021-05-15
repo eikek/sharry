@@ -34,6 +34,7 @@ view texts _ =
                     , attrs =
                         [ Page.href SharePage
                         ]
+                    , responsive = False
                     }
                 , B.secondaryButton
                     { label = texts.viewShares
@@ -43,6 +44,7 @@ view texts _ =
                     , attrs =
                         [ Page.href UploadPage
                         ]
+                    , responsive = False
                     }
                 ]
             ]

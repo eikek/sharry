@@ -114,6 +114,7 @@ searchArea texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }
 
 
@@ -185,6 +186,7 @@ shareInfo texts flags model url =
                     , attrs =
                         [ href "#"
                         ]
+                    , responsive = False
                     }
                 ]
             ]

@@ -34,6 +34,9 @@ view model =
     div
         [ id "main"
         , class styleMain
+        , classList
+            [ ( "h-screen-12", Page.isFixedHeight model.page )
+            ]
         ]
         [ topMenu texts model
         , mainContent texts model
@@ -405,12 +408,12 @@ styleTopNav =
 
 styleMain : String
 styleMain =
-    "pt-12 flex flex-grow flex-col w-full h-screen bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+    "mt-12 flex flex-col w-full min-h-screen-12  bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
 
 
 styleContent : String
 styleContent =
-    "h-full"
+    "h-full flex-grow"
 
 
 styleFooter : String

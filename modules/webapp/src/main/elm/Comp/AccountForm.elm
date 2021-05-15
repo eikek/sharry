@@ -337,5 +337,6 @@ view texts model =
                     }
                 ]
             , rootClasses = ""
+            , sticky = False
             }
         ]

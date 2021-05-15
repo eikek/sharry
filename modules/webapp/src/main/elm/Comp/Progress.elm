@@ -11,10 +11,6 @@ type alias ProgressStyles =
     }
 
 
-
--- parent: bg-gray-200 dark:bg-warmgray-600 shadow rounded
-
-
 progress2 : ProgressStyles -> Int -> Html msg
 progress2 css percent =
     div

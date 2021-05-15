@@ -267,10 +267,11 @@ fileEmbed texts settings model file =
             [ a
                 [ class "text-3xl"
                 , class S.secondaryBasicButton
+                , class "px-5 py-5 rounded-full"
                 , onClick (EmbedFile file)
                 , href "#"
                 ]
-                [ i [ class "fa fa-play-circle font-thin " ] []
+                [ i [ class "fa fa-play " ] []
                 ]
             ]
 
@@ -333,7 +334,7 @@ fileRow texts { baseUrl, delete } _ file =
         [ td [ class "text-center py-2" ]
             [ i [ class ("text-2xl " ++ fileIcon file) ] []
             ]
-        , td [ class "text-left w-full px-3" ]
+        , td [ class "text-left w-full px-3 break-all sm:break-words" ]
             [ a
                 [ title texts.downloadToDisk
                 , download file.filename

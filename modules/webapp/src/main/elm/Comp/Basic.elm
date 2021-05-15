@@ -26,6 +26,7 @@ primaryButton :
         , disabled : Bool
         , handler : Attribute msg
         , attrs : List (Attribute msg)
+        , responsive : Bool
     }
     -> Html msg
 primaryButton model =
@@ -37,6 +38,7 @@ primaryButton model =
         , attrs = model.attrs
         , baseStyle = S.primaryButtonMain ++ S.primaryButtonRounded
         , activeStyle = S.primaryButtonHover
+        , responsive = model.responsive
         }
 
 
@@ -47,6 +49,7 @@ primaryBasicButton :
         , disabled : Bool
         , handler : Attribute msg
         , attrs : List (Attribute msg)
+        , responsive : Bool
     }
     -> Html msg
 primaryBasicButton model =
@@ -58,6 +61,7 @@ primaryBasicButton model =
         , attrs = model.attrs
         , baseStyle = S.primaryBasicButtonMain
         , activeStyle = S.primaryBasicButtonHover
+        , responsive = model.responsive
         }
 
 
@@ -68,6 +72,7 @@ secondaryButton :
         , disabled : Bool
         , handler : Attribute msg
         , attrs : List (Attribute msg)
+        , responsive : Bool
     }
     -> Html msg
 secondaryButton model =
@@ -79,6 +84,7 @@ secondaryButton model =
         , attrs = model.attrs
         , baseStyle = S.secondaryButtonMain
         , activeStyle = S.secondaryButtonHover
+        , responsive = model.responsive
         }
 
 
@@ -89,6 +95,7 @@ secondaryBasicButton :
         , disabled : Bool
         , handler : Attribute msg
         , attrs : List (Attribute msg)
+        , responsive : Bool
     }
     -> Html msg
 secondaryBasicButton model =
@@ -100,6 +107,7 @@ secondaryBasicButton model =
         , attrs = model.attrs
         , baseStyle = S.secondaryBasicButtonMain ++ S.secondaryBasicButtonRounded
         , activeStyle = S.secondaryBasicButtonHover
+        , responsive = model.responsive
         }
 
 
@@ -112,6 +120,7 @@ genericButton :
         , attrs : List (Attribute msg)
         , baseStyle : String
         , activeStyle : String
+        , responsive : Bool
     }
     -> Html msg
 genericButton model =
@@ -131,7 +140,7 @@ genericButton model =
                 ]
                     ++ model.attrs
     in
-    genericLink model.icon model.label attrs
+    genericLink model.responsive model.icon model.label attrs
 
 
 linkLabel :
@@ -170,7 +179,7 @@ linkLabel model =
                     ++ styles
                     ++ hover
     in
-    genericLink model.icon model.label attrs
+    genericLink False model.icon model.label attrs
 
 
 loadingDimmer : { label : String, active : Bool } -> Html msg
@@ -268,18 +277,24 @@ inputRequired =
 --- Helpers
 
 
-genericLink : String -> String -> List (Attribute msg) -> Html msg
-genericLink icon label attrs =
+genericLink : Bool -> String -> String -> List (Attribute msg) -> Html msg
+genericLink responsive icon label attrs =
     a
         attrs
         [ i
             [ class icon
-            , classList [ ( "hidden", icon == "" ) ]
+            , classList
+                [ ( "hidden", icon == "" )
+                , ( "py-1 ", True )
+                ]
             ]
             []
         , span
             [ class "ml-2"
-            , classList [ ( "hidden", label == "" ) ]
+            , classList
+                [ ( "hidden", label == "" )
+                , ( "hidden sm:inline", responsive && label /= "" )
+                ]
             ]
             [ text label
             ]

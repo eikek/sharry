@@ -16,7 +16,7 @@ import Styles as S
 
 
 view : Texts -> Flags -> String -> Model -> Html Msg
-view texts flags id model =
+view texts flags _ model =
     let
         counts =
             countDone model.uploads
@@ -50,6 +50,12 @@ view texts flags id model =
             ]
             [ text model.formState.message
             ]
+        , Html.map DropzoneMsg
+            (Comp.Dropzone2.view
+                texts.dropzone
+                (mkViewSettings model)
+                model.dropzoneModel
+            )
         , div [ class "mb-4" ]
             [ label [ class S.inputLabel ]
                 [ text texts.description
@@ -62,17 +68,11 @@ view texts flags id model =
                     model.descModel
                 )
             ]
-        , Html.map DropzoneMsg
-            (Comp.Dropzone2.view
-                texts.dropzone
-                (mkViewSettings model)
-                model.dropzoneModel
-            )
         ]
 
 
 doneMessageBox : ( Int, Int ) -> Texts -> Model -> Html Msg
-doneMessageBox ( _, err ) texts model =
+doneMessageBox ( _, err ) texts _ =
     let
         buttons =
             div [ class "flex flex-row space-x-2" ]
@@ -134,6 +134,7 @@ controls texts model =
                     , label = texts.submit
                     , icon = "fa fa-upload"
                     , attrs = [ href "#" ]
+                    , responsive = False
                     }
             , MB.CustomElement <|
                 B.secondaryButton
@@ -142,6 +143,7 @@ controls texts model =
                     , label = texts.clearFiles
                     , icon = "fa fa-undo"
                     , attrs = [ href "#" ]
+                    , responsive = True
                     }
             ]
         , end =
@@ -157,14 +159,16 @@ controls texts model =
                             texts.pause
                     , icon =
                         if model.uploadPaused then
-                            "fa fa-play mr-2"
+                            "fa fa-play sm:mr-2"
 
                         else
-                            "fa fa-pause mr-2"
+                            "fa fa-pause sm:mr-2"
                     , attrs = [ href "#" ]
+                    , responsive = True
                     }
             ]
         , rootClasses = ""
+        , sticky = True
         }
 
 

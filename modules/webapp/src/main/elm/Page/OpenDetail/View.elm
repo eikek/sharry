@@ -126,6 +126,7 @@ middleMenu texts model =
                 }
             ]
         , rootClasses = "my-2"
+        , sticky = False
         }
 
 

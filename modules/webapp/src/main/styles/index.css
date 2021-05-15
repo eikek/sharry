@@ -111,6 +111,9 @@
     .h-screen-12 {
         height: calc(100vh - 3rem);
     }
+    .min-h-screen-12 {
+        min-height: calc(100vh - 3rem);
+    }
     .h-full-10 {
         height: calc(100% - 2.5rem);
     }

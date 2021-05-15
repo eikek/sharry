@@ -33,6 +33,7 @@ type alias MenuBar msg =
     { start : List (Item msg)
     , end : List (Item msg)
     , rootClasses : String
+    , sticky : Bool
     }
 
 
@@ -124,9 +125,8 @@ view1 classes mb =
     in
     div
         [ class mb.rootClasses
-        , class "flex flex-col sm:flex-row space-y-1 sm:space-y-0 "
-
-        --            ,class "sticky top-0 z-40"
+        , class "flex flex-row space-y-1 sm:space-y-0 "
+        , classList [ ( "sticky top-0 z-40", mb.sticky ) ]
         , class classes
         ]
         [ left

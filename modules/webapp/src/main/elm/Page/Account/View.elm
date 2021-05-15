@@ -105,4 +105,5 @@ searchArea texts model =
                 }
             ]
         , rootClasses = "mb-4"
+        , sticky = True
         }

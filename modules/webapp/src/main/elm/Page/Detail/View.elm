@@ -224,6 +224,7 @@ shareLinkPublished texts flags model =
                             , attrs =
                                 [ href "#"
                                 ]
+                            , responsive = False
                             }
                         ]
                     ]
@@ -620,6 +621,7 @@ topMenu texts model =
                 }
             ]
         , rootClasses = "mt-3"
+        , sticky = True
         }
 
 
@@ -661,6 +663,7 @@ middleMenu texts model =
                 }
             ]
         , rootClasses = "my-2"
+        , sticky = False
         }
 
 
@@ -684,6 +687,7 @@ dropzone texts flags model =
                 , icon = "fa fa-upload"
                 , disabled = False
                 , attrs = [ href "#" ]
+                , responsive = False
                 }
             , B.secondaryButton
                 { handler = onClick ResetFileForm
@@ -691,6 +695,7 @@ dropzone texts flags model =
                 , icon = "fa fa-undo"
                 , disabled = False
                 , attrs = [ href "#" ]
+                , responsive = True
                 }
             , div [ class "flex flex-row flex-grow justify-end" ]
                 [ B.secondaryButton
@@ -709,6 +714,7 @@ dropzone texts flags model =
                             "fa fa-pause"
                     , disabled = not model.uploading
                     , attrs = [ href "#" ]
+                    , responsive = True
                     }
                 ]
             ]

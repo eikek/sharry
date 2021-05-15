@@ -89,6 +89,7 @@ view texts classes txt model =
                         ]
                 ]
             , rootClasses = "text-xs"
+            , sticky = False
             }
         , case model.display of
             Edit ->
