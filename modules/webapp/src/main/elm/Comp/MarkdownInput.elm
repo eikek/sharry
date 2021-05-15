@@ -9,7 +9,7 @@ module Comp.MarkdownInput exposing
 import Comp.MenuBar as MB
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onInput)
 import Markdown
 import Messages.MarkdownInput exposing (Texts)
 import Styles as S
@@ -51,26 +51,6 @@ update txt msg model =
 
 view : Texts -> List ( String, Bool ) -> String -> Model -> Html Msg
 view texts classes txt model =
-    -- div [ class "flex flex-row text-sm" ]
-    --    , a
-    --        [ classList
-    --            [ ( "ui link item", True )
-    --            , ( "active", model.display == Split )
-    --            ]
-    --        , onClick (SetDisplay Split)
-    --        , href "#"
-    --        ]
-    --        [ text texts.split
-    --        ]
-    --    , a
-    --        [ class "ui right floated help-link link item"
-    --        , target "_new"
-    --        , href model.cheatSheetUrl
-    --        ]
-    --        [ i [ class "ui help icon" ] []
-    --        , text texts.supportsMarkdown
-    --        ]
-    --    ]
     div
         [ classList classes ]
         [ MB.view
@@ -108,7 +88,7 @@ view texts classes txt model =
                         , text texts.supportsMarkdown
                         ]
                 ]
-            , rootClasses = "text-sm"
+            , rootClasses = "text-xs"
             }
         , case model.display of
             Edit ->
@@ -126,7 +106,7 @@ editDisplay : String -> Html Msg
 editDisplay txt =
     textarea
         [ class (String.replace S.formFocusRing "" S.textAreaInput)
-        , class "w-full h-48 md:h-96 border-none min-h-full mt-1 focus:ring-0 focus:outline-none"
+        , class "w-full h-48 border-none min-h-full mt-1 focus:ring-0 focus:outline-none"
         , onInput SetText
         ]
         [ text txt ]

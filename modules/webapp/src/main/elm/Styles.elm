@@ -137,7 +137,7 @@ secondaryButtonMain =
 
 secondaryButtonPlain : String
 secondaryButtonPlain =
-    " my-auto whitespace-nowrap bg-gray-300 dark:bg-warmgray-400 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 dark:text-gray-800 "
+    " my-auto whitespace-nowrap bg-gray-300 text-gray-800 dark:bg-warmgray-400 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 dark:text-gray-800 "
 
 
 secondaryButtonHover : String

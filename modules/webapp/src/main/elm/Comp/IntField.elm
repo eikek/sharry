@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Messages.IntField exposing (Texts)
+import Styles as S
 
 
 type alias Model =
@@ -82,23 +83,25 @@ update msg model =
 view : Maybe Int -> Texts -> String -> Model -> Html Msg
 view nval texts labelText model =
     div
-        [ classList
-            [ ( "field", True )
-            , ( "error", model.error /= Nothing )
-            ]
+        [ class "mb-4"
         ]
-        [ label [] [ text labelText ]
+        [ label [ class S.inputLabel ]
+            [ text labelText ]
         , input
             [ type_ "text"
             , Maybe.map String.fromInt nval
                 |> Maybe.withDefault model.lastInput
                 |> value
             , onInput SetValue
+            , class S.textInput
+            , classList
+                [ ( S.inputErrorBorder, model.error /= Nothing )
+                ]
             ]
             []
         , div
             [ classList
-                [ ( "ui pointing red basic label", True )
+                [ ( "text-red-500 label", True )
                 , ( "hidden", model.error == Nothing )
                 ]
             ]
