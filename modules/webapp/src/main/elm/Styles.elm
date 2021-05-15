@@ -89,12 +89,12 @@ primaryButtonPlain =
 
 primaryButtonMain : String
 primaryButtonMain =
-    " my-auto whitespace-nowrap bg-blue-500 border border-blue-500 dark:border-lightblue-800 dark:bg-lightblue-800 text-white text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 "
+    " my-auto whitespace-nowrap bg-blue-500 border border-blue-500 dark:border-orange-800 dark:bg-orange-800 text-white text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 "
 
 
 primaryButtonHover : String
 primaryButtonHover =
-    " hover:bg-blue-600 dark:hover:bg-lightblue-700 "
+    " hover:bg-blue-600 dark:hover:bg-orange-700 "
 
 
 primaryButtonRounded : String
@@ -113,12 +113,12 @@ primaryBasicButton =
 
 primaryBasicButtonMain : String
 primaryBasicButtonMain =
-    " rounded my-auto whitespace-nowrap border border-blue-500 dark:border-lightblue-500 text-blue-500 dark:text-lightblue-500 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 "
+    " rounded my-auto whitespace-nowrap border border-blue-500 dark:border-orange-700 text-blue-500 dark:text-orange-500 text-center px-4 py-2 shadow-md focus:outline-none focus:ring focus:ring-opacity-75 "
 
 
 primaryBasicButtonHover : String
 primaryBasicButtonHover =
-    " hover:bg-blue-600 hover:text-white dark:hover:text-white dark:hover:bg-lightblue-500 "
+    " hover:bg-blue-600 hover:text-white dark:hover:text-white dark:hover:bg-orange-700 "
 
 
 

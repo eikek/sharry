@@ -129,7 +129,7 @@ view texts sett model =
                 , ( "bg-indigo-100 bg-opacity-50 dark:bg-orange-900 dark:bg-opacity-50", not model.hover )
                 , ( "disabled", not sett.active )
                 ]
-            , class "flex flex-col justify-center items-center py-2 md:py-12 border-0 border-t-2 border-indigo-500 dark:border-orange-500 dropzone"
+            , class "flex flex-col justify-center items-center py-2 md:py-12 border-0 border-t-2 border-indigo-500 dark:border-orange-500 h-24 md:h-auto"
             , onDragEnter DragEnter
             , onDragOver DragEnter
             , onDragLeave DragLeave

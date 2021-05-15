@@ -148,12 +148,12 @@ linkLabel model =
             [ class S.basicLabel
             , class "inline-block md:text-sm my-auto whitespace-nowrap"
             , class "border-blue-500 text-blue-500 "
-            , class "dark:border-lightblue-300 dark:text-lightblue-300"
+            , class "dark:border-orange-500 dark:text-orange-500"
             ]
 
         hover =
             [ class "hover:bg-blue-500 hover:text-gray-200"
-            , class "dark:hover:bg-lightblue-300 dark:hover:text-warmgray-900"
+            , class "dark:hover:bg-orange-500 dark:hover:text-warmgray-900"
             ]
 
         attrs =
