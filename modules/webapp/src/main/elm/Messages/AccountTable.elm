@@ -22,6 +22,7 @@ type alias Texts =
     , nrLogins : String
     , lastLogin : String
     , created : String
+    , edit : String
     , dateTime : Int -> String
     }
 
@@ -36,6 +37,7 @@ gb =
     , nrLogins = "#Logins"
     , lastLogin = "Last Login"
     , created = "Created"
+    , edit = "Edit"
     , dateTime = formatDateTime Language.English
     }
 
@@ -50,6 +52,7 @@ de =
     , nrLogins = "#Anmeldungen"
     , lastLogin = "Letzte Anmeldung"
     , created = "Erstellt"
+    , edit = "Editieren"
     , dateTime = formatDateTime Language.German
     }
 
@@ -64,5 +67,6 @@ fr =
     , nrLogins = "#Connexions"
     , lastLogin = "Dernière connexion"
     , created = "Créé"
+    , edit = "Éditer"
     , dateTime = formatDateTime Language.French
     }

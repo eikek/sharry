@@ -137,3 +137,6 @@ update key flags msg model =
             ( { model | saveResult = Just <| BasicResult False errmsg }
             , Cmd.none
             )
+
+        InitNewAccount ->
+            ( model, Page.set key (AccountPage (Just "new")) )

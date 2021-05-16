@@ -18,6 +18,7 @@ import Messages.YesNoDimmer
 type alias Texts =
     { mailSend : Messages.MailSend.Texts
     , save : String
+    , cancel : String
     , yourShare : String
     , markdownInput : Messages.MarkdownInput.Texts
     , shareFileList : Messages.ShareFileList.Texts
@@ -48,6 +49,7 @@ type alias Texts =
     , edit : String
     , detailsMenu : String
     , shareLinkMenu : String
+    , addFilesLinkMenu : String
     , editDescription : String
     , publish : String
     , unpublish : String
@@ -73,6 +75,7 @@ gb : Texts
 gb =
     { mailSend = Messages.MailSend.gb
     , save = "Save"
+    , cancel = "Cancel"
     , yourShare = "Your Share"
     , markdownInput = Messages.MarkdownInput.gb
     , shareFileList = Messages.ShareFileList.gb
@@ -110,6 +113,7 @@ gb =
     , edit = "Edit"
     , detailsMenu = "Details"
     , shareLinkMenu = "Share Link"
+    , addFilesLinkMenu = "Add files"
     , editDescription = "Edit description"
     , publish = "Publish"
     , unpublish = "Unpublish"
@@ -137,6 +141,7 @@ de : Texts
 de =
     { mailSend = Messages.MailSend.de
     , save = "Speichern"
+    , cancel = "Abbrechen"
     , yourShare = "Deine Datei-Freigabe"
     , markdownInput = Messages.MarkdownInput.de
     , shareFileList = Messages.ShareFileList.de
@@ -175,6 +180,7 @@ de =
     , edit = "Ändern"
     , detailsMenu = "Details"
     , shareLinkMenu = "Link teilen"
+    , addFilesLinkMenu = "Dateien hinzufügen"
     , editDescription = "Beschreibung ändern"
     , publish = "Veröffentlichen"
     , unpublish = "Veröffentlichung zurückziehen"
@@ -202,6 +208,7 @@ fr : Texts
 fr =
     { mailSend = Messages.MailSend.fr
     , save = "Sauver"
+    , cancel = "Annulation"
     , yourShare = "Votre partage"
     , markdownInput = Messages.MarkdownInput.fr
     , shareFileList = Messages.ShareFileList.fr
@@ -239,6 +246,7 @@ fr =
     , edit = "Éditer"
     , detailsMenu = "Détails"
     , shareLinkMenu = "Lien de partage"
+    , addFilesLinkMenu = "Ajouter des fichiers"
     , editDescription = "Modifier la description"
     , publish = "Publier"
     , unpublish = "Dépublier"

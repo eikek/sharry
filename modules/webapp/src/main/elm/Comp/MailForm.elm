@@ -10,10 +10,12 @@ module Comp.MailForm exposing
 
 import Api.Model.MailTemplate exposing (MailTemplate)
 import Api.Model.SimpleMail exposing (SimpleMail)
+import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Messages.MailForm exposing (Texts)
+import Styles as S
 
 
 type alias Model =
@@ -79,49 +81,83 @@ update msg model =
             ( model, FormSend sm )
 
 
+
+--- View
+
+
 view : Texts -> Model -> Html Msg
 view texts model =
-    div [ class "ui form" ]
-        [ div [ class "field" ]
-            [ label []
+    div [ class "flex flex-col" ]
+        [ div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
                 [ text texts.receivers
-                , span [ class "muted" ]
-                    [ text texts.separateRecipientsByComma ]
+                , B.inputRequired
                 ]
             , input
                 [ type_ "text"
+                , class S.textInput
                 , onInput SetReceiver
                 , value model.receiver
                 ]
                 []
+            , span [ class "text-sm opacity-70" ]
+                [ text texts.separateRecipientsByComma ]
             ]
-        , div [ class "field" ]
-            [ label [] [ text texts.subject ]
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
+                ]
+                [ text texts.subject
+                , B.inputRequired
+                ]
             , input
                 [ type_ "text"
                 , onInput SetSubject
                 , value model.subject
+                , class S.textInput
                 ]
                 []
             ]
-        , div [ class "field" ]
-            [ label [] [ text texts.body ]
-            , textarea [ onInput SetBody ]
-                [ text model.body ]
-            ]
-        , button
-            [ classList
-                [ ( "ui primary button", True )
-                , ( "disabled", model.receiver == "" )
+        , div [ class "mb-4" ]
+            [ label
+                [ class S.inputLabel
                 ]
-            , onClick Send
+                [ text texts.body
+                , B.inputRequired
+                ]
+            , textarea
+                [ onInput SetBody
+                , class S.textAreaInput
+                , class "h-48"
+                , value model.body
+                ]
+                []
             ]
-            [ text texts.send
-            ]
-        , button
-            [ class "ui secondary button"
-            , onClick Cancel
-            ]
-            [ text texts.cancel
+        , div [ class "flex flex-row space-x-2" ]
+            [ B.primaryButton
+                { disabled =
+                    String.isEmpty model.receiver
+                        || String.isEmpty model.subject
+                        || String.isEmpty model.body
+                , icon = "fa fa-paper-plane font-thin"
+                , label = texts.send
+                , handler = onClick Send
+                , attrs =
+                    [ href "#"
+                    ]
+                , responsive = False
+                }
+            , B.secondaryButton
+                { disabled = False
+                , handler = onClick Cancel
+                , label = texts.cancel
+                , icon = ""
+                , attrs =
+                    [ href "#"
+                    ]
+                , responsive = False
+                }
             ]
         ]

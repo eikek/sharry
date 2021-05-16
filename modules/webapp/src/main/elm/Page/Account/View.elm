@@ -1,25 +1,23 @@
 module Page.Account.View exposing (view)
 
 import Api.Model.AccountDetail exposing (AccountDetail)
-import Api.Model.BasicResult exposing (BasicResult)
 import Comp.AccountForm
 import Comp.AccountTable
+import Comp.MenuBar as MB
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
 import Messages.AccountPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Account.Data exposing (Model, Msg(..))
+import Styles as S
 import Util.Html
 
 
 view : Maybe String -> Texts -> Model -> Html Msg
 view id texts model =
     div
-        [ classList
-            [ ( "ui container account-page", True )
-            , ( "text", id /= Nothing )
-            ]
+        [ class S.content
+        , class "flex flex-col"
         ]
     <|
         case model.selected of
@@ -36,12 +34,16 @@ view id texts model =
 
 viewCreate : Texts -> Model -> List (Html Msg)
 viewCreate texts model =
-    [ h1 [ class "ui dividing header" ]
-        [ i [ class "ui user circle outline icon" ] []
+    [ h1 [ class S.header1 ]
+        [ i [ class "fa fa-users mr-2" ] []
         , text texts.createAccountTitle
         ]
-    , div [ class "" ]
-        [ Html.map AccountFormMsg (Comp.AccountForm.view texts.accountForm model.formModel)
+    , div [ class "mb-2" ]
+        [ Html.map AccountFormMsg
+            (Comp.AccountForm.view
+                texts.accountForm
+                model.formModel
+            )
         ]
     , Maybe.map Util.Html.resultMsg model.saveResult
         |> Maybe.withDefault Util.Html.noElement
@@ -50,11 +52,17 @@ viewCreate texts model =
 
 viewModify : Texts -> Model -> AccountDetail -> List (Html Msg)
 viewModify texts model acc =
-    [ h1 [ class "ui dividing header" ]
-        [ i [ class "ui user circle icon" ] []
+    [ h1 [ class S.header1 ]
+        [ i [ class "fa fa-users mr-2" ] []
         , text acc.login
+        , text " ("
+        , text acc.source
+        , text ")"
+        , div [ class "text-sm opacity-70 font-mono" ]
+            [ text acc.id
+            ]
         ]
-    , div [ class "" ]
+    , div [ class "mb-2" ]
         [ Html.map AccountFormMsg (Comp.AccountForm.view texts.accountForm model.formModel)
         ]
     , Maybe.map Util.Html.resultMsg model.saveResult
@@ -64,8 +72,8 @@ viewModify texts model acc =
 
 viewList : Texts -> Model -> List (Html Msg)
 viewList texts model =
-    [ h1 [ class "ui dividing header" ]
-        [ i [ class "ui users icon" ] []
+    [ h1 [ class S.header1 ]
+        [ i [ class "fa fa-users mr-2" ] []
         , text texts.accounts
         ]
     , searchArea texts model
@@ -79,29 +87,23 @@ viewList texts model =
 
 searchArea : Texts -> Model -> Html Msg
 searchArea texts model =
-    div [ class "ui secondary menu" ]
-        [ div [ class "ui container" ]
-            [ div [ class "fitted-item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , placeholder texts.searchPlaceholder
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ div [ class "fitted-item" ]
-                    [ a
-                        [ class "ui primary button"
-                        , Page.href (AccountPage (Just "new"))
-                        ]
-                        [ text texts.newAccount
-                        ]
-                    ]
-                ]
+    MB.view
+        { start =
+            [ MB.TextInput
+                { tagger = SetQuery
+                , value = model.query
+                , placeholder = texts.searchPlaceholder
+                , icon = Just "fa fa-search"
+                }
             ]
-        ]
+        , end =
+            [ MB.PrimaryButton
+                { tagger = InitNewAccount
+                , title = texts.newAccount
+                , icon = Just "fa fa-plus"
+                , label = texts.newAccount
+                }
+            ]
+        , rootClasses = "mb-4"
+        , sticky = True
+        }

@@ -1,5 +1,6 @@
 module Page.Detail.Data exposing
-    ( EditField(..)
+    ( DeleteState(..)
+    , EditField(..)
     , LoaderModel
     , Model
     , Msg(..)
@@ -7,9 +8,7 @@ module Page.Detail.Data exposing
     , PublishState(..)
     , TopMenuState(..)
     , clipboardData
-    , deleteLoader
     , emptyModel
-    , getLoader
     , isEdit
     , isPublished
     , mkEditField
@@ -26,13 +25,12 @@ import Comp.MarkdownInput
 import Comp.PasswordInput
 import Comp.ShareFileList
 import Comp.ValidityField
-import Comp.YesNoDimmer
 import Data.Flags exposing (Flags)
 import Data.UploadDict exposing (UploadDict)
 import Data.UploadState exposing (UploadState)
 import Data.ValidityValue exposing (ValidityValue)
 import Http
-import Messages.DetailPage exposing (Texts)
+import Util.Html exposing (KeyCode)
 
 
 type alias Model =
@@ -42,24 +40,29 @@ type alias Model =
     , message : Maybe BasicResult
     , fileView : Comp.ShareFileList.ViewMode
     , zoom : Maybe ShareFile
-    , yesNoModel : Comp.YesNoDimmer.Model
+    , deleteState : DeleteState
     , descEdit : Maybe ( Comp.MarkdownInput.Model, String )
     , editField : Maybe ( Property, EditField )
     , dropzone : Comp.Dropzone2.Model
     , uploads : UploadDict
-    , addFilesOpen : Bool
     , uploading : Bool
     , uploadPaused : Bool
     , uploadFormState : BasicResult
-    , loader : LoaderModel
     , mailForm : Maybe Comp.MailSend.Model
     }
+
+
+type DeleteState
+    = DeleteNone
+    | DeleteRequested
+    | DeleteInProgress
 
 
 type TopMenuState
     = TopClosed
     | TopDetail
     | TopShare
+    | TopAddFiles
 
 
 type PublishState
@@ -78,7 +81,7 @@ type Property
 
 type alias LoaderModel =
     { active : Bool
-    , message : Texts -> String
+    , message : String
     }
 
 
@@ -97,38 +100,22 @@ emptyModel =
     , message = Nothing
     , fileView = Comp.ShareFileList.ViewList
     , zoom = Nothing
-    , yesNoModel = Comp.YesNoDimmer.emptyModel
+    , deleteState = DeleteNone
     , descEdit = Nothing
     , editField = Nothing
     , dropzone = Comp.Dropzone2.init
     , uploads = Data.UploadDict.empty
-    , addFilesOpen = False
     , uploading = False
     , uploadPaused = True
     , uploadFormState = BasicResult True ""
-    , loader = noLoader
     , mailForm = Nothing
-    }
-
-
-deleteLoader : LoaderModel
-deleteLoader =
-    { active = True
-    , message = \texts -> texts.waitDeleteShare
-    }
-
-
-getLoader : LoaderModel
-getLoader =
-    { active = True
-    , message = \texts -> texts.loadingData
     }
 
 
 noLoader : LoaderModel
 noLoader =
     { active = False
-    , message = \_ -> ""
+    , message = ""
     }
 
 
@@ -181,7 +168,8 @@ type Msg
     | QuitZoom
     | SetZoom ShareFile
     | RequestDelete
-    | YesNoMsg Comp.YesNoDimmer.Msg
+    | DeleteConfirm
+    | DeleteCancel
     | DeleteResp (Result Http.Error BasicResult)
     | ToggleEditDesc
     | DescEditMsg Comp.MarkdownInput.Msg
@@ -193,7 +181,6 @@ type Msg
     | PasswordEditMsg Comp.PasswordInput.Msg
     | SaveEdit
     | CancelEdit
-    | ToggleFilesMenu
     | DropzoneMsg Comp.Dropzone2.Msg
     | ResetFileForm
     | SubmitFiles
@@ -203,6 +190,7 @@ type Msg
     | MailFormMsg Comp.MailSend.Msg
     | InitMail
     | CopyToClipboard String
+    | EditKey (Maybe KeyCode)
 
 
 isPublished : ShareDetail -> PublishState

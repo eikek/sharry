@@ -202,3 +202,6 @@ update key flags msg model =
             ( { model | mailForm = Just mm }
             , Cmd.map MailFormMsg mc
             )
+
+        InitNewAlias ->
+            ( model, Page.set key (AliasPage <| Just "new") )

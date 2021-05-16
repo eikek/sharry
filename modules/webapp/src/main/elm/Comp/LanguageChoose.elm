@@ -4,10 +4,10 @@ module Comp.LanguageChoose exposing
     , init
     , update
     , view
-    , viewItem
     )
 
-import Comp.FixedDropdown exposing (Item)
+import Comp.FixedDropdown
+import Data.DropdownStyle as DS
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Language exposing (Language)
@@ -25,17 +25,7 @@ type alias Msg =
 
 init : Model
 init =
-    List.map mkLanguageItem Language.allLanguages
-        |> Comp.FixedDropdown.init
-
-
-mkLanguageItem : Language -> Item Language
-mkLanguageItem lang =
-    let
-        texts =
-            Messages.get lang
-    in
-    Item lang texts.label (Just texts.flagIcon)
+    Comp.FixedDropdown.init Language.allLanguages
 
 
 update : Msg -> Model -> ( Model, Maybe Language )
@@ -45,18 +35,12 @@ update msg model =
 
 view : Texts -> Language -> Model -> Html Msg
 view texts selected model =
-    Comp.FixedDropdown.viewFloating
-        (mkLanguageItem selected |> Just)
-        texts
-        model
-
-
-viewItem : Texts -> Language -> Model -> Html Msg
-viewItem texts selected model =
-    Comp.FixedDropdown.viewFull
-        { mainClass = "ui dropdown item"
-        , iconOnly = True
-        , selected = mkLanguageItem selected |> Just
+    Comp.FixedDropdown.viewStyled
+        { display = \lang -> Messages.get lang |> .label
+        , icon = \lang -> Messages.get lang |> .flagIcon |> Just
+        , selectPlaceholder = texts.select
+        , style = DS.mainStyle
         }
-        texts
+        False
+        (Just selected)
         model

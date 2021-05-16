@@ -15,6 +15,7 @@ type alias Texts =
     , enabled : String
     , validity : String
     , created : String
+    , edit : String
     , validityField : Messages.ValidityField.Texts
     , dateTime : Int -> String
     }
@@ -26,6 +27,7 @@ gb =
     , enabled = "Enabled"
     , validity = "Validity"
     , created = "Created"
+    , edit = "Edit"
     , validityField = Messages.ValidityField.gb
     , dateTime = Messages.DateFormat.formatDateTime Language.English
     }
@@ -37,6 +39,7 @@ de =
     , enabled = "Aktiv"
     , validity = "Gültigkeit"
     , created = "Erstellt"
+    , edit = "Editieren"
     , validityField = Messages.ValidityField.de
     , dateTime = Messages.DateFormat.formatDateTime Language.German
     }
@@ -48,6 +51,7 @@ fr =
     , enabled = "Activé"
     , validity = "Validité"
     , created = "Créé"
+    , edit = "Éditer"
     , validityField = Messages.ValidityField.fr
     , dateTime = Messages.DateFormat.formatDateTime Language.French
     }

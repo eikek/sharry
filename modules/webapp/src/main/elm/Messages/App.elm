@@ -1,8 +1,8 @@
 module Messages.App exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 
@@ -16,6 +16,7 @@ type alias Texts =
     , logout : String -> String
     , login : String
     , register : String
+    , lightDark : String
     }
 
 
@@ -30,6 +31,7 @@ gb =
     , logout = \user -> "Logout (" ++ user ++ ")"
     , login = "Login"
     , register = "Register"
+    , lightDark = "Light/Dark"
     }
 
 
@@ -44,7 +46,9 @@ de =
     , logout = \user -> "Abmelden (" ++ user ++ ")"
     , login = "Anmelden"
     , register = "Registrieren"
+    , lightDark = "Hell/Dunkel"
     }
+
 
 fr : Texts
 fr =
@@ -57,4 +61,5 @@ fr =
     , logout = \user -> "Déconnexion (" ++ user ++ ")"
     , login = "Connexion"
     , register = "Inscription"
+    , lightDark = gb.lightDark
     }

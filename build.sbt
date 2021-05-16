@@ -55,6 +55,11 @@ val elmSettings = Seq(
   )
 )
 
+val stylesSettings = Seq(
+  stylesMode := StylesMode.Dev,
+  Compile / resourceGenerators += stylesBuild.taskValue
+)
+
 val webjarSettings = Seq(
   Compile / resourceGenerators += Def.task {
     copyWebjarResources(
@@ -204,10 +209,11 @@ val backend = project
 val webapp = project
   .in(file("modules/webapp"))
   .disablePlugins(RevolverPlugin)
-  .enablePlugins(OpenApiSchema)
+  .enablePlugins(OpenApiSchema, StylesPlugin)
   .settings(sharedSettings)
   .settings(elmSettings)
   .settings(webjarSettings)
+  .settings(stylesSettings)
   .settings(
     name := "sharry-webapp",
     openapiTargetLanguage := Language.Elm,
@@ -396,7 +402,7 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
 
 addCommandAlias(
   "make",
-  ";set webapp/elmCompileMode := ElmCompileMode.Production ;root/openapiCodegen ;root/test:compile"
+  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/test:compile"
 )
 addCommandAlias("make-zip", ";restserver/Universal/packageBin")
 addCommandAlias("make-deb", ";restserver/Debian/packageBin")

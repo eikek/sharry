@@ -6,6 +6,7 @@ import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Comp.LanguageChoose
 import Data.Flags
+import Data.UiTheme
 import Page exposing (Page(..))
 import Page.Account.Data
 import Page.Account.Update
@@ -41,6 +42,18 @@ import Util.Update
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ToggleDarkMode ->
+            let
+                next =
+                    Data.UiTheme.cycle model.uiTheme
+            in
+            ( { model
+                | uiTheme = next
+                , navMenuOpen = False
+              }
+            , Ports.setUiTheme next
+            )
+
         HomeMsg lm ->
             updateHome lm model
 
@@ -86,7 +99,15 @@ update msg model =
             )
 
         ToggleNavMenu ->
-            ( { model | navMenuOpen = not model.navMenuOpen }
+            ( { model
+                | navMenuOpen = not model.navMenuOpen
+                , langMenuOpen =
+                    if model.navMenuOpen then
+                        model.langMenuOpen
+
+                    else
+                        False
+              }
             , Cmd.none
             )
 
@@ -205,21 +226,22 @@ update msg model =
             , Cmd.none
             )
 
-        LangChooseMsg lmsg ->
-            let
-                ( lm, ll ) =
-                    Comp.LanguageChoose.update lmsg model.langChoose
+        ToggleLangMenu ->
+            ( { model
+                | langMenuOpen = not model.langMenuOpen
+                , navMenuOpen =
+                    if model.langMenuOpen then
+                        model.navMenuOpen
 
-                cmd =
-                    case ll of
-                        Just lang ->
-                            Ports.setLang lang
+                    else
+                        False
+              }
+            , Cmd.none
+            )
 
-                        Nothing ->
-                            Cmd.none
-            in
-            ( { model | langChoose = lm }
-            , cmd
+        SetLanguage lang ->
+            ( { model | langMenuOpen = False }
+            , Ports.setLang lang
             )
 
 

@@ -7,10 +7,11 @@ module Comp.AccountTable exposing
     )
 
 import Api.Model.AccountDetail exposing (AccountDetail)
+import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Messages.AccountTable exposing (Texts)
+import Styles as S
 import Util.Html
 
 
@@ -36,19 +37,28 @@ update msg model =
             ( { model | selected = Just acc }, Just acc )
 
 
+
+--- View
+
+
 view : Texts -> List AccountDetail -> Model -> Html Msg
 view texts accounts model =
-    table [ class "ui selectable padded table" ]
+    table [ class S.tableMain ]
         [ thead []
             [ tr []
-                [ th [] [ text texts.login ]
-                , th [] [ text texts.source ]
-                , th [] [ text texts.state ]
-                , th [] [ text texts.nrShares ]
-                , th [] [ text texts.admin ]
-                , th [] [ text texts.nrLogins ]
-                , th [] [ text texts.lastLogin ]
-                , th [] [ text texts.created ]
+                [ th [] []
+                , th [ class "text-left" ] [ text texts.login ]
+                , th [ class "text-left" ] [ text texts.source ]
+                , th [ class "text-left" ] [ text texts.state ]
+                , th [ class "text-center hidden sm:table-cell" ]
+                    [ text texts.nrShares
+                    ]
+                , th [ class "text-center" ] [ text texts.admin ]
+                , th [ class "text-center hidden sm:table-cell" ]
+                    [ text texts.nrLogins
+                    ]
+                , th [ class "text-center hidden lg:table-cell" ] [ text texts.lastLogin ]
+                , th [ class "text-center hidden lg:table-cell" ] [ text texts.created ]
                 ]
             ]
         , tbody []
@@ -66,23 +76,28 @@ isSelected model acc =
 viewTableLine : Texts -> Model -> AccountDetail -> Html Msg
 viewTableLine texts model acc =
     tr
-        [ onClick (Select acc)
-        , classList [ ( "active", isSelected model acc ) ]
+        [ classList [ ( "active", isSelected model acc ) ]
+        , class S.tableRow
         ]
-        [ td [] [ text acc.login ]
-        , td [] [ text acc.source ]
-        , td [] [ text acc.state ]
-        , td [] [ String.fromInt acc.shares |> text ]
-        , td []
+        [ B.editLinkTableCell texts.edit (Select acc)
+        , td [ class "text-left" ] [ text acc.login ]
+        , td [ class "text-left" ] [ text acc.source ]
+        , td [ class "text-left" ] [ text acc.state ]
+        , td [ class "text-center hidden sm:table-cell" ]
+            [ String.fromInt acc.shares |> text
+            ]
+        , td [ class "text-center" ]
             [ Util.Html.checkbox acc.admin
             ]
-        , td [] [ String.fromInt acc.loginCount |> text ]
-        , td []
+        , td [ class "text-center hidden sm:table-cell" ]
+            [ String.fromInt acc.loginCount |> text
+            ]
+        , td [ class "text-center hidden lg:table-cell" ]
             [ Maybe.map texts.dateTime acc.lastLogin
                 |> Maybe.withDefault ""
                 |> text
             ]
-        , td []
+        , td [ class "text-center hidden lg:table-cell" ]
             [ texts.dateTime acc.created
                 |> text
             ]

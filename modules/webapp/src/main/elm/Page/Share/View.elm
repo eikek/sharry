@@ -1,8 +1,10 @@
 module Page.Share.View exposing (view)
 
+import Comp.Basic as B
 import Comp.Dropzone2
 import Comp.IntField
 import Comp.MarkdownInput
+import Comp.MenuBar as MB
 import Comp.PasswordInput
 import Comp.ValidityField
 import Data.Flags exposing (Flags)
@@ -13,6 +15,7 @@ import Html.Events exposing (onClick, onInput)
 import Messages.SharePage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Share.Data exposing (Model, Msg(..))
+import Styles as S
 
 
 view : Texts -> Flags -> Model -> Html Msg
@@ -28,107 +31,102 @@ view texts flags model =
                 + Tuple.second counts
                 == List.length model.uploads.selectedFiles
     in
-    div []
-        [ div [ class "ui container" ]
-            [ h1 [ class "ui dividing header" ]
-                [ i [ class "ui share alternate icon" ] []
-                , text texts.createShare
+    div
+        [ class S.content
+        , class "flex flex-col"
+        ]
+        [ h1 [ class S.header1 ]
+            [ i [ class "fa fa-share-alt mr-2" ] []
+            , text texts.createShare
+            ]
+        , if allDone then
+            doneMessageBox counts texts model
+
+          else
+            controls texts model
+        , Data.Flags.limitsMessage
+            texts
+            flags
+            [ class "py-2" ]
+        , div
+            [ class S.errorMessage
+            , classList
+                [ ( "hidden", model.formState.success && Tuple.second counts <= 0 )
                 ]
             ]
-        , div [ class "ui container" ]
-            [ p [] []
-            , div
-                [ classList
-                    [ ( "ui small form", True )
-                    , ( "error", not model.formState.success || Tuple.second counts > 0 )
-                    , ( "success", Tuple.second counts == 0 )
-                    ]
+            [ text model.formState.message
+            ]
+        , div [ class "flex flex-col" ]
+            [ div []
+                [ Html.map DropzoneMsg
+                    (Comp.Dropzone2.view
+                        texts.dropzone
+                        (mkViewSettings model)
+                        model.dropzoneModel
+                    )
                 ]
-                [ if allDone then
-                    doneMessageBox counts texts model
-
-                  else
-                    controls texts model
-                , Data.Flags.limitsMessage
-                    texts
-                    flags
-                    [ class "ui info message" ]
-                , div [ class "ui error message" ]
-                    [ text model.formState.message
+            , div []
+                [ div
+                    [ classList
+                        [ ( "content", True )
+                        , ( "active", model.showDetails )
+                        ]
                     ]
-                , div [ class "ui accordion" ]
-                    [ div
-                        [ classList
-                            [ ( "ui header title", True )
-                            , ( "active", model.showDetails )
+                    [ div [ class "mb-4" ]
+                        [ label [ class S.inputLabel ]
+                            [ text texts.description
                             ]
-                        , onClick ToggleDetails
+                        , Html.map DescMsg
+                            (Comp.MarkdownInput.view
+                                texts.markdownInput
+                                [ ( S.border ++ " py-1 px-1", True ) ]
+                                model.descField
+                                model.descModel
+                            )
                         ]
-                        [ i [ class "dropdown icon" ] []
-                        , text texts.details
-                        ]
-                    , div
-                        [ classList
-                            [ ( "content", True )
-                            , ( "active", model.showDetails )
+                    , div [ class "mb-4" ]
+                        [ label [ class S.inputLabel ]
+                            [ text texts.name
                             ]
-                        ]
-                        [ div [ class "field" ]
-                            [ label [] [ text texts.description ]
-                            , Html.map DescMsg
-                                (Comp.MarkdownInput.view
-                                    texts.markdownInput
-                                    model.descField
-                                    model.descModel
-                                )
+                        , input
+                            [ type_ "text"
+                            , placeholder texts.namePlaceholder
+                            , class S.textInput
+                            , onInput SetName
                             ]
-                        , div [ class "two fields" ]
-                            [ div [ class "field" ]
-                                [ label [] [ text texts.name ]
-                                , input
-                                    [ type_ "text"
-                                    , placeholder texts.namePlaceholder
-                                    , onInput SetName
-                                    ]
-                                    []
-                                ]
-                            , div [ class "required field" ]
-                                [ label [] [ text texts.validity ]
-                                , Html.map ValidityMsg
-                                    (Comp.ValidityField.view
-                                        texts.validityField
-                                        model.validityField
-                                        model.validityModel
-                                    )
-                                ]
-                            ]
-                        , div [ class "two fields" ]
-                            [ Html.map MaxViewMsg
-                                (Comp.IntField.view
-                                    model.maxViewField
-                                    texts.intField
-                                    texts.maxPublicViews
-                                    model.maxViewModel
-                                )
-                            , div [ class "field" ]
-                                [ label [] [ text texts.password ]
-                                , Html.map PasswordMsg
-                                    (Comp.PasswordInput.view model.passwordField
-                                        model.passwordModel
-                                    )
-                                ]
-                            ]
+                            []
                         ]
-                    , div [ class "active ui header title" ]
-                        [ i [ class "dropdown icon" ] []
-                        , text texts.files
+                    , div [ class "mb-4" ]
+                        [ label [ class S.inputLabel ]
+                            [ text texts.validity
+                            , B.inputRequired
+                            ]
+                        , Html.map ValidityMsg
+                            (Comp.ValidityField.view
+                                texts.validityField
+                                model.validityField
+                                model.validityModel
+                            )
                         ]
-                    , Html.map DropzoneMsg
-                        (Comp.Dropzone2.view
-                            texts.dropzone
-                            (mkViewSettings model)
-                            model.dropzoneModel
+                    , Html.map MaxViewMsg
+                        (Comp.IntField.view
+                            model.maxViewField
+                            texts.intField
+                            texts.maxPublicViews
+                            model.maxViewModel
                         )
+                    , div [ class "mb-4" ]
+                        [ label [ class S.inputLabel ]
+                            [ text texts.password
+                            ]
+                        , Html.map PasswordMsg
+                            (Comp.PasswordInput.view
+                                { placeholder = "" }
+                                model.passwordField
+                                False
+                                model.passwordModel
+                            )
+                        ]
                     ]
                 ]
             ]
@@ -139,16 +137,16 @@ doneMessageBox : ( Int, Int ) -> Texts -> Model -> Html Msg
 doneMessageBox ( _, err ) texts model =
     let
         buttons =
-            div [ class "" ]
+            div [ class "flex flex-row space-x-2" ]
                 [ a
-                    [ class "ui primary button"
+                    [ class S.primaryButton
                     , href "#"
                     , onClick ResetForm
                     ]
                     [ text texts.newShare
                     ]
                 , a
-                    [ class "ui secondary button"
+                    [ class S.secondaryButton
                     , Page.href (DetailPage <| Maybe.withDefault "" model.shareId)
                     ]
                     [ text texts.gotoShare
@@ -156,29 +154,33 @@ doneMessageBox ( _, err ) texts model =
                 ]
 
         success =
-            div [ class "ui success icon message" ]
-                [ i [ class "ui check icon" ] []
-                , div [ class "content" ]
-                    [ div [ class "ui header" ]
+            div
+                [ class S.successMessage
+                , class "flex flex-row items-center"
+                ]
+                [ i [ class "fa fa-check text-2xl mr-2" ] []
+                , div [ class "flex flex-col" ]
+                    [ div [ class S.header2 ]
                         [ text texts.allFilesUploaded
                         ]
-                    , div [ class "ui divider" ] []
                     , buttons
                     ]
                 ]
 
         error =
-            div [ class "ui error icon message" ]
-                [ i [ class "ui meh icon" ] []
-                , div [ class "content" ]
-                    [ div [ class "header" ]
+            div
+                [ class S.errorMessage
+                , class "flex flex-row items-center"
+                ]
+                [ i [ class "fa fa-meh text-2xl mr-2" ] []
+                , div [ class "flex flex-col" ]
+                    [ div [ class S.header2 ]
                         [ text texts.someFilesFailedHeader
                         ]
-                    , p []
+                    , p [ class "mb-2" ]
                         [ text texts.someFilesFailedText
                         , text texts.someFilesFailedTextAddon
                         ]
-                    , div [ class "ui divider" ] []
                     , buttons
                     ]
                 ]
@@ -192,56 +194,51 @@ doneMessageBox ( _, err ) texts model =
 
 controls : Texts -> Model -> Html Msg
 controls texts model =
-    div
-        [ class "field"
-        ]
-        [ a
-            [ classList
-                [ ( "ui primary button", True )
-                , ( "disabled", model.uploading )
-                ]
-            , href "#"
-            , onClick Submit
+    MB.view
+        { start =
+            [ MB.CustomElement <|
+                B.primaryButton
+                    { handler = onClick Submit
+                    , disabled = model.uploading
+                    , label = texts.submit
+                    , icon = "fa fa-upload"
+                    , attrs = [ href "#" ]
+                    , responsive = False
+                    }
+            , MB.CustomElement <|
+                B.secondaryButton
+                    { handler = onClick ClearFiles
+                    , disabled = model.uploading
+                    , label = texts.clearFiles
+                    , icon = "fa fa-undo"
+                    , attrs = [ href "#" ]
+                    , responsive = True
+                    }
             ]
-            [ i [ class "upload icon" ] []
-            , text texts.submit
-            ]
-        , a
-            [ onClick ClearFiles
-            , href "#"
-            , classList
-                [ ( "ui basic button", True )
-                , ( "disabled", model.uploading )
-                ]
-            ]
-            [ i [ class "undo icon" ] []
-            , text texts.clearFiles
-            ]
-        , a
-            [ classList
-                [ ( "ui right floated basic button", True )
-                , ( "disabled", not model.uploading )
-                ]
-            , href "#"
-            , onClick StartStopUpload
-            ]
-            [ i
-                [ class
-                    (if model.uploadPaused then
-                        "play icon"
+        , end =
+            [ MB.CustomElement <|
+                B.secondaryBasicButton
+                    { handler = onClick StartStopUpload
+                    , disabled = not model.uploading
+                    , label =
+                        if model.uploadPaused then
+                            texts.resume
 
-                     else
-                        "pause icon"
-                    )
-                ]
-                []
-            , if model.uploadPaused then
-                text texts.resume
+                        else
+                            texts.pause
+                    , icon =
+                        if model.uploadPaused then
+                            "fa fa-play sm:mr-2"
 
-              else
-                text texts.pause
+                        else
+                            "fa fa-pause sm:mr-2"
+                    , attrs = [ href "#" ]
+                    , responsive = True
+                    }
             ]
-        ]
+        , rootClasses = ""
+        , sticky = True
+        }
 
 
 mkViewSettings : Model -> Comp.Dropzone2.ViewSettings

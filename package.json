@@ -1,0 +1,16 @@
+{
+  "name": "docspell-css",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@tailwindcss/forms": "^0.3.0",
+    "autoprefixer": "^10.2.5",
+    "cssnano": "^5.0.0",
+    "flag-icon-css": "^3.5.0",
+    "postcss": "^8.2.9",
+    "postcss-cli": "^8.3.1",
+    "postcss-import": "^14.0.1",
+    "tailwindcss": "^2.1.1"
+  }
+}

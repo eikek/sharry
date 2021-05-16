@@ -1,28 +1,27 @@
 module Page.Upload.View exposing (view)
 
+import Comp.MenuBar as MB
 import Comp.ShareTable
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
 import Messages.UploadPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Upload.Data exposing (Model, Msg(..))
+import Styles as S
 
 
 view : Texts -> Model -> Html Msg
 view texts model =
     div
-        [ classList
-            [ ( "ui container upload-page", True )
-            ]
+        [ class S.content
         ]
         (viewList texts model)
 
 
 viewList : Texts -> Model -> List (Html Msg)
 viewList texts model =
-    [ h1 [ class "ui dividing header" ]
-        [ i [ class "ui share alternate icon" ] []
+    [ h1 [ class S.header1 ]
+        [ i [ class "fa fa-share-alt mr-2" ] []
         , text texts.yourShares
         ]
     , searchArea texts model
@@ -35,28 +34,24 @@ viewList texts model =
 
 
 searchArea : Texts -> Model -> Html Msg
-searchArea texts _ =
-    div [ class "ui secondary menu" ]
-        [ div [ class "ui container" ]
-            [ div [ class "fitted-item" ]
-                [ div [ class "ui icon input" ]
-                    [ input
-                        [ type_ "text"
-                        , onInput SetQuery
-                        , placeholder texts.search
-                        ]
-                        []
-                    , i [ class "ui search icon" ]
-                        []
-                    ]
-                ]
-            , div [ class "right menu" ]
-                [ a
-                    [ class "ui primary button"
-                    , Page.href SharePage
-                    ]
-                    [ text texts.newShare
-                    ]
-                ]
+searchArea texts model =
+    MB.view
+        { start =
+            [ MB.TextInput
+                { tagger = SetQuery
+                , value = model.query
+                , placeholder = texts.search
+                , icon = Just "fa fa-search"
+                }
             ]
-        ]
+        , end =
+            [ MB.PrimaryButton
+                { tagger = InitNewShare
+                , title = texts.newShare
+                , icon = Just "fa fa-plus"
+                , label = texts.newShare
+                }
+            ]
+        , rootClasses = "mb-4"
+        , sticky = True
+        }

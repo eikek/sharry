@@ -3,6 +3,7 @@ module Comp.IntInput exposing (Model, Msg, init, update, view)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import Styles as S
 
 
 type alias Model =
@@ -71,5 +72,11 @@ view nval model =
             |> Maybe.withDefault model.lastInput
             |> value
         , onInput SetValue
+        , class S.textInput
+        , if model.isError then
+            class S.inputErrorBorder
+
+          else
+            class ""
         ]
         []

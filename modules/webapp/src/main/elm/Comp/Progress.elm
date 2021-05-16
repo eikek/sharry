@@ -1,63 +1,34 @@
-module Comp.Progress exposing
-    ( smallIndicating
-    , topAttachedIndicating
-    )
+module Comp.Progress exposing (ProgressStyles, progress2)
 
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (attribute, class, style)
+import Html.Attributes exposing (class, style)
 
 
-smallIndicating : Int -> String -> Html msg
-smallIndicating percent label =
-    progress "small indicating active" percent (Just label) Nothing
+type alias ProgressStyles =
+    { parent : String
+    , bar : String
+    , label : String
+    }
 
 
-topAttachedIndicating : Int -> Html msg
-topAttachedIndicating percent =
-    progress "top attached indicating active" percent Nothing Nothing
-
-
-progress : String -> Int -> Maybe String -> Maybe String -> Html msg
-progress classes percent label barText =
-    if percent <= 0 then
-        div
-            [ class ("ui progress " ++ classes)
+progress2 : ProgressStyles -> Int -> Html msg
+progress2 css percent =
+    div
+        [ class " w-full relative"
+        , class css.parent
+        ]
+        [ div
+            [ class "transition-duration-300 bg-indigo-500 dark:bg-orange-500"
+            , class "block text-xs text-center"
+            , class css.bar
+            , style "width" (String.fromInt percent ++ "%")
             ]
-            (div [ class "bar" ] (barDiv barText) :: labelDiv label)
-
-    else
-        div
-            [ class ("ui progress " ++ classes)
-            , attribute "data-percent" (String.fromInt percent)
-            ]
-            (div
-                [ class "bar"
-                , style "transition-duration" "300ms"
-                , style "display" "block"
-                , style "width" (String.fromInt percent ++ "%")
-                ]
-                (barDiv barText)
-                :: labelDiv label
-            )
-
-
-labelDiv : Maybe String -> List (Html msg)
-labelDiv label =
-    case label of
-        Just l ->
-            [ div [ class "label" ] [ text l ]
-            ]
-
-        Nothing ->
             []
-
-
-barDiv : Maybe String -> List (Html msg)
-barDiv barText =
-    case barText of
-        Just t ->
-            [ div [ class "progress" ] [ text t ]
+        , div
+            [ class "absolute left-1/2 top-0 font-semibold"
+            , class css.label
             ]
-
-        Nothing ->
-            []
+            [ text (String.fromInt percent)
+            , text "%"
+            ]
+        ]

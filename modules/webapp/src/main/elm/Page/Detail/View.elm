@@ -2,26 +2,29 @@ module Page.Detail.View exposing (view)
 
 import Api
 import Api.Model.ShareDetail exposing (ShareDetail)
+import Comp.Basic as B
+import Comp.ConfirmModal
 import Comp.Dropzone2
 import Comp.IntInput
 import Comp.MailSend
 import Comp.MarkdownInput
+import Comp.MenuBar as MB
 import Comp.PasswordInput
 import Comp.ShareFileList exposing (ViewMode(..))
 import Comp.ValidityField
-import Comp.YesNoDimmer
 import Comp.Zoom
 import Data.Flags exposing (Flags)
 import Data.ValidityOptions
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Markdown
 import Messages.DetailPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Detail.Data
     exposing
-        ( EditField(..)
+        ( DeleteState(..)
+        , EditField(..)
         , Model
         , Msg(..)
         , Property(..)
@@ -32,6 +35,7 @@ import Page.Detail.Data
         , isPublished
         )
 import QRCode
+import Styles as S
 import Util.Html
 import Util.Share
 import Util.Size
@@ -43,48 +47,63 @@ view texts flags model =
         ( head, desc ) =
             Util.Share.splitDescription model.share texts.yourShare
     in
-    div [ class "ui grid container detail-page" ]
-        [ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
-        , deleteLoader texts model
-        , div [ class "row" ]
-            [ div [ class "sixteen wide column" ]
-                ([ Markdown.toHtml [] head
-                 , topMenu texts model
-                 ]
-                    ++ shareProps texts model
-                    ++ shareLink texts flags model
-                    ++ [ messageDiv model
-                       , descriptionView texts model desc
-                       , middleMenu texts model
-                       , dropzone texts flags model
-                       , fileList texts flags model
-                       ]
-                )
-            ]
+    div
+        [ class S.content
+        , class "mb-2"
         ]
+        ([ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
+         , deleteLoader texts model
+         , Markdown.toHtml [ class "markdown-preview" ] head
+         , topMenu texts model
+         ]
+            ++ shareProps texts model
+            ++ shareLink texts flags model
+            ++ [ dropzone texts flags model
+               , messageDiv model
+               , descriptionView texts model desc
+               , middleMenu texts model
+               , fileList texts flags model
+               ]
+        )
 
 
 descriptionView : Texts -> Model -> String -> Html Msg
 descriptionView texts model desc =
     case model.descEdit of
         Just ( dm, str ) ->
-            div [ class "ui form" ]
+            div
+                [ class "flex flex-col mt-2 px-2 py-1"
+                , class S.box
+                ]
                 [ Html.map DescEditMsg
-                    (Comp.MarkdownInput.view texts.markdownInput str dm)
-                , div [ class "ui secondary menu" ]
+                    (Comp.MarkdownInput.view texts.markdownInput
+                        []
+                        str
+                        dm
+                    )
+                , div [ class "flex flex-row py-2" ]
                     [ a
-                        [ class "link item"
+                        [ class S.primaryButton
                         , onClick SaveDescription
+                        , class "mr-2"
                         , href "#"
                         ]
-                        [ i [ class "disk icon" ] []
+                        [ i [ class "fa fa-save mr-2" ] []
                         , text texts.save
+                        ]
+                    , a
+                        [ class S.secondaryButton
+                        , onClick ToggleEditDesc
+                        , href "#"
+                        ]
+                        [ i [ class "fa fa-times mr-2" ] []
+                        , text texts.cancel
                         ]
                     ]
                 ]
 
         Nothing ->
-            Markdown.toHtml [ class "share-description ui basic segment" ] desc
+            Markdown.toHtml [ class "markdown-preview mt-4" ] desc
 
 
 fileList : Texts -> Flags -> Model -> Html Msg
@@ -108,56 +127,36 @@ fileList texts flags model =
 
 shareLink : Texts -> Flags -> Model -> List (Html Msg)
 shareLink texts flags model =
-    case isPublished model.share of
+    let
+        mydiv boxType elements =
+            div
+                [ class "flex flex-col px-2 py-2 rounded mt-2"
+                , class boxType
+                , classList
+                    [ ( "hidden", model.topMenu /= TopShare )
+                    ]
+                ]
+                elements
+    in
+    [ case isPublished model.share of
         Unpublished ->
-            shareLinkNotPublished texts model
+            mydiv S.infoMessage <|
+                [ text texts.shareNotPublished
+                ]
 
         PublishOk ->
-            shareLinkPublished texts flags model
+            mydiv S.box <|
+                shareLinkPublished texts flags model
 
         PublishExpired ->
-            shareLinkExpired texts model
+            mydiv S.warnMessage <|
+                [ text texts.shareLinkExpired
+                ]
 
         MaxViewsExceeded ->
-            shareLinkMaxViewsExeeded texts model
-
-
-shareLinkMaxViewsExeeded : Texts -> Model -> List (Html Msg)
-shareLinkMaxViewsExeeded texts model =
-    [ div
-        [ classList
-            [ ( "invisible", model.topMenu /= TopShare )
-            , ( "ui attached warning message segment", True )
-            ]
-        ]
-        [ text texts.sharePublished
-        ]
-    ]
-
-
-shareLinkNotPublished : Texts -> Model -> List (Html Msg)
-shareLinkNotPublished texts model =
-    [ div
-        [ classList
-            [ ( "invisible", model.topMenu /= TopShare )
-            , ( "ui attached info message segment", True )
-            ]
-        ]
-        [ text texts.shareNotPublished
-        ]
-    ]
-
-
-shareLinkExpired : Texts -> Model -> List (Html Msg)
-shareLinkExpired texts model =
-    [ div
-        [ classList
-            [ ( "invisible", model.topMenu /= TopShare )
-            , ( "ui attached warning message segment", True )
-            ]
-        ]
-        [ text texts.shareLinkExpired
-        ]
+            mydiv S.warnMessage <|
+                [ text texts.sharePublished
+                ]
     ]
 
 
@@ -182,13 +181,9 @@ shareLinkPublished texts flags model =
                     (Html.text texts.errorQrCode)
     in
     [ div
-        [ classList
-            [ ( "invisible", model.topMenu /= TopShare )
-            , ( "ui attached segment", True )
-            ]
-        ]
+        []
         [ text texts.sharePublicAvailableAt
-        , pre [ class "url" ]
+        , pre [ class "text-center" ]
             [ code
                 [ id "share-url"
                 ]
@@ -202,55 +197,42 @@ shareLinkPublished texts flags model =
             Html.map MailFormMsg
                 (Comp.MailSend.view
                     texts.mailSend
-                    [ ( "invisible", model.topMenu /= TopShare )
-                    , ( "ui bottom attached segment", True )
-                    ]
+                    []
                     mf
                 )
 
         Nothing ->
-            div
-                [ classList
-                    [ ( "invisible", model.topMenu /= TopShare )
-                    , ( "ui bottom attached segment", True )
-                    ]
-                ]
-                [ div [ class "ui two column stackable center aligned grid" ]
-                    [ div [ class "ui vertical divider" ]
-                        [ text texts.or
-                        ]
-                    , div
-                        [ class "middle aligned row"
-                        ]
-                        [ div [ class "column" ]
-                            [ qrCodeView url
+            div [ class "flex flex-col md:flex-row py-2 h-full items-center justify-center" ]
+                [ div [ class "md:w-2/3" ]
+                    [ div [ class "flex flex-col items-center  space-y-2 py-2" ]
+                        [ a
+                            [ class S.primaryButton
+                            , Tuple.second clipboardData
+                                |> String.dropLeft 1
+                                |> id
+                            , href "#"
+                            , attribute "data-clipboard-target" "#share-url"
                             ]
-                        , div [ class "column" ]
-                            [ div [ class "ui vertical buttons" ]
-                                [ a
-                                    [ class "ui primary labeled icon button"
-                                    , Tuple.second clipboardData
-                                        |> String.dropLeft 1
-                                        |> id
-                                    , href "#"
-                                    , attribute "data-clipboard-target" "#share-url"
-                                    ]
-                                    [ i [ class "copy icon" ] []
-                                    , text texts.copyLink
-                                    ]
-                                , a
-                                    [ classList
-                                        [ ( "ui primary labeled icon button", True )
-                                        , ( "disabled", not flags.config.mailEnabled )
-                                        ]
-                                    , href "#"
-                                    , onClick InitMail
-                                    ]
-                                    [ i [ class "envelope icon" ] []
-                                    , text texts.sendEmail
-                                    ]
+                            [ i [ class "fa fa-copy mr-2" ] []
+                            , text texts.copyLink
+                            ]
+                        , B.primaryButton
+                            { disabled = not flags.config.mailEnabled
+                            , icon = "fa fa-envelope"
+                            , label = texts.sendEmail
+                            , handler = onClick InitMail
+                            , attrs =
+                                [ href "#"
                                 ]
-                            ]
+                            , responsive = False
+                            }
+                        ]
+                    ]
+                , div
+                    [ class "md:w-1/3"
+                    ]
+                    [ div [ class S.styleQr ]
+                        [ qrCodeView url
                         ]
                     ]
                 ]
@@ -270,186 +252,196 @@ shareProps texts model =
 
         propertyDisplay : String -> String -> List (Html Msg)
         propertyDisplay icon content =
-            [ i [ class icon ] []
+            [ i
+                [ class icon
+                , class "mr-2"
+                ]
+                []
             , text content
             ]
+
+        deleteModal =
+            Comp.ConfirmModal.defaultSettings
+                DeleteConfirm
+                DeleteCancel
+                texts.yesNo.confirmButton
+                texts.yesNo.cancelButton
+                texts.yesNo.message
     in
     [ div
         [ classList
-            [ ( "invisible", model.topMenu /= TopDetail )
-            , ( "ui attached segment", True )
+            [ ( "hidden", model.topMenu /= TopDetail )
             ]
+        , class ("flex flex-col mt-2 rounded pt-2 " ++ S.box)
         ]
-        [ Html.map YesNoMsg (Comp.YesNoDimmer.view texts.yesNo model.yesNoModel)
-        , div [ class "ui stackable two column grid" ]
-            [ div [ class "column" ]
-                [ div [ class "ui items" ]
-                    [ property
-                        texts
-                        { label = texts.name
-                        , content =
-                            isEdit model Name
-                                |> Maybe.map (propertyEdit texts)
-                                |> Maybe.withDefault
-                                    (propertyDisplay "comment outline icon"
-                                        (Maybe.withDefault "" share.name)
-                                    )
-                        , editAction = Just (ReqEdit Name)
-                        }
-                    , property
-                        texts
-                        { label = texts.validity
-                        , content =
-                            isEdit model Validity
-                                |> Maybe.map (propertyEdit texts)
-                                |> Maybe.withDefault
-                                    (propertyDisplay "hourglass half icon"
-                                        (Data.ValidityOptions.findValidityItemMillis
-                                            texts.validityField
-                                            share.validity
-                                            |> Tuple.first
-                                        )
-                                    )
-                        , editAction = Just (ReqEdit Validity)
-                        }
-                    , property
-                        texts
-                        { label = texts.maxViews
-                        , content =
-                            isEdit model MaxViews
-                                |> Maybe.map (propertyEdit texts)
-                                |> Maybe.withDefault
-                                    (propertyDisplay "eye icon" (String.fromInt share.maxViews))
-                        , editAction = Just (ReqEdit MaxViews)
-                        }
-                    , property
-                        texts
-                        { label = texts.password
-                        , content =
-                            isEdit model Password
-                                |> Maybe.map (propertyEdit texts)
-                                |> Maybe.withDefault
-                                    (propertyDisplay
-                                        (if share.password then
-                                            "lock icon"
-
-                                         else
-                                            "unlock icon"
-                                        )
-                                        (if share.password then
-                                            texts.passwordProtected
-
-                                         else
-                                            texts.passwordNone
-                                        )
-                                    )
-                        , editAction = Just (ReqEdit Password)
-                        }
-                    , property
-                        texts
-                        { label = texts.shareSize
-                        , content =
-                            propertyDisplay "file icon"
-                                (String.fromInt (List.length model.share.files)
-                                    ++ "/"
-                                    ++ (List.map .size model.share.files
-                                            |> List.sum
-                                            |> toFloat
-                                            |> Util.Size.bytesReadable Util.Size.B
-                                       )
+        [ Comp.ConfirmModal.view { deleteModal | enabled = model.deleteState == DeleteRequested }
+        , div
+            [ class "flex flex-col md:flex-row"
+            ]
+            [ div [ class "flex flex-col w-full md:w-1/2 px-2" ]
+                [ property
+                    texts
+                    { label = texts.name
+                    , content =
+                        isEdit model Name
+                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.withDefault
+                                (propertyDisplay "fa fa-comment font-thin"
+                                    (Maybe.withDefault "" share.name)
                                 )
-                        , editAction = Nothing
-                        }
-                    , property
-                        texts
-                        { label = texts.created
-                        , content =
-                            propertyDisplay "calendar icon"
-                                (texts.dateTime share.created)
-                        , editAction = Nothing
-                        }
-                    ]
+                    , editAction = Just (ReqEdit Name)
+                    }
+                , property
+                    texts
+                    { label = texts.validity
+                    , content =
+                        isEdit model Validity
+                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.withDefault
+                                (propertyDisplay "fa fa-hourglass-half"
+                                    (Data.ValidityOptions.findValidityItemMillis
+                                        texts.validityField
+                                        share.validity
+                                        |> Tuple.first
+                                    )
+                                )
+                    , editAction = Just (ReqEdit Validity)
+                    }
+                , property
+                    texts
+                    { label = texts.maxViews
+                    , content =
+                        isEdit model MaxViews
+                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.withDefault
+                                (propertyDisplay "fa fa-eye" (String.fromInt share.maxViews))
+                    , editAction = Just (ReqEdit MaxViews)
+                    }
+                , property
+                    texts
+                    { label = texts.password
+                    , content =
+                        isEdit model Password
+                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.withDefault
+                                (propertyDisplay
+                                    (if share.password then
+                                        "fa fa-lock"
+
+                                     else
+                                        "fa fa-unlock"
+                                    )
+                                    (if share.password then
+                                        texts.passwordProtected
+
+                                     else
+                                        texts.passwordNone
+                                    )
+                                )
+                    , editAction = Just (ReqEdit Password)
+                    }
+                , property
+                    texts
+                    { label = texts.shareSize
+                    , content =
+                        propertyDisplay "fa fa-file"
+                            (String.fromInt (List.length model.share.files)
+                                ++ "/"
+                                ++ (List.map .size model.share.files
+                                        |> List.sum
+                                        |> toFloat
+                                        |> Util.Size.bytesReadable Util.Size.B
+                                   )
+                            )
+                    , editAction = Nothing
+                    }
+                , property
+                    texts
+                    { label = texts.created
+                    , content =
+                        propertyDisplay "fa fa-calendar"
+                            (texts.dateTime share.created)
+                    , editAction = Nothing
+                    }
                 ]
-            , div [ class "column" ]
-                [ div [ class "ui items" ]
-                    [ property
-                        texts
-                        { label = texts.aliasLabel
-                        , content =
-                            propertyDisplay "dot circle outline icon" (Maybe.withDefault "-" share.aliasName)
-                        , editAction = Nothing
-                        }
-                    , property
-                        texts
-                        { label = texts.publishedOn
-                        , content =
-                            propertyDisplay (Tuple.first <| publishIconLabel texts share)
-                                (Maybe.map .publishDate share.publishInfo
-                                    |> Maybe.map texts.dateTime
-                                    |> Maybe.withDefault "-"
-                                )
-                        , editAction = Nothing
-                        }
-                    , property
-                        texts
-                        { label = texts.publishedUntil
-                        , content =
-                            propertyDisplay "hourglass icon"
-                                (Maybe.map .publishUntil share.publishInfo
-                                    |> Maybe.map texts.dateTime
-                                    |> Maybe.withDefault "-"
-                                )
-                        , editAction = Nothing
-                        }
-                    , property
-                        texts
-                        { label = texts.lastAccess
-                        , content =
-                            propertyDisplay "calendar outline icon"
-                                (Maybe.andThen .lastAccess share.publishInfo
-                                    |> Maybe.map texts.dateTime
-                                    |> Maybe.withDefault "-"
-                                )
-                        , editAction = Nothing
-                        }
-                    , property
-                        texts
-                        { label = texts.views
-                        , content =
-                            propertyDisplay "eye icon"
-                                (Maybe.map .views share.publishInfo
-                                    |> Maybe.map String.fromInt
-                                    |> Maybe.withDefault "-"
-                                )
-                        , editAction = Nothing
-                        }
-                    ]
+            , div [ class "flex flex-col w-full md:w-1/2 px-2" ]
+                [ property
+                    texts
+                    { label = texts.aliasLabel
+                    , content =
+                        propertyDisplay "fa fa-dot-circle font-thin" (Maybe.withDefault "-" share.aliasName)
+                    , editAction = Nothing
+                    }
+                , property
+                    texts
+                    { label = texts.publishedOn
+                    , content =
+                        propertyDisplay (Tuple.first <| publishIconLabel texts share)
+                            (Maybe.map .publishDate share.publishInfo
+                                |> Maybe.map texts.dateTime
+                                |> Maybe.withDefault "-"
+                            )
+                    , editAction = Nothing
+                    }
+                , property
+                    texts
+                    { label = texts.publishedUntil
+                    , content =
+                        propertyDisplay "fa fa-hourglass"
+                            (Maybe.map .publishUntil share.publishInfo
+                                |> Maybe.map texts.dateTime
+                                |> Maybe.withDefault "-"
+                            )
+                    , editAction = Nothing
+                    }
+                , property
+                    texts
+                    { label = texts.lastAccess
+                    , content =
+                        propertyDisplay "fa fa-calendar font-thin"
+                            (Maybe.andThen .lastAccess share.publishInfo
+                                |> Maybe.map texts.dateTime
+                                |> Maybe.withDefault "-"
+                            )
+                    , editAction = Nothing
+                    }
+                , property
+                    texts
+                    { label = texts.views
+                    , content =
+                        propertyDisplay "fa fa-eye"
+                            (Maybe.map .views share.publishInfo
+                                |> Maybe.map String.fromInt
+                                |> Maybe.withDefault "-"
+                            )
+                    , editAction = Nothing
+                    }
                 ]
             ]
-        ]
-    , div
-        [ classList
-            [ ( "invisible", model.topMenu /= TopDetail )
-            , ( "ui bottom attached secondary segment", True )
+        , div [ class "h-px w-full", class S.border ] []
+        , div
+            [ classList
+                [ ( "hidden", model.topMenu /= TopDetail )
+                ]
+            , class "flex flex-row px-2 py-2"
             ]
-        ]
-        [ div [ class "item" ]
-            [ button
-                [ type_ "button"
-                , classList
-                    [ ( "ui secondary button", True )
-                    , ( "invisible", isPublished share /= Unpublished )
+            [ a
+                [ classList
+                    [ ( "hidden", isPublished share /= Unpublished )
                     ]
+                , class "mr-2"
+                , class S.secondaryButton
                 , onClick (PublishShare False)
+                , href "#"
                 ]
                 [ text texts.publishWithNewLink
                 ]
-            , button
-                [ type_ "button"
-                , class "ui red button"
+            , a
+                [ class S.deleteButton
                 , onClick RequestDelete
+                , href "#"
                 ]
-                [ i [ class "trash icon" ] []
+                [ i [ class "fa fa-trash mr-2" ] []
                 , text texts.delete
                 ]
             ]
@@ -466,26 +458,25 @@ property :
         }
     -> Html Msg
 property texts rec =
-    div [ class "item" ]
-        [ div [ class "content" ]
-            [ div [ class "header" ] <|
-                rec.content
-            , div [ class "meta" ]
-                [ case rec.editAction of
-                    Just msg ->
-                        a
-                            [ class "ui link"
-                            , href "#"
-                            , title texts.edit
-                            , onClick msg
-                            ]
-                            [ i [ class "edit icon" ] []
-                            , text " "
-                            ]
+    div [ class "mb-3" ]
+        [ div [ class "font-semibold text-base" ] <|
+            rec.content
+        , div [ class "text-sm " ]
+            [ case rec.editAction of
+                Just msg ->
+                    a
+                        [ class S.link
+                        , href "#"
+                        , title texts.edit
+                        , onClick msg
+                        ]
+                        [ i [ class "fa fa-edit mr-2" ] []
+                        ]
 
-                    Nothing ->
-                        text ""
-                , text rec.label
+                Nothing ->
+                    text ""
+            , span [ class "opacity-75" ]
+                [ text rec.label
                 ]
             ]
         ]
@@ -495,33 +486,44 @@ propertyEdit : Texts -> EditField -> List (Html Msg)
 propertyEdit texts ef =
     let
         saveButton =
-            a
-                [ class "ui primary icon button"
+            button
+                [ class S.primaryButtonPlain
+                , class "ml-2 rounded-l"
                 , href "#"
                 , onClick SaveEdit
+                , type_ "submit"
                 ]
-                [ i [ class "check icon" ] []
+                [ i [ class "fa fa-check" ] []
                 ]
 
         cancelButton =
             a
-                [ class "ui secondary icon button"
+                [ class S.secondaryButtonPlain
+                , class S.secondaryButtonHover
+                , class "rounded-r"
                 , href "#"
                 , onClick CancelEdit
                 ]
-                [ i [ class "delete icon" ] []
+                [ i [ class "fa fa-times" ] []
                 ]
     in
     case ef of
         EditName v ->
-            [ div [ class "ui mini action input" ]
-                [ input
-                    [ type_ "text"
-                    , placeholder texts.name
-                    , onInput SetName
-                    , Maybe.withDefault "" v |> value
+            [ div
+                [ class "flex flex-row"
+                , onSubmit SaveEdit
+                ]
+                [ div [ class "flex-grow" ]
+                    [ input
+                        [ type_ "text"
+                        , placeholder texts.name
+                        , onInput SetName
+                        , Maybe.withDefault "" v |> value
+                        , class S.textInput
+                        , Util.Html.onKeyUpCode EditKey
+                        ]
+                        []
                     ]
-                    []
                 , saveButton
                 , cancelButton
                 ]
@@ -530,27 +532,40 @@ propertyEdit texts ef =
         EditMaxViews ( im, n ) ->
             [ div
                 [ classList
-                    [ ( "ui mini action input", True )
-                    , ( "error", n == Nothing )
+                    [ ( "error", n == Nothing )
                     ]
+                , class "flex flex-row"
                 ]
-                [ Html.map MaxViewMsg (Comp.IntInput.view n im)
+                [ div [ class "flex-grow" ]
+                    [ Html.map MaxViewMsg (Comp.IntInput.view n im)
+                    ]
                 , saveButton
                 , cancelButton
                 ]
             ]
 
         EditValidity ( vm, v ) ->
-            [ div [ class "ui mini action input" ]
-                [ Html.map ValidityEditMsg (Comp.ValidityField.view texts.validityField v vm)
+            [ div [ class "flex flex-row" ]
+                [ div [ class "flex-grow text-base font-normal" ]
+                    [ Html.map ValidityEditMsg
+                        (Comp.ValidityField.view texts.validityField v vm)
+                    ]
                 , saveButton
                 , cancelButton
                 ]
             ]
 
         EditPassword ( pm, p ) ->
-            [ div [ class "ui mini action input" ]
-                [ Html.map PasswordEditMsg (Comp.PasswordInput.view p pm)
+            [ div [ class "flex flex-row" ]
+                [ div [ class "flex-grow mr-2" ]
+                    [ Html.map PasswordEditMsg
+                        (Comp.PasswordInput.view
+                            { placeholder = "" }
+                            p
+                            False
+                            pm
+                        )
+                    ]
                 , saveButton
                 , cancelButton
                 ]
@@ -566,114 +581,90 @@ topMenu texts model =
         ( publishIcon, label ) =
             publishIconLabel texts share
     in
-    div
-        [ classList
-            [ ( "ui pointing menu", True )
-            , ( "top attached", model.topMenu /= TopClosed )
+    MB.view
+        { start =
+            [ MB.ToggleButton
+                { tagger = SetTopMenu TopDetail
+                , label = texts.detailsMenu
+                , icon = Just "fa fa-eye"
+                , title = texts.detailsMenu
+                , active = model.topMenu == TopDetail
+                }
+            , MB.ToggleButton
+                { tagger = SetTopMenu TopShare
+                , label = texts.shareLinkMenu
+                , icon = Just "fa fa-share-alt"
+                , title = texts.shareLinkMenu
+                , active = model.topMenu == TopShare
+                }
+            , MB.ToggleButton
+                { tagger = SetTopMenu TopAddFiles
+                , active = model.topMenu == TopAddFiles
+                , label = texts.addFilesLinkMenu
+                , icon = Just "fa fa-folder-plus"
+                , title = texts.addFilesLinkMenu
+                }
             ]
-        ]
-        [ topMenuLink model TopDetail texts.detailsMenu
-        , topMenuLink model TopShare texts.shareLinkMenu
-        , div [ class "right menu" ]
-            [ a
-                [ classList
-                    [ ( "icon link item", True )
-                    , ( "active", model.descEdit /= Nothing )
-                    ]
-                , href "#"
-                , title texts.editDescription
-                , onClick ToggleEditDesc
-                ]
-                [ i [ class "ui edit icon" ] []
-                ]
-            , a
-                [ class "link item"
-                , href "#"
-                , onClick (PublishShare True)
-                ]
-                [ i [ class publishIcon ] []
-                , text label
-                ]
+        , end =
+            [ MB.ToggleButton
+                { tagger = ToggleEditDesc
+                , label = ""
+                , icon = Just "fa fa-edit"
+                , title = texts.editDescription
+                , active = model.descEdit /= Nothing
+                }
+            , MB.BasicButton
+                { tagger = PublishShare True
+                , label = label
+                , icon = Just publishIcon
+                , title = ""
+                }
             ]
-        ]
+        , rootClasses = "mt-3"
+        , sticky = True
+        }
 
 
 publishIconLabel : Texts -> ShareDetail -> ( String, String )
 publishIconLabel texts share =
     case isPublished share of
         Unpublished ->
-            ( "circle outline icon", texts.publish )
+            ( S.unpublished, texts.publish )
 
         PublishExpired ->
-            ( "red bolt icon", texts.unpublish )
+            ( S.publishError, texts.unpublish )
 
         MaxViewsExceeded ->
-            ( "red bolt icon", texts.unpublish )
+            ( S.publishError, texts.unpublish )
 
         PublishOk ->
-            ( "green circle icon", texts.unpublish )
-
-
-topMenuLink : Model -> TopMenuState -> String -> Html Msg
-topMenuLink model state label =
-    a
-        [ classList
-            [ ( "active", model.topMenu == state )
-            , ( "link item", True )
-            ]
-        , href "#"
-        , onClick (SetTopMenu state)
-        ]
-        [ text label
-        ]
+            ( S.published, texts.unpublish )
 
 
 middleMenu : Texts -> Model -> Html Msg
 middleMenu texts model =
-    div
-        [ classList
-            [ ( "ui menu", True )
-            , ( "attached", model.addFilesOpen )
+    MB.view
+        { start =
+            []
+        , end =
+            [ MB.ToggleButton
+                { tagger = SetFileView ViewList
+                , active = model.fileView == ViewList
+                , label = ""
+                , icon = Just "fa fa-list"
+                , title = texts.listView
+                }
+            , MB.ToggleButton
+                { tagger = SetFileView ViewCard
+                , active = model.fileView == ViewCard
+                , label = ""
+                , icon = Just "fa fa-th"
+                , title = texts.cardView
+                }
             ]
-        ]
-        [ a
-            [ classList
-                [ ( "icon link item", True )
-                , ( "active", model.fileView == ViewList )
-                ]
-            , href "#"
-            , onClick (SetFileView ViewList)
-            , title texts.listView
-            ]
-            [ i [ class "ui list icon" ] []
-            ]
-        , a
-            [ classList
-                [ ( "icon link item", True )
-                , ( "active", model.fileView == ViewCard )
-                ]
-            , href "#"
-            , onClick (SetFileView ViewCard)
-            , title texts.cardView
-            ]
-            [ i [ class "th icon" ] []
-            ]
-        , div [ class "right menu" ]
-            [ a
-                [ classList
-                    [ ( "icon link item", True )
-                    , ( "active", model.addFilesOpen )
-                    ]
-                , href "#"
-                , onClick ToggleFilesMenu
-                ]
-                [ i [ class "icons" ]
-                    [ i [ class "file outline icon" ] []
-                    , i [ class "corner add icon" ] []
-                    ]
-                ]
-            ]
-        ]
+        , rootClasses = "my-2"
+        , sticky = False
+        }
 
 
 dropzone : Texts -> Flags -> Model -> Html Msg
@@ -684,57 +675,50 @@ dropzone texts flags model =
     in
     div
         [ classList
-            [ ( "ui bottom attached segment", True )
-            , ( "hidden invisible", not model.addFilesOpen )
+            [ ( "hidden", model.topMenu /= TopAddFiles )
             ]
+        , class S.box
+        , class "flex flex-col mt-2 rounded px-2 py-2"
         ]
-        [ div [ class "ui secondary menu" ]
-            [ a
-                [ class "primary item"
-                , href "#"
-                , onClick SubmitFiles
-                ]
-                [ i [ class "upload icon" ] []
-                , text texts.submit
-                ]
-            , a
-                [ class "item"
-                , href "#"
-                , onClick ResetFileForm
-                ]
-                [ i [ class "undo icon" ] []
-                , text texts.clear
-                ]
-            , div [ class "right floated menu" ]
-                [ a
-                    [ classList
-                        [ ( "item", True )
-                        , ( "disabled", not model.uploading )
-                        ]
-                    , href "#"
-                    , onClick StartStopUpload
-                    ]
-                    [ i
-                        [ class
-                            (if model.uploadPaused then
-                                "play icon"
-
-                             else
-                                "pause icon"
-                            )
-                        ]
-                        []
-                    , text
-                        (if model.uploadPaused then
+        [ div [ class "flex flex-row space-x-2" ]
+            [ B.primaryButton
+                { handler = onClick SubmitFiles
+                , label = texts.submit
+                , icon = "fa fa-upload"
+                , disabled = False
+                , attrs = [ href "#" ]
+                , responsive = False
+                }
+            , B.secondaryButton
+                { handler = onClick ResetFileForm
+                , label = texts.clear
+                , icon = "fa fa-undo"
+                , disabled = False
+                , attrs = [ href "#" ]
+                , responsive = True
+                }
+            , div [ class "flex flex-row flex-grow justify-end" ]
+                [ B.secondaryButton
+                    { handler = onClick StartStopUpload
+                    , label =
+                        if model.uploadPaused then
                             texts.resume
 
-                         else
+                        else
                             texts.pause
-                        )
-                    ]
+                    , icon =
+                        if model.uploadPaused then
+                            "fa fa-play"
+
+                        else
+                            "fa fa-pause"
+                    , disabled = not model.uploading
+                    , attrs = [ href "#" ]
+                    , responsive = True
+                    }
                 ]
             ]
-        , p []
+        , p [ class "py-3" ]
             [ toFloat flags.config.maxSize
                 |> Util.Size.bytesReadable Util.Size.B
                 |> texts.uploadsGreaterThan
@@ -742,9 +726,10 @@ dropzone texts flags model =
             ]
         , div
             [ classList
-                [ ( "ui error message", True )
-                , ( "invisible hidden", model.uploadFormState.success )
+                [ ( S.errorMessage, True )
+                , ( "hidden", model.uploadFormState.success )
                 ]
+            , class "mb-2"
             ]
             [ text model.uploadFormState.message
             ]
@@ -759,13 +744,7 @@ dropzone texts flags model =
 
 deleteLoader : Texts -> Model -> Html Msg
 deleteLoader texts model =
-    div
-        [ classList
-            [ ( "ui dimmer", True )
-            , ( "active", model.loader.active )
-            ]
-        ]
-        [ div [ class "ui indeterminate text loader" ]
-            [ text (model.loader.message texts)
-            ]
-        ]
+    B.loadingDimmer
+        { label = texts.waitDeleteShare
+        , active = model.deleteState == DeleteInProgress
+        }

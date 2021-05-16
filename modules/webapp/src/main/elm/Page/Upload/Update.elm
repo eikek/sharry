@@ -43,3 +43,6 @@ update key flags msg model =
 
         SearchResp (Err _) ->
             ( model, Cmd.none )
+
+        InitNewShare ->
+            ( model, Page.set key SharePage )

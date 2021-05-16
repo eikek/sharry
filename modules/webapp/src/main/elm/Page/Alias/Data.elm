@@ -45,6 +45,7 @@ type Msg
     | DeleteResp (Result Http.Error BasicResult)
     | MailFormMsg Comp.MailSend.Msg
     | InitMail
+    | InitNewAlias
 
 
 clipboardData : ( String, String )

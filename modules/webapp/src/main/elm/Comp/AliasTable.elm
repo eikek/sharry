@@ -7,11 +7,13 @@ module Comp.AliasTable exposing
     )
 
 import Api.Model.AliasDetail exposing (AliasDetail)
+import Comp.Basic as B
 import Data.ValidityOptions exposing (findValidityItemMillis)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages.AliasTable exposing (Texts)
+import Styles as S
 import Util.Html
 
 
@@ -37,15 +39,21 @@ update msg model =
             ( { model | selected = Just alias_ }, Just alias_ )
 
 
+
+--- View
+
+
 view : Texts -> List AliasDetail -> Model -> Html Msg
 view texts aliases model =
-    table [ class "ui selectable padded table" ]
+    table [ class S.tableMain ]
         [ thead []
             [ tr []
-                [ th [] [ text texts.name ]
-                , th [] [ text texts.enabled ]
-                , th [] [ text texts.validity ]
-                , th [] [ text texts.created ]
+                [ th [] []
+                , th [ class "text-center px-2 md:hidden" ] [ Util.Html.checkbox True ]
+                , th [ class "text-center px-2 hidden md:table-cell" ] [ text texts.enabled ]
+                , th [ class "text-left" ] [ text texts.name ]
+                , th [ class "text-left hidden md:table-cell" ] [ text texts.validity ]
+                , th [ class "text-left hidden md:table-cell" ] [ text texts.created ]
                 ]
             ]
         , tbody []
@@ -63,19 +71,21 @@ isSelected model alias_ =
 viewTableLine : Texts -> Model -> AliasDetail -> Html Msg
 viewTableLine texts model alias_ =
     tr
-        [ onClick (Select alias_)
-        , classList [ ( "active", isSelected model alias_ ) ]
+        [ classList [ ( "active", isSelected model alias_ ) ]
+        , class S.tableRow
         ]
-        [ td [] [ text alias_.name ]
-        , td []
+        [ B.editLinkTableCell texts.edit (Select alias_)
+        , td [ class "text-center py-4 md:py-2" ]
             [ Util.Html.checkbox alias_.enabled
             ]
-        , td []
+        , td [ class "text-left py-4 md:py-2" ]
+            [ text alias_.name ]
+        , td [ class "text-left py-4 md:py-2 hidden md:table-cell" ]
             [ findValidityItemMillis texts.validityField alias_.validity
                 |> Tuple.first
                 |> text
             ]
-        , td []
+        , td [ class "text-left hidden md:table-cell md:py-2" ]
             [ texts.dateTime alias_.created
                 |> text
             ]

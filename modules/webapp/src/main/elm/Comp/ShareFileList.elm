@@ -12,19 +12,19 @@ module Comp.ShareFileList exposing
     )
 
 import Api.Model.ShareFile exposing (ShareFile)
-import Comp.YesNoDimmer
+import Comp.ConfirmModal
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Messages.ShareFileList exposing (Texts)
 import Set exposing (Set)
+import Styles as S
 import Util.Size
 
 
 type alias Model =
     { embedOn : Set String
     , requestDelete : Maybe ShareFile
-    , yesNoModel : Comp.YesNoDimmer.Model
     }
 
 
@@ -32,7 +32,8 @@ type Msg
     = Select ShareFile
     | EmbedFile ShareFile
     | ReqDelete ShareFile
-    | YesNoMsg Comp.YesNoDimmer.Msg
+    | DeleteConfirm
+    | DeleteCancel
 
 
 type FileAction
@@ -50,13 +51,7 @@ init : Model
 init =
     { embedOn = Set.empty
     , requestDelete = Nothing
-    , yesNoModel = Comp.YesNoDimmer.emptyModel
     }
-
-
-dimmerSettings : Texts -> Comp.YesNoDimmer.Settings
-dimmerSettings texts =
-    Comp.YesNoDimmer.defaultSettings texts.yesNo
 
 
 reset : Model -> Model
@@ -91,29 +86,26 @@ update msg model =
         ReqDelete sf ->
             ( { model
                 | requestDelete = Just sf
-                , yesNoModel = Comp.YesNoDimmer.activate model.yesNoModel
               }
             , FileNone
             )
 
-        YesNoMsg lmsg ->
-            let
-                ( ym, flag ) =
-                    Comp.YesNoDimmer.update lmsg model.yesNoModel
+        DeleteCancel ->
+            ( { model | requestDelete = Nothing }, FileNone )
 
-                action =
-                    case model.requestDelete of
-                        Just sf ->
-                            if flag then
-                                FileDelete sf
+        DeleteConfirm ->
+            case model.requestDelete of
+                Just sf ->
+                    ( { model | requestDelete = Nothing }
+                    , FileDelete sf
+                    )
 
-                            else
-                                FileNone
+                Nothing ->
+                    ( model, FileNone )
 
-                        Nothing ->
-                            FileNone
-            in
-            ( { model | yesNoModel = ym }, action )
+
+
+--- View
 
 
 view : Texts -> Settings -> List ShareFile -> Model -> Html Msg
@@ -128,65 +120,85 @@ view texts settings files model =
 
 fileCards : Texts -> Settings -> Model -> List ShareFile -> Html Msg
 fileCards texts settings model files =
-    div [ class "ui centered cards" ] <|
+    div [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2" ] <|
         List.map (fileCard texts settings model) files
 
 
 fileCard : Texts -> Settings -> Model -> ShareFile -> Html Msg
 fileCard texts settings model file =
-    div [ class "ui card", id file.id ]
-        [ Html.map YesNoMsg
-            (Comp.YesNoDimmer.view2
-                (model.requestDelete == Just file)
-                (dimmerSettings texts)
-                model.yesNoModel
-            )
-        , div [ class "image" ]
+    let
+        deleteModal_ =
+            modalSettings texts
+
+        deleteModal =
+            { deleteModal_
+                | enabled = model.requestDelete == Just file
+                , extraClass = "rounded"
+            }
+    in
+    div
+        [ class "relative hover:shadow-lg rounded flex flex-col break-words border border-gray-400 dark:border-warmgray-600 dark:hover:border-warmgray-500"
+        , id file.id
+        ]
+        [ Comp.ConfirmModal.view deleteModal
+        , div [ class "overflow-hidden block bg-gray-50 dark:bg-warmgray-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-warmgray-500 rounded-t max-h-52" ]
             [ fileEmbed texts settings model file
             ]
-        , div [ class "content" ]
-            [ a
-                [ title texts.downloadToDisk
-                , download file.filename
-                , href (settings.baseUrl ++ file.id)
+        , div [ class "flex flex-col flex-grow px-2 my-2" ]
+            [ div [ class "inline" ]
+                [ a
+                    [ title texts.downloadToDisk
+                    , download file.filename
+                    , href (settings.baseUrl ++ file.id)
+                    , class S.link
+                    ]
+                    [ text file.filename
+                    ]
+                , span [ class "ml-2" ]
+                    [ text "("
+                    , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
+                    , text ")"
+                    ]
                 ]
-                [ text file.filename
+            , div [ class "mt-2 break-words " ]
+                [ incompleteLabel texts file
                 ]
-            , text " ("
-            , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
-            , text ")"
             ]
-        , div [ class "extra content" ]
-            [ a
-                [ class "ui primary icon button"
-                , title texts.downloadToDisk
-                , download file.filename
-                , href (settings.baseUrl ++ file.id)
-                ]
-                [ i [ class "download icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "ui basic icon button", True )
-                    , ( "invisible", not <| previewPossible file.mimetype )
+        , div [ class "flex flex-col px-1 py-1" ]
+            [ div [ class "flex flex-row space-x-1" ]
+                [ a
+                    [ class S.secondaryBasicButton
+                    , title texts.downloadToDisk
+                    , download file.filename
+                    , href (settings.baseUrl ++ file.id)
                     ]
-                , title texts.viewInBrowser
-                , href "#"
-                , onClick (Select file)
-                ]
-                [ i [ class "eye icon" ] []
-                ]
-            , incompleteLabel texts file
-            , a
-                [ classList
-                    [ ( "ui right floated basic red icon button", True )
-                    , ( "invisible", not settings.delete )
+                    [ i [ class "fa fa-download" ] []
                     ]
-                , title texts.deleteFile
-                , href "#"
-                , onClick (ReqDelete file)
-                ]
-                [ i [ class "trash icon" ] []
+                , a
+                    [ classList
+                        [ ( "invisible", not <| previewPossible file.mimetype )
+                        ]
+                    , class S.secondaryBasicButton
+                    , title texts.viewInBrowser
+                    , href "#"
+                    , onClick (Select file)
+                    ]
+                    [ i [ class "fa fa-eye" ] []
+                    ]
+                , div [ class "flex-grow flex flex-row justify-end" ]
+                    [ a
+                        [ classList
+                            [ ( "ui right floated basic red icon button", True )
+                            , ( "invisible", not settings.delete )
+                            ]
+                        , class S.deleteButton
+                        , title texts.deleteFile
+                        , href "#"
+                        , onClick (ReqDelete file)
+                        ]
+                        [ i [ class "fa fa-trash" ] []
+                        ]
+                    ]
                 ]
             ]
         ]
@@ -200,14 +212,20 @@ incompleteLabel texts file =
     in
     div
         [ classList
-            [ ( "ui red basic icon label", True )
-            , ( "invisible", file.size == file.storedSize )
+            [ ( "hidden", file.size == file.storedSize )
             ]
+        , class
+            ("border label text-sm inline-flex  "
+                ++ "border-red-600 text-red-700 "
+                ++ "dark:bg-red-500 dark:bg-opacity-30 dark:text-red-400 dark:border-red-400"
+            )
         ]
-        [ i [ class "red bolt icon" ] []
-        , text texts.fileIsIncomplete
-        , String.fromInt perc |> text
-        , text texts.tryUploadAgain
+        [ i [ class "fa fa-bolt dark:text-red-400 mr-2" ] []
+        , text
+            (texts.fileIsIncomplete
+                ++ String.fromInt perc
+                ++ texts.tryUploadAgain
+            )
         ]
 
 
@@ -240,34 +258,51 @@ fileEmbed texts settings model file =
     if previewFor previewDirect mime || Set.member file.id model.embedOn then
         embed
             [ src (settings.baseUrl ++ file.id)
+            , class "mx-auto min-h-preview dark:bg-warmgray-300 bg-gray-50"
             ]
             []
 
     else if previewFor previewDeferred mime then
-        div [ class "ui embed" ]
-            [ button
-                [ type_ "button"
-                , class "ui large secondary icon button"
+        div [ class "min-h-preview flex flex-row items-center justify-center" ]
+            [ a
+                [ class "text-3xl"
+                , class S.secondaryBasicButton
+                , class "px-5 py-5 rounded-full"
                 , onClick (EmbedFile file)
+                , href "#"
                 ]
-                [ i [ class "large play circle outline icon" ] []
+                [ i [ class "fa fa-play " ] []
                 ]
             ]
 
     else if String.startsWith "image/" mime then
         img
             [ src (settings.baseUrl ++ file.id)
-            , class "preview-image"
+            , class "mx-auto pt-1 max-h-52 "
             ]
             []
 
     else
-        div [ class "ui placeholder segment preview-image" ]
-            [ div [ class "ui icon header" ]
-                [ i [ class (fileIcon file) ] []
+        div [ class "px-8 py-8 text-center flex flex-col items-center justify-center min-h-preview" ]
+            [ div [ class S.header3 ]
+                [ i
+                    [ class (fileIcon file)
+                    , class "mr-2"
+                    ]
+                    []
                 , text texts.previewNotSupported
                 ]
             ]
+
+
+modalSettings : Texts -> Comp.ConfirmModal.Settings Msg
+modalSettings texts =
+    Comp.ConfirmModal.defaultSettings
+        DeleteConfirm
+        DeleteCancel
+        texts.yesNo.confirmButton
+        texts.yesNo.cancelButton
+        texts.yesNo.message
 
 
 fileTable : Texts -> Settings -> Model -> List ShareFile -> Html Msg
@@ -275,20 +310,15 @@ fileTable texts settings model files =
     let
         yesNo =
             case model.requestDelete of
-                Just sf ->
-                    Html.map YesNoMsg
-                        (Comp.YesNoDimmer.view2
-                            True
-                            (dimmerSettings texts)
-                            model.yesNoModel
-                        )
+                Just _ ->
+                    Comp.ConfirmModal.view (modalSettings texts)
 
                 Nothing ->
                     span [] []
     in
-    div []
+    div [ class "md:relative" ]
         [ yesNo
-        , table [ class "ui very basic table" ]
+        , table [ class S.tableMain ]
             [ tbody [] <|
                 List.map (fileRow texts settings model) files
             ]
@@ -296,54 +326,56 @@ fileTable texts settings model files =
 
 
 fileRow : Texts -> Settings -> Model -> ShareFile -> Html Msg
-fileRow texts { baseUrl, delete } model file =
-    tr [ id file.id ]
-        [ td [ class "collapsing" ]
-            [ i [ class ("large " ++ fileIcon file) ] []
+fileRow texts { baseUrl, delete } _ file =
+    tr
+        [ id file.id
+        , class S.tableRow
+        ]
+        [ td [ class "text-center py-2" ]
+            [ i [ class ("text-2xl " ++ fileIcon file) ] []
             ]
-        , td []
+        , td [ class "text-left w-full px-3 break-all sm:break-words" ]
             [ a
                 [ title texts.downloadToDisk
                 , download file.filename
                 , href (baseUrl ++ file.id)
+                , class S.link
                 ]
                 [ text file.filename
                 ]
-            , text " ("
-            , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
-            , text ") "
+            , span [ class "text-sm font-mono" ]
+                [ text " ("
+                , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
+                , text ") "
+                ]
             , incompleteLabel texts file
             ]
-        , td []
-            [ a
-                [ class "ui mini right floated primary icon button"
-                , title texts.downloadToDisk
-                , download file.filename
-                , href (baseUrl ++ file.id)
-                ]
-                [ i [ class "download icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "ui mini right floated basic icon button", True )
-                    , ( "invisible", not <| previewPossible file.mimetype )
+        , td [ class "" ]
+            [ div [ class "text-right flex flex-row justify-end space-x-1 items-center" ]
+                [ a
+                    [ classList
+                        [ ( "hidden", not <| previewPossible file.mimetype )
+                        ]
+                    , class S.secondaryBasicButton
+                    , class "text-xs"
+                    , title texts.viewInBrowser
+                    , href "#"
+                    , onClick (Select file)
                     ]
-                , title texts.viewInBrowser
-                , href "#"
-                , onClick (Select file)
-                ]
-                [ i [ class "eye icon" ] []
-                ]
-            , a
-                [ classList
-                    [ ( "ui mini red right floated basic icon button", True )
-                    , ( "invisible", not delete )
+                    [ i [ class "fa fa-eye" ] []
                     ]
-                , title texts.deleteFile
-                , href "#"
-                , onClick (ReqDelete file)
-                ]
-                [ i [ class "trash icon" ] []
+                , a
+                    [ classList
+                        [ ( "hidden", not delete )
+                        ]
+                    , class S.deleteButton
+                    , class "text-xs"
+                    , title texts.deleteFile
+                    , href "#"
+                    , onClick (ReqDelete file)
+                    ]
+                    [ i [ class "fa fa-trash" ] []
+                    ]
                 ]
             ]
         ]
@@ -356,25 +388,25 @@ fileIcon file =
             file.mimetype
     in
     if file.size /= file.storedSize then
-        "red bolt icon"
+        "text-red-500 fa fa-bolt"
 
     else if mime == "application/pdf" then
-        "file pdf outline icon"
+        "fa fa-file-pdf font-thin"
 
     else if mime == "application/zip" then
-        "file archive outline icon"
+        "fa fa-file-archive font-thin"
 
     else if String.startsWith "image/" mime then
-        "file image outline icon"
+        "fa fa-file-image font-thin"
 
     else if String.startsWith "video/" mime then
-        "file video outline icon"
+        "fa fa-file-video font-thin"
 
     else if String.startsWith "audio/" mime then
-        "file audio outline icon"
+        "fa fa-file-audio font-thin"
 
     else if String.startsWith "text/" mime then
-        "file alternate outline icon"
+        "fa fa-file-alt font-thin"
 
     else
-        "file outline icon"
+        "fa fa-file font-thin"

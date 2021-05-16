@@ -10,7 +10,6 @@ object Dependencies {
   val DoobieVersion           = "0.13.2"
   val EmilVersion             = "0.9.2"
   val FlywayVersion           = "7.9.0"
-  val FomanticUIVersion       = "2.8.7-3"
   val Fs2Version              = "2.5.6"
   val H2Version               = "1.4.200"
   val Http4sVersion           = "0.21.22"
@@ -130,10 +129,9 @@ object Dependencies {
   val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
-    "org.webjars"      % "swagger-ui"            % SwaggerVersion,
-    "com.github.eikek" % "fomantic-slim-default" % FomanticUIVersion,
-    "org.webjars.npm"  % "tus-js-client"         % TusClientVersion,
-    "org.webjars"      % "clipboard.js"          % ClipboardJsVersion
+    "org.webjars"     % "swagger-ui"    % SwaggerVersion,
+    "org.webjars.npm" % "tus-js-client" % TusClientVersion,
+    "org.webjars"     % "clipboard.js"  % ClipboardJsVersion
   )
 
   val organizeImports = Seq(

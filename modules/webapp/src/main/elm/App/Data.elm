@@ -4,10 +4,11 @@ import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.VersionInfo exposing (VersionInfo)
 import Browser exposing (UrlRequest)
 import Browser.Navigation exposing (Key)
-import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
+import Data.UiTheme exposing (UiTheme)
 import Data.UploadState exposing (UploadState)
 import Http
+import Language exposing (Language)
 import Page exposing (Page(..))
 import Page.Account.Data
 import Page.Alias.Data
@@ -31,7 +32,7 @@ type alias Model =
     , key : Key
     , page : Page
     , navMenuOpen : Bool
-    , langChoose : Comp.LanguageChoose.Model
+    , langMenuOpen : Bool
     , version : VersionInfo
     , homeModel : Page.Home.Data.Model
     , loginModel : Page.Login.Data.Model
@@ -46,6 +47,7 @@ type alias Model =
     , settingsModel : Page.Settings.Data.Model
     , detailModel : Page.Detail.Data.Model
     , openDetailModel : Page.OpenDetail.Data.Model
+    , uiTheme : UiTheme
     }
 
 
@@ -62,7 +64,7 @@ init key url flags_ =
     , key = key
     , page = page
     , navMenuOpen = False
-    , langChoose = Comp.LanguageChoose.init
+    , langMenuOpen = False
     , version = Api.Model.VersionInfo.empty
     , homeModel = Page.Home.Data.emptyModel
     , loginModel = Page.Login.Data.empty
@@ -77,6 +79,10 @@ init key url flags_ =
     , settingsModel = Page.Settings.Data.emptyModel
     , detailModel = Page.Detail.Data.emptyModel
     , openDetailModel = Page.OpenDetail.Data.emptyModel
+    , uiTheme =
+        Maybe.andThen Data.UiTheme.fromString
+            flags.uiTheme
+            |> Maybe.withDefault Data.UiTheme.Light
     }
 
 
@@ -105,7 +111,9 @@ type Msg
     | UploadStateMsg (Result String UploadState)
     | UploadStoppedMsg (Maybe String)
     | ReceiveLanguage String
-    | LangChooseMsg Comp.LanguageChoose.Msg
+    | SetLanguage Language
+    | ToggleLangMenu
+    | ToggleDarkMode
 
 
 initBaseUrl : Url -> Flags -> Flags

@@ -4,6 +4,7 @@ module Page exposing
     , goto
     , href
     , isAdmin
+    , isFixedHeight
     , isOpen
     , isSecured
     , loginPage
@@ -78,6 +79,22 @@ isSecured page =
             True
 
         OpenDetailPage _ ->
+            False
+
+
+isFixedHeight : Page -> Bool
+isFixedHeight page =
+    case page of
+        HomePage ->
+            True
+
+        LoginPage _ ->
+            True
+
+        RegisterPage ->
+            True
+
+        _ ->
             False
 
 
