@@ -120,7 +120,7 @@ filePreview fileUrl _ file =
     else if isVideo file then
         video
             [ src url
-            , class "w-full"
+            , class "block max-h-full mx-auto"
             , controls True
             , autoplay False
             ]
