@@ -56,9 +56,12 @@ Please see the [documentation site](https://eikek.github.io/sharry).
 
 ## Screenshots
 
-![screenshot-1](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-222359.jpg)
-![screenshot-2](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-223117.jpg)
-![screenshot-3](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/20191216-223128.jpg)
+![screenshot-1](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/Selection_226.png)
+![screenshot-2](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/Selection_230.png)
+![screenshot-3](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/Selection_235.png)
+![screenshot-4](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/mobile_02.png)
+![screenshot-5](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/mobile_03.png)
+![screenshot-6](https://raw.githubusercontent.com/eikek/sharry/master/modules/microsite/docs/screenshots/mobile_04.png)
 
 ## Contributions/Support
 

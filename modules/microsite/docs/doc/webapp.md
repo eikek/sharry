@@ -17,7 +17,7 @@ resumable uploads. All the css is provided by
 
 After logging in, you can create new shares:
 
-<img src="../screenshots/20191217-210812.jpg" class="rounded screenshot">
+<img src="../screenshots/Selection_242.png" class="rounded screenshot">
 
 The details are all optional and can also be changed afterwards. It is
 required to specfiy a description, some files or both. Otherwise

@@ -1,3 +1,6 @@
 img.screenshot {
     width: 100%;
 }
+img.mobile-screenshot {
+    max-height: 800px;
+}
