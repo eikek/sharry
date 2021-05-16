@@ -4,7 +4,6 @@ import Api
 import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
-import Comp.LanguageChoose
 import Data.Flags
 import Data.UiTheme
 import Page exposing (Page(..))
@@ -127,7 +126,7 @@ update msg model =
                 ]
                 model
 
-        UploadStateMsg (Err str) ->
+        UploadStateMsg (Err _) ->
             ( model, Cmd.none )
 
         VersionResp (Ok info) ->

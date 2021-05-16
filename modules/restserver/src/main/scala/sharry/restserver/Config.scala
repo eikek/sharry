@@ -36,7 +36,9 @@ object Config {
   case class Webapp(
       appName: String,
       appIcon: String,
+      appIconDark: String,
       appLogo: String,
+      appLogoDark: String,
       appFooter: String,
       appFooterVisible: Boolean,
       chunkSize: ByteSize,

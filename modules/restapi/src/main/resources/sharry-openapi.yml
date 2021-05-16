@@ -1677,7 +1677,9 @@ components:
         - appName
         - baseUrl
         - logoUrl
+        - logoUrlDark
         - iconUrl
+        - iconUrlDark
         - footerText
         - footerVisible
         - signupMode
@@ -1699,7 +1701,11 @@ components:
           type: string
         logoUrl:
           type: string
+        logoUrlDark:
+          type: string
         iconUrl:
+          type: string
+        iconUrlDark:
           type: string
         footerText:
           type: string

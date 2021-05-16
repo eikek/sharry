@@ -2,6 +2,7 @@ module Page.Register.View exposing (view)
 
 import Comp.Basic as B
 import Data.Flags exposing (Flags)
+import Data.UiTheme exposing (UiTheme)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -11,8 +12,8 @@ import Page.Register.Data exposing (..)
 import Styles as S
 
 
-view : Texts -> Flags -> Model -> Html Msg
-view texts flags model =
+view : Texts -> Flags -> UiTheme -> Model -> Html Msg
+view texts flags currentTheme model =
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -22,7 +23,11 @@ view texts flags model =
             [ div [ class "self-center" ]
                 [ img
                     [ class "max-w-xs mx-auto max-h-20"
-                    , src flags.config.iconUrl
+                    , if currentTheme == Data.UiTheme.Light then
+                        src flags.config.logoUrl
+
+                      else
+                        src flags.config.logoUrlDark
                     ]
                     []
                 ]

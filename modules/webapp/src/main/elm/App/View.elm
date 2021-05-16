@@ -2,6 +2,7 @@ module App.View exposing (view)
 
 import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
+import Data.UiTheme
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -83,8 +84,12 @@ headerNavItem model =
         , Page.href HomePage
         ]
         [ img
-            [ src model.flags.config.iconUrl
-            , class "w-9 h-9 mr-2 block"
+            [ class "w-9 h-9 mr-2 block"
+            , if model.uiTheme == Data.UiTheme.Light then
+                src model.flags.config.iconUrl
+
+              else
+                src model.flags.config.iconUrlDark
             ]
             []
         , div [ class "" ]
@@ -175,7 +180,11 @@ userMenu2 texts model acc =
             [ pageLink HomePage
                 [ img
                     [ class "h-6 w-6 mx-auto inline-block -ml-1"
-                    , src model.flags.config.iconUrl
+                    , if model.uiTheme == Data.UiTheme.Light then
+                        src model.flags.config.iconUrl
+
+                      else
+                        src model.flags.config.iconUrlDark
                     ]
                     []
                 , span [ class "ml-2" ]
@@ -347,12 +356,12 @@ viewNewInvite texts model =
 
 viewRegister : Messages -> Model -> Html Msg
 viewRegister texts model =
-    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.registerModel)
+    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.uiTheme model.registerModel)
 
 
 viewLogin : Messages -> Model -> Html Msg
 viewLogin texts model =
-    Html.map LoginMsg (Page.Login.View.view texts.login model.flags model.loginModel)
+    Html.map LoginMsg (Page.Login.View.view texts.login model.flags model.uiTheme model.loginModel)
 
 
 viewHome : Messages -> Model -> Html Msg
@@ -418,7 +427,7 @@ styleContent =
 
 styleFooter : String
 styleFooter =
-    "pt-1 text-xs items-center text-center"
+    "pt-1 text-xs items-center text-center markdown-preview my-0"
 
 
 dropdownLink : String

@@ -39,14 +39,22 @@ object InfoRoutes {
     val logoUrl =
       if (cfg.webapp.appLogo.nonEmpty) cfg.webapp.appLogo
       else s"$assetPath/img/logo.png"
+    val logoUrlDark =
+      if (cfg.webapp.appLogoDark.nonEmpty) cfg.webapp.appLogoDark
+      else s"$assetPath/img/logo-dark.png"
     val iconUrl =
       if (cfg.webapp.appIcon.nonEmpty) cfg.webapp.appIcon
       else s"$assetPath/img/icon.svg"
+    val iconUrlDark =
+      if (cfg.webapp.appIconDark.nonEmpty) cfg.webapp.appIconDark
+      else s"$assetPath/img/icon-dark.svg"
     AppConfig(
       cfg.webapp.appName,
       getBaseUrl(cfg),
       logoUrl,
+      logoUrlDark,
       iconUrl,
+      iconUrlDark,
       cfg.webapp.appFooter,
       cfg.webapp.appFooterVisible,
       cfg.backend.signup.mode,

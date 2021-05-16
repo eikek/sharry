@@ -4,6 +4,7 @@ import Api
 import Api.Model.OAuthItem exposing (OAuthItem)
 import Comp.Basic as Basic
 import Data.Flags exposing (Flags)
+import Data.UiTheme exposing (UiTheme)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onSubmit)
@@ -14,8 +15,8 @@ import Page.Login.Data exposing (..)
 import Styles as S
 
 
-view : Texts -> Flags -> Model -> Html Msg
-view texts flags model =
+view : Texts -> Flags -> UiTheme -> Model -> Html Msg
+view texts flags currentTheme model =
     div
         [ id "content"
         , class "h-full flex flex-col items-center justify-center w-full"
@@ -25,12 +26,13 @@ view texts flags model =
             [ div [ class "self-center" ]
                 [ img
                     [ class "max-w-xs mx-auto max-h-20"
-                    , src flags.config.iconUrl
+                    , if currentTheme == Data.UiTheme.Light then
+                        src flags.config.logoUrl
+
+                      else
+                        src flags.config.logoUrlDark
                     ]
                     []
-                ]
-            , div [ class "text-4xl font-serif italic tracking-wider font-bold self-center my-2" ]
-                [ text flags.config.appName
                 ]
             , Html.form
                 [ action "#"
@@ -159,7 +161,7 @@ renderOAuthButtons texts flags _ =
                 , lineColor = "bg-gray-300 dark:bg-bluegray-600"
                 }
         , div
-            [ class "flex flex-row space-x-2"
+            [ class "flex flex-row space-x-2 items-center justify-center"
             , classList [ ( "mt-2", flags.config.oauthOnly ) ]
             ]
             (List.map (renderOAuthButton texts flags) flags.config.oauthConfig)
