@@ -14,11 +14,11 @@ import Page.Alias.View
 import Page.Detail.View
 import Page.Home.View
 import Page.Info.View
-import Page.Login.View2
+import Page.Login.View
 import Page.NewInvite.View
 import Page.OpenDetail.View
 import Page.OpenShare.View
-import Page.Register.View2
+import Page.Register.View
 import Page.Settings.View
 import Page.Share.View
 import Page.Upload.View
@@ -347,12 +347,12 @@ viewNewInvite texts model =
 
 viewRegister : Messages -> Model -> Html Msg
 viewRegister texts model =
-    Html.map RegisterMsg (Page.Register.View2.view texts.register model.flags model.registerModel)
+    Html.map RegisterMsg (Page.Register.View.view texts.register model.flags model.registerModel)
 
 
 viewLogin : Messages -> Model -> Html Msg
 viewLogin texts model =
-    Html.map LoginMsg (Page.Login.View2.view texts.login model.flags model.loginModel)
+    Html.map LoginMsg (Page.Login.View.view texts.login model.flags model.loginModel)
 
 
 viewHome : Messages -> Model -> Html Msg

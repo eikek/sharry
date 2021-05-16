@@ -295,6 +295,11 @@ box =
     " border dark:border-warmgray-500 bg-white dark:bg-warmgray-800 shadow-md "
 
 
+boxMd : String
+boxMd =
+    " md:border dark:border-warmgray-500 bg-white dark:bg-warmgray-800 md:shadow-md "
+
+
 border : String
 border =
     " border dark:border-warmgray-600 "

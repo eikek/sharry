@@ -1,152 +1,208 @@
 module Page.Register.View exposing (view)
 
-import Comp.LanguageChoose
+import Comp.Basic as B
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Language exposing (Language)
-import Messages
 import Messages.RegisterPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Register.Data exposing (..)
+import Styles as S
 
 
 view : Texts -> Flags -> Model -> Html Msg
 view texts flags model =
-    let
-        currentLanguage =
-            Messages.fromFlags flags
-                |> .lang
-    in
-    div [ class "register-page" ]
-        [ div [ class "ui centered grid" ]
-            [ div [ class "row" ]
-                [ div [ class "sixteen wide mobile ten wide tablet six wide computer column" ]
-                    [ div [ class "ui segment register-view" ]
-                        [ h1 [ class "ui cener aligned icon header" ]
-                            [ img
-                                [ class "ui logo image"
-                                , src flags.config.logoUrl
-                                ]
-                                []
-                            , div [ class "content" ]
-                                [ text texts.signup
-                                ]
+    div
+        [ id "content"
+        , class "h-full flex flex-col items-center justify-center w-full"
+        , class S.content
+        ]
+        [ div [ class ("flex flex-col px-2 sm:px-4 py-4 rounded-md min-w-full md:min-w-0 md:w-96" ++ S.boxMd) ]
+            [ div [ class "self-center" ]
+                [ img
+                    [ class "max-w-xs mx-auto max-h-20"
+                    , src flags.config.iconUrl
+                    ]
+                    []
+                ]
+            , div [ class "text-4xl font-serif italic tracking-wider font-bold self-center my-2" ]
+                [ text texts.signup
+                ]
+            , Html.form
+                [ class "ui large error form raised segment"
+                , onSubmit RegisterSubmit
+                , autocomplete False
+                ]
+                [ div [ class "flex flex-col mt-6" ]
+                    [ label
+                        [ for "username"
+                        , class S.inputLabel
+                        ]
+                        [ text texts.userLogin
+                        , B.inputRequired
+                        ]
+                    , div [ class "relative" ]
+                        [ div [ class S.inputIcon ]
+                            [ i [ class "fa fa-user" ] []
                             ]
-                        , Html.form
-                            [ class "ui large error form raised segment"
-                            , onSubmit RegisterSubmit
+                        , input
+                            [ type_ "text"
+                            , name "collective"
                             , autocomplete False
+                            , onInput SetLogin
+                            , value model.login
+                            , autofocus True
+                            , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
+                            , placeholder texts.userLogin
                             ]
-                            [ div [ class "required field" ]
-                                [ label [] [ text texts.userLogin ]
-                                , div [ class "ui left icon input" ]
-                                    [ input
-                                        [ type_ "text"
-                                        , autocomplete False
-                                        , onInput SetLogin
-                                        , value model.login
-                                        ]
-                                        []
-                                    , i [ class "user icon" ] []
-                                    ]
-                                ]
-                            , div
-                                [ class "required field"
-                                ]
-                                [ label [] [ text texts.password ]
-                                , div [ class "ui left icon action input" ]
-                                    [ input
-                                        [ type_ <|
-                                            if model.showPass1 then
-                                                "text"
-
-                                            else
-                                                "password"
-                                        , autocomplete False
-                                        , onInput SetPass1
-                                        , value model.pass1
-                                        ]
-                                        []
-                                    , i [ class "lock icon" ] []
-                                    , button [ class "ui icon button", onClick ToggleShowPass1 ]
-                                        [ i [ class "eye icon" ] []
-                                        ]
-                                    ]
-                                ]
-                            , div
-                                [ class "required field"
-                                ]
-                                [ label [] [ text texts.passwordRepeat ]
-                                , div [ class "ui left icon action input" ]
-                                    [ input
-                                        [ type_ <|
-                                            if model.showPass2 then
-                                                "text"
-
-                                            else
-                                                "password"
-                                        , autocomplete False
-                                        , onInput SetPass2
-                                        , value model.pass2
-                                        ]
-                                        []
-                                    , i [ class "lock icon" ] []
-                                    , button [ class "ui icon button", onClick ToggleShowPass2 ]
-                                        [ i [ class "eye icon" ] []
-                                        ]
-                                    ]
-                                ]
-                            , div
-                                [ classList
-                                    [ ( "field", True )
-                                    , ( "invisible", flags.config.signupMode /= "invite" )
-                                    ]
-                                ]
-                                [ label [] [ text texts.invitationKey ]
-                                , div [ class "ui left icon input" ]
-                                    [ input
-                                        [ type_ "text"
-                                        , autocomplete False
-                                        , onInput SetInvite
-                                        , model.invite |> Maybe.withDefault "" |> value
-                                        ]
-                                        []
-                                    , i [ class "key icon" ] []
-                                    ]
-                                ]
-                            , button
-                                [ class "ui primary button"
-                                , type_ "submit"
-                                ]
-                                [ text texts.submitButton
-                                ]
-                            ]
-                        , resultMessage texts model
-                        , renderLanguageAndSignin currentLanguage texts model
+                            []
                         ]
                     ]
+                , div [ class "flex flex-col my-3" ]
+                    [ label
+                        [ for "passw1"
+                        , class S.inputLabel
+                        ]
+                        [ text texts.password
+                        , B.inputRequired
+                        ]
+                    , div [ class "relative" ]
+                        [ div [ class S.inputIcon ]
+                            [ i
+                                [ class "fa"
+                                , if model.showPass1 then
+                                    class "fa-lock-open"
+
+                                  else
+                                    class "fa-lock"
+                                ]
+                                []
+                            ]
+                        , input
+                            [ type_ <|
+                                if model.showPass1 then
+                                    "text"
+
+                                else
+                                    "password"
+                            , name "passw1"
+                            , autocomplete False
+                            , onInput SetPass1
+                            , value model.pass1
+                            , class ("pl-10 pr-10 py-2 rounded-lg" ++ S.textInput)
+                            , placeholder texts.password
+                            ]
+                            []
+                        , a
+                            [ class S.inputLeftIconLink
+                            , onClick ToggleShowPass1
+                            , href "#"
+                            ]
+                            [ i [ class "fa fa-eye" ] []
+                            ]
+                        ]
+                    ]
+                , div [ class "flex flex-col my-3" ]
+                    [ label
+                        [ for "passw2"
+                        , class S.inputLabel
+                        ]
+                        [ text texts.passwordRepeat
+                        , B.inputRequired
+                        ]
+                    , div [ class "relative" ]
+                        [ div [ class S.inputIcon ]
+                            [ i
+                                [ class "fa"
+                                , if model.showPass2 then
+                                    class "fa-lock-open"
+
+                                  else
+                                    class "fa-lock"
+                                ]
+                                []
+                            ]
+                        , input
+                            [ type_ <|
+                                if model.showPass2 then
+                                    "text"
+
+                                else
+                                    "password"
+                            , name "passw2"
+                            , autocomplete False
+                            , onInput SetPass2
+                            , value model.pass2
+                            , class ("pl-10 pr-10 py-2 rounded-lg" ++ S.textInput)
+                            , placeholder texts.passwordRepeat
+                            ]
+                            []
+                        , a
+                            [ class S.inputLeftIconLink
+                            , onClick ToggleShowPass2
+                            , href "#"
+                            ]
+                            [ i [ class "fa fa-eye" ] []
+                            ]
+                        ]
+                    ]
+                , div
+                    [ class "flex flex-col my-3"
+                    , classList [ ( "hidden", flags.config.signupMode /= "invite" ) ]
+                    ]
+                    [ label
+                        [ for "invitekey"
+                        , class S.inputLabel
+                        ]
+                        [ text texts.invitationKey
+                        , B.inputRequired
+                        ]
+                    , div [ class "relative" ]
+                        [ div [ class S.inputIcon ]
+                            [ i [ class "fa fa-key" ] []
+                            ]
+                        , input
+                            [ type_ "text"
+                            , name "invitekey"
+                            , autocomplete False
+                            , onInput SetInvite
+                            , model.invite |> Maybe.withDefault "" |> value
+                            , class ("pl-10 pr-4 py-2 rounded-lg" ++ S.textInput)
+                            , placeholder texts.invitationKey
+                            ]
+                            []
+                        ]
+                    ]
+                , div [ class "flex flex-col my-3" ]
+                    [ button
+                        [ type_ "submit"
+                        , class S.primaryButton
+                        ]
+                        [ text texts.submitButton
+                        ]
+                    ]
+                , resultMessage texts model
+                , renderLangAndSignin texts
                 ]
             ]
         ]
 
 
-renderLanguageAndSignin : Language -> Texts -> Model -> Html Msg
-renderLanguageAndSignin current texts model =
-    div [ class "ui two column stackable grid basic segment" ]
-        [ div [ class "column" ]
-            [ Html.map LangChooseMsg
-                (Comp.LanguageChoose.view
-                    texts.dropdown
-                    current
-                    model.langChoose
-                )
+renderLangAndSignin : Texts -> Html Msg
+renderLangAndSignin texts =
+    div [ class "flex flex-row mt-6 items-center" ]
+        [ div
+            [ class "flex flex-col flex-grow justify-end text-right text-sm opacity-75"
             ]
-        , div [ class "right aligned column" ]
-            [ text (texts.alreadySignedUp ++ " ")
-            , a [ class "ui link", Page.href (LoginPage ( Nothing, False )) ]
-                [ i [ class "sign-in icon" ] []
+            [ span [ class "" ]
+                [ text texts.alreadySignedUp
+                ]
+            , a
+                [ class S.link
+                , Page.href (LoginPage ( Nothing, False ))
+                ]
+                [ i [ class "fa fa-signin mr-1" ] []
                 , text texts.signin
                 ]
             ]
@@ -158,19 +214,19 @@ resultMessage texts model =
     case model.result of
         Just r ->
             if r.success then
-                div [ class "ui success message" ]
+                div [ class S.successMessage ]
                     [ text texts.registrationSuccessful
                     ]
 
             else
-                div [ class "ui error message" ]
+                div [ class S.errorMessage ]
                     [ text r.message
                     ]
 
         Nothing ->
             if List.isEmpty model.errorMsg then
-                span [ class "invisible" ] []
+                span [ class "hidden" ] []
 
             else
-                div [ class "ui error message" ]
+                div [ class S.errorMessage ]
                     (List.map (\s -> div [] [ text s ]) model.errorMsg)
