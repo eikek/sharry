@@ -316,19 +316,28 @@ object Queries {
         } yield ()
     }
 
-  def findExpired(point: Timestamp): Stream[ConnectionIO, Ident] = {
-    val pShare  = RPublishShare.Columns.shareId
-    val pUntil  = RPublishShare.Columns.publishUntil
-    val pEnable = RPublishShare.Columns.enabled
+  def findExpired(point: Timestamp): Stream[ConnectionIO, (RShare, RAccount)] = {
+    val pShare  = "p" :: RPublishShare.Columns.shareId
+    val pUntil  = "p" :: RPublishShare.Columns.publishUntil
+    val pEnable = "p" :: RPublishShare.Columns.enabled
 
-    Sql
-      .selectSimple(
-        Seq(pShare),
-        RPublishShare.table,
+    val aId = "a" :: RAccount.Columns.id
+
+    val sId = "s" :: RShare.Columns.id
+    val sAccountId = "s" :: RShare.Columns.accountId
+
+    val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ RAccount.Columns.all.map("a"::_).map(_.f)
+    val from = RPublishShare.table ++ fr"p" ++
+      fr"LEFT JOIN" ++ RShare.table ++ fr"s ON" ++ pShare.is(sId) ++
+      fr"LEFT JOIN" ++ RAccount.table ++ fr"a ON" ++ sAccountId.is(aId)
+
+    val frag = Sql.selectSimple(
+        Sql.commas(cols),
+        from,
         Sql.and(pEnable.is(true), pUntil.isLt(point))
       )
-      .query[Ident]
-      .stream
+    logger.trace(s"$frag")
+    frag.query[(RShare, RAccount)].stream
   }
 
   def findOrphanedFiles: Stream[ConnectionIO, Ident] = {
