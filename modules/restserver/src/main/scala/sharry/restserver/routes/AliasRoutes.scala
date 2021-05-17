@@ -5,6 +5,7 @@ import cats.effect._
 import cats.implicits._
 
 import sharry.backend.BackendApp
+import sharry.backend.alias.OAlias
 import sharry.backend.auth.AuthToken
 import sharry.common._
 import sharry.common.syntax.all._
@@ -30,10 +31,12 @@ object AliasRoutes {
     HttpRoutes.of {
       case req @ POST -> Root =>
         for {
-          in   <- req.as[AliasChange]
-          _    <- logger.fdebug(s"Create new alias for ${token.account}")
-          na   <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
-          res  <- backend.alias.create(na)
+          in      <- req.as[AliasChange]
+          members <- Conv.readIds[F](in.members)
+          _       <- logger.fdebug(s"Create new alias for ${token.account}")
+          na      <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
+          data = OAlias.AliasDetail(na, members)
+          res  <- backend.alias.create(data)
           resp <- Ok(convert(Conv.basicResult(res, "Alias successfully created."), na.id))
         } yield resp
 
@@ -47,13 +50,15 @@ object AliasRoutes {
 
       case req @ POST -> Root / Ident(id) =>
         for {
-          in <- req.as[AliasChange]
-          _  <- logger.fdebug(s"Change alias $id to $in")
-          na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
+          in      <- req.as[AliasChange]
+          members <- Conv.readIds[F](in.members)
+          _       <- logger.fdebug(s"Change alias $id to $in")
+          na      <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
+          data = OAlias.AliasDetail(na, members)
           res <- backend.alias.modify(
             id,
             token.account.id,
-            na.copy(id = in.id.getOrElse(na.id))
+            data.copy(alias = data.alias.copy(id = in.id.getOrElse(na.id)))
           )
           resp <- Ok(
             convert(
@@ -78,8 +83,15 @@ object AliasRoutes {
     }
   }
 
-  def convert(r: RAlias): AliasDetail =
-    AliasDetail(r.id, r.name, r.validity, r.enabled, r.created)
+  def convert(r: OAlias.AliasDetail[OAlias.AliasMember]): AliasDetail =
+    AliasDetail(
+      r.alias.id,
+      r.alias.name,
+      r.alias.validity,
+      r.alias.enabled,
+      AccountLightList(r.members.map(m => AccountLight(m.accountId, m.login))),
+      r.alias.created
+    )
 
   def convert(br: BasicResult, aliasId: Ident): IdResult =
     IdResult(br.success, br.message, aliasId)

@@ -1,12 +1,44 @@
 package sharry.restserver.routes
 
+import cats.data.NonEmptyList
+import cats.implicits._
+import cats.{ApplicativeError, MonadError}
+
 import sharry.backend.share.UploadResult
 import sharry.common.Ident
 import sharry.restapi.model.BasicResult
 import sharry.restapi.model.IdResult
 import sharry.store.AddResult
 
+import io.circe.DecodingFailure
+
 object Conv {
+
+  def readId[F[_]](
+      id: String
+  )(implicit F: ApplicativeError[F, Throwable]): F[Ident] =
+    Ident
+      .fromString(id)
+      .fold(
+        err => F.raiseError(DecodingFailure(err, Nil)),
+        F.pure
+      )
+
+  def readIdsNonEmpty[F[_]](ids: List[String])(implicit
+      F: MonadError[F, Throwable]
+  ): F[NonEmptyList[Ident]] =
+    ids.traverse(readId[F]).map(NonEmptyList.fromList).flatMap {
+      case Some(nel) => nel.pure[F]
+      case None =>
+        F.raiseError(
+          DecodingFailure("Empty list found, at least one element required", Nil)
+        )
+    }
+
+  def readIds[F[_]](ids: List[String])(implicit
+      F: MonadError[F, Throwable]
+  ): F[List[Ident]] =
+    ids.traverse(readId[F])
 
   def basicResult(ar: AddResult, successMsg: String): BasicResult =
     ar match {
