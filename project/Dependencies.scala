@@ -15,7 +15,7 @@ object Dependencies {
   val Http4sVersion           = "0.21.23"
   val JQueryVersion           = "3.5.1"
   val KindProjectorVersion    = "0.10.3"
-  val Log4sVersion            = "1.9.0"
+  val Log4sVersion            = "1.10.0"
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.3"
   val MiniTestVersion         = "2.9.4"
