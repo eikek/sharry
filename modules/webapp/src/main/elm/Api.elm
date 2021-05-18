@@ -20,6 +20,7 @@ module Api exposing
     , getShareTemplate
     , listAccounts
     , listAlias
+    , listAliasMember
     , loadAccount
     , login
     , loginSession
@@ -45,6 +46,7 @@ module Api exposing
 
 import Api.Model.AccountCreate exposing (AccountCreate)
 import Api.Model.AccountDetail exposing (AccountDetail)
+import Api.Model.AccountLightList exposing (AccountLightList)
 import Api.Model.AccountList exposing (AccountList)
 import Api.Model.AccountModify exposing (AccountModify)
 import Api.Model.AliasChange exposing (AliasChange)
@@ -379,6 +381,15 @@ listAlias flags q receive =
         { url = flags.config.baseUrl ++ "/api/v2/sec/alias?q=" ++ Url.percentEncode q
         , account = getAccount flags
         , expect = Http.expectJson receive Api.Model.AliasList.decoder
+        }
+
+
+listAliasMember : Flags -> String -> (Result Http.Error AccountLightList -> msg) -> Cmd msg
+listAliasMember flags q receive =
+    Http2.authGet
+        { url = flags.config.baseUrl ++ "/api/v2/sec/alias-member?q=" ++ Url.percentEncode q
+        , account = getAccount flags
+        , expect = Http.expectJson receive Api.Model.AccountLightList.decoder
         }
 
 
