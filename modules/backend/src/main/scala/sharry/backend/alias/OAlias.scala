@@ -61,8 +61,7 @@ object OAlias {
           accId: Ident,
           detail: AliasDetail[Ident]
       ): F[AddResult] = {
-        val exists = RAlias.existsById(detail.alias.id)
-        val modify = for {
+        val doUpdate = for {
           n <- RAlias.update(aliasId, accId, detail.alias)
           k <-
             if (n > 0) RAliasMember.updateForAlias(aliasId, detail.members)
@@ -70,8 +69,11 @@ object OAlias {
         } yield n + k
 
         for {
-          _   <- logger.fdebug(s"Modify alias '${aliasId.id}' to ${detail.alias}")
-          res <- store.add(modify, exists)
+          _ <- logger.fdebug(s"Modify alias '${aliasId.id}' to ${detail.alias}")
+          n <- store.transact(doUpdate)
+          res =
+            if (n > 0) AddResult.Success
+            else AddResult.Failure(new Exception("No rows modified!"))
         } yield res
       }
 
