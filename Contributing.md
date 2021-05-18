@@ -71,5 +71,15 @@ included in the server component. The CSS is currently provided by
 [FomanticUI](https://fomantic-ui.com/). (I'm working to migrate it on
 [tailwind](https://tailwindcss.com)).
 
+For Scala and Elm this project uses a code format standard. For Scala
+this is enforced at CI using
+[scalafix](https://scalacenter.github.io/scalafix/) and
+[scalafmt](https://scalameta.org/scalafmt/). You can run `sbt fix` to
+reformat all files to the standard (Scala). For elm, use
+[`elm-format`](https://github.com/avh4/elm-format) in your editor or
+via the cli. Elm format is not enforced yet via CI, but it's much
+appreciated to adopt it.
+
+
 The [development](https://eikek.github.io/sharry/doc/dev) page
 contains some tips to get started.
