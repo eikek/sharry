@@ -6,6 +6,10 @@ permalink: doc/dev
 
 # {{ page.title }}
 
+## Contribution Guide Lines
+
+Contribution guide lines may be found [here](https://github.com/eikek/sharry/blob/master/Contributing.md).
+
 ## Building
 
 Clone the repository using [git](https://git-scm.org).
