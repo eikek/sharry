@@ -498,10 +498,12 @@ object OShare {
           n <-
             store
               .transact(Queries.findExpired(point))
-              .evalMap {
-                case (share, account) => logger
-                  .finfo(s"Cleaning up expired share '${share.name.getOrElse("")}' " +
-                         s"owned by '${account.login.value.id}' (${share.id.id})") *> Queries
+              .evalMap { case (share, account) =>
+                logger
+                  .finfo(
+                    s"Cleaning up expired share '${share.name.getOrElse("")}' " +
+                      s"owned by '${account.login.value.id}' (${share.id.id})"
+                  ) *> Queries
                   .deleteShare(share.id, false)(
                     store
                   )

@@ -323,19 +323,21 @@ object Queries {
 
     val aId = "a" :: RAccount.Columns.id
 
-    val sId = "s" :: RShare.Columns.id
+    val sId        = "s" :: RShare.Columns.id
     val sAccountId = "s" :: RShare.Columns.accountId
 
-    val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ RAccount.Columns.all.map("a"::_).map(_.f)
+    val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ RAccount.Columns.all
+      .map("a" :: _)
+      .map(_.f)
     val from = RPublishShare.table ++ fr"p" ++
       fr"LEFT JOIN" ++ RShare.table ++ fr"s ON" ++ pShare.is(sId) ++
       fr"LEFT JOIN" ++ RAccount.table ++ fr"a ON" ++ sAccountId.is(aId)
 
     val frag = Sql.selectSimple(
-        Sql.commas(cols),
-        from,
-        Sql.and(pEnable.is(true), pUntil.isLt(point))
-      )
+      Sql.commas(cols),
+      from,
+      Sql.and(pEnable.is(true), pUntil.isLt(point))
+    )
     logger.trace(s"$frag")
     frag.query[(RShare, RAccount)].stream
   }

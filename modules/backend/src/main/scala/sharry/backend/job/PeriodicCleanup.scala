@@ -53,8 +53,14 @@ object PeriodicCleanup {
     }
 
   private def logStarting[F[_]: Sync](cleanupCfg: CleanupConfig) =
-    Stream.eval(logger.finfo(s"Periodic cleanup job active and will run every ${cleanupCfg.interval}. " ++
-                             s"Will remove published shares expired for at least ${cleanupCfg.invalidAge}.")).drain
+    Stream
+      .eval(
+        logger.finfo(
+          s"Periodic cleanup job active and will run every ${cleanupCfg.interval}. " ++
+            s"Will remove published shares expired for at least ${cleanupCfg.invalidAge}."
+        )
+      )
+      .drain
 
   private def logStopped[F[_]: Sync] =
     Stream.eval(logger.finfo("Periodic cleanup job stopped")).drain
