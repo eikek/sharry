@@ -37,9 +37,8 @@ modules/restserver/target/
 ## Starting Servers with `reStart`
 
 When developing, it's very convenient to use the [revolver sbt
-plugin](https://github.com/spray/sbt-revolver). Make sure you run at least
-a `make` to compile elm sources before using this plugin. Start the sbt
-console and then run:
+plugin](https://github.com/spray/sbt-revolver). Start the sbt console
+and then run:
 
 ```
 sbt:sharry-root> restserver/reStart
@@ -77,12 +76,6 @@ sharry.restserver {
   }
 }
 ```
-
-## Contributing
-
-When making contributions to this project, please follow the following guide lines:
-
-- Code should be formatted using `sbt fix`
 
 ## Nix Expressions
 

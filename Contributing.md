@@ -72,5 +72,4 @@ included in the server component. The CSS is currently provided by
 [tailwind](https://tailwindcss.com)).
 
 The [development](https://eikek.github.io/sharry/doc/dev) page
-contains some tips to get started and defines the various guidelines
-to contributing.
+contains some tips to get started.
