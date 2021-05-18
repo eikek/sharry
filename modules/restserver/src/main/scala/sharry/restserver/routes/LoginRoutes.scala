@@ -39,7 +39,7 @@ object LoginRoutes {
           res <- S.login.loginUserPass(cfg.backend.auth)(
             UserPassData(up.account, Password(up.password))
           )
-          resp <- makeResponse(dsl, cfg, req, res)
+          resp <- makeResponse(dsl, cfg, req, res, up.account)
         } yield resp
 
       case req @ GET -> Root / "oauth" / id =>
@@ -110,7 +110,7 @@ object LoginRoutes {
       case req @ POST -> Root / "session" =>
         Authenticate
           .authenticateRequest(S.loginSession(cfg.backend.auth))(req)
-          .flatMap(res => makeResponse(dsl, cfg, req, res))
+          .flatMap(res => makeResponse(dsl, cfg, req, res, "unknown due to session login"))
 
       case req @ POST -> Root / "logout" =>
         Ok().map(_.addCookie(CookieData.deleteCookie(getBaseUrl(cfg, req))))
@@ -124,7 +124,8 @@ object LoginRoutes {
       dsl: Http4sDsl[F],
       cfg: Config,
       req: Request[F],
-      res: LoginResult
+      res: LoginResult,
+      accountName: String
   ): F[Response[F]] = {
     import dsl._
     res match {
@@ -147,6 +148,7 @@ object LoginRoutes {
           ).map(_.addCookie(cd.asCookie(getBaseUrl(cfg, req))))
         } yield resp
       case _ =>
+        logger.info(s"Authentication attempt failure for username ${accountName} from ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}")
         Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))
     }
   }
