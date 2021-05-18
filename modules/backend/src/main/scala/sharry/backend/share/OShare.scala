@@ -498,13 +498,16 @@ object OShare {
           n <-
             store
               .transact(Queries.findExpired(point))
-              .evalMap(id =>
+              .evalMap { case (share, account) =>
                 logger
-                  .fdebug(s"Delete expired share: ${id.id}") *> Queries
-                  .deleteShare(id, false)(
+                  .finfo(
+                    s"Cleaning up expired share '${share.name.getOrElse("")}' " +
+                      s"owned by '${account.login.value.id}' (${share.id.id})"
+                  ) *> Queries
+                  .deleteShare(share.id, false)(
                     store
                   )
-              )
+              }
               .compile
               .fold(0)((n, _) => n + 1)
         } yield n

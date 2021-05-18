@@ -23,7 +23,7 @@ object PeriodicCleanup {
       Resource.eval(logger.finfo("Cleanup job not running, because it is disabled"))
     else {
       val main =
-        (logStarting ++ loop(
+        (logStarting(cleanupCfg) ++ loop(
           cleanupCfg,
           signupCfg,
           shareOps,
@@ -52,8 +52,15 @@ object PeriodicCleanup {
         .drain
     }
 
-  private def logStarting[F[_]: Sync] =
-    Stream.eval(logger.finfo("Periodic cleanup job active")).drain
+  private def logStarting[F[_]: Sync](cleanupCfg: CleanupConfig) =
+    Stream
+      .eval(
+        logger.finfo(
+          s"Periodic cleanup job active and will run every ${cleanupCfg.interval}. " ++
+            s"Will remove published shares expired for at least ${cleanupCfg.invalidAge}."
+        )
+      )
+      .drain
 
   private def logStopped[F[_]: Sync] =
     Stream.eval(logger.finfo("Periodic cleanup job stopped")).drain
