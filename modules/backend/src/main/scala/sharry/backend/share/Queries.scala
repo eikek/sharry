@@ -22,6 +22,7 @@ import bitpeace.Mimetype
 import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
+import sharry.store.records.RAliasMember
 
 object Queries {
   private[this] val logger = getLogger
@@ -126,11 +127,13 @@ object Queries {
     val sId      = "s" :: RShare.Columns.id
     val sAlias   = "s" :: RShare.Columns.aliasId
     val sAccount = "s" :: RShare.Columns.accountId
-    val aId      = "a" :: RAccount.Columns.id
 
-    val from = RShare.table ++ fr"s INNER JOIN" ++
-      RAccount.table ++ fr"a ON" ++ aId.is(sAccount)
-    val cond = Seq(sId.is(share), aId.is(accId.id)) ++
+    val from = RShare.table ++ fr"s"
+
+    val cond = Seq(
+      sId.is(share),
+      Sql.or(sAccount.is(accId.id), sAlias.in(aliasMemberOf(accId.id)))
+    ) ++
       accId.alias.map(alias => Seq(sAlias.is(alias))).getOrElse(Seq.empty)
 
     Sql
@@ -174,14 +177,15 @@ object Queries {
     val sId      = "s" :: RShare.Columns.id
     val sAccount = "s" :: RShare.Columns.accountId
     val sAlias   = "s" :: RShare.Columns.aliasId
-    val aId      = "a" :: RAccount.Columns.id
     val fShare   = "f" :: RShareFile.Columns.shareId
     val fId      = "f" :: RShareFile.Columns.id
 
-    val from = RShare.table ++ fr"s INNER JOIN" ++
-      RAccount.table ++ fr"a ON" ++ aId.is(sAccount) ++
+    val from = RShare.table ++ fr"s" ++
       fr"INNER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fShare.is(sId)
-    val cond = Seq(fId.is(fileId), aId.is(accId.id)) ++
+    val cond = Seq(
+      fId.is(fileId),
+      Sql.or(sAccount.is(accId.id), sAlias.in(aliasMemberOf(accId.id)))
+    ) ++
       accId.alias.map(alias => Seq(sAlias.is(alias))).getOrElse(Seq.empty)
 
     Sql
@@ -205,6 +209,9 @@ object Queries {
 
     Sql.selectSimple(cols, table, Fragment.empty)
   }
+
+  private def aliasMemberOf(accId: Ident) =
+    RAliasMember.aliasMemberOf(accId)
 
   def findShares(q: String, accId: AccountId): Stream[ConnectionIO, ShareItem] = {
     val nfiles     = Column("files")
@@ -236,7 +243,7 @@ object Queries {
       Sql.commas(cols),
       from,
       Sql.and(
-        account.is(accId.id),
+        Sql.or(account.is(accId.id), shareAlias.in(aliasMemberOf(accId.id))),
         Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs))
       )
     ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC"
@@ -273,7 +280,12 @@ object Queries {
             pUntil.isGt(now),
             sMaxViews.isGt(pViews)
           ),
-        priv => Sql.and(account.is(priv.account.id), sId.is(priv.id))
+        priv =>
+          Sql.and(
+            Sql
+              .or(account.is(priv.account.id), sAlias.in(aliasMemberOf(priv.account.id))),
+            sId.is(priv.id)
+          )
       )
 
     def qDetail(now: Timestamp) = Sql.selectSimple(cols, from, cond(now))

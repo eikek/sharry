@@ -90,21 +90,21 @@ object RAlias {
   private def find0(accId: Ident, cond: Fragment) = {
     val aId      = "a" :: id
     val aAccount = "a" :: account
-    val mAlias   = "m" :: RAliasMember.Columns.aliasId
-    val mAccount = "m" :: RAliasMember.Columns.accountId
     val cId      = "c" :: RAccount.Columns.id
-    val cLogin = "c" :: RAccount.Columns.login
+    val cLogin   = "c" :: RAccount.Columns.login
 
     val from =
       table ++ fr"a" ++
-        fr"INNER JOIN" ++ RAccount.table ++ fr"c ON" ++ aAccount.is(cId) ++
-        fr"LEFT JOIN" ++ RAliasMember.table ++ fr"m ON" ++ aId.is(mAlias)
+        fr"INNER JOIN" ++ RAccount.table ++ fr"c ON" ++ aAccount.is(cId)
 
     Sql
       .selectSimple(
         all.map("a" :: _) :+ cLogin,
         from,
-        Sql.and(Sql.or(aAccount.is(accId), mAccount.is(accId)), cond)
+        Sql.and(
+          Sql.or(aAccount.is(accId), aId.in(RAliasMember.aliasMemberOf(accId))),
+          cond
+        )
       )
       .query[(RAlias, Ident)]
   }

@@ -42,6 +42,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def is(c: Column): Fragment =
     f ++ fr"=" ++ c.f
 
+  def in(subSelect: Fragment): Fragment =
+    f ++ fr"IN (" ++ subSelect ++ fr")"
+
   def like(value: String): Fragment = {
     val str = value.toLowerCase
     fr"LOWER(" ++ f ++ fr") LIKE $str"

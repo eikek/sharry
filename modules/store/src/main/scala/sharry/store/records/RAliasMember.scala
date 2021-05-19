@@ -103,4 +103,11 @@ object RAliasMember {
   def delete(aid: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, id.is(aid)).update.run
 
+  /** A query to select all aliasIds of the given account */
+  def aliasMemberOf(accId: Ident): Fragment =
+    Sql.selectSimple(
+      RAliasMember.Columns.aliasId.f,
+      RAliasMember.table,
+      RAliasMember.Columns.accountId.is(accId)
+    )
 }
