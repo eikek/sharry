@@ -110,7 +110,9 @@ object LoginRoutes {
       case req @ POST -> Root / "session" =>
         Authenticate
           .authenticateRequest(S.loginSession(cfg.backend.auth))(req)
-          .flatMap(res => makeResponse(dsl, cfg, req, res, "unknown due to session login"))
+          .flatMap(res =>
+            makeResponse(dsl, cfg, req, res, "unknown due to session login")
+          )
 
       case req @ POST -> Root / "logout" =>
         Ok().map(_.addCookie(CookieData.deleteCookie(getBaseUrl(cfg, req))))
@@ -148,7 +150,9 @@ object LoginRoutes {
           ).map(_.addCookie(cd.asCookie(getBaseUrl(cfg, req))))
         } yield resp
       case _ =>
-        logger.info(s"Authentication attempt failure for username ${accountName} from ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}")
+        logger.info(
+          s"Authentication attempt failure for username ${accountName} from ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}"
+        )
         Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))
     }
   }
