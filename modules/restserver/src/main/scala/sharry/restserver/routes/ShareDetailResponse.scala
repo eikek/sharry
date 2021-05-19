@@ -14,8 +14,11 @@ import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
+import org.log4s.getLogger
 
 object ShareDetailResponse {
+  private[this] val logger = getLogger
+
   private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
     ClientRequestInfo.getBaseUrl(cfg, req)
 
@@ -42,11 +45,23 @@ object ShareDetailResponse {
       resp <- OptionT.liftF(
         detail.fold(
           d => Ok(shareDetail(now, baseUri)(d)),
-          _ => Forbidden(),
+          _ => {
+            logger.info(
+              s"Password challenge failure for share id ${shareId
+                .fold(pub => pub.id.id, priv => priv.id.id)} from ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}"
+            )
+            Forbidden()
+          },
           _ => Unauthorized(authChallenge)
         )
       )
-    } yield resp).getOrElseF(NotFound())
+    } yield resp).getOrElseF {
+      logger.info(
+        s"No share with id ${shareId
+          .fold(pub => pub.id.id, priv => priv.id.id)}. Attempt by ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}"
+      )
+      NotFound()
+    }
   }
 
   def shareDetail(now: Timestamp, baseUri: LenientUri)(

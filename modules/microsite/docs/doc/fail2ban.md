@@ -21,7 +21,7 @@ before it is considered an offender, how long the offender is banned for and
 the (time) window of log lines is considered while searching for offenders.
 
 An example jail config:
-```properties
+```
 [sharry]
 enabled = true
 port = 0:65535
@@ -35,8 +35,10 @@ findtime = 1h
 ```
 
 An example filter config:
-```properties
+```
 [Definition]
-failregex =  ^.*Authentication attempt failure for username .* from ip <ADDR>.*
+failregex =  Authentication attempt failure for username .* from ip <ADDR>
+             Password challenge failure for share id .* from ip <ADDR>
+             No share with id .* Attempt by ip <ADDR>
 ignoreregex =
 ```
