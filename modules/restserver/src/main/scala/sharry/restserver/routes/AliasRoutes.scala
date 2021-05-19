@@ -35,7 +35,7 @@ object AliasRoutes {
           members <- Conv.readIds[F](in.members)
           _       <- logger.fdebug(s"Create new alias for ${token.account}")
           na      <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
-          data = OAlias.AliasDetail(na, members)
+          data = OAlias.AliasInput(na, members)
           res  <- backend.alias.create(data)
           resp <- Ok(convert(Conv.basicResult(res, "Alias successfully created."), na.id))
         } yield resp
@@ -54,7 +54,7 @@ object AliasRoutes {
           members <- Conv.readIds[F](in.members)
           _       <- logger.fdebug(s"Change alias $id to $in")
           na      <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
-          data = OAlias.AliasDetail(na, members)
+          data = OAlias.AliasInput(na, members)
           res <- backend.alias.modify(
             id,
             token.account.id,
@@ -83,11 +83,12 @@ object AliasRoutes {
     }
   }
 
-  def convert(r: OAlias.AliasDetail[OAlias.AliasMember]): AliasDetail =
+  def convert(r: OAlias.AliasDetail): AliasDetail =
     AliasDetail(
       r.alias.id,
       r.alias.name,
       r.alias.validity,
+      r.ownerLogin,
       r.alias.enabled,
       AccountLightList(r.members.map(m => AccountLight(m.accountId, m.login))),
       r.alias.created

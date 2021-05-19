@@ -1564,6 +1564,7 @@ components:
         - name
         - validity
         - enabled
+        - owner
         - members
         - created
       properties:
@@ -1575,6 +1576,9 @@ components:
         validity:
           type: integer
           format: duration
+        owner:
+          type: string
+          format: ident
         enabled:
           type: boolean
         members:

@@ -645,7 +645,7 @@ object OShare {
       accId,
       alias,
       data.name,
-      dbalias.map(_.validity).getOrElse(data.validity),
+      dbalias.map(_._1.validity).getOrElse(data.validity),
       data.maxViews,
       data.password,
       data.description,

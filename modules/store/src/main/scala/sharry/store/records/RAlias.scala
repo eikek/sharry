@@ -71,13 +71,13 @@ object RAlias {
       .update
       .run
 
-  def findById(aliasId: Ident, accId: Ident): ConnectionIO[Option[RAlias]] = {
-    val aId      = "a" :: id
+  def findById(aliasId: Ident, accId: Ident): ConnectionIO[Option[(RAlias, Ident)]] = {
+    val aId = "a" :: id
 
     find0(accId, aId.is(aliasId)).option
   }
 
-  def findAll(acc: Ident, nameQ: String): Stream[ConnectionIO, RAlias] = {
+  def findAll(acc: Ident, nameQ: String): Stream[ConnectionIO, (RAlias, Ident)] = {
     val aName = "a" :: name
 
     val q =
@@ -92,17 +92,21 @@ object RAlias {
     val aAccount = "a" :: account
     val mAlias   = "m" :: RAliasMember.Columns.aliasId
     val mAccount = "m" :: RAliasMember.Columns.accountId
+    val cId      = "c" :: RAccount.Columns.id
+    val cLogin = "c" :: RAccount.Columns.login
 
     val from =
-      table ++ fr"a LEFT JOIN" ++ RAliasMember.table ++ fr"m ON" ++ aId.is(mAlias)
+      table ++ fr"a" ++
+        fr"INNER JOIN" ++ RAccount.table ++ fr"c ON" ++ aAccount.is(cId) ++
+        fr"LEFT JOIN" ++ RAliasMember.table ++ fr"m ON" ++ aId.is(mAlias)
 
     Sql
       .selectSimple(
-        all.map("a" :: _),
+        all.map("a" :: _) :+ cLogin,
         from,
         Sql.and(Sql.or(aAccount.is(accId), mAccount.is(accId)), cond)
       )
-      .query[RAlias]
+      .query[(RAlias, Ident)]
   }
 
   def existsById(aliasId: Ident): ConnectionIO[Boolean] =
