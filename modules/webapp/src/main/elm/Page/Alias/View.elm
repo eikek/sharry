@@ -38,7 +38,7 @@ view texts flags id model =
                     viewCreate texts model
 
                 else
-                    viewList texts model
+                    viewList flags texts model
         )
 
 
@@ -96,15 +96,15 @@ viewModify texts flags model alias_ =
     ]
 
 
-viewList : Texts -> Model -> List (Html Msg)
-viewList texts model =
+viewList : Flags -> Texts -> Model -> List (Html Msg)
+viewList flags texts model =
     [ h1 [ class S.header1 ]
         [ i [ class "fa fa-dot-circle font-thin mr-2" ] []
         , text texts.aliasPages
         ]
     , searchArea texts model
     , Html.map AliasTableMsg
-        (Comp.AliasTable.view
+        (Comp.AliasTable.view flags
             texts.aliasTable
             model.searchResult
             model.tableModel

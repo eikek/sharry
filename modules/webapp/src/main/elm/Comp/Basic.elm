@@ -10,6 +10,7 @@ module Comp.Basic exposing
     , primaryButton
     , secondaryBasicButton
     , secondaryButton
+    , showLinkTableCell
     , stats
     )
 
@@ -149,20 +150,22 @@ linkLabel :
         , label : String
         , icon : String
         , handler : msg
+        , style :
+            { plain : String
+            , hover : String
+            }
     }
     -> Html msg
 linkLabel model =
     let
         styles =
-            [ class S.basicLabel
+            [ class "label"
             , class "inline-block md:text-sm my-auto whitespace-nowrap"
-            , class "border-blue-500 text-blue-500 "
-            , class "dark:border-orange-500 dark:text-orange-500"
+            , class model.style.plain
             ]
 
         hover =
-            [ class "hover:bg-blue-500 hover:text-gray-200"
-            , class "dark:hover:bg-orange-500 dark:hover:text-warmgray-900"
+            [ class model.style.hover
             ]
 
         attrs =
@@ -206,6 +209,32 @@ editLinkLabel label click =
         , icon = "fa fa-edit"
         , handler = click
         , disabled = False
+        , style =
+            { plain =
+                "border-blue-500 text-blue-500 "
+                    ++ "dark:border-orange-500 dark:text-orange-500"
+            , hover =
+                "hover:bg-blue-500 hover:text-gray-100 "
+                    ++ "dark:hover:bg-orange-500 dark:hover:text-warmgray-900"
+            }
+        }
+
+
+showLinkLabel : String -> msg -> Html msg
+showLinkLabel label click =
+    linkLabel
+        { label = label
+        , icon = "fa fa-eye"
+        , handler = click
+        , disabled = False
+        , style =
+            { plain =
+                "border-blue-500 text-blue-500 "
+                    ++ "dark:border-orange-500 dark:text-orange-500"
+            , hover =
+                "hover:bg-blue-500 hover:text-gray-100 "
+                    ++ "dark:hover:bg-orange-500 dark:hover:text-warmgray-900"
+            }
         }
 
 
@@ -213,6 +242,13 @@ editLinkTableCell : String -> msg -> Html msg
 editLinkTableCell label m =
     td [ class S.editLinkTableCellStyle ]
         [ editLinkLabel label m
+        ]
+
+
+showLinkTableCell : String -> msg -> Html msg
+showLinkTableCell label m =
+    td [ class S.editLinkTableCellStyle ]
+        [ showLinkLabel label m
         ]
 
 

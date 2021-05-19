@@ -8,10 +8,10 @@ module Comp.AliasTable exposing
 
 import Api.Model.AliasDetail exposing (AliasDetail)
 import Comp.Basic as B
+import Data.Flags exposing (Flags)
 import Data.ValidityOptions exposing (findValidityItemMillis)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Messages.AliasTable exposing (Texts)
 import Styles as S
 import Util.Html
@@ -43,8 +43,8 @@ update msg model =
 --- View
 
 
-view : Texts -> List AliasDetail -> Model -> Html Msg
-view texts aliases model =
+view : Flags -> Texts -> List AliasDetail -> Model -> Html Msg
+view flags texts aliases model =
     table [ class S.tableMain ]
         [ thead []
             [ tr []
@@ -59,7 +59,7 @@ view texts aliases model =
                 ]
             ]
         , tbody []
-            (List.map (viewTableLine texts model) aliases)
+            (List.map (viewTableLine flags texts model) aliases)
         ]
 
 
@@ -70,13 +70,23 @@ isSelected model alias_ =
         |> Maybe.withDefault False
 
 
-viewTableLine : Texts -> Model -> AliasDetail -> Html Msg
-viewTableLine texts model alias_ =
+viewTableLine : Flags -> Texts -> Model -> AliasDetail -> Html Msg
+viewTableLine flags texts model alias_ =
+    let
+        isOwner =
+            Maybe.map .user flags.account
+                |> Maybe.map ((==) alias_.owner)
+                |> Maybe.withDefault False
+    in
     tr
         [ classList [ ( "active", isSelected model alias_ ) ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell texts.edit (Select alias_)
+        [ if isOwner then
+            B.editLinkTableCell texts.edit (Select alias_)
+
+          else
+            B.showLinkTableCell texts.show (Select alias_)
         , td [ class "text-center py-4 md:py-2" ]
             [ Util.Html.checkbox alias_.enabled
             ]
