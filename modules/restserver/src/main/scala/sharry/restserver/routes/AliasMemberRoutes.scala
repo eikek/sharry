@@ -27,8 +27,13 @@ object AliasMemberRoutes {
     HttpRoutes.of { case req @ GET -> Root =>
       val q = req.params.getOrElse("q", "")
       for {
-        _    <- logger.ftrace(s"Listing accounts for ${token.account}")
-        list <- backend.account.findAccounts(q).take(100).compile.toVector
+        _ <- logger.ftrace(s"Listing accounts for ${token.account}")
+        list <- backend.account
+          .findAccounts(q)
+          .filter(a => a.acc.id != token.account.id)
+          .take(100)
+          .compile
+          .toVector
         resp <- Ok(AccountLightList(list.map(convert).toList))
       } yield resp
     }
