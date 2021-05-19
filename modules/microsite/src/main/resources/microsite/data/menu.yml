@@ -19,6 +19,9 @@ options:
       - title: Nix/NixOS
         url: doc/nix
 
+      - title: Fail2ban
+        url: doc/fail2ban
+
   - title: Configuring
     url: doc/configure
 
