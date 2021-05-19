@@ -94,10 +94,7 @@ update flags msg model =
                     Util.Share.validate flags Nothing model
             in
             if valid.success then
-                ( { model
-                    | uploading = True
-                    , showDetails = False
-                  }
+                ( { model | uploading = True }
                 , Api.createEmptyShare flags (makeProps model) CreateShareResp
                 )
 
@@ -145,9 +142,6 @@ update flags msg model =
 
             else
                 ( model, Cmd.none )
-
-        ToggleDetails ->
-            ( { model | showDetails = not model.showDetails }, Cmd.none )
 
         StartStopUpload ->
             case model.shareId of
