@@ -91,15 +91,6 @@ object RAliasMember {
       .to[List]
   }
 
-  def findById(member: Ident): ConnectionIO[Option[RAliasMember]] =
-    Sql
-      .selectSimple(all, table, id.is(member))
-      .query[RAliasMember]
-      .option
-
-  def existsById(aid: Ident): ConnectionIO[Boolean] =
-    Sql.selectCount(id, table, id.is(aid)).query[Int].map(_ > 0).unique
-
   def delete(aid: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, id.is(aid)).update.run
 
