@@ -52,7 +52,7 @@ view texts aliases model =
                 , th [ class "text-center px-2 md:hidden" ] [ Util.Html.checkbox True ]
                 , th [ class "text-center px-2 hidden md:table-cell" ] [ text texts.enabled ]
                 , th [ class "text-left" ] [ text texts.name ]
-                , th [ class "text-left hidden md:table-cell" ] [ text "Owner" ]
+                , th [ class "text-left hidden md:table-cell" ] [ text texts.owner ]
                 , th [ class "text-left hidden md:table-cell" ] [ text texts.validity ]
                 , th [ class "text-left hidden md:table-cell" ] [ text "Member" ]
                 , th [ class "text-left hidden md:table-cell" ] [ text texts.created ]
