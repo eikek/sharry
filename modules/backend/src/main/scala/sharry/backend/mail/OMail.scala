@@ -7,6 +7,7 @@ import cats.implicits._
 
 import sharry.backend.mail.MailConfig.MailTpl
 import sharry.common._
+import sharry.common.syntax.all._
 import sharry.store.Store
 
 import emil.builder._
@@ -21,7 +22,7 @@ trait OMail[F[_]] {
       aliasId: Ident,
       shareId: Ident,
       baseUrl: LenientUri
-  ): F[NotifyResult]
+  ): F[List[NotifyResult]]
 
   def getShareTemplate(
       acc: AccountId,
@@ -52,7 +53,7 @@ object OMail {
           aliasId: Ident,
           shareId: Ident,
           baseUrl: LenientUri
-      ): F[NotifyResult] = {
+      ): F[List[NotifyResult]] = {
         def createMail(tpl: MailTpl, data: TemplateData, receiver: MailAddress): Mail[F] =
           MailBuilder.build(
             From(cfg.smtp.defaultFrom.getOrElse(receiver)),
@@ -67,24 +68,41 @@ object OMail {
             .send(createMail(cfg.templates.uploadNotify, td, rec))
             .attempt
             .map {
-              case Right(_) => NotifyResult.SendSuccessful
+              case Right(_) => NotifyResult.SendSuccessful(rec)
               case Left(ex) =>
                 logger.warn(ex)("Sending failed")
-                NotifyResult.SendFailed(ex.getMessage)
+                NotifyResult.SendFailed(rec, ex.getMessage)
             }
 
-        if (!cfg.enabled) NotifyResult.featureDisabled.pure[F]
+        if (!cfg.enabled) List(NotifyResult.featureDisabled).pure[F]
         else
           (for {
-            t <- OptionT(store.transact(Queries.resolveAlias(aliasId, shareId)))
-            receiver = t._2.email.map(MailAddress.parse).flatMap(_.toOption)
-            td       = TemplateData(t._2.login.value, baseUrl / shareId.id, false, t._1.name)
-            res <- OptionT.liftF(
-              receiver
-                .map(rec => send(rec, td))
-                .getOrElse(NotifyResult.missingEmail.pure[F])
+            data <- OptionT(store.transact(Queries.findNotifyData(aliasId, shareId)))
+            receivers <- OptionT.fromOption[F](
+              data.users.traverse(u =>
+                MailAddress.parse(u.email).toOption.map(ma => (u.login, ma))
+              )
             )
-          } yield res).getOrElse(NotifyResult.InvalidAlias)
+            templates = receivers.map { case (login, mailAddress) =>
+              (
+                mailAddress,
+                TemplateData(login, baseUrl / shareId.id, false, data.aliasName)
+              )
+            }
+            res <- OptionT.liftF(templates.traverse((send _).tupled))
+            failedReceiver = res
+              .filter(_.isError)
+              .flatMap(_.receiver)
+              .map(_.displayString)
+              .mkString(", ")
+            _ <- OptionT.liftF(
+              logger.finfo(
+                "Send notification mails about upload. " +
+                  s"Success ${res.filter(_.isSuccess).size}/${res.size}. " +
+                  s"Sending failures for: ${failedReceiver}"
+              )
+            )
+          } yield res).getOrElse(List(NotifyResult.InvalidAlias))
       }
 
       def getShareTemplate(

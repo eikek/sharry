@@ -14,6 +14,7 @@ import sharry.store.doobie.DoobieMeta._
 import sharry.store.doobie._
 import sharry.store.records.RAccount
 import sharry.store.records.RAlias
+import sharry.store.records.RAliasMember
 import sharry.store.records.RPublishShare
 import sharry.store.records.RShare
 import sharry.store.records.RShareFile
@@ -22,7 +23,6 @@ import bitpeace.Mimetype
 import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
-import sharry.store.records.RAliasMember
 
 object Queries {
   private[this] val logger = getLogger
@@ -228,7 +228,8 @@ object Queries {
     val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ Seq(
       ("p" :: RPublishShare.Columns.enabled).f,
       ("p" :: RPublishShare.Columns.publishUntil).f,
-      aliasId.f, aliasName.f,
+      aliasId.f,
+      aliasName.f,
       fr"COALESCE(" ++ ("f" :: nfiles).f ++ fr", 0)",
       fr"COALESCE(" ++ ("f" :: nsize).f ++ fr", 0)"
     )

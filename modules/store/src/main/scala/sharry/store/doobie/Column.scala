@@ -39,6 +39,9 @@ case class Column(name: String, ns: String = "", alias: String = "") {
   def isNull: Fragment =
     f ++ fr"is null"
 
+  def isNotNull: Fragment =
+    f ++ fr"is not null"
+
   def is(c: Column): Fragment =
     f ++ fr"=" ++ c.f
 

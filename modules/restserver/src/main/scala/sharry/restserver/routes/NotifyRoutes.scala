@@ -45,22 +45,28 @@ object NotifyRoutes {
     }
   }
 
-  private def basicResult(n: NotifyResult): BasicResult =
+  private def basicResult(n: List[NotifyResult]): BasicResult =
     n match {
-      case NotifyResult.InvalidAlias =>
+      case Nil =>
+        BasicResult(false, "There is no email to notify")
+
+      case NotifyResult.InvalidAlias :: Nil =>
         BasicResult(false, "Invalid alias")
 
-      case NotifyResult.FeatureDisabled =>
+      case NotifyResult.FeatureDisabled :: Nil =>
         BasicResult(false, "Mail feature is disabled.")
 
-      case NotifyResult.MissingEmail =>
-        BasicResult(false, "There is no e-mail address.")
-
-      case NotifyResult.SendFailed(err) =>
-        BasicResult(false, s"Sending failed: $err.")
-
-      case NotifyResult.SendSuccessful =>
-        BasicResult(true, s"Mail sent.")
+      case _ =>
+        val success = n.filter(_.isSuccess).size
+        val fails   = n.filter(_.isError).size
+        if (fails > 0 && success == 0)
+          BasicResult(false, s"Sending failed to all recipients ($fails)")
+        else if (fails > 0)
+          BasicResult(
+            true,
+            s"Sending succeeded for $success, but failed for $fails recipients"
+          )
+        else BasicResult(true, "Mail sent")
     }
 
 }
