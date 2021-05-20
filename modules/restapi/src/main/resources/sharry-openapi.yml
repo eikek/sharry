@@ -1490,8 +1490,8 @@ components:
           format: ident
         name:
           type: string
-        aliasName:
-          type: string
+        aliasInfo:
+          $ref: "#/components/schemas/AliasIdName"
         validity:
           type: integer
           format: duration
@@ -1610,6 +1610,18 @@ components:
           items:
             type: string
             format: ident
+    AliasIdName:
+      description: |
+        The id and name for an alias.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
     EmailInfo:
       description: |
         Accounts may optionally have an e-mail address registered.

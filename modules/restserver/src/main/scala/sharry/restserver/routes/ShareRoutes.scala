@@ -171,7 +171,7 @@ object ShareRoutes {
     ShareListItem(
       item.share.id,
       item.share.name,
-      item.aliasName,
+      item.alias.map(a => AliasIdName(a.id, a.name)),
       item.share.validity,
       item.share.maxViews,
       item.share.password != None,

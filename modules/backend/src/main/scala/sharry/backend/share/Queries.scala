@@ -228,7 +228,7 @@ object Queries {
     val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ Seq(
       ("p" :: RPublishShare.Columns.enabled).f,
       ("p" :: RPublishShare.Columns.publishUntil).f,
-      aliasName.f,
+      aliasId.f, aliasName.f,
       fr"COALESCE(" ++ ("f" :: nfiles).f ++ fr", 0)",
       fr"COALESCE(" ++ ("f" :: nsize).f ++ fr", 0)"
     )
