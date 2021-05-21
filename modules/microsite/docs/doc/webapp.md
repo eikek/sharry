@@ -178,6 +178,9 @@ right menu item of the file list menu and the upload form appears.
 
 ## Alias Pages
 
+<img src="../screenshots/Selection_244.png" class="rounded screenshot">
+
+
 The alias page is a way to let other users upload files for you. The
 idea is the same as with shared downloads: there is a cryptic URL you
 can share with others. This url allows to upload files that will be
@@ -196,3 +199,16 @@ $ curl -H'Sharry-Alias: E5EohHtJHxN' -F file=@test.jpg -F file=@logo.jpg http://
 ```
 
 See the [REST page](rest) for more details on the various routes.
+
+### Alias Members
+
+An alias can specify a list of users that are then members of that
+alias. This allows to give access to all uploads through this alias to
+the members. Every member can edit/delete/publish etc the shares that
+are created via the corresponding alias.
+
+While all members can see the alias and manage corresponding uploads,
+editing its properties is only possible by its creator.
+
+This may be useful to give a group of people access to the same files
+and to make it simpler to share files among registered users.
