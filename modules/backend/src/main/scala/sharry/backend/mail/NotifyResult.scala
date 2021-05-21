@@ -1,19 +1,36 @@
 package sharry.backend.mail
 
-sealed trait NotifyResult {}
+import emil.MailAddress
+
+sealed trait NotifyResult {
+  def isSuccess: Boolean
+  def isError: Boolean =
+    !isSuccess
+
+  def receiver: Option[MailAddress]
+}
 
 object NotifyResult {
-  def missingEmail: NotifyResult    = MissingEmail
   def featureDisabled: NotifyResult = FeatureDisabled
 
-  case object InvalidAlias extends NotifyResult
+  case object InvalidAlias extends NotifyResult {
+    val isSuccess                     = false
+    def receiver: Option[MailAddress] = None
+  }
 
-  case object FeatureDisabled extends NotifyResult
+  case object FeatureDisabled extends NotifyResult {
+    val isSuccess                     = false
+    def receiver: Option[MailAddress] = None
+  }
 
-  case object MissingEmail extends NotifyResult
+  case class SendFailed(mail: MailAddress, err: String) extends NotifyResult {
+    val isSuccess                     = false
+    def receiver: Option[MailAddress] = Some(mail)
+  }
 
-  case class SendFailed(err: String) extends NotifyResult
-
-  case object SendSuccessful extends NotifyResult
+  case class SendSuccessful(mail: MailAddress) extends NotifyResult {
+    val isSuccess                     = true
+    def receiver: Option[MailAddress] = Some(mail)
+  }
 
 }

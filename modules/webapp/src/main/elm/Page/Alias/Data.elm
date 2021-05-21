@@ -1,5 +1,7 @@
 module Page.Alias.Data exposing (Model, Msg(..), clipboardData, emptyModel)
 
+import Api.Model.AccountLight exposing (AccountLight)
+import Api.Model.AccountLightList exposing (AccountLightList)
 import Api.Model.AliasDetail exposing (AliasDetail)
 import Api.Model.AliasList exposing (AliasList)
 import Api.Model.BasicResult exposing (BasicResult)
@@ -19,6 +21,7 @@ type alias Model =
     , formModel : Comp.AliasForm.Model
     , saveResult : Maybe BasicResult
     , mailForm : Maybe Comp.MailSend.Model
+    , accounts : List AccountLight
     }
 
 
@@ -28,9 +31,10 @@ emptyModel flags =
     , searchResult = []
     , query = ""
     , tableModel = Comp.AliasTable.init
-    , formModel = Comp.AliasForm.initNew flags
+    , formModel = Comp.AliasForm.initNew flags []
     , saveResult = Nothing
     , mailForm = Nothing
+    , accounts = []
     }
 
 
@@ -46,6 +50,7 @@ type Msg
     | MailFormMsg Comp.MailSend.Msg
     | InitMail
     | InitNewAlias
+    | AliasMemberResp (Result Http.Error AccountLightList)
 
 
 clipboardData : ( String, String )

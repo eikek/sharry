@@ -3,23 +3,27 @@ module Comp.AliasForm exposing
     , Model
     , Msg
     , init
+    , initAccounts
     , initModify
     , initNew
     , update
     , view
     )
 
+import Api.Model.AccountLight exposing (AccountLight)
 import Api.Model.AliasChange exposing (AliasChange)
 import Api.Model.AliasDetail exposing (AliasDetail)
 import Comp.Basic as B
 import Comp.ConfirmModal
+import Comp.Dropdown
 import Comp.MenuBar as MB
 import Comp.ValidityField
+import Data.DropdownStyle as DS
 import Data.Flags exposing (Flags)
 import Data.ValidityValue exposing (ValidityValue(..))
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html.Events exposing (onClick, onInput)
 import Messages.AliasForm exposing (Texts)
 import Styles as S
 import Util.Maybe
@@ -33,17 +37,18 @@ type alias Model =
     , validityField : ValidityValue
     , enabledField : Bool
     , deleteRequested : Bool
+    , aliasMember : Comp.Dropdown.Model AccountLight
     }
 
 
-init : Flags -> Maybe AliasDetail -> Model
-init flags ma =
-    Maybe.map (initModify flags) ma
-        |> Maybe.withDefault (initNew flags)
+init : Flags -> List AccountLight -> Maybe AliasDetail -> Model
+init flags accounts ma =
+    Maybe.map (initModify flags accounts) ma
+        |> Maybe.withDefault (initNew flags accounts)
 
 
-initNew : Flags -> Model
-initNew flags =
+initNew : Flags -> List AccountLight -> Model
+initNew flags accounts =
     { existing = Nothing
     , idField = Nothing
     , nameField = ""
@@ -51,14 +56,19 @@ initNew flags =
     , validityField = Data.ValidityValue.Days 2
     , enabledField = True
     , deleteRequested = False
+    , aliasMember =
+        Comp.Dropdown.setOptions
+            Comp.Dropdown.makeMultiple
+            accounts
+            []
     }
 
 
-initModify : Flags -> AliasDetail -> Model
-initModify flags alias_ =
+initModify : Flags -> List AccountLight -> AliasDetail -> Model
+initModify flags accounts alias_ =
     let
         m =
-            initNew flags
+            initNew flags accounts
     in
     { m
         | existing = Just alias_
@@ -66,6 +76,24 @@ initModify flags alias_ =
         , nameField = alias_.name
         , validityField = Data.ValidityValue.Millis alias_.validity
         , enabledField = alias_.enabled
+        , aliasMember =
+            Comp.Dropdown.setOptions
+                Comp.Dropdown.makeMultiple
+                accounts
+                alias_.members.items
+    }
+
+
+initAccounts : Model -> List AccountLight -> Model
+initAccounts model accounts =
+    { model
+        | aliasMember =
+            Comp.Dropdown.setOptions
+                Comp.Dropdown.makeMultiple
+                accounts
+                (Maybe.map (.members >> .items) model.existing
+                    |> Maybe.withDefault []
+                )
     }
 
 
@@ -79,6 +107,7 @@ type Msg
     | RequestDelete
     | DeleteConfirm
     | DeleteCancel
+    | MemberDropdownMsg (Comp.Dropdown.Msg AccountLight)
 
 
 type FormAction
@@ -166,6 +195,10 @@ update msg model =
                         , name = model.nameField
                         , validity = Data.ValidityValue.toMillis model.validityField
                         , enabled = model.enabledField
+                        , members =
+                            Comp.Dropdown.getSelected
+                                model.aliasMember
+                                |> List.map .id
                         }
                 in
                 case Maybe.map .id model.existing of
@@ -174,6 +207,13 @@ update msg model =
 
                     Nothing ->
                         ( model, FormCreated ac )
+
+        MemberDropdownMsg lm ->
+            let
+                ( mm_, _ ) =
+                    Comp.Dropdown.update lm model.aliasMember
+            in
+            ( { model | aliasMember = mm_ }, FormNone )
 
 
 
@@ -228,12 +268,20 @@ view texts model =
                     , Html.map (\_ -> Cancel) texts.noteToIds
                     ]
                 ]
-            , div
-                [ classList
-                    [ ( "required field", True )
-                    , ( "error", String.isEmpty model.nameField )
+            , div [ class "mb-4" ]
+                [ MB.viewItem <|
+                    MB.Checkbox
+                        { id = "alias-enabled"
+                        , value = model.enabledField
+                        , tagger = \_ -> ToggleEnabled
+                        , label = texts.enabled
+                        }
+                , span [ class "text-sm opacity-75" ]
+                    [ text "If not enabled, uploads are not possible via this alias."
                     ]
-                , class "mb-4"
+                ]
+            , div
+                [ class "mb-4"
                 ]
                 [ label
                     [ class S.inputLabel
@@ -269,17 +317,25 @@ view texts model =
                     )
                 ]
             , div [ class "mb-4" ]
-                [ MB.viewItem <|
-                    MB.Checkbox
-                        { id = "alias-enabled"
-                        , value = model.enabledField
-                        , tagger = \_ -> ToggleEnabled
-                        , label = texts.enabled
+                [ label [ class S.inputLabel ]
+                    [ text texts.members
+                    ]
+                , Html.map MemberDropdownMsg
+                    (Comp.Dropdown.view2
+                        { makeOption = \m -> { text = m.login, additional = "" }
+                        , placeholder = texts.searchPlaceholder
+                        , labelColor = \_ -> S.basicLabel
+                        , style = DS.mainStyle
                         }
+                        model.aliasMember
+                    )
+                , span [ class "text-sm opacity-75" ]
+                    [ text texts.memberInfo
+                    ]
                 ]
             ]
         , div
-            [ class "mb-4"
+            [ class "mb-2"
             ]
             [ button
                 [ type_ "button"

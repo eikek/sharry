@@ -490,6 +490,25 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /sec/alias-member:
+    get:
+      tags: [ Alias ]
+      summary: Get a list of accounts
+      description: |
+        Gets a list of accounts suitable for adding them as members to
+        an alias.
+      parameters:
+        - $ref: "#/components/parameters/q"
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountLightList"
+
   /alias/upload:
     $ref: "#/paths/~1sec~1upload"
 
@@ -1207,6 +1226,31 @@ paths:
 
 components:
   schemas:
+    AccountLight:
+      description: |
+        Reduced information about an account.
+      required:
+        - id
+        - login
+      properties:
+        id:
+          type: string
+          format: ident
+        login:
+          type: string
+          format: ident
+
+    AccountLightList:
+      description: |
+        A list of logins.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountLight"
+
     SimpleMail:
       description: |
         A simple e-mail.
@@ -1446,8 +1490,8 @@ components:
           format: ident
         name:
           type: string
-        aliasName:
-          type: string
+        aliasInfo:
+          $ref: "#/components/schemas/AliasIdName"
         validity:
           type: integer
           format: duration
@@ -1520,6 +1564,8 @@ components:
         - name
         - validity
         - enabled
+        - owner
+        - members
         - created
       properties:
         id:
@@ -1530,8 +1576,13 @@ components:
         validity:
           type: integer
           format: duration
+        owner:
+          type: string
+          format: ident
         enabled:
           type: boolean
+        members:
+          $ref: "#/components/schemas/AccountLightList"
         created:
           type: integer
           format: date-time
@@ -1542,6 +1593,7 @@ components:
         - name
         - validity
         - enabled
+        - members
       properties:
         id:
           type: string
@@ -1553,6 +1605,23 @@ components:
           format: duration
         enabled:
           type: boolean
+        members:
+          type: array
+          items:
+            type: string
+            format: ident
+    AliasIdName:
+      description: |
+        The id and name for an alias.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
     EmailInfo:
       description: |
         Accounts may optionally have an e-mail address registered.
@@ -1908,6 +1977,13 @@ components:
       name: id
       in: path
       description: A share identifier
+      required: true
+      schema:
+        type: string
+    accountId:
+      name: accountId
+      in: path
+      description: A account identifier
       required: true
       schema:
         type: string

@@ -6,14 +6,14 @@ module Comp.ShareTable exposing
     , view
     )
 
+import Api.Model.AliasIdName exposing (AliasIdName)
 import Api.Model.ShareListItem exposing (ShareListItem)
 import Comp.Basic as B
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Messages.ShareTable exposing (Texts)
+import Page exposing (Page(..))
 import Styles as S
-import Util.Html
 import Util.Size
 import Util.String
 
@@ -81,8 +81,8 @@ viewTableLine texts model item =
                 |> text
             ]
         , td [ class "text-left hidden sm:table-cell" ]
-            [ Maybe.withDefault "-" item.aliasName
-                |> text
+            [ Maybe.map aliasLink item.aliasInfo
+                |> Maybe.withDefault (text "-")
             ]
         , td [ class "text-center hidden lg:table-cell" ]
             [ String.fromInt item.maxViews
@@ -117,3 +117,13 @@ publishedState item =
 
         Nothing ->
             i [ class S.unpublished ] []
+
+
+aliasLink : AliasIdName -> Html Msg
+aliasLink item =
+    a
+        [ Page.href (AliasPage <| Just item.id)
+        , class S.link
+        ]
+        [ text item.name
+        ]

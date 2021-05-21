@@ -30,7 +30,6 @@ type alias Model =
     , formState : BasicResult
     , uploading : Bool
     , shareId : Maybe String
-    , showDetails : Bool
     , uploadPaused : Bool
     }
 
@@ -51,7 +50,6 @@ emptyModel flags =
     , formState = BasicResult True ""
     , uploading = False
     , shareId = Nothing
-    , showDetails = False
     , uploadPaused = False
     }
 
@@ -67,7 +65,6 @@ type Msg
     | Submit
     | CreateShareResp (Result Http.Error IdResult)
     | Uploading UploadState
-    | ToggleDetails
     | StartStopUpload
     | UploadStopped (Maybe String)
     | ResetForm

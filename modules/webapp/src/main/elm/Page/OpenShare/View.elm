@@ -56,7 +56,7 @@ view texts flags _ model =
                 (mkViewSettings model)
                 model.dropzoneModel
             )
-        , div [ class "mb-4" ]
+        , div [ class "mb-4 mt-4" ]
             [ label [ class S.inputLabel ]
                 [ text texts.description
                 ]

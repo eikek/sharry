@@ -14,6 +14,7 @@ import sharry.store.doobie.DoobieMeta._
 import sharry.store.doobie._
 import sharry.store.records.RAccount
 import sharry.store.records.RAlias
+import sharry.store.records.RAliasMember
 import sharry.store.records.RPublishShare
 import sharry.store.records.RShare
 import sharry.store.records.RShareFile
@@ -126,11 +127,13 @@ object Queries {
     val sId      = "s" :: RShare.Columns.id
     val sAlias   = "s" :: RShare.Columns.aliasId
     val sAccount = "s" :: RShare.Columns.accountId
-    val aId      = "a" :: RAccount.Columns.id
 
-    val from = RShare.table ++ fr"s INNER JOIN" ++
-      RAccount.table ++ fr"a ON" ++ aId.is(sAccount)
-    val cond = Seq(sId.is(share), aId.is(accId.id)) ++
+    val from = RShare.table ++ fr"s"
+
+    val cond = Seq(
+      sId.is(share),
+      Sql.or(sAccount.is(accId.id), sAlias.in(aliasMemberOf(accId.id)))
+    ) ++
       accId.alias.map(alias => Seq(sAlias.is(alias))).getOrElse(Seq.empty)
 
     Sql
@@ -174,14 +177,15 @@ object Queries {
     val sId      = "s" :: RShare.Columns.id
     val sAccount = "s" :: RShare.Columns.accountId
     val sAlias   = "s" :: RShare.Columns.aliasId
-    val aId      = "a" :: RAccount.Columns.id
     val fShare   = "f" :: RShareFile.Columns.shareId
     val fId      = "f" :: RShareFile.Columns.id
 
-    val from = RShare.table ++ fr"s INNER JOIN" ++
-      RAccount.table ++ fr"a ON" ++ aId.is(sAccount) ++
+    val from = RShare.table ++ fr"s" ++
       fr"INNER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fShare.is(sId)
-    val cond = Seq(fId.is(fileId), aId.is(accId.id)) ++
+    val cond = Seq(
+      fId.is(fileId),
+      Sql.or(sAccount.is(accId.id), sAlias.in(aliasMemberOf(accId.id)))
+    ) ++
       accId.alias.map(alias => Seq(sAlias.is(alias))).getOrElse(Seq.empty)
 
     Sql
@@ -206,6 +210,9 @@ object Queries {
     Sql.selectSimple(cols, table, Fragment.empty)
   }
 
+  private def aliasMemberOf(accId: Ident) =
+    RAliasMember.aliasMemberOf(accId)
+
   def findShares(q: String, accId: AccountId): Stream[ConnectionIO, ShareItem] = {
     val nfiles     = Column("files")
     val nsize      = Column("size")
@@ -221,6 +228,7 @@ object Queries {
     val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ Seq(
       ("p" :: RPublishShare.Columns.enabled).f,
       ("p" :: RPublishShare.Columns.publishUntil).f,
+      aliasId.f,
       aliasName.f,
       fr"COALESCE(" ++ ("f" :: nfiles).f ++ fr", 0)",
       fr"COALESCE(" ++ ("f" :: nsize).f ++ fr", 0)"
@@ -236,7 +244,7 @@ object Queries {
       Sql.commas(cols),
       from,
       Sql.and(
-        account.is(accId.id),
+        Sql.or(account.is(accId.id), shareAlias.in(aliasMemberOf(accId.id))),
         Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs))
       )
     ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC"
@@ -273,7 +281,12 @@ object Queries {
             pUntil.isGt(now),
             sMaxViews.isGt(pViews)
           ),
-        priv => Sql.and(account.is(priv.account.id), sId.is(priv.id))
+        priv =>
+          Sql.and(
+            Sql
+              .or(account.is(priv.account.id), sAlias.in(aliasMemberOf(priv.account.id))),
+            sId.is(priv.id)
+          )
       )
 
     def qDetail(now: Timestamp) = Sql.selectSimple(cols, from, cond(now))

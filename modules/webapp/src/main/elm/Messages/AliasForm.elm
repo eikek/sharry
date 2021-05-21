@@ -1,8 +1,8 @@
 module Messages.AliasForm exposing
     ( Texts
     , de
-    , gb
     , fr
+    , gb
     )
 
 import Html exposing (..)
@@ -20,6 +20,9 @@ type alias Texts =
     , submit : String
     , back : String
     , delete : String
+    , searchPlaceholder : String
+    , members : String
+    , memberInfo : String
     , yesNo : Messages.YesNoDimmer.Texts
     , validityField : Messages.ValidityField.Texts
     }
@@ -44,6 +47,9 @@ gb =
     , submit = "Submit"
     , back = "Back"
     , delete = "Delete"
+    , searchPlaceholder = "Search…"
+    , members = "Members"
+    , memberInfo = "Members of your alias can see and share this alias and can see all uploads that were received via this alias."
     , yesNo = Messages.YesNoDimmer.gb
     , validityField = Messages.ValidityField.gb
     }
@@ -68,9 +74,13 @@ de =
     , submit = "Speichern"
     , back = "Zurück"
     , delete = "Löschen"
+    , searchPlaceholder = "Suche…"
+    , members = "Zugehörige Benutzer"
+    , memberInfo = "Zugehörige Benutzer können den Alias sehen und teilen, sowie alle Uploads einsehen, die durch diesen Alias empfangen wurden."
     , yesNo = Messages.YesNoDimmer.de
     , validityField = Messages.ValidityField.de
     }
+
 
 fr : Texts
 fr =
@@ -91,6 +101,9 @@ fr =
     , submit = "Envoyer"
     , back = "Retour"
     , delete = "Supprimer"
+    , searchPlaceholder = "Recherche…"
+    , members = "Membre"
+    , memberInfo = gb.memberInfo
     , yesNo = Messages.YesNoDimmer.fr
     , validityField = Messages.ValidityField.fr
     }

@@ -38,7 +38,7 @@ view texts flags id model =
                     viewCreate texts model
 
                 else
-                    viewList texts model
+                    viewList flags texts model
         )
 
 
@@ -60,17 +60,35 @@ viewCreate texts model =
 
 viewModify : Texts -> Flags -> Model -> AliasDetail -> List (Html Msg)
 viewModify texts flags model alias_ =
+    let
+        isOwner =
+            Maybe.map .user flags.account
+                |> Maybe.map ((==) alias_.owner)
+                |> Maybe.withDefault False
+    in
     [ div [ class "flex flex-col" ]
         [ h1 [ class S.header1 ]
             [ i [ class "fa fa-upload mr-2" ] []
             , text texts.aliasPage
             , text alias_.name
+            , div [ class "text-sm opacity-75" ]
+                [ text (texts.owner ++ ":")
+                , span [ class "ml-1" ]
+                    [ text alias_.owner
+                    ]
+                ]
             ]
-        , Html.map AliasFormMsg
-            (Comp.AliasForm.view
-                texts.aliasForm
-                model.formModel
-            )
+        , if isOwner then
+            Html.map AliasFormMsg
+                (Comp.AliasForm.view
+                    texts.aliasForm
+                    model.formModel
+                )
+
+          else
+            div [ class S.infoMessage ]
+                [ text texts.notOwnerInfo
+                ]
         , Maybe.map Util.Html.resultMsg model.saveResult
             |> Maybe.withDefault Util.Html.noElement
         , shareText texts flags model alias_
@@ -78,15 +96,15 @@ viewModify texts flags model alias_ =
     ]
 
 
-viewList : Texts -> Model -> List (Html Msg)
-viewList texts model =
+viewList : Flags -> Texts -> Model -> List (Html Msg)
+viewList flags texts model =
     [ h1 [ class S.header1 ]
         [ i [ class "fa fa-dot-circle font-thin mr-2" ] []
         , text texts.aliasPages
         ]
     , searchArea texts model
     , Html.map AliasTableMsg
-        (Comp.AliasTable.view
+        (Comp.AliasTable.view flags
             texts.aliasTable
             model.searchResult
             model.tableModel

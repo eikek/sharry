@@ -22,6 +22,8 @@ type alias Texts =
     , shareThisUrl : String
     , sendEmail : String
     , copyLink : String
+    , owner : String
+    , notOwnerInfo : String
     , aliasForm : Messages.AliasForm.Texts
     , aliasTable : Messages.AliasTable.Texts
     , mailSend : Messages.MailSend.Texts
@@ -41,6 +43,8 @@ gb =
     , shareThisUrl = "You can share this URL with others to receive files from them."
     , sendEmail = "Send E-Mail"
     , copyLink = "Copy Link"
+    , owner = "Owner"
+    , notOwnerInfo = "This alias is owned by another user and shared with you. You cannot edit its properties."
     , aliasForm = Messages.AliasForm.gb
     , aliasTable = Messages.AliasTable.gb
     , mailSend = Messages.MailSend.gb
@@ -60,6 +64,8 @@ de =
     , shareThisUrl = "Du kannst diese URL mit anderen teilen, um von ihnen Dateien zu erhalten."
     , sendEmail = "Sende E-Mail"
     , copyLink = "Link kopieren"
+    , owner = "Eigentümer"
+    , notOwnerInfo = "Diese Alias-Seite gehört einen anderen Benutzer. Du kannst die Eigenschaften nicht bearbeiten."
     , aliasForm = Messages.AliasForm.de
     , aliasTable = Messages.AliasTable.de
     , mailSend = Messages.MailSend.de
@@ -79,6 +85,8 @@ fr =
     , shareThisUrl = "Vous pouvez partager cette URL avec d'autres personnes pour recevoir des fichiers de leur part."
     , sendEmail = "Envoyer un email"
     , copyLink = "Copier le lien"
+    , owner = "Owner"
+    , notOwnerInfo = "This alias is owned by another user and shared with you. You cannot edit its properties."
     , aliasForm = Messages.AliasForm.fr
     , aliasTable = Messages.AliasTable.fr
     , mailSend = Messages.MailSend.fr

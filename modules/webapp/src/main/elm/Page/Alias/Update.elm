@@ -34,7 +34,7 @@ update key flags msg model =
             if id == "new" then
                 ( { model
                     | selected = Nothing
-                    , formModel = Comp.AliasForm.initNew flags
+                    , formModel = Comp.AliasForm.initNew flags model.accounts
                   }
                 , clipboardInit
                 )
@@ -47,15 +47,19 @@ update key flags msg model =
                 , Cmd.batch
                     [ Api.getAlias flags id LoadResp
                     , clipboardInit
+                    , Api.listAliasMember flags "" AliasMemberResp
                     ]
                 )
 
         Init Nothing ->
             ( { model
                 | selected = Nothing
-                , formModel = Comp.AliasForm.initNew flags
+                , formModel = Comp.AliasForm.initNew flags model.accounts
               }
-            , Api.listAlias flags model.query SearchResp
+            , Cmd.batch
+                [ Api.listAlias flags model.query SearchResp
+                , Api.listAliasMember flags "" AliasMemberResp
+                ]
             )
 
         SearchResp (Ok list) ->
@@ -69,12 +73,23 @@ update key flags msg model =
         LoadResp (Ok alias_) ->
             ( { model
                 | selected = Just alias_
-                , formModel = Comp.AliasForm.initModify flags alias_
+                , formModel = Comp.AliasForm.initModify flags model.accounts alias_
               }
             , Cmd.none
             )
 
-        LoadResp (Err err) ->
+        LoadResp (Err _) ->
+            ( model, Cmd.none )
+
+        AliasMemberResp (Ok ams) ->
+            ( { model
+                | accounts = ams.items
+                , formModel = Comp.AliasForm.initAccounts model.formModel ams.items
+              }
+            , Cmd.none
+            )
+
+        AliasMemberResp (Err _) ->
             ( model, Cmd.none )
 
         SetQuery str ->
@@ -93,7 +108,7 @@ update key flags msg model =
             ( { model
                 | tableModel = m
                 , selected = sel
-                , formModel = Comp.AliasForm.init flags sel
+                , formModel = Comp.AliasForm.init flags model.accounts sel
               }
             , cmd
             )

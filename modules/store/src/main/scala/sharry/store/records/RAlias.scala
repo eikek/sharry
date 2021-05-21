@@ -71,21 +71,46 @@ object RAlias {
       .update
       .run
 
-  def findById(aliasId: Ident, accId: Ident): ConnectionIO[Option[RAlias]] =
+  def findById(aliasId: Ident, accId: Ident): ConnectionIO[Option[(RAlias, Ident)]] = {
+    val aId = "a" :: id
+
+    find0(accId, aId.is(aliasId)).option
+  }
+
+  def findAll(acc: Ident, nameQ: String): Stream[ConnectionIO, (RAlias, Ident)] = {
+    val aName = "a" :: name
+
+    val q =
+      if (nameQ.isEmpty) Fragment.empty
+      else aName.like("%" + nameQ + "%")
+
+    find0(acc, q).stream
+  }
+
+  private def find0(accId: Ident, cond: Fragment) = {
+    val aId      = "a" :: id
+    val aAccount = "a" :: account
+    val cId      = "c" :: RAccount.Columns.id
+    val cLogin   = "c" :: RAccount.Columns.login
+
+    val from =
+      table ++ fr"a" ++
+        fr"INNER JOIN" ++ RAccount.table ++ fr"c ON" ++ aAccount.is(cId)
+
     Sql
-      .selectSimple(all, table, Sql.and(id.is(aliasId), account.is(accId)))
-      .query[RAlias]
-      .option
+      .selectSimple(
+        all.map("a" :: _) :+ cLogin,
+        from,
+        Sql.and(
+          Sql.or(aAccount.is(accId), aId.in(RAliasMember.aliasMemberOf(accId))),
+          cond
+        )
+      )
+      .query[(RAlias, Ident)]
+  }
 
   def existsById(aliasId: Ident): ConnectionIO[Boolean] =
     Sql.selectCount(id, table, id.is(aliasId)).query[Int].map(_ > 0).unique
-
-  def findAll(acc: Ident, nameQ: String): Stream[ConnectionIO, RAlias] = {
-    val q =
-      if (nameQ.isEmpty) Fragment.empty
-      else name.like("%" + nameQ + "%")
-    Sql.selectSimple(all, table, Sql.and(account.is(acc), q)).query[RAlias].stream
-  }
 
   def delete(aliasId: Ident, accId: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, Sql.and(account.is(accId), id.is(aliasId))).update.run

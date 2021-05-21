@@ -57,7 +57,7 @@ view texts flags model =
             [ text model.formState.message
             ]
         , div [ class "flex flex-col" ]
-            [ div []
+            [ div [ class "mb-4" ]
                 [ Html.map DropzoneMsg
                     (Comp.Dropzone2.view
                         texts.dropzone
@@ -65,69 +65,60 @@ view texts flags model =
                         model.dropzoneModel
                     )
                 ]
-            , div []
-                [ div
-                    [ classList
-                        [ ( "content", True )
-                        , ( "active", model.showDetails )
-                        ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.description
                     ]
-                    [ div [ class "mb-4" ]
-                        [ label [ class S.inputLabel ]
-                            [ text texts.description
-                            ]
-                        , Html.map DescMsg
-                            (Comp.MarkdownInput.view
-                                texts.markdownInput
-                                [ ( S.border ++ " py-1 px-1", True ) ]
-                                model.descField
-                                model.descModel
-                            )
-                        ]
-                    , div [ class "mb-4" ]
-                        [ label [ class S.inputLabel ]
-                            [ text texts.name
-                            ]
-                        , input
-                            [ type_ "text"
-                            , placeholder texts.namePlaceholder
-                            , class S.textInput
-                            , onInput SetName
-                            ]
-                            []
-                        ]
-                    , div [ class "mb-4" ]
-                        [ label [ class S.inputLabel ]
-                            [ text texts.validity
-                            , B.inputRequired
-                            ]
-                        , Html.map ValidityMsg
-                            (Comp.ValidityField.view
-                                texts.validityField
-                                model.validityField
-                                model.validityModel
-                            )
-                        ]
-                    , Html.map MaxViewMsg
-                        (Comp.IntField.view
-                            model.maxViewField
-                            texts.intField
-                            texts.maxPublicViews
-                            model.maxViewModel
-                        )
-                    , div [ class "mb-4" ]
-                        [ label [ class S.inputLabel ]
-                            [ text texts.password
-                            ]
-                        , Html.map PasswordMsg
-                            (Comp.PasswordInput.view
-                                { placeholder = "" }
-                                model.passwordField
-                                False
-                                model.passwordModel
-                            )
-                        ]
+                , Html.map DescMsg
+                    (Comp.MarkdownInput.view
+                        texts.markdownInput
+                        [ ( S.border ++ " py-1 px-1", True ) ]
+                        model.descField
+                        model.descModel
+                    )
+                ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.name
                     ]
+                , input
+                    [ type_ "text"
+                    , placeholder texts.namePlaceholder
+                    , class S.textInput
+                    , onInput SetName
+                    ]
+                    []
+                ]
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.validity
+                    , B.inputRequired
+                    ]
+                , Html.map ValidityMsg
+                    (Comp.ValidityField.view
+                        texts.validityField
+                        model.validityField
+                        model.validityModel
+                    )
+                ]
+            , Html.map MaxViewMsg
+                (Comp.IntField.view
+                    model.maxViewField
+                    texts.intField
+                    texts.maxPublicViews
+                    model.maxViewModel
+                )
+            , div [ class "mb-4" ]
+                [ label [ class S.inputLabel ]
+                    [ text texts.password
+                    ]
+                , Html.map PasswordMsg
+                    (Comp.PasswordInput.view
+                        { placeholder = "" }
+                        model.passwordField
+                        False
+                        model.passwordModel
+                    )
                 ]
             ]
         ]
