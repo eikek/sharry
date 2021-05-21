@@ -152,16 +152,22 @@ sharry.restserver.bind {
 
 By default, it binds to `localhost` and some predefined port.
 
-### baseurl
+### Base-url
 
-The base url is an important setting that defines the http URL where
-sharry can be reached. The REST server uses this url to create
+The base url is an important setting that defines the URL where sharry
+can be reached (the external url). The REST server uses it to create
 absolute urls and to configure the authenication cookie. These URLs
 are sent to the client, so they must resolve back to the sharry
 server. If you see "network error" error messages in the browser, then
 this setting is probably not correct.
 
-By default it is build using the information from the `bind` setting.
+By default it is set to `http://localhost:9090`. If you leave it at
+`localhost`, then sharry uses the request to obtain the real external
+url dynamically by inspecting http headers and finally falling back to
+the `bind.address|port`.
+
+However, if you have a single external url, it is recommended to set
+this here.
 
 #### Examples
 
@@ -170,7 +176,7 @@ sharry.restserver.base-url = "https://sharry.example.com"
 ```
 
 
-### registration options
+### Registration Options
 
 This defines if and how new users can create accounts. There are 3
 options:

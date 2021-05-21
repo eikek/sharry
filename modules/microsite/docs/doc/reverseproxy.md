@@ -13,6 +13,7 @@ For the examples below, assume the following:
 - Sharry app is available at `192.168.1.11:9090`.
 - The external domain/hostname is `sharry.example.com`
 
+
 ## Configuring Sharry
 
 These settings require a complement config part in the sharry
@@ -37,9 +38,11 @@ configuration file:
   the server to every network interface. If it is running on the same
   machine as the reverse proxy server, you can set `localhost`
   instead.
-- Sharry needs to know the external url. The `base-url` setting must
-  point to the external address. Using above values, it must be set to
-  `https://sharry.example.com`.
+- Sharry needs to know the external url. The `base-url` can be used to
+  explicitely specify this url. If it is left at its default value,
+  sharry finds the external url from the request. It is recommended to
+  set this url, if you have a single external url. Using above values,
+  it must be set to `https://sharry.example.com`.
 
   ```
   sharry.restserver {
@@ -82,7 +85,10 @@ this site.
 
 This defines two servers: one listens for http traffic and redirects
 to the https variant. Additionally it defines the let's encrypt
-`.well-known` folder name.
+`.well-known` folder name. For more information about how to setup
+let's encrypt, please refer to [their
+documentation](https://letsencrypt.org/docs/) and/or the [nginx
+documentation](https://nginx.org/en/docs/).
 
 The https server endpoint is configured with the let's encrypt
 certificates and acts as a proxy for the application at
