@@ -757,6 +757,32 @@
   },
   "description" : "Information about an account.\n"
 };
+            defs["AccountLight"] = {
+  "required" : [ "id", "login" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "login" : {
+      "type" : "string",
+      "format" : "ident"
+    }
+  },
+  "description" : "Reduced information about an account.\n"
+};
+            defs["AccountLightList"] = {
+  "required" : [ "items" ],
+  "properties" : {
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/AccountLight"
+      }
+    }
+  },
+  "description" : "A list of logins.\n"
+};
             defs["AccountList"] = {
   "required" : [ "items" ],
   "properties" : {
@@ -790,7 +816,7 @@
   "description" : "Modify an existing  account.\n"
 };
             defs["AliasChange"] = {
-  "required" : [ "enabled", "name", "validity" ],
+  "required" : [ "enabled", "members", "name", "validity" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -805,12 +831,19 @@
     },
     "enabled" : {
       "type" : "boolean"
+    },
+    "members" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string",
+        "format" : "ident"
+      }
     }
   },
   "description" : "Data for changing alias properties.\n"
 };
             defs["AliasDetail"] = {
-  "required" : [ "created", "enabled", "id", "name", "validity" ],
+  "required" : [ "created", "enabled", "id", "members", "name", "owner", "validity" ],
   "properties" : {
     "id" : {
       "type" : "string",
@@ -823,8 +856,15 @@
       "type" : "integer",
       "format" : "duration"
     },
+    "owner" : {
+      "type" : "string",
+      "format" : "ident"
+    },
     "enabled" : {
       "type" : "boolean"
+    },
+    "members" : {
+      "$ref" : "#/components/schemas/AccountLightList"
     },
     "created" : {
       "type" : "integer",
@@ -832,6 +872,19 @@
     }
   },
   "description" : "Details about one alias.\n"
+};
+            defs["AliasIdName"] = {
+  "required" : [ "id", "name" ],
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "format" : "ident"
+    },
+    "name" : {
+      "type" : "string"
+    }
+  },
+  "description" : "The id and name for an alias.\n"
 };
             defs["AliasList"] = {
   "required" : [ "items" ],
@@ -846,7 +899,7 @@
   "description" : "A list of aliases.\n"
 };
             defs["AppConfig"] = {
-  "required" : [ "appName", "authRefreshTime", "baseUrl", "chunkSize", "defaultLanguage", "footerText", "footerVisible", "iconUrl", "initialPage", "logoUrl", "mailEnabled", "maxSize", "maxValidity", "oauthConfig", "oauthOnly", "retryDelays", "signupMode", "welcomeMessage" ],
+  "required" : [ "appName", "authRefreshTime", "baseUrl", "chunkSize", "defaultLanguage", "footerText", "footerVisible", "iconUrl", "iconUrlDark", "initialPage", "logoUrl", "logoUrlDark", "mailEnabled", "maxSize", "maxValidity", "oauthConfig", "oauthOnly", "retryDelays", "signupMode", "welcomeMessage" ],
   "properties" : {
     "appName" : {
       "type" : "string"
@@ -857,7 +910,13 @@
     "logoUrl" : {
       "type" : "string"
     },
+    "logoUrlDark" : {
+      "type" : "string"
+    },
     "iconUrl" : {
+      "type" : "string"
+    },
+    "iconUrlDark" : {
       "type" : "string"
     },
     "footerText" : {
@@ -1240,8 +1299,8 @@
     "name" : {
       "type" : "string"
     },
-    "aliasName" : {
-      "type" : "string"
+    "aliasInfo" : {
+      "$ref" : "#/components/schemas/AliasIdName"
     },
     "validity" : {
       "type" : "integer",
@@ -1465,6 +1524,9 @@
                     <li data-group="Alias" data-name="secAliasIdPost" class="">
                       <a href="#api-Alias-secAliasIdPost">secAliasIdPost</a>
                     </li>
+                    <li data-group="Alias" data-name="secAliasMemberGet" class="">
+                      <a href="#api-Alias-secAliasMemberGet">secAliasMemberGet</a>
+                    </li>
                     <li data-group="Alias" data-name="secAliasPost" class="">
                       <a href="#api-Alias-secAliasPost">secAliasPost</a>
                     </li>
@@ -1617,7 +1679,7 @@
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 1.7.1</div>
+              <div class="app-desc">Version: 1.8.0</div>
             <hr>
             <div><p>Sharry provides a way to share files with others in a convenient
 way. The core functionality is provided by a server that can be
@@ -6417,6 +6479,342 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-secAliasIdPost-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Alias-secAliasMemberGet">
+                      <article id="api-Alias-secAliasMemberGet-0" data-group="User" data-name="secAliasMemberGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>secAliasMemberGet</h1>
+                          <p>Get a list of accounts</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Gets a list of accounts suitable for adding them as members to
+an alias.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/sec/alias-member</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Alias-secAliasMemberGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Alias-secAliasMemberGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Alias-secAliasMemberGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Alias-secAliasMemberGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Alias-secAliasMemberGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Sharry-Auth: [[apiKey]]"\
+-H "Accept: application/json"\
+"/api/v2/sec/alias-member?q="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.AliasApi;
+
+import java.io.File;
+import java.util.*;
+
+public class AliasApiExample {
+
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+
+        // Configure API key authorization: authTokenHeader
+        ApiKeyAuth authTokenHeader = (ApiKeyAuth) defaultClient.getAuthentication("authTokenHeader");
+        authTokenHeader.setApiKey("YOUR API KEY");
+        // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+        //authTokenHeader.setApiKeyPrefix("Token");
+
+        AliasApi apiInstance = new AliasApi();
+        String q = q_example; // String | A query string
+        try {
+            AccountLightList result = apiInstance.secAliasMemberGet(q);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AliasApi#secAliasMemberGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AliasApi;
+
+public class AliasApiExample {
+
+    public static void main(String[] args) {
+        AliasApi apiInstance = new AliasApi();
+        String q = q_example; // String | A query string
+        try {
+            AccountLightList result = apiInstance.secAliasMemberGet(q);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling AliasApi#secAliasMemberGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Configuration *apiConfig = [Configuration sharedConfig];
+// Configure API key authorization: (authentication scheme: authTokenHeader)
+[apiConfig setApiKey:@"YOUR_API_KEY" forApiKeyIdentifier:@"Sharry-Auth"];
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+//[apiConfig setApiKeyPrefix:@"Bearer" forApiKeyIdentifier:@"Sharry-Auth"];
+String *q = q_example; // A query string (optional)
+
+AliasApi *apiInstance = [[AliasApi alloc] init];
+
+// Get a list of accounts
+[apiInstance secAliasMemberGetWith:q
+              completionHandler: ^(AccountLightList output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var Sharry = require('sharry');
+var defaultClient = Sharry.ApiClient.instance;
+
+// Configure API key authorization: authTokenHeader
+var authTokenHeader = defaultClient.authentications['authTokenHeader'];
+authTokenHeader.apiKey = "YOUR API KEY"
+// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+//authTokenHeader.apiKeyPrefix['Sharry-Auth'] = "Token"
+
+var api = new Sharry.AliasApi()
+var opts = { 
+  'q': q_example // {{String}} A query string
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.secAliasMemberGet(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class secAliasMemberGetExample
+    {
+        public void main()
+        {
+
+            // Configure API key authorization: authTokenHeader
+            Configuration.Default.ApiKey.Add("Sharry-Auth", "YOUR_API_KEY");
+            // Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+            // Configuration.Default.ApiKeyPrefix.Add("Sharry-Auth", "Bearer");
+
+            var apiInstance = new AliasApi();
+            var q = q_example;  // String | A query string (optional) 
+
+            try
+            {
+                // Get a list of accounts
+                AccountLightList result = apiInstance.secAliasMemberGet(q);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling AliasApi.secAliasMemberGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Configure API key authorization: authTokenHeader
+Swagger\Client\Configuration::getDefaultConfiguration()->setApiKey('Sharry-Auth', 'YOUR_API_KEY');
+// Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+// Swagger\Client\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Sharry-Auth', 'Bearer');
+
+$api_instance = new Swagger\Client\ApiAliasApi();
+$q = q_example; // String | A query string
+
+try {
+    $result = $api_instance->secAliasMemberGet($q);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling AliasApi->secAliasMemberGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::AliasApi;
+
+# Configure API key authorization: authTokenHeader
+$WWW::SwaggerClient::Configuration::api_key->{'Sharry-Auth'} = 'YOUR_API_KEY';
+# uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+#$WWW::SwaggerClient::Configuration::api_key_prefix->{'Sharry-Auth'} = "Bearer";
+
+my $api_instance = WWW::SwaggerClient::AliasApi->new();
+my $q = q_example; # String | A query string
+
+eval { 
+    my $result = $api_instance->secAliasMemberGet(q => $q);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling AliasApi->secAliasMemberGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Alias-secAliasMemberGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# Configure API key authorization: authTokenHeader
+swagger_client.configuration.api_key['Sharry-Auth'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# swagger_client.configuration.api_key_prefix['Sharry-Auth'] = 'Bearer'
+
+# create an instance of the API class
+api_instance = swagger_client.AliasApi()
+q = q_example # String | A query string (optional)
+
+try: 
+    # Get a list of accounts
+    api_response = api_instance.sec_alias_member_get(q=q)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling AliasApi->secAliasMemberGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">q</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_secAliasMemberGet_q">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        A query string
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - Ok </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-secAliasMemberGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-secAliasMemberGet-200-schema">
+                                  <div id='responses-secAliasMemberGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Ok",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/AccountLightList"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-secAliasMemberGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-secAliasMemberGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-secAliasMemberGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

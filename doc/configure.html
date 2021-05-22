@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Sharry: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Sharry – Share files conveniently" /><meta name="og:image" content="/sharry/img/poster.png" /><meta name="image" property="og:image" content="/sharry/img/poster.png" /><meta name="og:title" content="Sharry: Configuring" /><meta name="title" property="og:title" content="Sharry: Configuring" /><meta name="og:site_name" content="Sharry" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Sharry – Share files conveniently" /><link rel="icon" type="image/png" href="/sharry/img/favicon.png" /><meta name="twitter:title" content="Sharry: Configuring" /><meta name="twitter:image" content="/sharry/img/poster.png" /><meta name="twitter:description" content="Sharry – Share files conveniently" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="32x32" href="/sharry/img/favicon-32x32.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/sharry/highlight/styles/vs.css" /><link rel="stylesheet" href="/sharry/css/light-style.css" /><link rel="stylesheet" href="/sharry/css/styles.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/sharry/" class="brand"><div class="brand-wrapper"></div><span>Sharry</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/sharry/doc/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/quickstart" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/install" title="Installation" class="drop-nested">Installation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/migration" title="Migration" class="">Migration</a> <a href="/sharry/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/sharry/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a></div></div> <div class="sidebar-nav-item active "><a href="/sharry/doc/configure" title="Configuring" class="active">Configuring</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/webapp" title="Webapp" class="drop-nested">Webapp</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/screenshots" title="Screenshots" class="">Screenshots</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/rest" title="REST Api" class="">REST Api</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/dev" title="Development" class="">Development</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="search-nav"><div id="search-dropdown"><label><i class="fa fa-search"></i>Search</label><input id="search-bar" type="text" placeholder="Enter keywords here..." onclick="displayToggleSearch(event)" /><ul id="search-dropdown-content" class="dropdown dropdown-content"></ul></div></li><li id="gh-eyes-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="sharry"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
+<!DOCTYPE html><html><head><title>Sharry: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Sharry – Share files conveniently" /><meta name="og:image" content="/sharry/img/poster.png" /><meta name="image" property="og:image" content="/sharry/img/poster.png" /><meta name="og:title" content="Sharry: Configuring" /><meta name="title" property="og:title" content="Sharry: Configuring" /><meta name="og:site_name" content="Sharry" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Sharry – Share files conveniently" /><link rel="icon" type="image/png" href="/sharry/img/favicon.png" /><meta name="twitter:title" content="Sharry: Configuring" /><meta name="twitter:image" content="/sharry/img/poster.png" /><meta name="twitter:description" content="Sharry – Share files conveniently" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="32x32" href="/sharry/img/favicon-32x32.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/sharry/highlight/styles/vs.css" /><link rel="stylesheet" href="/sharry/css/light-style.css" /><link rel="stylesheet" href="/sharry/css/styles.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/sharry/" class="brand"><div class="brand-wrapper"></div><span>Sharry</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/sharry/doc/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/quickstart" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/install" title="Installation" class="drop-nested">Installation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/migration" title="Migration" class="">Migration</a> <a href="/sharry/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/sharry/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/sharry/doc/fail2ban" title="Fail2ban" class="">Fail2ban</a> <a href="/sharry/doc/sharex" title="ShareX" class="">ShareX</a></div></div> <div class="sidebar-nav-item active "><a href="/sharry/doc/configure" title="Configuring" class="active">Configuring</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/webapp" title="Webapp" class="drop-nested">Webapp</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/screenshots" title="Screenshots" class="">Screenshots</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/rest" title="REST Api" class="">REST Api</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/dev" title="Development" class="">Development</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="search-nav"><div id="search-dropdown"><label><i class="fa fa-search"></i>Search</label><input id="search-bar" type="text" placeholder="Enter keywords here..." onclick="displayToggleSearch(event)" /><ul id="search-dropdown-content" class="dropdown dropdown-content"></ul></div></li><li id="gh-eyes-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="sharry"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
 
 <p>Sharry’s executable can take one argument – a configuration file. If
 that is not given, the defaults are used. The config file overrides
@@ -138,23 +138,29 @@ found <a href="https://www.eicar.org/?page_id=3950">here</a>.</p>
 
 <p>By default, it binds to <code class="language-plaintext highlighter-rouge">localhost</code> and some predefined port.</p>
 
-<h3 id="baseurl">baseurl</h3>
+<h3 id="base-url">Base-url</h3>
 
-<p>The base url is an important setting that defines the http URL where
-sharry can be reached. The REST server uses this url to create
+<p>The base url is an important setting that defines the URL where sharry
+can be reached (the external url). The REST server uses it to create
 absolute urls and to configure the authenication cookie. These URLs
 are sent to the client, so they must resolve back to the sharry
 server. If you see “network error” error messages in the browser, then
 this setting is probably not correct.</p>
 
-<p>By default it is build using the information from the <code class="language-plaintext highlighter-rouge">bind</code> setting.</p>
+<p>By default it is set to <code class="language-plaintext highlighter-rouge">http://localhost:9090</code>. If you leave it at
+<code class="language-plaintext highlighter-rouge">localhost</code>, then sharry uses the request to obtain the real external
+url dynamically by inspecting http headers and finally falling back to
+the <code class="language-plaintext highlighter-rouge">bind.address|port</code>.</p>
+
+<p>However, if you have a single external url, it is recommended to set
+this here.</p>
 
 <h4 id="examples-1">Examples</h4>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.base-url = "https://sharry.example.com"
 </code></pre></div></div>
 
-<h3 id="registration-options">registration options</h3>
+<h3 id="registration-options">Registration Options</h3>
 
 <p>This defines if and how new users can create accounts. There are 3
 options:</p>
@@ -402,6 +408,24 @@ exists already) using the account name from the provider amended with
 <p>I only tested this with github and google, I would appreciate any
 information on how it works with other providers.</p>
 
+<h2 id="cleanup">Cleanup</h2>
+
+<p>Sharry has a periodic cleanup job that will delete ‘invalid’
+resources. This cleanup job runs in the backend and is triggered
+by a timer every <code class="language-plaintext highlighter-rouge">interval</code> as defined in the <code class="language-plaintext highlighter-rouge">cleanup</code> block. It
+cleans up the following resources:</p>
+
+<ul>
+  <li>Expired, published shares and their files are removed once the
+expiration datetime is older than <code class="language-plaintext highlighter-rouge">invalid-age</code> defined in the
+<code class="language-plaintext highlighter-rouge">cleanup</code> block.</li>
+  <li>Expired invites are removed based on the <code class="language-plaintext highlighter-rouge">invite-time</code> from the
+<code class="language-plaintext highlighter-rouge">signup</code> block.</li>
+  <li>Orphaned files are removed. However, orphaned files should not
+happen as long as all shares and files are maintained by only
+sharry and not any external modifications.</li>
+</ul>
+
 <h2 id="default-config">Default Config</h2>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
@@ -431,13 +455,20 @@ sharry.restserver {
     # This is shown in the top right corner of the web application
     app-name = "Sharry"
 
-    # The icon next to the app-name. Needs to be an URL to a image.
+    # The icon next to the app-name. Needs to be an URL to an image.
     app-icon = ""
 
-    # The login and register page displays a logo image, by default
+    # The icon next to the app-name when dark mode is enabled.
+    app-icon-dark = ""
+
+    # The login and register pages display a logo image, by default
     # the Sharry logo. This can be changed here. It needs to be an URL
     # to an image.
     app-logo = ""
+
+    # The login and register pages display a logo image. This is the
+    # one used when dark mode is enabled.
+    app-logo-dark = ""
 
     # This is markdown that is inserted as the footer on each page in
     # the ui. If left empty, a link to the project is rendered.
@@ -591,7 +622,7 @@ sharry.restserver {
           enabled = false
           id = "github"
           name = "Github"
-          icon = "github"
+          icon = "fab fa-github"
           authorize-url = "https://github.com/login/oauth/authorize"
           token-url = "https://github.com/login/oauth/access_token"
           user-url = "https://api.github.com/user"
@@ -603,7 +634,7 @@ sharry.restserver {
           enabled = false
           id = "google"
           name = "Google"
-          icon = "google"
+          icon = "fab fa-google"
           authorize-url = "https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.profile"
           token-url = "https://oauth2.googleapis.com/token"
           user-url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json"
@@ -689,14 +720,14 @@ sharry.restserver {
     }
 
     cleanup {
-      # Whether to enable the upload cleanup job that periodically
-      # removes invalid uploads
+      # Whether to enable the cleanup job that periodically
+      # cleans up published, expired shares and expired invites
       enabled = true
 
       # The interval for the cleanup job
       interval = 14 days
 
-      # Age of invalid uploads to get collected by cleanup job
+      # Time of published shares past expiration to get collected by cleanup job
       invalid-age = 7 days
     }
 
