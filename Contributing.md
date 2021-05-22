@@ -51,6 +51,14 @@ Then see the site at `http://localhost:4000/sharry`. You need to run
 `microsite/makeMicrosite` after a change and then reload the page.
 
 
+## Translating
+
+Any help to translate Sharry to more languages or fix existing strings
+is very much appreciated. There is [this wiki
+page](https://github.com/eikek/sharry/wiki/Translation) containing a
+guide on how to get started.
+
+
 ## Code
 
 Code is very welcome, too, of course.
