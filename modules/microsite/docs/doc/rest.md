@@ -98,10 +98,10 @@ Output:
 ":1577101969643,"files":1,"size":192886,"published":null}]}
 ```
 
-### Create a alias page
+### Create an alias page
 
 ```
-$ curl -XPOST -H 'Sharry-Auth: 1577122785983-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$kceo1M6cRNpMpptb0F67uO-sZurk/s03VHuzpxLGhT+AUF4TjU=' -d'{"name":"test alias","validity": 172800000, "enabled":true}' http://localhost:9090/api/v2/sec/alias
+$ curl -XPOST -H 'Sharry-Auth: 1577122785983-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$kceo1M6cRNpMpptb0F67uO-sZurk/s03VHuzpxLGhT+AUF4TjU=' -d'{"name":"test alias","validity": 172800000, "enabled":true,"members":[]}' http://localhost:9090/api/v2/sec/alias
 ```
 
 Output:

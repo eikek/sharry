@@ -73,6 +73,7 @@ object Queries {
     val sId    = "s" :: RShare.Columns.id
     val sAcc   = "s" :: RShare.Columns.accountId
     val sPass  = "s" :: RShare.Columns.password
+    val sAlias = "s" :: RShare.Columns.aliasId
     val pId    = "p" :: RPublishShare.Columns.id
     val pShare = "p" :: RPublishShare.Columns.shareId
 
@@ -82,7 +83,14 @@ object Queries {
       )
 
     Sql
-      .selectSimple(Seq(sPass, pId), from, Sql.and(sId.is(shareId), sAcc.is(accId)))
+      .selectSimple(
+        Seq(sPass, pId),
+        from,
+        Sql.and(
+          sId.is(shareId),
+          Sql.or(sAcc.is(accId), sAlias.in(RAliasMember.aliasMemberOf(accId)))
+        )
+      )
       .query[(Option[String], Ident)]
       .option
       .map(_.map(t => (t._1.nonEmpty, t._2)))

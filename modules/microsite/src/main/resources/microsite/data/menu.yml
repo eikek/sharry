@@ -22,6 +22,9 @@ options:
       - title: Fail2ban
         url: doc/fail2ban
 
+      - title: ShareX
+        url: doc/sharex
+
   - title: Configuring
     url: doc/configure
 
