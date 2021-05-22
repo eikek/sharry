@@ -158,3 +158,78 @@ http {
     }
 }
 ```
+
+### Serving two domains
+
+This config shows an example to serve nginx on two domains, while the
+sharry app is fixed to one domain. This will allow to always use the
+same base-url in e-mail templates, while serving the webapp on
+different domains.
+
+This is in contrast to the default behaviour (leaving `base-url`
+setting to its default): the url in mail templates would change
+according to the request.
+
+
+```
+# sharry.conf: base-url = "https://example.org"
+
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+# this is the domain as configured in sharry, serve as is
+server {
+  listen [::]:443 ssl default_server;
+
+  server_name example.org;
+
+  root /srv/http;
+
+  location / {
+    # This is the nginx example from the sharry docs
+    proxy_pass http://localhost:9090/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_buffering off;
+    client_max_body_size 105M;
+    proxy_send_timeout   300s;
+    proxy_read_timeout   300s;
+    send_timeout         300s;
+  }
+}
+
+# this is the second domain as configured in sharry, do the replacing
+server {
+  listen [::]:80 default_server;
+
+  server_name example.com;
+
+  root /srv/http;
+
+  location / {
+    # This is the nginx example from the sharry docs
+    proxy_pass http://localhost:9090/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_buffering off;
+    client_max_body_size 105M;
+    proxy_send_timeout   300s;
+    proxy_read_timeout   300s;
+    send_timeout         300s;
+
+    # Replace the protocol/domain in Location headers
+    proxy_redirect https://example.org/ http://example.com/;
+    # Replace the protocol/domain in the content
+    sub_filter_once off;
+    sub_filter "https://example.org" "http://example.com";
+    sub_filter "example.org" "example.com";
+    # sub_filter does not work with gzip, so enforce plaintext
+    # see https://www.nginx.com/resources/wiki/modules/substitutions/#subs-filter-types
+    proxy_set_header Accept-Encoding "";
+  }
+}
+```
