@@ -10,7 +10,7 @@ The web client is written in [Elm](https://elm-lang.org), an awesome
 programming language for the web :-). The [tus javascript client
 library](https://github.com/tus/tus-js-client) is used to realize the
 resumable uploads. All the css is provided by
-[Semantic-UI](https://semantic-ui.com/).
+[TailwindCSS](https://tailwindcss.com/).
 
 
 ## Creating a new share

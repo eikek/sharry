@@ -408,8 +408,9 @@ Let's go through the config values of one entry:
 - `id`: the id that is used in the url behind the button on the login
   screen. It is also used to amend the account name.
 - `name`: The name rendered as button text.
-- `icon`: a [semantic-ui icon
-  name](https://semantic-ui.com/elements/icon.html) for the button
+- `icon`: a [fontawesome (free) icon
+  name](https://fontawesome.com/icons?d=gallery&p=2&m=free) for the
+  button
 - `authorize-url` this is the URL of the provider where sharry
   redirects to at first, attaching `client_id` and the redirect uri
   back to sharry.

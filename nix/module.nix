@@ -22,7 +22,9 @@ let
       chunk-size = "100M";
       retry-delays = [0 3000 6000 12000 24000 48000];
       app-icon = "";
+      app-icon-dark = "";
       app-logo = "";
+      app-logo-dark = "";
       app-footer = "";
       app-footer-visible = true;
       welcome-message = "";
@@ -73,7 +75,7 @@ let
             enabled = false;
             id = "github";
             name = "Github";
-            icon = "github";
+            icon = "fab fa-github";
             authorize-url = "https://github.com/login/oauth/authorize";
             token-url = "https://github.com/login/oauth/access_token";
             user-url = "https://api.github.com/user";
@@ -246,10 +248,24 @@ in {
                 to an image.
               '';
             };
+            app-logo-dark = mkOption {
+              type = types.str;
+              default = defaults.webapp.app-logo-dark;
+              description = ''
+                The login and register page displays a logo image, by default
+                the Sharry logo. This can be changed here. It needs to be an URL
+                to an image. This url is used in dark mode.
+              '';
+            };
             app-icon = mkOption {
               type = types.str;
               default = defaults.webapp.app-icon;
               description = "The icon next to the app-name. Needs to be an URL to a image.";
+            };
+            app-icon-dark = mkOption {
+              type = types.str;
+              default = defaults.webapp.app-icon-dark;
+              description = "The icon next to the app-name for dark mode. Needs to be an URL to a image.";
             };
             app-footer = mkOption {
               type = types.str;
@@ -535,7 +551,7 @@ in {
                         icon = mkOption {
                           type = types.str;
                           default = d.icon;
-                          description = "A semantic-ui icon name for the button";
+                          description = "A fontawesome icon name for the button";
                         };
                         authorize-url = mkOption {
                           type = types.str;
