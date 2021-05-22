@@ -4,7 +4,7 @@ rec {
       version = "1.8.0";
       src = {
         url = "https://github.com/eikek/sharry/releases/download/v${version}/sharry-restserver-${version}.zip";
-        sha256 = "011zj8iq0zmb22zn49b5dlqqm707bvrqnv9xvxn2z96d6cgi47an";
+        sha256 = "034qlf4y2j6gjyy3fkpfrcz3d1nrvyp2n75ssh4ani64qqld028k";
       };
     };
     v1_7_1 = rec {
