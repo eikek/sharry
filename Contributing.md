@@ -67,9 +67,8 @@ using a pure functional style. It builds on great libraries from the
 
 The web frontend is written in [Elm](https://elm-lang.org), which is a
 nice functional language that compiles to javascript. The frontend is
-included in the server component. The CSS is currently provided by
-[FomanticUI](https://fomantic-ui.com/). (I'm working to migrate it on
-[tailwind](https://tailwindcss.com)).
+included in the server component. The CSS is provided by
+[tailwind](https://tailwindcss.com).
 
 For Scala and Elm this project uses a code format standard. For Scala
 this is enforced at CI using
