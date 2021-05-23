@@ -23,6 +23,12 @@ in `/modules/microsite` folder. It is built using
 [Jekyll](https://jekyllrb.com), a static site generator via the [sbt
 microsite plugin](https://47degrees.github.io/sbt-microsites/).
 
+There are two states of documentation: the currently released one and
+one for the next (not yet released) version. The current documentation
+is in branch `current-docs`. If you'd like to contribute to the
+current state of documentation, please base the PR off the branch
+`current-docs`. The state for the next version is `master`.
+
 If you want to contribute to the documentation: the main content is in
 `/modules/microsite/docs` and sibling directories, while assets are in
 `src/main/resources/microsite`. It is recommended to install
