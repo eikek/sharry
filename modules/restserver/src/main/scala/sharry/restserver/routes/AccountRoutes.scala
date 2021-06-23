@@ -20,7 +20,7 @@ import org.log4s._
 object AccountRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](backend: BackendApp[F]): HttpRoutes[F] = {
+  def apply[F[_]: Async](backend: BackendApp[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

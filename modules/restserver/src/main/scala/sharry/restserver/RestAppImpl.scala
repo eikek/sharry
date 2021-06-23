@@ -20,13 +20,12 @@ final class RestAppImpl[F[_]: Sync](val config: Config, val backend: BackendApp[
 
 object RestAppImpl {
 
-  def create[F[_]: ConcurrentEffect: ContextShift: Timer](
+  def create[F[_]: Async](
       cfg: Config,
-      connectEC: ExecutionContext,
-      blocker: Blocker
+      connectEC: ExecutionContext
   ): Resource[F, RestApp[F]] =
     for {
-      backend <- BackendApp(cfg.backend, connectEC, blocker)
+      backend <- BackendApp(cfg.backend, connectEC)
       app = new RestAppImpl[F](cfg, backend)
       appR <- Resource.make(app.init.map(_ => app))(_.shutdown)
     } yield appR

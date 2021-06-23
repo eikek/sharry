@@ -158,7 +158,7 @@ trait OShare[F[_]] {
 object OShare {
   private[this] val logger = getLogger
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Async](
       store: Store[F],
       cfg: ShareConfig
   ): Resource[F, OShare[F]] =
@@ -391,7 +391,7 @@ object OShare {
           case AddResult.EntityExists(_) =>
             store.transact(RPublishShare.update(share, true, reuseId))
           case AddResult.Failure(ex) =>
-            Effect[F].raiseError(ex)
+            Async[F].raiseError(ex)
         }
 
         for {
@@ -434,7 +434,7 @@ object OShare {
           fd <- OptionT(store.transact(Queries.fileDesc(file)))
           _  <- OptionT.liftF(store.transact(RShareFile.delete(file)))
           _ <- OptionT.liftF(
-            ConcurrentEffect[F].start(
+            Async[F].start(
               Queries.deleteFile(store)(fd.metaId) *> logger.fdebug(
                 s"File deleted: ${file.id}"
               )
@@ -629,7 +629,7 @@ object OShare {
     } yield ursf
   }
 
-  def createShareRecord[F[_]: Effect](
+  def createShareRecord[F[_]: Async](
       store: Store[F],
       accId: Ident,
       alias: Option[Ident],

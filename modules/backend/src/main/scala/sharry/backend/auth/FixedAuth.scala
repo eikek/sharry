@@ -20,7 +20,7 @@ import org.log4s._
   * a fallback to easily access the application in case other
   * authentication is not possible.
   */
-final class FixedAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
+final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
   private[this] val logger = getLogger
 
@@ -47,6 +47,6 @@ final class FixedAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
 }
 
 object FixedAuth {
-  def apply[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]): FixedAuth[F] =
+  def apply[F[_]: Async](cfg: AuthConfig, op: OAccount[F]): FixedAuth[F] =
     new FixedAuth[F](cfg, op)
 }

@@ -24,7 +24,7 @@ import org.log4s._
 object LoginRoutes {
   private[this] val logger = getLogger
 
-  def login[F[_]: ConcurrentEffect](
+  def login[F[_]: Async](
       S: BackendApp[F],
       client: Client[F],
       cfg: Config
@@ -102,7 +102,7 @@ object LoginRoutes {
   private def findOAuthProvider(cfg: Config, id: String): Option[AuthConfig.OAuth] =
     cfg.backend.auth.oauth.filter(_.enabled).find(_.id.id == id)
 
-  def session[F[_]: Effect](S: Login[F], cfg: Config): HttpRoutes[F] = {
+  def session[F[_]: Async](S: Login[F], cfg: Config): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
@@ -122,7 +122,7 @@ object LoginRoutes {
   private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
     ClientRequestInfo.getBaseUrl(cfg, req)
 
-  def makeResponse[F[_]: Effect](
+  def makeResponse[F[_]: Async](
       dsl: Http4sDsl[F],
       cfg: Config,
       req: Request[F],
@@ -151,7 +151,7 @@ object LoginRoutes {
         } yield resp
       case _ =>
         logger.info(
-          s"Authentication attempt failure for username ${accountName} from ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}"
+          s"Authentication attempt failure for username ${accountName} from ip ${req.from.map(_.toInetAddress.getHostAddress).getOrElse("Unknown ip")}"
         )
         Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))
     }

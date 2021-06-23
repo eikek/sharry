@@ -23,7 +23,7 @@ object RegisterRoutes {
     def genInvite: HttpRoutes[F]
   }
 
-  def apply[F[_]: Effect](backend: BackendApp[F], cfg: Config): InternRoutes[F] = {
+  def apply[F[_]: Async](backend: BackendApp[F], cfg: Config): InternRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 

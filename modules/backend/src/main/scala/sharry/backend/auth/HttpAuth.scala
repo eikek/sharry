@@ -14,7 +14,7 @@ import org.log4s.getLogger
 import yamusca.implicits._
 import yamusca.imports._
 
-final class HttpAuth[F[_]: Effect](
+final class HttpAuth[F[_]: Async](
     cfg: AuthConfig,
     ops: AddAccount.AccountOps[F],
     runner: HttpAuth.RunRequest[F]
@@ -56,7 +56,7 @@ final class HttpAuth[F[_]: Effect](
 
 object HttpAuth {
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       cfg: AuthConfig,
       ops: AddAccount.AccountOps[F],
       runner: RunRequest[F]

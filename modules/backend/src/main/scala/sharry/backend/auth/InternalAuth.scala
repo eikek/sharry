@@ -12,7 +12,7 @@ import sharry.store.records.RAccount
 
 import org.log4s._
 
-final class InternalAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
+final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
   private[this] val logger = getLogger
 
@@ -53,6 +53,6 @@ final class InternalAuth[F[_]: Effect](cfg: AuthConfig, op: OAccount[F]) {
 
 object InternalAuth {
 
-  def apply[F[_]: Effect](cfg: AuthConfig, oacc: OAccount[F]): InternalAuth[F] =
+  def apply[F[_]: Async](cfg: AuthConfig, oacc: OAccount[F]): InternalAuth[F] =
     new InternalAuth[F](cfg, oacc)
 }

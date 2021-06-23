@@ -4,14 +4,14 @@ import sharry.common.LenientUri
 import sharry.common.Password
 
 import org.http4s.Request
-import org.http4s.syntax.string._
+import org.typelevel.ci.CIString
 
 object SharryPassword {
 
   def apply[F[_]](req: Request[F]): Option[Password] =
     req.headers
-      .get("sharry-password".ci)
-      .map(_.value)
+      .get(CIString("sharry-password"))
+      .map(_.head.value)
       .flatMap(LenientUri.percentDecode)
       .map(Password.apply)
 

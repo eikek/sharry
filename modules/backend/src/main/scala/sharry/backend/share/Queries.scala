@@ -1,9 +1,7 @@
 package sharry.backend.share
 
 import cats.data.OptionT
-import cats.effect.ConcurrentEffect
-import cats.effect.Effect
-import cats.effect.Sync
+import cats.effect._
 import cats.implicits._
 import fs2.Stream
 
@@ -368,7 +366,7 @@ object Queries {
     q.query[Ident].stream
   }
 
-  def deleteFile[F[_]: Effect](store: Store[F])(fileMetaId: Ident) = {
+  def deleteFile[F[_]: Async](store: Store[F])(fileMetaId: Ident) = {
     def deleteChunk(fid: Ident, chunk: Int): F[Int] =
       store
         .transact(
@@ -404,7 +402,7 @@ object Queries {
     deleteFileData(fileMetaId) *> deleteFileMeta(fileMetaId)
   }
 
-  def deleteShare[F[_]: ConcurrentEffect](share: Ident, background: Boolean)(
+  def deleteShare[F[_]: Async](share: Ident, background: Boolean)(
       store: Store[F]
   ): F[Unit] = {
     val rFileId  = RShareFile.Columns.fileId
@@ -428,7 +426,7 @@ object Queries {
       fids <- allFileIds
       _    <- store.transact(RShare.delete(share))
       _ <-
-        if (background) ConcurrentEffect[F].start(deleteAllFiles(fids))
+        if (background) Async[F].start(deleteAllFiles(fids))
         else deleteAllFiles(fids)
     } yield ()
   }

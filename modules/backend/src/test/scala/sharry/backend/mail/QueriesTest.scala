@@ -1,7 +1,5 @@
 package sharry.backend.mail
 
-import scala.concurrent.ExecutionContext
-
 import cats.effect._
 
 import sharry.common._
@@ -12,7 +10,6 @@ import emil.MailAddress
 import munit._
 
 class QueriesTest extends FunSuite with StoreFixture {
-  implicit val CS = IO.contextShift(ExecutionContext.global)
 
   test("get email from account") {
     withStore { store =>

@@ -16,11 +16,12 @@ import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.log4s.getLogger
+import org.typelevel.ci.CIString
 
 object TusRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       shareId: Ident,
       backend: BackendApp[F],
       token: AuthToken,
@@ -32,7 +33,9 @@ object TusRoutes {
 
     HttpRoutes.of {
       case OPTIONS -> Root =>
-        NoContent.apply(TusHeader.resumable, TusHeader.extension, TusHeader.version)
+        NoContent().map(
+          _.putHeaders(TusHeader.resumable, TusHeader.extension, TusHeader.version)
+        )
 
       case req @ POST -> Root =>
         // creation extension
@@ -43,9 +46,11 @@ object TusRoutes {
               .semiflatMap({
                 case UploadResult.Success(fid) =>
                   val url = rootUrl / fid.id
-                  Created(
-                    TusHeader.resumable,
-                    Location(Uri.unsafeFromString(url.asString))
+                  Created().map(
+                    _.putHeaders(
+                      TusHeader.resumable,
+                      Location(Uri.unsafeFromString(url.asString))
+                    )
                   )
                 case UploadResult.ValidityExceeded(_) =>
                   BadRequest()
@@ -63,12 +68,14 @@ object TusRoutes {
 
       case req @ (POST | PATCH) -> Root / Ident(fileId) =>
         val offset = UploadOffset.get(req).getOrElse(ByteSize.zero)
-        val length = req.headers.get(`Content-Length`).map(_.length).map(ByteSize.apply)
+        val length = req.headers.get[`Content-Length`].map(_.length).map(ByteSize.apply)
         backend.share
           .addFileData(shareId, fileId, token.account, length, offset, req.body)
           .flatMap({
             case UploadResult.Success(saved) =>
-              OptionT.liftF(NoContent(TusHeader.resumable, UploadOffset(saved)))
+              OptionT.liftF(
+                NoContent().map(_.putHeaders(TusHeader.resumable, UploadOffset(saved)))
+              )
             case UploadResult.ValidityExceeded(_) =>
               OptionT.liftF(BadRequest("Validity exceeded"))
             case UploadResult.SizeExceeded(_) =>
@@ -83,12 +90,14 @@ object TusRoutes {
           _    <- OptionT.liftF(logger.fdebug(s"Return info for file ${fileId.id}"))
           data <- backend.share.getFileData(fileId, token.account)
           resp <- OptionT.liftF(
-            Ok(
-              TusHeader.resumable,
-              UploadOffset(data.saved),
-              TusHeader.cacheControl,
-              TusMaxSize(cfg.backend.share.maxSize),
-              UploadLength(data.length)
+            Ok().map(
+              _.putHeaders(
+                TusHeader.resumable,
+                UploadOffset(data.saved),
+                TusHeader.cacheControl,
+                TusMaxSize(cfg.backend.share.maxSize),
+                UploadLength(data.length)
+              )
             )
           )
         } yield resp).getOrElseF(NotFound())
@@ -101,19 +110,19 @@ object TusRoutes {
     def fileInfo[F[_]](req: Request[F]): Option[FileInfo] = {
       val name = SharryFileName(req)
       val len  = SharryFileLength(req)
-      val mime = SharryFileType(req).getOrElse(Mimetype.`application/octet-stream`)
+      val mime = SharryFileType(req).getOrElse(Mimetype.applicationOctetStream)
 
       len.map(l => FileInfo(l.bytes, name, mime))
     }
 
-    def resumable: Header =
-      Header("Tus-Resumable", "1.0.0")
-    def extension: Header =
-      Header("Tus-Extension", "creation")
-    def version: Header =
-      Header("Tus-Version", "1.0.0")
+    def resumable =
+      Header.Raw(CIString("Tus-Resumable"), "1.0.0")
+    def extension: Header.Raw =
+      Header.Raw(CIString("Tus-Extension"), "creation")
+    def version: Header.Raw =
+      Header.Raw(CIString("Tus-Version"), "1.0.0")
 
-    def cacheControl: Header =
+    def cacheControl =
       `Cache-Control`(CacheDirective.`no-store`)
   }
 

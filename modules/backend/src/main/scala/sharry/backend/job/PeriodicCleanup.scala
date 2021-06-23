@@ -13,7 +13,7 @@ import org.log4s.getLogger
 object PeriodicCleanup {
   private[this] val logger = getLogger
 
-  def resource[F[_]: ConcurrentEffect: Timer](
+  def resource[F[_]: Async](
       cleanupCfg: CleanupConfig,
       signupCfg: SignupConfig,
       shareOps: OShare[F],
@@ -30,13 +30,13 @@ object PeriodicCleanup {
           signupOps
         ) ++ logStopped).compile.drain
       Resource
-        .make(ConcurrentEffect[F].start(main))(fiber =>
+        .make(Async[F].start(main))(fiber =>
           logger.fdebug("Periodic cleanup cancelled") *> fiber.cancel
         )
         .map(_ => ())
     }
 
-  def loop[F[_]: ConcurrentEffect: Timer](
+  def loop[F[_]: Async](
       cleanupCfg: CleanupConfig,
       signupCfg: SignupConfig,
       shareOps: OShare[F],
@@ -65,7 +65,7 @@ object PeriodicCleanup {
   private def logStopped[F[_]: Sync] =
     Stream.eval(logger.finfo("Periodic cleanup job stopped")).drain
 
-  def doCleanup[F[_]: ConcurrentEffect](
+  def doCleanup[F[_]: Async](
       cleanupCfg: CleanupConfig,
       signupCfg: SignupConfig,
       shareOps: OShare[F],

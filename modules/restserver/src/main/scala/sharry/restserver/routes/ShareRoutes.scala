@@ -23,7 +23,7 @@ import org.log4s._
 object ShareRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config

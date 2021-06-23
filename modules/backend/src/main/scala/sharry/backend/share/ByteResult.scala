@@ -1,7 +1,7 @@
 package sharry.backend.share
 
 import cats.data.OptionT
-import cats.effect.Effect
+import cats.effect._
 import fs2.Stream
 
 import sharry.common.Ident
@@ -20,7 +20,7 @@ object ByteResult {
   ): Stream[F, Byte] =
     bitpeace.get(id).unNoneTerminate.through(bitpeace.fetchData(range))
 
-  def load[F[_]: Effect](
+  def load[F[_]: Async](
       store: Store[F]
   )(fileId: Ident, range: RangeDef): OptionT[F, FileRange[F]] =
     for {
@@ -30,7 +30,7 @@ object ByteResult {
 
   // impl. note: bitpeace uses for filemeta's timestamp column a different mapping, so
   // it's complicated to create a single query with doobie. Using to two queries.
-  private def loadMeta[F[_]: Effect](
+  private def loadMeta[F[_]: Async](
       fileId: Ident,
       store: Store[F]
   ): OptionT[F, (RShareFile, FileMeta)] =

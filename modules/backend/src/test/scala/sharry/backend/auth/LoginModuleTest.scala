@@ -1,9 +1,8 @@
 package sharry.backend.auth
 
-import scala.concurrent.ExecutionContext
-
 import cats.data.Kleisli
 import cats.effect._
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
 
 import sharry.backend.account.OAccount
@@ -19,7 +18,6 @@ import munit._
 import scodec.bits.ByteVector
 
 class LoginModuleTest extends FunSuite {
-  implicit val CS = IO.contextShift(ExecutionContext.global)
 
   val cfg = AuthConfig(
     ByteVector.fromValidHex("caffee"),

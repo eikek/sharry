@@ -13,7 +13,7 @@ import org.log4s.getLogger
 import yamusca.implicits._
 import yamusca.imports._
 
-final class CommandAuth[F[_]: Effect](
+final class CommandAuth[F[_]: Async](
     cfg: AuthConfig,
     ops: AddAccount.AccountOps[F],
     runner: CommandAuth.RunCommand[F]
@@ -55,7 +55,7 @@ final class CommandAuth[F[_]: Effect](
 
 object CommandAuth {
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       cfg: AuthConfig,
       ops: AddAccount.AccountOps[F],
       runner: RunCommand[F]

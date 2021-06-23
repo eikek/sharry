@@ -23,7 +23,7 @@ trait Login[F[_]] {
 object Login {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](oacc: OAccount[F]): Resource[F, Login[F]] =
+  def apply[F[_]: Async](oacc: OAccount[F]): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
 
       def loginSession(config: AuthConfig)(sessionKey: String): F[LoginResult] =
@@ -55,7 +55,7 @@ object Login {
 
     })
 
-  def createLoginModule[F[_]: Effect](
+  def createLoginModule[F[_]: Async](
       cfg: AuthConfig,
       account: OAccount[F]
   ): Kleisli[F, UserPassData, LoginResult] = {

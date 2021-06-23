@@ -47,7 +47,7 @@ trait OAccount[F[_]] {
 object OAccount {
   private[this] val logger = getLogger
 
-  def apply[F[_]: ConcurrentEffect](store: Store[F]): Resource[F, OAccount[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OAccount[F]] =
     Resource.pure[F, OAccount[F]](new OAccount[F] {
 
       def changePassword(id: Ident, oldPw: Password, newPw: Password): F[AddResult] = {
@@ -158,7 +158,7 @@ object OAccount {
               .flatMap {
                 case Some(a) => a.pure[F]
                 case None =>
-                  Effect[F]
+                  Async[F]
                     .raiseError(new Exception("Currently saved account not found!"))
               }
           case AddResult.EntityExists(msg) =>
@@ -168,11 +168,11 @@ object OAccount {
                 .flatMap {
                   case Some(a) => a.pure[F]
                   case None =>
-                    Effect[F]
+                    Async[F]
                       .raiseError(new Exception("Currently saved account not found!"))
                 }
           case AddResult.Failure(ex) =>
-            Effect[F].raiseError(ex)
+            Async[F].raiseError(ex)
         }
 
       def findByAlias(alias: Ident): OptionT[F, RAccount] =

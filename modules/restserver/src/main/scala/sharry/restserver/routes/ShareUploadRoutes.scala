@@ -18,6 +18,7 @@ import sharry.restserver.routes.tus.TusRoutes
 import bitpeace.Mimetype
 import org.http4s.HttpRoutes
 import org.http4s.Request
+import org.http4s.Uri
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
@@ -28,7 +29,7 @@ import org.log4s.getLogger
 object ShareUploadRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config,
@@ -75,15 +76,15 @@ object ShareUploadRoutes {
       case req @ (PATCH | POST | GET | OPTIONS | HEAD) -> Ident(
             id
           ) /: "files" /: "tus" /: _ =>
-        val pi      = req.pathInfo.substring(id.id.length() + 10)
+        val pi      = req.pathInfo.renderString.substring(id.id.length() + 10)
         val rootUri = getBaseUrl(cfg, req) ++ uploadPathPrefix / id.id / "files" / "tus"
         TusRoutes(id, backend, token, cfg, rootUri)
-          .run(req.withPathInfo(pi))
+          .run(req.withPathInfo(Uri.Path.unsafeFromString(pi)))
           .getOrElseF(NotFound())
     }
   }
 
-  def readMultipart[F[_]: Effect](mp: Multipart[F]): F[ShareData[F]] = {
+  def readMultipart[F[_]: Async](mp: Multipart[F]): F[ShareData[F]] = {
     def parseMeta(body: Stream[F, Byte]): F[ShareProperties] =
       body
         .through(fs2.text.utf8Decode)
@@ -111,8 +112,8 @@ object ShareUploadRoutes {
       .map(p =>
         File(
           p.filename,
-          p.headers.get(`Content-Type`).map(fromContentType),
-          p.headers.get(`Content-Length`).map(_.length),
+          p.headers.get[`Content-Type`].map(fromContentType),
+          p.headers.get[`Content-Length`].map(_.length),
           p.body
         )
       )

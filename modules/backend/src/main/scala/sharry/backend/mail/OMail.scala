@@ -42,7 +42,7 @@ trait OMail[F[_]] {
 object OMail {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       store: Store[F],
       cfg: MailConfig,
       emil: Emil[F]
