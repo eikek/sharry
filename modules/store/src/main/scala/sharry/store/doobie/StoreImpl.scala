@@ -1,6 +1,6 @@
 package sharry.store.doobie
 
-import cats.effect.Effect
+import cats.effect._
 import cats.implicits._
 
 import sharry.common.Ident
@@ -11,8 +11,7 @@ import bitpeace.{Bitpeace, BitpeaceConfig, TikaMimetypeDetect}
 import doobie._
 import doobie.implicits._
 
-final class StoreImpl[F[_]: Effect](jdbc: JdbcConfig, xa: Transactor[F])
-    extends Store[F] {
+final class StoreImpl[F[_]: Async](jdbc: JdbcConfig, xa: Transactor[F]) extends Store[F] {
   val bitpeaceCfg =
     BitpeaceConfig(
       "filemeta",

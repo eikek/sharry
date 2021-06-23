@@ -18,7 +18,7 @@ import org.log4s.getLogger
 object SettingRoutes {
   private[this] val logger = getLogger
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken
   ): HttpRoutes[F] = {

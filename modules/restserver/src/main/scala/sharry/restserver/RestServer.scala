@@ -16,30 +16,24 @@ import sharry.restserver.routes._
 import sharry.restserver.webapp._
 
 import org.http4s._
+import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 import org.log4s.getLogger
 
 object RestServer {
   private[this] val logger = getLogger
 
-  def stream[F[_]: ConcurrentEffect](
-      cfg: Config,
-      pools: Pools
-  )(implicit
-      T: Timer[F],
-      CS: ContextShift[F]
-  ): Stream[F, Nothing] = {
+  def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
 
-    val templates = TemplateRoutes[F](pools.blocker, cfg)
+    val templates = TemplateRoutes[F](cfg)
     val app = for {
-      restApp <- RestAppImpl.create[F](cfg, pools.connectEC, pools.blocker)
+      restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
       _       <- Resource.eval(restApp.init)
       client  <- BlazeClientBuilder[F](pools.httpClientEC).resource
 
@@ -58,7 +52,7 @@ object RestServer {
             else notFound[F](token)
         },
         "/api/doc"    -> templates.doc,
-        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F](pools.blocker)),
+        "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
         "/app"        -> EnvMiddleware(templates.app),
         "/sw.js"      -> EnvMiddleware(templates.serviceWorker),
         "/"           -> redirectTo("/app")
@@ -83,7 +77,7 @@ object RestServer {
 
   }.drain
 
-  def aliasRoutes[F[_]: Effect](
+  def aliasRoutes[F[_]: Async](
       cfg: Config,
       restApp: RestApp[F],
       token: AuthToken
@@ -98,7 +92,7 @@ object RestServer {
       "mail" -> NotifyRoutes(restApp.backend, token, cfg)
     )
 
-  def securedRoutes[F[_]: Effect](
+  def securedRoutes[F[_]: Async](
       cfg: Config,
       restApp: RestApp[F],
       token: AuthToken
@@ -118,7 +112,7 @@ object RestServer {
       "mail" -> MailRoutes(restApp.backend, token, cfg)
     )
 
-  def adminRoutes[F[_]: Effect](
+  def adminRoutes[F[_]: Async](
       cfg: Config,
       restApp: RestApp[F]
   ): HttpRoutes[F] =
@@ -127,7 +121,7 @@ object RestServer {
       "account" -> AccountRoutes(restApp.backend)
     )
 
-  def openRoutes[F[_]: ConcurrentEffect](
+  def openRoutes[F[_]: Async](
       cfg: Config,
       client: Client[F],
       restApp: RestApp[F]
@@ -139,7 +133,7 @@ object RestServer {
       "share"  -> OpenShareRoutes(restApp.backend, cfg)
     )
 
-  def notFound[F[_]: Effect](token: AuthToken): HttpRoutes[F] =
+  def notFound[F[_]: Async](token: AuthToken): HttpRoutes[F] =
     Kleisli(_ =>
       OptionT.liftF(
         logger
@@ -148,7 +142,7 @@ object RestServer {
       )
     )
 
-  def redirectTo[F[_]: Effect](path: String): HttpRoutes[F] = {
+  def redirectTo[F[_]: Async](path: String): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -156,7 +150,7 @@ object RestServer {
       Response[F](
         Status.SeeOther,
         body = Stream.empty,
-        headers = Headers.of(Location(Uri(path = path)))
+        headers = Headers(Location(Uri(path = Uri.Path.unsafeFromString(path))))
       ).pure[F]
     }
   }

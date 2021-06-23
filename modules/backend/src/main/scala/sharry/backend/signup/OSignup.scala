@@ -27,14 +27,14 @@ object OSignup {
 
   case class RegisterData(login: Ident, password: Password, invite: Option[Ident])
 
-  def apply[F[_]: ConcurrentEffect](store: Store[F]): Resource[F, OSignup[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure[F, OSignup[F]](new OSignup[F] {
 
       def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult] =
         if (cfg.mode != SignupMode.Invite)
-          Effect[F].pure(NewInviteResult.invitationClosed)
+          Async[F].pure(NewInviteResult.invitationClosed)
         else if (cfg.invitePassword != password)
-          Effect[F].pure(NewInviteResult.passwordMismatch)
+          Async[F].pure(NewInviteResult.passwordMismatch)
         else
           store.transact(RInvitation.insertNew).map(ri => NewInviteResult.success(ri.id))
 

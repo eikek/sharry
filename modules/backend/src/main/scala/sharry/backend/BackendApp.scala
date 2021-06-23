@@ -32,18 +32,14 @@ trait BackendApp[F[_]] {
 
 object BackendApp {
 
-  def create[F[_]: ConcurrentEffect: ContextShift](
-      cfg: Config,
-      blocker: Blocker,
-      store: Store[F]
-  ): Resource[F, BackendApp[F]] =
+  def create[F[_]: Async](cfg: Config, store: Store[F]): Resource[F, BackendApp[F]] =
     for {
       accountImpl <- OAccount[F](store)
       loginImpl   <- Login[F](accountImpl)
       signupImpl  <- OSignup[F](store)
       aliasImpl   <- OAlias[F](store)
       shareImpl   <- OShare[F](store, cfg.share)
-      mailImpl    <- OMail[F](store, cfg.mail, JavaMailEmil[F](blocker))
+      mailImpl    <- OMail[F](store, cfg.mail, JavaMailEmil[F]())
     } yield new BackendApp[F] {
       val login: Login[F]      = loginImpl
       val signup: OSignup[F]   = signupImpl
@@ -53,14 +49,13 @@ object BackendApp {
       val mail: OMail[F]       = mailImpl
     }
 
-  def apply[F[_]: ConcurrentEffect: ContextShift: Timer](
+  def apply[F[_]: Async](
       cfg: Config,
-      connectEC: ExecutionContext,
-      blocker: Blocker
+      connectEC: ExecutionContext
   ): Resource[F, BackendApp[F]] =
     for {
-      store   <- Store.create(cfg.jdbc, connectEC, blocker, true)
-      backend <- create(cfg, blocker, store)
+      store   <- Store.create(cfg.jdbc, connectEC, true)
+      backend <- create(cfg, store)
       _ <-
         PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)
     } yield backend

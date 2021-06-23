@@ -1,7 +1,7 @@
 package sharry.restserver.oauth
 
 import cats.data.OptionT
-import cats.effect.ConcurrentEffect
+import cats.effect._
 import cats.implicits._
 
 import sharry.backend.auth.AuthConfig
@@ -23,7 +23,7 @@ import org.log4s.getLogger
 object CodeFlow {
   private[this] val logger = getLogger
 
-  def apply[F[_]: ConcurrentEffect](
+  def apply[F[_]: Async](
       client: Client[F]
   )(cfg: AuthConfig.OAuth, redirectUri: String, code: String): OptionT[F, Ident] = {
 
@@ -46,7 +46,7 @@ object CodeFlow {
     } yield user
   }
 
-  private def codeToToken[F[_]: ConcurrentEffect](
+  private def codeToToken[F[_]: Async](
       c: Client[F],
       dsl: Http4sClientDsl[F],
       cfg: AuthConfig.OAuth,
@@ -66,7 +66,7 @@ object CodeFlow {
       Uri.unsafeFromString(cfg.tokenUrl.asString)
     )
 
-    OptionT(req.flatMap(c.run(_).use {
+    OptionT(c.run(req).use {
       case Status.Successful(r) =>
         val u1 = r.as[UrlForm].map(_.getFirst("access_token"))
         val u2 =
@@ -76,10 +76,10 @@ object CodeFlow {
         logger
           .ferror[F](s"Error obtaining access token '${r.status.code}' / ${r.as[String]}")
           .map(_ => None)
-    }))
+    })
   }
 
-  private def tokenToUser[F[_]: ConcurrentEffect](
+  private def tokenToUser[F[_]: Async](
       c: Client[F],
       dsl: Http4sClientDsl[F],
       cfg: AuthConfig.OAuth,
@@ -93,7 +93,7 @@ object CodeFlow {
       Accept(MediaType.application.json)
     )
 
-    val resp: F[Option[Ident]] = req.flatMap(c.run(_).use {
+    val resp: F[Option[Ident]] = c.run(req).use {
       case Status.Successful(r) =>
         r.as[Json]
           .flatTap(j => logger.ftrace(s"user structure: ${j.noSpaces}"))
@@ -107,7 +107,7 @@ object CodeFlow {
           )
           .map(_ => None)
 
-    })
+    }
 
     OptionT(resp)
   }
@@ -115,14 +115,14 @@ object CodeFlow {
   private def normalizeUid(uid: String): Ident =
     Ident.unsafe(uid.filter(Ident.chars.contains))
 
-  private def logRequests[F[_]: ConcurrentEffect](c: Client[F]): Client[F] =
+  private def logRequests[F[_]: Async](c: Client[F]): Client[F] =
     RequestLogger(
       logHeaders = true,
       logBody = true,
       logAction = Some((msg: String) => logger.ftrace[F](msg))
     )(c)
 
-  private def logResponses[F[_]: ConcurrentEffect](c: Client[F]): Client[F] =
+  private def logResponses[F[_]: Async](c: Client[F]): Client[F] =
     ResponseLogger(
       logHeaders = true,
       logBody = true,

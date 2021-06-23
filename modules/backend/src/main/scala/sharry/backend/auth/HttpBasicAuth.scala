@@ -13,7 +13,7 @@ import sharry.common.syntax.all._
 
 import org.log4s.getLogger
 
-final class HttpBasicAuth[F[_]: Effect](
+final class HttpBasicAuth[F[_]: Async](
     cfg: AuthConfig,
     ops: AddAccount.AccountOps[F],
     runner: HttpBasicAuth.RunRequest[F]
@@ -55,7 +55,7 @@ final class HttpBasicAuth[F[_]: Effect](
 
 object HttpBasicAuth {
 
-  def apply[F[_]: Effect](
+  def apply[F[_]: Async](
       cfg: AuthConfig,
       ops: AddAccount.AccountOps[F],
       runner: RunRequest[F]

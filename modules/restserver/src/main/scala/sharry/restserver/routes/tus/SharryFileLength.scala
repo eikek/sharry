@@ -3,7 +3,7 @@ package sharry.restserver.routes.tus
 import sharry.common.ByteSize
 
 import org.http4s._
-import org.http4s.syntax.string._
+import org.typelevel.ci.CIString
 
 object SharryFileLength {
 
@@ -11,5 +11,5 @@ object SharryFileLength {
     sizeHeader(req, "sharry-file-length").orElse(sizeHeader(req, "upload-length"))
 
   private[tus] def sizeHeader[F[_]](req: Request[F], name: String): Option[ByteSize] =
-    req.headers.get(name.ci).flatMap(_.value.toLongOption).map(ByteSize.apply)
+    req.headers.get(CIString(name)).flatMap(_.head.value.toLongOption).map(ByteSize.apply)
 }

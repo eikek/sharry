@@ -4,21 +4,20 @@ object Dependencies {
 
   val BcryptVersion           = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion         = "0.8.0"
+  val BitpeaceVersion         = "0.9.0-M1"
   val CirceVersion            = "0.14.1"
   val ClipboardJsVersion      = "2.0.6"
-  val DoobieVersion           = "0.13.4"
-  val EmilVersion             = "0.9.2"
+  val DoobieVersion           = "1.0.0-M5"
+  val EmilVersion             = "0.10.0-M1"
   val FlywayVersion           = "7.10.0"
-  val Fs2Version              = "2.5.6"
+  val Fs2Version              = "3.0.4"
   val H2Version               = "1.4.200"
-  val Http4sVersion           = "0.21.24"
+  val Http4sVersion           = "0.23.0-RC1"
   val JQueryVersion           = "3.5.1"
   val KindProjectorVersion    = "0.10.3"
   val Log4sVersion            = "1.10.0"
   val LogbackVersion          = "1.2.3"
   val MariaDbVersion          = "2.7.3"
-  val MiniTestVersion         = "2.9.4"
   val MUnitVersion            = "0.7.26"
   val OrganizeImportsVersion  = "0.5.0"
   val PostgresVersion         = "42.2.22"
@@ -112,13 +111,6 @@ object Dependencies {
   val bcrypt = Seq(
     "org.mindrot" % "jbcrypt" % BcryptVersion
   )
-
-  val miniTest = Seq(
-    // https://github.com/monix/minitest
-    // Apache 2.0
-    "io.monix" %% "minitest"      % MiniTestVersion,
-    "io.monix" %% "minitest-laws" % MiniTestVersion
-  ).map(_ % Test)
 
   val munit = Seq(
     "org.scalameta" %% "munit"            % MUnitVersion,

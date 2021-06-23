@@ -53,10 +53,9 @@ object Main extends IOApp {
 
     val pools = for {
       bec <- blockingEC
-      blocker = Blocker.liftExecutionContext(bec)
       cec <- connectEC
       rec <- restEC
-    } yield Pools(cec, bec, blocker, rec)
+    } yield Pools(cec, bec, rec)
 
     if (EnvMode.current.isDev) {
       logger.warn(">>>>>   Sharry is running in DEV mode!   <<<<<")
@@ -64,7 +63,7 @@ object Main extends IOApp {
 
     pools.use { p =>
       if ("true" == System.getProperty("sharry.migrate-old-dbschema"))
-        MigrateFrom06[IO](cfg.backend.jdbc, p.connectEC, p.blocker)
+        MigrateFrom06[IO](cfg.backend.jdbc, p.connectEC)
           .use(mig => mig.migrate)
           .as(ExitCode.Success)
       else

@@ -41,7 +41,7 @@ object OAlias {
 
   case class AliasMember(accountId: Ident, login: Ident)
 
-  def apply[F[_]: Effect](store: Store[F]): Resource[F, OAlias[F]] =
+  def apply[F[_]: Async](store: Store[F]): Resource[F, OAlias[F]] =
     Resource.pure[F, OAlias[F]](new OAlias[F] {
       def create(detail: AliasInput): F[AddResult] =
         store.add(

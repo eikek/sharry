@@ -24,26 +24,20 @@ trait Store[F[_]] {
 
 object Store {
 
-  def create[F[_]: Effect: ContextShift](
+  def create[F[_]: Async](
       jdbc: JdbcConfig,
       connectEC: ExecutionContext,
-      blocker: Blocker,
       runMigration: Boolean
-  ): Resource[F, Store[F]] = {
-
-    val hxa = HikariTransactor.newHikariTransactor[F](
-      jdbc.driverClass,
-      jdbc.url.asString,
-      jdbc.user,
-      jdbc.password,
-      connectEC,
-      blocker
-    )
-
+  ): Resource[F, Store[F]] =
     for {
-      xa <- hxa
+      xa <- HikariTransactor.newHikariTransactor[F](
+        jdbc.driverClass,
+        jdbc.url.asString,
+        jdbc.user,
+        jdbc.password,
+        connectEC
+      )
       st = new StoreImpl[F](jdbc, xa)
-      _ <- if (runMigration) Resource.eval(st.migrate) else Resource.pure(())
-    } yield st
-  }
+      _ <- if (runMigration) Resource.eval(st.migrate) else Resource.pure[F, Int](0)
+    } yield st: Store[F]
 }

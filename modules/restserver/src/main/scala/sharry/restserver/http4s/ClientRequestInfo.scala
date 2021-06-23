@@ -8,7 +8,7 @@ import sharry.restserver.Config
 
 import org.http4s._
 import org.http4s.headers._
-import org.http4s.util.CaseInsensitiveString
+import org.typelevel.ci.CIString
 
 /** Obtain information about the client by inspecting the request.
   */
@@ -35,23 +35,24 @@ object ClientRequestInfo {
     xForwardedProto(req).orElse(clientConnectionProto(req))
 
   private def host[F[_]](req: Request[F]): Option[String] =
-    req.headers.get(Host).map(_.host)
+    req.headers.get[Host].map(_.host)
 
   private def xForwardedFor[F[_]](req: Request[F]): Option[String] =
     req.headers
-      .get(`X-Forwarded-For`)
+      .get[`X-Forwarded-For`]
       .flatMap(_.values.head)
+      .map(_.toInetAddress)
       .flatMap(inet => Option(inet.getHostName).orElse(Option(inet.getHostAddress)))
 
   private def xForwardedHost[F[_]](req: Request[F]): Option[String] =
     req.headers
-      .get(CaseInsensitiveString("X-Forwarded-Host"))
-      .map(_.value)
+      .get(CIString("X-Forwarded-Host"))
+      .map(_.head.value)
 
   private def xForwardedProto[F[_]](req: Request[F]): Option[String] =
     req.headers
-      .get(CaseInsensitiveString("X-Forwarded-Proto"))
-      .map(_.value)
+      .get(CIString("X-Forwarded-Proto"))
+      .map(_.head.value)
 
   private def clientConnectionProto[F[_]](req: Request[F]): Option[String] =
     req.isSecure.map {
@@ -61,8 +62,8 @@ object ClientRequestInfo {
 
   private def xForwardedPort[F[_]](req: Request[F]): Option[Int] =
     req.headers
-      .get(CaseInsensitiveString("X-Forwarded-Port"))
-      .map(_.value)
+      .get(CIString("X-Forwarded-Port"))
+      .map(_.head.value)
       .flatMap(str => Either.catchNonFatal(str.toInt).toOption)
 
 }

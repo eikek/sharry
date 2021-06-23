@@ -1,7 +1,7 @@
 package sharry.restserver.routes
 
 import cats.data.OptionT
-import cats.effect.Sync
+import cats.effect._
 
 import sharry.backend.BackendApp
 import sharry.backend.share._
@@ -48,7 +48,7 @@ object ShareDetailResponse {
           _ => {
             logger.info(
               s"Password challenge failure for share id ${shareId
-                .fold(pub => pub.id.id, priv => priv.id.id)} from ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}"
+                .fold(pub => pub.id.id, priv => priv.id.id)} from ip ${req.from.map(_.toUriString).getOrElse("Unknown ip")}"
             )
             Forbidden()
           },
@@ -58,7 +58,7 @@ object ShareDetailResponse {
     } yield resp).getOrElseF {
       logger.info(
         s"No share with id ${shareId
-          .fold(pub => pub.id.id, priv => priv.id.id)}. Attempt by ip ${req.from.map(_.getHostAddress).getOrElse("Unknown ip")}"
+          .fold(pub => pub.id.id, priv => priv.id.id)}. Attempt by ip ${req.from.map(_.toUriString).getOrElse("Unknown ip")}"
       )
       NotFound()
     }

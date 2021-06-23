@@ -14,6 +14,7 @@ import bitpeace.RangeDef
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
+import org.typelevel.ci.CIString
 
 object ByteResponse {
 
@@ -26,7 +27,7 @@ object ByteResponse {
       fid: Ident
   ) =
     req.headers
-      .get(Range)
+      .get[Range]
       .map(_.ranges.head)
       .map(sr => range(dsl, sr, backend, shareId, pass, fid))
       .getOrElse(all(dsl, req, backend, shareId, pass, fid))
@@ -93,7 +94,7 @@ object ByteResponse {
   ): OptionT[F, Response[F]] = {
     import dsl._
 
-    val noneMatch = req.headers.get(`If-None-Match`).flatMap(_.tags).map(_.head.tag)
+    val noneMatch = req.headers.get[`If-None-Match`].flatMap(_.tags).map(_.head.tag)
 
     if (Some(file.fileMeta.checksum) == noneMatch) OptionT.liftF(NotModified())
     else OptionT.none
@@ -137,5 +138,5 @@ object ByteResponse {
     HttpDate.unsafeFromInstant(file.fileMeta.timestamp)
 
   private def fileNameMap[F[_]](file: FileRange[F]) =
-    file.shareFile.filename.map(n => Map("filename" -> n)).getOrElse(Map.empty)
+    file.shareFile.filename.map(n => Map(CIString("filename") -> n)).getOrElse(Map.empty)
 }

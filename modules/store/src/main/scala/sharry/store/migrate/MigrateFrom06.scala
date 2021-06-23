@@ -19,11 +19,7 @@ import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
 
-final class MigrateFrom06[F[_]: Effect: ContextShift](
-    cfg: JdbcConfig,
-    store: Store[F],
-    blocker: Blocker
-) {
+final class MigrateFrom06[F[_]: Async](cfg: JdbcConfig, store: Store[F]) {
   private[this] val logger = getLogger
 
   def migrate: F[Unit] =
@@ -41,7 +37,7 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
     } yield ()
 
   def flywayBaseline: F[Unit] =
-    Effect[F].delay {
+    Async[F].delay {
       val fw = FlywayMigrate.baselineFlyway(cfg)
       fw.migrate()
       ()
@@ -70,7 +66,7 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
       case Some(f) => f
     }
     val text = fs2.io
-      .readInputStream(Effect[F].delay(file.openStream()), 8 * 1024, blocker)
+      .readInputStream(Async[F].delay(file.openStream()), 8 * 1024)
       .through(fs2.text.utf8Decode)
       .fold1(_ + _)
       .compile
@@ -292,13 +288,12 @@ final class MigrateFrom06[F[_]: Effect: ContextShift](
 
 object MigrateFrom06 {
 
-  def apply[F[_]: Effect: ContextShift](
+  def apply[F[_]: Async](
       cfg: JdbcConfig,
-      connectEC: ExecutionContext,
-      blocker: Blocker
+      connectEC: ExecutionContext
   ): Resource[F, MigrateFrom06[F]] =
     for {
-      store <- Store.create(cfg, connectEC, blocker, false)
-    } yield new MigrateFrom06[F](cfg, store, blocker)
+      store <- Store.create(cfg, connectEC, false)
+    } yield new MigrateFrom06[F](cfg, store)
 
 }
