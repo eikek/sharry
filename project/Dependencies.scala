@@ -20,7 +20,7 @@ object Dependencies {
   val MariaDbVersion          = "2.7.3"
   val MUnitVersion            = "0.7.27"
   val OrganizeImportsVersion  = "0.5.0"
-  val PostgresVersion         = "42.2.22"
+  val PostgresVersion         = "42.2.23"
   val PureConfigVersion       = "0.16.0"
   val SwaggerVersion          = "3.51.0"
   val TikaVersion             = "1.26"
