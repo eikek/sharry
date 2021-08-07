@@ -87,7 +87,7 @@ object ShareUploadRoutes {
   def readMultipart[F[_]: Async](mp: Multipart[F]): F[ShareData[F]] = {
     def parseMeta(body: Stream[F, Byte]): F[ShareProperties] =
       body
-        .through(fs2.text.utf8Decode)
+        .through(fs2.text.utf8.decode)
         .parseJsonAs[ShareProperties]
         .map(
           _.fold(
