@@ -67,7 +67,7 @@ final class MigrateFrom06[F[_]: Async](cfg: JdbcConfig, store: Store[F]) {
     }
     val text = fs2.io
       .readInputStream(Async[F].delay(file.openStream()), 8 * 1024)
-      .through(fs2.text.utf8Decode)
+      .through(fs2.text.utf8.decode)
       .fold1(_ + _)
       .compile
       .lastOrError
