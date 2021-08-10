@@ -19,7 +19,7 @@ object AliasMemberRoutes {
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
-      token: AuthToken
+      token: AuthToken,
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
@@ -39,7 +39,7 @@ object AliasMemberRoutes {
     }
   }
 
-  def convert(r: AccountItem): AccountLight =
+  private def convert(r: AccountItem): AccountLight =
     AccountLight(r.acc.id, r.acc.login.value)
 
 }

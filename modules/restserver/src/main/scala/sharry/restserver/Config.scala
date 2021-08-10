@@ -6,6 +6,7 @@ import sharry.common._
 case class Config(
     baseUrl: LenientUri,
     responseTimeout: Duration,
+    aliasMemberEnabled: Boolean,
     bind: Config.Bind,
     webapp: Config.Webapp,
     backend: BackendConfig

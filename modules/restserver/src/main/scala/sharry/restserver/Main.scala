@@ -60,6 +60,7 @@ object Main extends IOApp {
     if (EnvMode.current.isDev) {
       logger.warn(">>>>>   Sharry is running in DEV mode!   <<<<<")
     }
+    logger.info(s"Alias-Member feature enabled: ${cfg.aliasMemberEnabled}")
 
     pools.use { p =>
       if ("true" == System.getProperty("sharry.migrate-old-dbschema"))
