@@ -2,15 +2,23 @@ FROM alpine:latest
 
 LABEL maintainer="eikek0 <news@eknet.org>"
 
-RUN apk add --no-cache openjdk11-jre unzip curl bash
+ARG version=
+ARG sharry_url=
+ARG TARGETPLATFORM
 
-RUN mkdir -p /opt \
-  && cd /opt \
-  && curl -L -o sharry.zip https://github.com/eikek/sharry/releases/download/v1.8.0/sharry-restserver-1.8.0.zip \
+RUN JDKPKG="openjdk11"; \
+    if [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then JDKPKG="openjdk8"; fi; \
+    apk -U add --no-cache $JDKPKG tzdata unzip curl
+
+WORKDIR /opt
+
+RUN curl -L -o sharry.zip ${sharry_url:-https://github.com/eikek/sharry/releases/download/v$version/sharry-restserver-$version.zip} \
   && unzip sharry.zip \
   && rm sharry.zip \
-  && apk del unzip curl
+  && ln -snf sharry-restserver-* sharry
 
 EXPOSE 9090
+ENTRYPOINT ["/opt/sharry/bin/sharry-restserver"]
 
-ENTRYPOINT ["/opt/sharry-restserver-1.8.0/bin/sharry-restserver"]
+HEALTHCHECK --interval=1m --timeout=10m --retries=2 --start-period=30s \
+  CMD wget --spider http://localhost:9090/api/v2/open/info/version
