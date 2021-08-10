@@ -1763,6 +1763,7 @@ components:
         - authRefreshTime
         - initialPage
         - oauthOnly
+        - aliasMemberEnabled
       properties:
         appName:
           type: string
@@ -1819,6 +1820,8 @@ components:
             - uploads
             - share
         oauthOnly:
+          type: boolean
+        aliasMemberEnabled:
           type: boolean
     OAuthItem:
       description: |

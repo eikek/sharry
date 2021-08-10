@@ -1,4 +1,4 @@
-cfg: { stdenv, fetchzip, jre8_headless, unzip, bash }:
+cfg: { lib, stdenv, fetchzip, jre8_headless, unzip, bash }:
 
 stdenv.mkDerivation rec {
   name = "sharry-restserver-${cfg.version}";
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Sharry allows to share files with others in a simple way.";
-    license = stdenv.lib.licenses.gpl3;
+    license = lib.licenses.gpl3;
     homepage = https://github.com/eikek/sharry;
   };
 }

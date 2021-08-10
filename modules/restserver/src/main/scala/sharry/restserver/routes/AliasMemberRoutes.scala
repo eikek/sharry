@@ -39,7 +39,7 @@ object AliasMemberRoutes {
     }
   }
 
-  def convert(r: AccountItem): AccountLight =
+  private def convert(r: AccountItem): AccountLight =
     AccountLight(r.acc.id, r.acc.login.value)
 
 }

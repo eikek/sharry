@@ -98,11 +98,13 @@ object RestServer {
       token: AuthToken
   ): HttpRoutes[F] =
     Router(
-      "auth"         -> LoginRoutes.session(restApp.backend.login, cfg),
-      "settings"     -> SettingRoutes(restApp.backend, token),
-      "alias-member" -> AliasMemberRoutes(restApp.backend, token),
-      "alias"        -> AliasRoutes(restApp.backend, token),
-      "share"        -> ShareRoutes(restApp.backend, token, cfg),
+      "auth"     -> LoginRoutes.session(restApp.backend.login, cfg),
+      "settings" -> SettingRoutes(restApp.backend, token),
+      "alias-member" ->
+        (if (cfg.aliasMemberEnabled) AliasMemberRoutes(restApp.backend, token)
+         else notFound[F](token)),
+      "alias" -> AliasRoutes(restApp.backend, token),
+      "share" -> ShareRoutes(restApp.backend, token, cfg),
       "upload" -> ShareUploadRoutes(
         restApp.backend,
         token,

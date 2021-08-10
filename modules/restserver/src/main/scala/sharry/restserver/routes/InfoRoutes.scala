@@ -71,7 +71,8 @@ object InfoRoutes {
       cfg.webapp.defaultLanguage,
       cfg.webapp.authRenewal,
       cfg.webapp.initialPage,
-      cfg.backend.auth.isOAuthOnly
+      cfg.backend.auth.isOAuthOnly,
+      cfg.aliasMemberEnabled
     )
   }
 

@@ -9,7 +9,7 @@ import Comp.MenuBar as MB
 import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick)
 import Messages.AliasPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Alias.Data
@@ -35,21 +35,22 @@ view texts flags id model =
 
             Nothing ->
                 if id == Just "new" then
-                    viewCreate texts model
+                    viewCreate flags texts model
 
                 else
                     viewList flags texts model
         )
 
 
-viewCreate : Texts -> Model -> List (Html Msg)
-viewCreate texts model =
+viewCreate : Flags -> Texts -> Model -> List (Html Msg)
+viewCreate flags texts model =
     [ h1 [ class S.header1 ]
         [ i [ class "fa fa-upload mr-2" ] []
         , text texts.createNew
         ]
     , Html.map AliasFormMsg
         (Comp.AliasForm.view
+            flags
             texts.aliasForm
             model.formModel
         )
@@ -80,7 +81,7 @@ viewModify texts flags model alias_ =
             ]
         , if isOwner then
             Html.map AliasFormMsg
-                (Comp.AliasForm.view
+                (Comp.AliasForm.view flags
                     texts.aliasForm
                     model.formModel
                 )

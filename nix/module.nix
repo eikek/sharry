@@ -17,6 +17,7 @@ let
       port = 9090;
     };
     response-timeout = "4 minutes";
+    alias-member-enabled = true;
     webapp = {
       app-name = "Sharry";
       chunk-size = "100M";
@@ -229,6 +230,12 @@ in {
           connections, this may have to be increased (or the
           `webapp.chunk-size' decreased).
         '';
+      };
+
+      alias-member-enabled = mkOption {
+        type = types.bool;
+        default = defaults.alias-member-enabled;
+        description = "Enable/disable the alias-member feature.";
       };
 
       webapp = mkOption {
