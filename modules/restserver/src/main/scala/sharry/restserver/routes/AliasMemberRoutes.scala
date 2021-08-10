@@ -19,7 +19,7 @@ object AliasMemberRoutes {
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
-      token: AuthToken,
+      token: AuthToken
   ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._

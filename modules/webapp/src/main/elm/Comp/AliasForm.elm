@@ -220,8 +220,8 @@ update msg model =
 --- View
 
 
-view : Texts -> Model -> Html Msg
-view texts model =
+view : Flags -> Texts -> Model -> Html Msg
+view flags texts model =
     let
         modalSettings =
             Comp.ConfirmModal.defaultSettings
@@ -316,7 +316,10 @@ view texts model =
                         model.validityModel
                     )
                 ]
-            , div [ class "mb-4" ]
+            , div
+                [ class "mb-4"
+                , classList [ ( "hidden", not flags.config.aliasMemberEnabled ) ]
+                ]
                 [ label [ class S.inputLabel ]
                     [ text texts.members
                     ]
