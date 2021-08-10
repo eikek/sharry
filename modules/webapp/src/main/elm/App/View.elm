@@ -45,11 +45,25 @@ view model =
         ]
 
 
+isAuthenticated : Model -> Bool
+isAuthenticated model =
+    case model.flags.account of
+        Just acc ->
+            acc.success
+
+        Nothing ->
+            False
+
+
 topMenu : Messages -> Model -> Html Msg
 topMenu texts model =
     case model.flags.account of
         Just acc ->
-            topMenuUser acc texts model
+            if acc.success then
+                topMenuUser acc texts model
+
+            else
+                topMenuAnon texts model
 
         Nothing ->
             topMenuAnon texts model
@@ -81,7 +95,11 @@ headerNavItem : Model -> Html Msg
 headerNavItem model =
     a
         [ class "inline-flex font-bold hover:bg-indigo-200 dark:hover:bg-warmgray-800 items-center px-4"
-        , Page.href HomePage
+        , if isAuthenticated model then
+            Page.href HomePage
+
+          else
+            Page.href (LoginPage ( Nothing, False ))
         ]
         [ img
             [ class "w-9 h-9 mr-2 block"
