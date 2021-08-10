@@ -25,27 +25,51 @@ view texts _ =
                     [ text texts.shareFilesWithOthers
                     ]
                 ]
-            , div [ class "w-full flex flex-col sm:flex-row sm:justify-center mt-8" ]
-                [ B.primaryButton
-                    { label = texts.createShare
-                    , icon = "fa fa-upload"
-                    , handler = class "text-xl sm:text-base"
-                    , disabled = False
-                    , attrs =
-                        [ Page.href SharePage
-                        ]
-                    , responsive = False
-                    }
-                , B.secondaryButton
-                    { label = texts.viewShares
-                    , icon = "fa fa-eye"
-                    , handler = class "mt-2 text-xl sm:text-base sm:mt-0 sm:ml-2"
-                    , disabled = False
-                    , attrs =
-                        [ Page.href UploadPage
-                        ]
-                    , responsive = False
-                    }
+            , div [ class "flex flex-col sm:flex-row justify-center w-full mt-8" ]
+                [ div [ class "flex flex-col sm:mr-2" ]
+                    [ B.primaryButton
+                        { label = texts.createShare
+                        , icon = "fa fa-upload"
+                        , handler = class "text-xl sm:text-base"
+                        , disabled = False
+                        , attrs =
+                            [ Page.href SharePage
+                            ]
+                        , responsive = False
+                        }
+                    , B.secondaryButton
+                        { label = texts.viewShares
+                        , icon = "fa fa-eye"
+                        , handler = class "mt-2 text-xl sm:text-base"
+                        , disabled = False
+                        , attrs =
+                            [ Page.href UploadPage
+                            ]
+                        , responsive = False
+                        }
+                    ]
+                , div [ class "mt-2 sm:mt-0 sm:ml-2 flex flex-col " ]
+                    [ B.primaryButton
+                        { label = texts.createAlias
+                        , icon = "fa fa-dot-circle font-thin"
+                        , handler = class "text-xl sm:text-base"
+                        , disabled = False
+                        , attrs =
+                            [ Page.href (AliasPage (Just "new"))
+                            ]
+                        , responsive = False
+                        }
+                    , B.secondaryButton
+                        { label = texts.viewAliases
+                        , icon = "fa fa-eye"
+                        , handler = class "mt-2 text-xl sm:text-base"
+                        , disabled = False
+                        , attrs =
+                            [ Page.href (AliasPage Nothing)
+                            ]
+                        , responsive = False
+                        }
+                    ]
                 ]
             ]
         , div [ class "text-xs mt-2" ]
