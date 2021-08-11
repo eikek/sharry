@@ -96,7 +96,7 @@ viewTableLine flags texts model alias_ =
             [ text alias_.owner
             ]
         , td [ class "text-left py-4 md:py-2 hidden md:table-cell" ]
-            [ findValidityItemMillis texts.validityField alias_.validity
+            [ findValidityItemMillis texts.validityField flags alias_.validity
                 |> Tuple.first
                 |> text
             ]

@@ -56,7 +56,7 @@ view texts flags model =
          , Markdown.toHtml [ class "markdown-preview" ] head
          , topMenu texts model
          ]
-            ++ shareProps texts model
+            ++ shareProps texts flags model
             ++ shareLink texts flags model
             ++ [ dropzone texts flags model
                , messageDiv model
@@ -244,8 +244,8 @@ messageDiv model =
     Util.Html.resultMsgMaybe model.message
 
 
-shareProps : Texts -> Model -> List (Html Msg)
-shareProps texts model =
+shareProps : Texts -> Flags -> Model -> List (Html Msg)
+shareProps texts flags model =
     let
         share =
             model.share
@@ -284,7 +284,7 @@ shareProps texts model =
                     { label = texts.name
                     , content =
                         isEdit model Name
-                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.map (propertyEdit texts flags)
                             |> Maybe.withDefault
                                 (propertyDisplay "fa fa-comment font-thin"
                                     (Maybe.withDefault "" share.name)
@@ -296,11 +296,12 @@ shareProps texts model =
                     { label = texts.validity
                     , content =
                         isEdit model Validity
-                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.map (propertyEdit texts flags)
                             |> Maybe.withDefault
                                 (propertyDisplay "fa fa-hourglass-half"
                                     (Data.ValidityOptions.findValidityItemMillis
                                         texts.validityField
+                                        flags
                                         share.validity
                                         |> Tuple.first
                                     )
@@ -312,7 +313,7 @@ shareProps texts model =
                     { label = texts.maxViews
                     , content =
                         isEdit model MaxViews
-                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.map (propertyEdit texts flags)
                             |> Maybe.withDefault
                                 (propertyDisplay "fa fa-eye" (String.fromInt share.maxViews))
                     , editAction = Just (ReqEdit MaxViews)
@@ -322,7 +323,7 @@ shareProps texts model =
                     { label = texts.password
                     , content =
                         isEdit model Password
-                            |> Maybe.map (propertyEdit texts)
+                            |> Maybe.map (propertyEdit texts flags)
                             |> Maybe.withDefault
                                 (propertyDisplay
                                     (if share.password then
@@ -482,8 +483,8 @@ property texts rec =
         ]
 
 
-propertyEdit : Texts -> EditField -> List (Html Msg)
-propertyEdit texts ef =
+propertyEdit : Texts -> Flags -> EditField -> List (Html Msg)
+propertyEdit texts flags ef =
     let
         saveButton =
             button
@@ -548,7 +549,7 @@ propertyEdit texts ef =
             [ div [ class "flex flex-row" ]
                 [ div [ class "flex-grow text-base font-normal" ]
                     [ Html.map ValidityEditMsg
-                        (Comp.ValidityField.view texts.validityField v vm)
+                        (Comp.ValidityField.view texts.validityField flags v vm)
                     ]
                 , saveButton
                 , cancelButton

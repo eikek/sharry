@@ -27,7 +27,7 @@ import Html.Events exposing (onClick, onInput)
 import Messages.AliasForm exposing (Texts)
 import Styles as S
 import Util.Maybe
-
+import Data.ValidityOptions
 
 type alias Model =
     { existing : Maybe AliasDetail
@@ -53,7 +53,7 @@ initNew flags accounts =
     , idField = Nothing
     , nameField = ""
     , validityModel = Comp.ValidityField.init flags
-    , validityField = Data.ValidityValue.Days 2
+    , validityField = Data.ValidityOptions.defaultValidity flags |> Tuple.second
     , enabledField = True
     , deleteRequested = False
     , aliasMember =
@@ -312,6 +312,7 @@ view flags texts model =
                 , Html.map ValidityMsg
                     (Comp.ValidityField.view
                         texts.validityField
+                        flags
                         model.validityField
                         model.validityModel
                     )

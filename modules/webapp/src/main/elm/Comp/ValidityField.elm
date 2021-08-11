@@ -43,14 +43,14 @@ update msg model =
             ( m, sel )
 
 
-view : Texts -> ValidityValue -> Model -> Html Msg
-view texts validity model =
+view : Texts -> Flags -> ValidityValue -> Model -> Html Msg
+view texts flags validity model =
     let
         value =
-            findValidityItem texts validity |> Tuple.second
+            findValidityItem texts flags validity |> Tuple.second
 
         dropdownCfg =
-            { display = \vv -> findValidityItem texts vv |> Tuple.first
+            { display = \vv -> findValidityItem texts flags vv |> Tuple.first
             , icon = \_ -> Nothing
             , style = DS.mainStyle
             , selectPlaceholder = texts.dropdown.select
