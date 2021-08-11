@@ -25,11 +25,16 @@
         <!-- everything in here gets replaced by elm; include the body tag itself -->
 
         <script type="application/javascript">
+         var sharryFlags = {{{flagsJson}}};
          var storedAccount = localStorage.getItem('account');
          var lang = localStorage.getItem('language');
-         var theme = localStorage.getItem('uiTheme');
+         var theme =
+             (function() {
+                 var initialTheme = sharryFlags.initialTheme;
+                 var storageTheme = localStorage.getItem('uiTheme');
+                 return storageTheme ? storageTheme : initialTheme;
+             })();
          var account = storedAccount ? JSON.parse(storedAccount) : null;
-         var sharryFlags = {{{flagsJson}}};
          var elmFlags = {
              "account": account,
              "language": lang,

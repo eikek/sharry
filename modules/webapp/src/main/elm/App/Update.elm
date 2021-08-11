@@ -144,7 +144,9 @@ update msg model =
             )
 
         LogoutResp _ ->
-            ( { model | loginModel = Page.Login.Data.empty }, Page.goto (LoginPage ( Nothing, False )) )
+            ( { model | loginModel = Page.Login.Data.empty }
+            , Page.goto (LoginPage ( Nothing, False ))
+            )
 
         SessionCheckResp res ->
             case res of

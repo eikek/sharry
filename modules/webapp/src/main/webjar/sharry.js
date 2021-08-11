@@ -191,4 +191,4 @@ elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
 });
 
 
-applyUiTheme(localStorage.getItem('uiTheme'));
+applyUiTheme(theme);
