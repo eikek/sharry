@@ -72,7 +72,8 @@ object InfoRoutes {
       cfg.webapp.authRenewal,
       cfg.webapp.initialPage,
       cfg.backend.auth.isOAuthOnly,
-      cfg.aliasMemberEnabled
+      cfg.aliasMemberEnabled,
+      cfg.webapp.defaultValidity
     )
   }
 

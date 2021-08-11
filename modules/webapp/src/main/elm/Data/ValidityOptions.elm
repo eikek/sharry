@@ -1,5 +1,6 @@
 module Data.ValidityOptions exposing
-    ( findValidityItem
+    ( defaultValidity
+    , findValidityItem
     , findValidityItemMillis
     , validityOptions
     )
@@ -46,32 +47,41 @@ validityOptions flags =
     List.filter fun (allValidityOptions texts)
 
 
-defaultValidity : ( String, ValidityValue )
-defaultValidity =
-    ( "2 days", Days 2 )
+defaultValidity : Flags -> ( String, ValidityValue )
+defaultValidity flags =
+    let
+        findDefault ( _, v ) =
+            Data.ValidityValue.toMillis v == flags.config.defaultValidity
+    in
+    List.filter findDefault (validityOptions flags)
+        |> List.head
+        |> Maybe.withDefault ( "2x days", Days 2 )
 
 
-findValidityItemMillis : Texts -> Int -> ( String, ValidityValue )
-findValidityItemMillis texts millis =
-    findValidityItem texts (Millis millis)
+findValidityItemMillis : Texts -> Flags -> Int -> ( String, ValidityValue )
+findValidityItemMillis texts flags millis =
+    findValidityItem texts flags (Millis millis)
 
 
 {-| Finds the item from the list of options that best matches the
 given validity value.
 -}
-findValidityItem : Texts -> ValidityValue -> ( String, ValidityValue )
-findValidityItem texts vv =
+findValidityItem : Texts -> Flags -> ValidityValue -> ( String, ValidityValue )
+findValidityItem texts flags vv =
     let
         ld =
             List.repeat (List.length <| allValidityOptions texts) vv
 
         diff t a =
             ( Data.ValidityValue.sub (Tuple.second t) a |> abs, t )
+
+        defaultValue =
+            defaultValidity flags
     in
     List.map2 diff (allValidityOptions texts) ld
         |> findMinimum
         |> Maybe.map Tuple.second
-        |> Maybe.withDefault defaultValidity
+        |> Maybe.withDefault defaultValue
 
 
 findMinimum :

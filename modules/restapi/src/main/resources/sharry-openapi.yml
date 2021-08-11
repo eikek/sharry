@@ -1764,6 +1764,7 @@ components:
         - initialPage
         - oauthOnly
         - aliasMemberEnabled
+        - defaultValidity
       properties:
         appName:
           type: string
@@ -1823,6 +1824,9 @@ components:
           type: boolean
         aliasMemberEnabled:
           type: boolean
+        defaultValidity:
+          type: integer
+          format: duration
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

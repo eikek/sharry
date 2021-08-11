@@ -11,6 +11,7 @@ import Comp.ValidityField
 import Data.Flags exposing (Flags)
 import Data.UploadDict exposing (UploadDict)
 import Data.UploadState exposing (UploadState)
+import Data.ValidityOptions
 import Data.ValidityValue exposing (ValidityValue)
 import Http
 
@@ -39,7 +40,7 @@ emptyModel flags =
     { dropzoneModel = Comp.Dropzone2.init
     , uploads = Data.UploadDict.empty
     , validityModel = Comp.ValidityField.init flags
-    , validityField = Data.ValidityValue.Days 2
+    , validityField = Data.ValidityOptions.defaultValidity flags |> Tuple.second
     , passwordModel = Comp.PasswordInput.init
     , passwordField = Nothing
     , maxViewModel = Comp.IntField.init (Just 1) Nothing

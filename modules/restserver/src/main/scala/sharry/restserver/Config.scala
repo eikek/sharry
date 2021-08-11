@@ -18,7 +18,10 @@ case class Config(
       if (backend.auth.sessionValid >= (webapp.authRenewal + threshold)) ""
       else
         s"session-valid time (${backend.auth.sessionValid}) must be " +
-          s"at least 30s greater than webapp.auth-renewal (${webapp.authRenewal})"
+          s"at least 30s greater than webapp.auth-renewal (${webapp.authRenewal})",
+      if (backend.share.maxValidity >= webapp.defaultValidity) ""
+      else
+        s"Default validity (${webapp.defaultValidity}) is larger than maximum ${backend.share.maxValidity}!"
     ).filter(_.nonEmpty)
   }
 
@@ -47,7 +50,8 @@ object Config {
       welcomeMessage: String,
       defaultLanguage: String,
       authRenewal: Duration,
-      initialPage: String
+      initialPage: String,
+      defaultValidity: Duration
   )
 
 }

@@ -97,6 +97,7 @@ view texts flags model =
                 , Html.map ValidityMsg
                     (Comp.ValidityField.view
                         texts.validityField
+                        flags
                         model.validityField
                         model.validityModel
                     )
