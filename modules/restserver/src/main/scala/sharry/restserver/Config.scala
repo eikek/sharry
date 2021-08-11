@@ -21,7 +21,8 @@ case class Config(
           s"at least 30s greater than webapp.auth-renewal (${webapp.authRenewal})",
       if (backend.share.maxValidity >= webapp.defaultValidity) ""
       else
-        s"Default validity (${webapp.defaultValidity}) is larger than maximum ${backend.share.maxValidity}!"
+        s"Default validity (${webapp.defaultValidity}) is larger than maximum ${backend.share.maxValidity}!",
+      Config.validateTheme(webapp.initialTheme)
     ).filter(_.nonEmpty)
   }
 
@@ -51,7 +52,11 @@ object Config {
       defaultLanguage: String,
       authRenewal: Duration,
       initialPage: String,
-      defaultValidity: Duration
+      defaultValidity: Duration,
+      initialTheme: String
   )
 
+  private def validateTheme(str: String): String =
+    if (str.equalsIgnoreCase("light") || str.equalsIgnoreCase("dark")) ""
+    else s"Invalid theme: $str (use either 'light' or 'dark')"
 }

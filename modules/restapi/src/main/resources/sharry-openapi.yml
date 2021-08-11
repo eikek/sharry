@@ -1765,6 +1765,7 @@ components:
         - oauthOnly
         - aliasMemberEnabled
         - defaultValidity
+        - initialTheme
       properties:
         appName:
           type: string
@@ -1827,6 +1828,9 @@ components:
         defaultValidity:
           type: integer
           format: duration
+        initialTheme:
+          type: string
+          format: theme
     OAuthItem:
       description: |
         Information about a configured OAuth provider.
