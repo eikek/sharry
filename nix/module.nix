@@ -33,6 +33,7 @@ let
       default-language = "gb";
       initial-page = "home";
       default-validity = "7 days";
+      initial-theme = "light";
     };
     backend = {
       auth = {
@@ -347,6 +348,11 @@ in {
               type = types.str;
               default = defaults.webapp.default-validity;
               description = "The default validity to use in the gui.";
+            };
+            initial-theme = mkOption {
+              type = types.str;
+              default = defaults.webapp.initial-theme;
+              description = "The theme to use initially. One of 'light' or 'dark'.";
             };
 
           };
