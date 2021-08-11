@@ -256,9 +256,14 @@ fileEmbed texts settings model file =
             file.mimetype
     in
     if previewFor previewDirect mime || Set.member file.id model.embedOn then
-        embed
+        iframe
             [ src (settings.baseUrl ++ file.id)
             , class "mx-auto min-h-preview dark:bg-warmgray-300 bg-gray-50"
+            , if mime == "application/pdf" then
+                sandbox "allow-scripts"
+
+              else
+                sandbox ""
             ]
             []
 
