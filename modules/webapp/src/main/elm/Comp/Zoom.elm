@@ -126,10 +126,23 @@ filePreview fileUrl _ file =
             ]
             []
 
+    else if isPdf file then
+        div [ class "dark:bg-warmgray-300 bg-white" ]
+            [ iframe
+                [ src url
+                , sandbox "allow-scripts"
+                , class "w-full"
+                , attribute "width" "100%"
+                , attribute "height" "100%"
+                ]
+                []
+            ]
+
     else
         div [ class "dark:bg-warmgray-300 bg-white" ]
             [ iframe
                 [ src url
+                , sandbox ""
                 , class "w-full"
                 , attribute "width" "100%"
                 , attribute "height" "100%"
