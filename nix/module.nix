@@ -32,6 +32,7 @@ let
       auth-renewal = "4 minutes";
       default-language = "gb";
       initial-page = "home";
+      default-validity = "7 days";
     };
     backend = {
       auth = {
@@ -341,6 +342,11 @@ in {
               type = types.str;
               default = defaults.webapp.initial-page;
               description = "The initial page after login. One of: home, uploads, share";
+            };
+            default-validity = mkOption {
+              type = types.str;
+              default = defaults.webapp.default-validity;
+              description = "The default validity to use in the gui.";
             };
 
           };
