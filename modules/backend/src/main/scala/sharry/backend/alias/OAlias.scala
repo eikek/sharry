@@ -64,10 +64,11 @@ object OAlias {
           detail: AliasInput
       ): F[AddResult] = {
         val doUpdate = for {
+          _ <- RAliasMember.deleteForAlias(aliasId)
           n <- RAlias.update(aliasId, accId, detail.alias)
           k <-
-            if (n > 0) RAliasMember.updateForAlias(aliasId, detail.members)
-            else 0.pure[ConnectionIO]
+            if (n > 0) RAliasMember.insertForAlias(detail.alias.id, detail.members)
+            else RAliasMember.insertForAlias(aliasId, detail.members)
         } yield n + k
 
         for {
