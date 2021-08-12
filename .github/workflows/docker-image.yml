@@ -1,5 +1,6 @@
 name: Publish Docker Images
 on:
+  pull_request:
   release:
     types: [ published ]
 jobs:
