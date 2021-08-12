@@ -10,7 +10,7 @@ let
 in
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    jekyll sbt git
+    jekyll nodejs
   ];
   shellHook = ''
     alias jekyll-sharry=${run-jekyll}

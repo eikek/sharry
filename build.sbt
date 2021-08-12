@@ -151,6 +151,7 @@ val restapi = project
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("sharry.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
+    openapiStaticGen := OpenApiDocGenerator.Redoc,
     openapiScalaConfig := ScalaConfig()
       .withJson(ScalaJson.circeSemiauto)
       .addMapping(CustomMapping.forType({ case TypeDef("LocalDateTime", _) =>
