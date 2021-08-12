@@ -1,0 +1,2053 @@
+openapi: 3.0.0
+
+info:
+  title: Sharry
+  version: 1.9.0
+  description: |
+    Sharry provides a way to share files with others in a convenient
+    way. The core functionality is provided by a server that can be
+    controlled via REST calls.
+
+    The calls are divided into 4 categories:
+
+    - `/open/*`: no authentication is required to access
+    - `/sec/*`: an authenticated user is required
+    - `/alias/*`: these routes are allowed with a valid *alias id*
+      given as header `Sharry-Alias`
+    - `/admin/*`: an authenticated user that is admin is required
+
+    Authentication works by logging in with username/password (or an
+    oauth2 flow) that generates a token that has to be sent with every
+    request to a secured and admin route. It is possible to sent it
+    via a `Cookie` header or the special `Sharry-Auth` header.
+
+    Files can be uploaded using different methods. There is an
+    endpoint that can take all files and meta data from one single
+    request. For more reliable uploads, the server implements the [tus
+    protocol](https://tus.io/protocols/resumable-upload.html) that
+    allows to resume failed or paused uploads.
+
+tags:
+  - name: Information
+    description: Get information about this API.
+  - name: Authentication
+    description: Various methods to authenticate.
+  - name: Registration
+    description: Register a new account.
+  - name: Account Management
+    description: Admins can create/update/delete accounts.
+  - name: Alias
+    description: Edit your alias pages.
+  - name: Shares
+    description: Edit shares.
+  - name: Shares Upload
+    description: Create or Add Files
+servers:
+  - url: /api/v2
+    description: Current host
+
+paths:
+  /open/info/version:
+    get:
+      tags: [ Information ]
+      summary: Version information.
+      description: |
+        Returns version information about server application.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+  /open/info/appconfig:
+    get:
+      tags: [ Information ]
+      summary: Basic configuration.
+      description: |
+        Return basic information for setting up a web client.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppConfig"
+
+  /open/auth/login:
+    post:
+      tags: [ Authentication ]
+      summary: Authenticate with account name and password.
+      description: |
+        Authenticate with account name and password.
+
+        If successful, an authentication token is returned that can be
+        used for subsequent calls to protected routes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPass"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+  /open/auth/oauth/{id}:
+    get:
+      tags: [ Authentication ]
+      summary: Authenticate via OAuth2
+      description: |
+        The `id` must be a configured OAuth provider. This requests
+        will redirect the client to the configured provider. After
+        authentication there, the provider will redirect back to
+        sharry.
+
+        This only works, if sharry uses TLS (https), and the correct
+        callback-url is configured at the provider.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        '303':
+          description: See other
+  /open/auth/oauth/{id}/resume:
+    post:
+      tags: [ Authentication ]
+      summary: Callback url from OAuth2 providers.
+      description: |
+        This endpoint is for OAuth2 providers when delegating control
+        back to sharry. At this stage, sharry will do basic validation
+        and then finishes logging into the application.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+  /sec/auth/session:
+    post:
+      tags: [ Authentication ]
+      summary: Authentication with a token
+      description: |
+        Authenticate with a token. This can be used to get a new
+        authentication token based on another valid one.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+  /sec/auth/logout:
+    post:
+      tags: [ Authentication ]
+      summary: Logout.
+      description: |
+        This route informs the server about a logout. This is not
+        strictly necessary.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+  /open/signup/register:
+    post:
+      tags: [ Registration ]
+      summary: Register a new account.
+      description: |
+        Create a new account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Registration"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+  /admin/signup/newinvite:
+    post:
+      tags: [ Registration ]
+      summary: Generate a new invite.
+      description: |
+        When signup mode is set to "invite", sharry requires an
+        invitation key when signing up. These keys can be created
+        here. Creating such keys requires an admin user. It also asks
+        for a password that must be set in the configuration file.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenInvite"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InviteResult"
+
+  /admin/account:
+    get:
+      tags: [ Account Management ]
+      summary: List all accounts.
+      description: |
+        Lists all available (internal and external) accounts. An
+        optional query parameter can be used to narrow the list down
+        by username. It is a simple substring search in the username
+        property.
+      parameters:
+        - $ref: "#/components/parameters/q"
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountList"
+    post:
+      tags: [ Account Management ]
+      summary: Create a new account.
+      description: |
+        Creates a new account. The account is marked as internal and
+        the provided password is used when authenticating. Sharry
+        supports external authentication, these accounts however,
+        cannot be directly created. They are created on demand.
+
+        The username and password properties are mandatory. The others
+        are optional or have a sensible default.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountCreate"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /admin/account/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ Account Management ]
+      summary: Details about one account.
+      description: |
+        Returns details about the account with the given id. Note that
+        the id is *not* the username, but the account-id.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDetail"
+    post:
+      tags: [ Account Management ]
+      summary: Modify an account.
+      description: |
+        Modifies an existing account. It is only possible to modify
+        `state`, `email` and the `admin` property.
+
+        If the `email` property is not supplied, an existing email is
+        removed from the account.
+
+        The password can be changed for an account. If it is `null` or
+        empty, it is left unchanged. Also, if the account is not
+        internal, a given password is ignored.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountModify"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Account Management ]
+      summary: Deletes an account.
+      description: |
+        Deletes the account and all its related data.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/settings/email:
+    get:
+      tags: [ Account Management ]
+      summary: Get your E-Mail address.
+      description: |
+        Allows the current user to get their e-mail address.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailInfo"
+    post:
+      tags: [ Account Management ]
+      summary: Edit your E-Mail.
+      description: |
+        Allows the current user to change their e-mail address.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailChange"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags: [ Account Management ]
+      summary: Removed your E-Mail.
+      description: |
+        Allows the current user to remove their e-mail address.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/settings/password:
+    get:
+      tags: [ Account Management ]
+      summary: Check for password change.
+      description: |
+        Returns wether the current account is available for a password
+        change. If this returns `false`, the POST request to this url
+        will always fail.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    post:
+      tags: [ Account Management ]
+      summary: Change your password.
+      description: |
+        Allows users to change their password. This is only valid for
+        internal accounts.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordChange"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/alias:
+    get:
+      tags: [ Alias ]
+      summary: List all aliases.
+      description: |
+        Lists all aliases of the current user.
+      parameters:
+        - $ref: "#/components/parameters/q"
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AliasList"
+    post:
+      tags: [ Alias ]
+      summary: Create new alias
+      description: |
+        Create a new alias. The id is generated to some random string
+        if not specified, such that the URLs resulting from this alias
+        are not guessable.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AliasChange"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+  /sec/alias/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: [ Alias ]
+      summary: Details about one alias.
+      description: |
+        Returns details about an alias for the given id.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AliasDetail"
+    post:
+      tags: [ Alias ]
+      summary: Change an alias
+      description: |
+        Change some properties of an existing alias.
+
+        The id is optional; if it is not specified a new random one
+        will be generated.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AliasChange"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+    delete:
+      tags: [ Alias ]
+      summary: Delete an alias.
+      description: |
+        Deletes an alias.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/alias-member:
+    get:
+      tags: [ Alias ]
+      summary: Get a list of accounts
+      description: |
+        Gets a list of accounts suitable for adding them as members to
+        an alias.
+      parameters:
+        - $ref: "#/components/parameters/q"
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountLightList"
+
+  /alias/upload:
+    $ref: "#/paths/~1sec~1upload"
+
+  /sec/upload:
+    post:
+      tags:
+        - Shares Upload
+      summary: Upload files to create a share.
+      description: |
+        Allows to create a new share by uploading data using
+        `multipart/form-data` requests. All requests must have content
+        type `multipart/form-data`.
+
+        All parts of a `multipart/form-data` request are treated as
+        files except if one with name *"meta"* is found. This is
+        expected to contain a JSON structure with the metadata
+        (validity, password etc). If this is missing, default values
+        will be used. All other parts are added as files to the new
+        share. It is allowed to send only a "meta" part or even an
+        empty body. In these cases the new share will be created
+        without files..
+
+        If this route is at `/alias/` a `Sharry-Alias` header is
+        required.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                meta:
+                  $ref: "#/components/schemas/ShareProperties"
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+
+  /sec/share/search:
+    get:
+      tags:
+        - Shares
+      summary: Search your shares.
+      security:
+        - authTokenHeader: []
+      description: |
+        Returns a list of all shares of the current user.
+      parameters:
+        - $ref: "#/components/parameters/q"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareList"
+
+  /alias/upload/new:
+    $ref: "#/paths/~1sec~1upload~1new"
+
+  /sec/upload/new:
+    post:
+      tags:
+        - Shares Upload
+      summary: Create a new empty share.
+      description: |
+        This endpoint allows to only upload json data to create a new
+        empty share.
+
+        The same thing can be achieved by using `multipart/form-data`
+        requests to the `/sec/upload` endpoint containing only one part
+        named "meta". But this endpoint may be more convenient to use.
+
+        If this route is at `/alias/` a `Sharry-Alias` header is
+        required.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShareProperties"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResult"
+
+  /open/share/{pid}:
+    get:
+      tags:
+        - Shares (Public)
+      summary: Get details about a share.
+      description: |
+        Returns all details about a share.
+
+        If the share is password protected, the password must be
+        supplied using the header `Sharry-Password`. If it is not
+        supplied, a 401 response is sent. If it is wrong, a 403
+        response will be returned.
+      parameters:
+        - $ref: "#/components/parameters/pid"
+        - $ref: "#/components/parameters/SharryPassword"
+      responses:
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareDetail"
+
+  /sec/share/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags:
+        - Shares
+      summary: Get details about a share.
+      security:
+        - authTokenHeader: []
+      description: |
+        Returns all details about a share.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareDetail"
+
+    delete:
+      tags:
+        - Shares
+      summary: Delete a share.
+      description: |
+        Allows to delete a share and all associated files.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /alias/upload/{id}/files/add:
+    $ref: "#/paths/~1sec~1upload~1%7Bid%7D~1files~1add"
+
+  /sec/upload/{id}/files/add:
+    post:
+      tags:
+        - Shares Upload
+      summary: Add more files to a share.
+      description: |
+        This endpoint can be used to add more files to an existing
+        share. It must be a `multipart/form-data` request, where each
+        part results in a new file added to the share.
+
+        If this route is at `/alias/` a `Sharry-Alias` header is
+        required.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/share/{id}/name:
+    post:
+      tags:
+        - Shares
+      summary: Set a new name.
+      description: |
+        Sets the name of the share.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SingleString"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+    delete:
+      tags:
+        - Shares
+      summary: Deletes the name of a share.
+      description: |
+        A name is optional and can be removed via this route.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+
+  /sec/share/{id}/validity:
+    post:
+      tags:
+        - Shares
+      summary: Set a new validity time.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      description: |
+        Sets the validity property of the share to a new value.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SingleNumber"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+
+  /sec/share/{id}/description:
+    post:
+      tags:
+        - Shares
+      summary: Set a new description.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      description: |
+        Sets the description of share.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SingleString"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/share/{id}/maxviews:
+    post:
+      tags:
+        - Shares
+      summary: Set new maximum downloads.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      description: |
+        Sets the maximum downloads property.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SingleNumber"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/share/{id}/password:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    post:
+      tags:
+        - Shares
+      summary: Sets a password to this share.
+      description: |
+        Sets or changes the password of the share. If the share
+        already has a password defined, it must be given with the
+        request. Otherwise it may be empty.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SingleString"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+    delete:
+      tags:
+        - Shares
+      summary: Removes the password from the share.
+      security:
+        - authTokenHeader: []
+      description: |
+        Removes the password that has been set for this share. If this
+        share has no password set, a successful response is sent.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/share/{id}/publish:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    post:
+      tags:
+        - Shares
+      summary: Publishes a share.
+      security:
+        - authTokenHeader: []
+      description: |
+        A share can be published. That means it is accessible by
+        everyone (no access protection!) using a different url and id.
+        This link can then be shared. Once the validity time is
+        expired, the public link won't work anymore.
+
+        If the share is already published, this is a no-op (resulting
+        in a successful response).
+
+        If the share was previously published the request can control,
+        wether the old id should be reused (resulting in the same
+        links as before), or a new random one should be generated.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublishData"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+    delete:
+      tags:
+        - Shares
+      summary: Unpublish a share.
+      security:
+        - authTokenHeader: []
+      description: |
+        If a share is currently published it can be un-published using
+        this endpoint.
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /open/share/{pid}/file/{fid}:
+    get:
+      tags:
+        - Shares (Public)
+      summary: Retrieve a file from the share.
+      description: |
+        Returns a file from a share.
+
+        The response supports byte-serving and ETag.
+      parameters:
+        - $ref: "#/components/parameters/pid"
+        - $ref: "#/components/parameters/fid"
+      responses:
+        200:
+          description: Ok
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+
+  /sec/share/{id}/file/{fid}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+      - $ref: "#/components/parameters/fid"
+    get:
+      tags:
+        - Shares
+      summary: Retrieve a file from the share.
+      description: |
+        Returns a file from a share.
+
+        The response supports byte-serving and ETag.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+    delete:
+      tags:
+        - Shares
+      summary: Remove a file from a share.
+      description: |
+        Deletes a file from a share.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /alias/upload/{id}/files/tus:
+    $ref: "#/paths/~1sec~1upload~1%7Bid%7D~1files~1tus"
+
+  /sec/upload/{id}/files/tus:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    options:
+      tags:
+        - Shares Upload
+      summary: "[Tus] Protocol information."
+      description: |
+        Implements the TUS protocol OPTIONS request to return common
+        information about what parts of the tus protocol are supported
+        by this server.
+
+        Please see the
+        [protocol](https://tus.io/protocols/resumable-upload.html)
+        specification for more details.
+
+        If this is the `/alias` route, a `Sharry-Alias` header is
+        required.
+      security:
+        - authTokenHeader: []
+      responses:
+        204:
+          description: NoContent
+          headers:
+            Tus-Resumable:
+              schema:
+                type: string
+            Tus-Extension:
+              schema:
+                type: string
+            Tus-Version:
+              schema:
+                type: string
+    post:
+      tags:
+        - Shares Upload
+      summary: "[Tus] Create new (empty) files using tus protocol"
+      description: |
+        Create a new (empty) file via tus' *creation* extension.
+
+        This follows the tus protocol, but uses different headers for
+        transporting the filename and filetype. While the tus protocol
+        defines a `Upload-Metadata` header, what it can contain is not
+        specified. It requires custom negotiation between server and
+        client, so we can as well use different headers that are
+        easier to read and write:
+
+        - `Sharry-File-Name` specifies the filename (percent-encoded)
+        - `Sharry-File-Type` specifies the content type
+        - `Sharry-File-Length` can be used to specifiy the total
+          length in bytes. If not found `Upload-Length` is used.
+
+        The total length must be specified, name and content type are
+        optional.
+
+        Please see the
+        [protocol](https://tus.io/protocols/resumable-upload.html)
+        specification for more details.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/SharryFileName"
+        - $ref: "#/components/parameters/SharryFileType"
+        - $ref: "#/components/parameters/SharryFileLength"
+        - $ref: "#/components/parameters/UploadLength"
+      responses:
+        201:
+          description: Created
+          headers:
+            Tus-Resumable:
+              schema:
+                type: string
+            Location:
+              schema:
+                type: string
+
+  /alias/upload/{id}/files/tus/{fid}:
+    $ref: "#/paths/~1sec~1upload~1%7Bid%7D~1files~1tus~1%7Bfid%7D"
+
+  /sec/upload/{id}/files/tus/{fid}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+      - $ref: "#/components/parameters/fid"
+    patch:
+      tags:
+        - Shares Upload
+      summary: "[Tus] Upload binary data"
+      description: |
+        Endpoint for receiving the binary data belonging to a file.
+        The file must have been created before using a POST request to
+        the parent path url.
+
+        The `Upload-Offset` header must be specified, it may be set to
+        `0`.
+
+        You may also use the `POST` method instead.
+
+        Please see the
+        [protocol](https://tus.io/protocols/resumable-upload.html)
+        specification for more details.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/UploadOffset"
+      requestBody:
+        content:
+          application/offset+octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        204:
+          description: NoContent
+          headers:
+            Tus-Resumable:
+              schema:
+                type: string
+            Upload-Offset:
+              schema:
+                type: integer
+                format: int64
+        404:
+          description: Not Found
+    head:
+      tags:
+        - Shares Upload
+      summary: "[Tus] Information about a file."
+      description: |
+        Returns the upload status of the file. Returns the total
+        expected length and the number of bytes that have really been
+        saved. This is used by clients to determine the next
+        `Upload-Offset` to use.
+
+        Please see the
+        [protocol](https://tus.io/protocols/resumable-upload.html)
+        specification for more details.
+      security:
+        - authTokenHeader: []
+      responses:
+        200:
+          description: Ok
+          headers:
+            Tus-Resumable:
+              schema:
+                type: string
+            Upload-Offset:
+              schema:
+                type: integer
+                format: int64
+            Upload-Length:
+              schema:
+                type: integer
+                format: int64
+
+  /alias/mail/notify/{id}:
+    post:
+      tags:
+        - Mail
+      summary: Notify the owner.
+      description: |
+        After uploading some files via an alias page, the client can
+        request to notify the owner via e-mail that an upload just
+        finished.
+
+        The corresponding user must have an e-mail address in their
+        account and the mail feautre must be enabled in the config
+        file.
+      security:
+        - aliasTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+  /sec/mail/template/share/{id}:
+    get:
+      tags:
+        - Mail
+      summary: Get the mail template for a published share.
+      description: |
+        To send a link to a published share via e-mail, templates can
+        be specified in the configuration file. The server can then
+        insert the required data (like the cryptic url), so the user
+        is freed from copy-pasting things.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailTemplate"
+  /sec/mail/template/alias/{aid}:
+    get:
+      tags:
+        - Mail
+      summary: Get the mail template for a published share.
+      description: |
+        To send a link to an alias page via e-mail, templates can be
+        specified in the configuration file. The server can then
+        insert the required data (like the cryptic url), so the user
+        is freed from copy-pasting things.
+      security:
+        - authTokenHeader: []
+      parameters:
+        - $ref: "#/components/parameters/aliasId"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MailTemplate"
+  /sec/mail/send:
+    post:
+      tags:
+        - Mail
+      summary: Send an e-mail.
+      description: |
+        This will send the given e-mail as is to the specified
+        recipients. This will only work, if the server enabled the
+        mail feature.
+      security:
+        - authTokenHeader: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimpleMail"
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResult"
+
+components:
+  schemas:
+    AccountLight:
+      description: |
+        Reduced information about an account.
+      required:
+        - id
+        - login
+      properties:
+        id:
+          type: string
+          format: ident
+        login:
+          type: string
+          format: ident
+
+    AccountLightList:
+      description: |
+        A list of logins.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountLight"
+
+    SimpleMail:
+      description: |
+        A simple e-mail.
+      required:
+        - recipients
+        - subject
+        - body
+      properties:
+        recipients:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+        body:
+          type: string
+    MailTemplate:
+      description: |
+        Contents of a mail template.
+      required:
+        - subject
+        - body
+      properties:
+        subject:
+          type: string
+        body:
+          type: string
+    PublishData:
+      description: |
+        Input when publishing a share.
+      required:
+        - reuseId
+      properties:
+        reuseId:
+          type: boolean
+    SingleString:
+      description: |
+        Sending a single string value.
+      required:
+        - value
+      properties:
+        value:
+          type: string
+    SingleNumber:
+      description: |
+        For sending a single number.
+      required:
+        - value
+      properties:
+        value:
+          type: integer
+          format: int64
+    ShareDetail:
+      description: |
+        Details about a single share.
+      required:
+        - id
+        - validity
+        - maxViews
+        - password
+        - created
+        - files
+      properties:
+        id:
+          type: string
+          format: ident
+          description: |
+            The (private) id of the share.
+        name:
+          type: string
+          description: |
+            An optional name.
+        aliasId:
+          type: string
+          format: ident
+          description: |
+            If the share was created via an alias page and that alias
+            still exists, its id is given.
+        aliasName:
+          type: string
+          description: |
+            If the share was created via an alias page, this is the
+            name of that alias. Even if the alias doesn't exist
+            anymore, the name is kept.
+        validity:
+          type: integer
+          format: duration
+          description: |
+            The validity duration in milliseconds.
+        maxViews:
+          type: integer
+          description: |
+            How many times public shares can be viewed until they are
+            closed.
+        password:
+          type: boolean
+          description: |
+            An optional password for protecting the share with a
+            second secret (the publish-id being the first).
+        descriptionRaw:
+          type: string
+          description: |
+            The *raw* description as given by the user. Descriptions
+            are processed by the server as mustache templates. This
+            contains the template as is.
+        description:
+          type: string
+          description: |
+            The description rendered as mustache template. The
+            mustache template may refer to the attached files.
+        created:
+          type: integer
+          format: date-time
+          description: |
+            When the share has been created.
+        publishInfo:
+          $ref: "#/components/schemas/SharePublish"
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShareFile"
+    SharePublish:
+      description: |
+        Information about a published share.
+      required:
+        - id
+        - enabled
+        - views
+        - publishDate
+        - publishUntil
+        - expired
+      properties:
+        id:
+          type: string
+          format: ident
+          description: |
+            The public id of the share.
+        enabled:
+          type: boolean
+          description: |
+            Whether the public share is enabled. If a share is
+            unpublished, this data is still there, but the `enabled`
+            flag is set to false. This allows to re-publish it using
+            the same id thus keeping published links stable.
+        views:
+          type: integer
+          format: int32
+          description: |
+            How many times the public share was accessed.
+        publishDate:
+          type: integer
+          format: date-time
+          description: |
+            When the share was published.
+        publishUntil:
+          type: integer
+          format: date-time
+          description: |
+            End date of the public share. After this point in time the
+            public share will not be available anymore.
+        expired:
+          type: boolean
+          description: |
+            Whether this share is expired. That is, `publishUntil` is
+            before *now*. This is kind of redundant, but saves clients
+            from syncing clocks with the server.
+        lastAccess:
+          type: integer
+          format: date-time
+          description: |
+            The last time the public share has been accessed.
+    ShareFile:
+      description: |
+        Details about a file belonging to a share.
+      required:
+        - id
+        - filename
+        - size
+        - mimetype
+        - checksum
+        - storedSize
+      properties:
+        id:
+          type: string
+          format: ident
+          description: |
+            The identifier of that file.
+        filename:
+          type: string
+          description: |
+            An optional filename.
+        size:
+          type: integer
+          format: size
+          description: |
+            The size of the file as advertised when the upload is
+            initiated.
+        mimetype:
+          type: string
+          description: |
+            The mimetype as detected by Sharry.
+        checksum:
+          type: string
+          description: |
+            The (sha256) checksum of the file's contents.
+        storedSize:
+          type: integer
+          format: size
+          description: |
+            This indicates the size of bytes that have really been
+            written to the store. If this differs to the `size`
+            property, then the file is only partially uploaded.
+    ShareList:
+      description: |
+        A list of shares
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShareListItem"
+    ShareListItem:
+      description: |
+        Some details about a share used when searching for shares.
+      required:
+        - id
+        - validity
+        - maxViews
+        - password
+        - created
+        - files
+        - size
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        aliasInfo:
+          $ref: "#/components/schemas/AliasIdName"
+        validity:
+          type: integer
+          format: duration
+        maxViews:
+          type: integer
+          format: int32
+        password:
+          type: boolean
+        created:
+          type: integer
+          format: date-time
+        files:
+          type: integer
+        size:
+          type: integer
+          format: size
+        published:
+          type: boolean
+    ShareProperties:
+      description: |
+        Describes a share.
+      required:
+        - validity
+        - maxViews
+      properties:
+        name:
+          type: string
+        validity:
+          type: integer
+          format: duration
+        description:
+          type: string
+        maxViews:
+          type: integer
+          format: int32
+        password:
+          type: string
+          format: password
+    IdResult:
+      description: |
+        Some basic result of an operation and an identifier. The
+        identifier is valid on success only.
+      required:
+        - success
+        - message
+        - id
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        id:
+          type: string
+          format: ident
+    AliasList:
+      description: |
+        A list of aliases.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AliasDetail"
+    AliasDetail:
+      description: |
+        Details about one alias.
+      required:
+        - id
+        - name
+        - validity
+        - enabled
+        - owner
+        - members
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        validity:
+          type: integer
+          format: duration
+        owner:
+          type: string
+          format: ident
+        enabled:
+          type: boolean
+        members:
+          $ref: "#/components/schemas/AccountLightList"
+        created:
+          type: integer
+          format: date-time
+    AliasChange:
+      description: |
+        Data for changing alias properties.
+      required:
+        - name
+        - validity
+        - enabled
+        - members
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        validity:
+          type: integer
+          format: duration
+        enabled:
+          type: boolean
+        members:
+          type: array
+          items:
+            type: string
+            format: ident
+    AliasIdName:
+      description: |
+        The id and name for an alias.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+    EmailInfo:
+      description: |
+        Accounts may optionally have an e-mail address registered.
+      properties:
+        email:
+          type: string
+    EmailChange:
+      description: |
+        Change your email.
+      required:
+        - email
+      properties:
+        email:
+          type: string
+    PasswordChange:
+      description: |
+        Change your password.
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          format: password
+        newPassword:
+          type: string
+          format: password
+    AccountList:
+      description: |
+        A list of accounts.
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccountDetail"
+    AccountDetail:
+      description: |
+        Information about an account.
+      required:
+        - id
+        - login
+        - source
+        - state
+        - admin
+        - loginCount
+        - shares
+        - created
+      properties:
+        id:
+          type: string
+          format: ident
+        login:
+          type: string
+          format: ident
+        source:
+          type: string
+          format: accountsource
+        state:
+          type: string
+          format: accountstate
+        admin:
+          type: boolean
+        email:
+          type: string
+        loginCount:
+          type: integer
+          format: int32
+        shares:
+          type: integer
+          format: int32
+        lastLogin:
+          type: integer
+          format: date-time
+        created:
+          type: integer
+          format: date-time
+    AccountCreate:
+      description: |
+        Create an account.
+      required:
+        - login
+        - admin
+        - state
+        - password
+      properties:
+        login:
+          type: string
+          format: ident
+        state:
+          type: string
+          format: accountstate
+        admin:
+          type: boolean
+        password:
+          type: string
+          format: password
+        email:
+          type: string
+    AccountModify:
+      description: |
+        Modify an existing  account.
+      required:
+        - admin
+        - state
+      properties:
+        state:
+          type: string
+          format: accountstate
+        admin:
+          type: boolean
+        email:
+          type: string
+        password:
+          type: string
+          format: password
+    AppConfig:
+      description: |
+        Initial configuration.
+      required:
+        - appName
+        - baseUrl
+        - logoUrl
+        - logoUrlDark
+        - iconUrl
+        - iconUrlDark
+        - footerText
+        - footerVisible
+        - signupMode
+        - oauthConfig
+        - chunkSize
+        - retryDelays
+        - maxValidity
+        - maxSize
+        - mailEnabled
+        - welcomeMessage
+        - defaultLanguage
+        - authRefreshTime
+        - initialPage
+        - oauthOnly
+        - aliasMemberEnabled
+        - defaultValidity
+        - initialTheme
+      properties:
+        appName:
+          type: string
+        baseUrl:
+          type: string
+        logoUrl:
+          type: string
+        logoUrlDark:
+          type: string
+        iconUrl:
+          type: string
+        iconUrlDark:
+          type: string
+        footerText:
+          type: string
+        footerVisible:
+          type: boolean
+        signupMode:
+          type: string
+          format: signupmode
+        oauthConfig:
+          type: array
+          items:
+            $ref: "#/components/schemas/OAuthItem"
+        chunkSize:
+          type: integer
+          format: int64
+        retryDelays:
+          type: array
+          items:
+            type: integer
+            format: int64
+        maxValidity:
+          type: integer
+          format: duration
+        maxSize:
+          type: integer
+          format: size
+        mailEnabled:
+          type: boolean
+        welcomeMessage:
+          type: string
+        defaultLanguage:
+          type: string
+        authRefreshTime:
+          type: integer
+          format: duration
+        initialPage:
+          description: |
+            The inital page to show after logging in.
+          type: string
+          enum:
+            - home
+            - uploads
+            - share
+        oauthOnly:
+          type: boolean
+        aliasMemberEnabled:
+          type: boolean
+        defaultValidity:
+          type: integer
+          format: duration
+        initialTheme:
+          type: string
+          format: theme
+    OAuthItem:
+      description: |
+        Information about a configured OAuth provider.
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: ident
+        name:
+          type: string
+        icon:
+          type: string
+    GenInvite:
+      description: |
+        A request to generate a new invitation key.
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          format: password
+    InviteResult:
+      description: |
+        The result when requesting new invitation keys.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        key:
+          type: string
+          format: ident
+    Registration:
+      description: |
+        Data for registering a new account.
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          format: ident
+        password:
+          type: string
+          format: password
+        invite:
+          type: string
+          format: ident
+    BasicResult:
+      description: |
+        Some basic result of an operation.
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    UserPass:
+      description: |
+        Account name and password.
+      required:
+        - account
+        - password
+      properties:
+        account:
+          type: string
+        password:
+          type: string
+    AuthResult:
+      description: |
+        The response to a authentication request.
+      required:
+        - id
+        - user
+        - admin
+        - success
+        - message
+        - validMs
+      properties:
+        id:
+          type: string
+          format: ident
+        user:
+          type: string
+          format: ident
+        admin:
+          type: boolean
+        success:
+          type: boolean
+        message:
+          type: string
+        token:
+          description: |
+            The authentication token that should be used for
+            subsequent requests to secured endpoints.
+          type: string
+        validMs:
+          description: |
+            How long the token is valid in ms.
+          type: integer
+          format: int64
+    VersionInfo:
+      description: |
+        Information about the software.
+      required:
+        - version
+        - builtAtMillis
+        - builtAtString
+        - gitCommit
+        - gitVersion
+      properties:
+        version:
+          type: string
+        builtAtMillis:
+          type: integer
+          format: int64
+        builtAtString:
+          type: string
+        gitCommit:
+          type: string
+        gitVersion:
+          type: string
+  securitySchemes:
+    authTokenHeader:
+      type: apiKey
+      in: header
+      name: Sharry-Auth
+    aliasTokenHeader:
+      type: apiKey
+      in: header
+      name: Sharry-Alias
+  parameters:
+    aliasId:
+      name: aid
+      in: path
+      description: The alias identifier.
+      required: true
+      schema:
+        type: string
+    fid:
+      name: fid
+      in: path
+      description: A file identifier
+      required: true
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      description: A share identifier
+      required: true
+      schema:
+        type: string
+    accountId:
+      name: accountId
+      in: path
+      description: A account identifier
+      required: true
+      schema:
+        type: string
+    pid:
+      name: pid
+      in: path
+      description: A public share identifier
+      required: true
+      schema:
+        type: string
+    q:
+      name: q
+      in: query
+      description: A query string
+      required: false
+      schema:
+        type: string
+    SharryFileName:
+      name: Sharry-File-Name
+      in: header
+      required: false
+      schema:
+        type: string
+    SharryFileLength:
+      name: Sharry-File-Length
+      in: header
+      required: false
+      schema:
+        type: integer
+        format: int64
+    SharryFileType:
+      name: Sharry-File-Type
+      in: header
+      required: false
+      schema:
+        type: string
+    UploadLength:
+      name: Upload-Length
+      in: header
+      required: true
+      schema:
+        type: integer
+        format: int64
+    UploadOffset:
+      name: Upload-Offset
+      in: header
+      required: true
+      schema:
+        type: integer
+        format: int64
+    SharryPassword:
+      name: Sharry-Password
+      in: header
+      required: false
+      schema:
+        type: string
