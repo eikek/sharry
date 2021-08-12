@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Sharry
-  version: 1.9.0-SNAPSHOT
+  version: 1.10.0-SNAPSHOT
   description: |
     Sharry provides a way to share files with others in a convenient
     way. The core functionality is provided by a server that can be
