@@ -151,6 +151,7 @@ val restapi = project
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("sharry.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
+    openapiStaticGen := OpenApiDocGenerator.Redoc,
     openapiScalaConfig := ScalaConfig()
       .withJson(ScalaJson.circeSemiauto)
       .addMapping(CustomMapping.forType({ case TypeDef("LocalDateTime", _) =>
@@ -278,7 +279,7 @@ lazy val microsite = project
     publish / skip := true,
     micrositeFooterText := Some(
       """
-        |<p>&copy; 2020 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
+        |<p>&copy; 2021 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
         |""".stripMargin
     ),
     micrositeName := "Sharry",
