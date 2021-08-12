@@ -279,7 +279,7 @@ lazy val microsite = project
     publish / skip := true,
     micrositeFooterText := Some(
       """
-        |<p>&copy; 2020 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
+        |<p>&copy; 2021 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
         |""".stripMargin
     ),
     micrositeName := "Sharry",
