@@ -1,5 +1,12 @@
 rec {
   cfg = {
+    v1_9_0 = rec {
+      version = "1.9.0";
+      src = {
+        url = "https://github.com/eikek/sharry/releases/download/v${version}/sharry-restserver-${version}.zip";
+        sha256 = "0wx41sw7272g26jx3c93ixl0ky1jswdhlcvkxmzf1gyg9vs26nyc";
+      };
+    };
     v1_8_0 = rec {
       version = "1.8.0";
       src = {
@@ -93,7 +100,7 @@ rec {
     };
   };
   pkg = v: import ./pkg.nix v;
-  currentPkg = pkg cfg.v1_8_0;
+  currentPkg = pkg cfg.v1_9_0;
   module = ./module.nix;
   modules = [ module
             ];
