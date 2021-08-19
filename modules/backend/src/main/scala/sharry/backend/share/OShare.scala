@@ -27,14 +27,12 @@ trait OShare[F[_]] {
 
   /** Create a new share given 'data'.
     *
-    * If 'data' contains files, they are added to the share. Errors
-    * when adding the files are skipped, meaning that this operation
-    * succeeds even if no file could be added.
+    * If 'data' contains files, they are added to the share. Errors when adding the files
+    * are skipped, meaning that this operation succeeds even if no file could be added.
     *
-    * If the account-id contains an alias, it is used to supply most
-    * meta data instead of 'data'. However, the alias is not checked
-    * for validity, as it is assumed to be part of the authentication
-    * process.
+    * If the account-id contains an alias, it is used to supply most meta data instead of
+    * 'data'. However, the alias is not checked for validity, as it is assumed to be part
+    * of the authentication process.
     */
   def create(data: ShareData[F], accId: AccountId): F[UploadResult[Ident]]
 
@@ -50,13 +48,12 @@ trait OShare[F[_]] {
     *
     * This is used with 'addFileData' when uploading a file in chunks.
     *
-    * It is checked if the account is allowed to create a file. That
-    * is, the 'share' id must belong to an existing share owned by the
-    * given account. If the 'accId' contains an alias, the existing
-    * share must be linked to that alias.
+    * It is checked if the account is allowed to create a file. That is, the 'share' id
+    * must belong to an existing share owned by the given account. If the 'accId' contains
+    * an alias, the existing share must be linked to that alias.
     *
-    * The id of the new file is returned. If there is no share with
-    * the given id, 'None' is returned.
+    * The id of the new file is returned. If there is no share with the given id, 'None'
+    * is returned.
     */
   def createEmptyFile(
       share: Ident,
@@ -66,14 +63,13 @@ trait OShare[F[_]] {
 
   /** Add a new chunk of bytes to an existing file.
     *
-    * When files are uploaded in chunks, or an upload is resumed, file
-    * data can be uploaded starting from an offset. This offset is
-    * usually retrieved first using 'getFileData'.
+    * When files are uploaded in chunks, or an upload is resumed, file data can be
+    * uploaded starting from an offset. This offset is usually retrieved first using
+    * 'getFileData'.
     *
-    * It is checked if the account is allowed to create a file. That
-    * is, the 'fileId' id must belong to an existing file owned by the
-    * given account. If the 'accId' contains an alias, the
-    * corresponding share must be linked to that alias.
+    * It is checked if the account is allowed to create a file. That is, the 'fileId' id
+    * must belong to an existing file owned by the given account. If the 'accId' contains
+    * an alias, the corresponding share must be linked to that alias.
     */
   def addFileData(
       shareId: Ident,
@@ -86,10 +82,9 @@ trait OShare[F[_]] {
 
   /** Return information about an existing file.
     *
-    * It is checked if the file is owned by the given account. That
-    * is, the 'fileId' id must belong to an existing file owned by the
-    * given account. If the 'accId' contains an alias, the
-    * corresponding share must be linked to that alias.
+    * It is checked if the file is owned by the given account. That is, the 'fileId' id
+    * must belong to an existing file owned by the given account. If the 'accId' contains
+    * an alias, the corresponding share must be linked to that alias.
     */
   def getFileData(fileId: Ident, accId: AccountId): OptionT[F, FileData]
 
@@ -108,9 +103,8 @@ trait OShare[F[_]] {
 
   /** Publishes a share.
     *
-    * If 'reuseId' is true and this share was previously published,
-    * the id will be reused so the link doesn't change. Otherwise a
-    * new id will be generated.
+    * If 'reuseId' is true and this share was previously published, the id will be reused
+    * so the link doesn't change. Otherwise a new id will be generated.
     *
     * No changes are applied if this share is already published.
     */
@@ -143,14 +137,12 @@ trait OShare[F[_]] {
       value: Option[Password]
   ): OptionT[F, Unit]
 
-  /** Deletes all shares (with all its data) that have been published
-    * but are expired now.
+  /** Deletes all shares (with all its data) that have been published but are expired now.
     */
   def cleanupExpired(invalidAge: Duration): F[Int]
 
-  /** Deletes files that have no reference to a share. This should
-    * actually never happen, but it might be possible due to bugs or
-    * manually modifying the database.
+  /** Deletes files that have no reference to a share. This should actually never happen,
+    * but it might be possible due to bugs or manually modifying the database.
     */
   def deleteOrphanedFiles: F[Int]
 }
@@ -302,14 +294,14 @@ object OShare {
                       length.bytes,
                       mimeHint
                     )
-                    .evalMap({
+                    .evalMap {
                       case Outcome.Created(_) =>
                         store.transact(
                           RShareFile.addRealSize(fileId, ByteSize(chunk.chunkData.size))
                         )
                       case Outcome.Unmodified(_) =>
                         0.pure[F]
-                    })
+                    }
                     .map(_ => chunk.chunkData.size)
               )
               .fold1(_ + _)

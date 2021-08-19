@@ -103,7 +103,7 @@ object CodeFlow {
       case r =>
         r.as[String]
           .flatMap(err =>
-            logger.ferror(s"Cannot obtain user info: ${r.status.code} / ${err}")
+            logger.ferror(s"Cannot obtain user info: ${r.status.code} / $err")
           )
           .map(_ => None)
 

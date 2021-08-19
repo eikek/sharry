@@ -139,7 +139,7 @@ class LoginModuleTest extends FunSuite {
     val data = UserPassData("jdoe", Password("test"))
 
     ops
-      .use({ case (op, store) =>
+      .use { case (op, store) =>
         val modules = List(
           httpModule(true, op),
           commandModule(true, op),
@@ -154,7 +154,7 @@ class LoginModuleTest extends FunSuite {
           _ = as2.foreach(a => assertEquals(a.admin, true))
           _ <- modules.traverse(_.apply(data).map(checkAdminAccount)).map(_.combineAll)
         } yield ()
-      })
+      }
       .unsafeRunSync()
   }
 }

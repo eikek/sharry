@@ -43,7 +43,7 @@ object TusRoutes {
           case Some(info) =>
             backend.share
               .createEmptyFile(shareId, token.account, info)
-              .semiflatMap({
+              .semiflatMap {
                 case UploadResult.Success(fid) =>
                   val url = rootUrl / fid.id
                   Created().map(
@@ -59,7 +59,7 @@ object TusRoutes {
                     .map(_.withHeaders(TusMaxSize(cfg.backend.share.maxSize)))
                 case UploadResult.PermanentError(msg) =>
                   UnprocessableEntity(msg)
-              })
+              }
               .getOrElseF(NotFound())
 
           case None =>
@@ -71,7 +71,7 @@ object TusRoutes {
         val length = req.headers.get[`Content-Length`].map(_.length).map(ByteSize.apply)
         backend.share
           .addFileData(shareId, fileId, token.account, length, offset, req.body)
-          .flatMap({
+          .flatMap {
             case UploadResult.Success(saved) =>
               OptionT.liftF(
                 NoContent().map(_.putHeaders(TusHeader.resumable, UploadOffset(saved)))
@@ -82,7 +82,7 @@ object TusRoutes {
               OptionT.liftF(PayloadTooLarge("Max size exceeded"))
             case UploadResult.PermanentError(msg) =>
               OptionT.liftF(UnprocessableEntity(msg))
-          })
+          }
           .getOrElseF(NotFound())
 
       case HEAD -> Root / Ident(fileId) =>

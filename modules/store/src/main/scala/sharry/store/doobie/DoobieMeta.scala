@@ -57,21 +57,21 @@ object DoobieMeta extends DoobieMeta {
 
   object TraceLogging {
     implicit val handler =
-      LogHandler({
+      LogHandler {
         case e @ Success(_, _, _, _) =>
           DoobieMeta.logger.trace("SQL success: " + e)
         case e =>
           DoobieMeta.logger.trace(s"SQL failure: $e")
-      })
+      }
   }
 
   object DefaultLogging {
     implicit val handler =
-      LogHandler({
+      LogHandler {
         case e @ Success(_, _, _, _) =>
           DoobieMeta.logger.trace("SQL success: " + e)
         case e =>
           DoobieMeta.logger.warn(s"SQL failure: $e")
-      })
+      }
   }
 }

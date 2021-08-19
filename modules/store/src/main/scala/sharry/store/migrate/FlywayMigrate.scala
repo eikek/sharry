@@ -47,7 +47,7 @@ object FlywayMigrate {
       case Some("h2") =>
         List(s"classpath:db/migration/postgresql", "classpath:db/migration/h2")
       case Some(dbtype) =>
-        List(s"classpath:db/migration/${dbtype}")
+        List(s"classpath:db/migration/$dbtype")
       case None =>
         logger.warn(s"Cannot read database name from jdbc url: ${jdbc.url}. Go with H2")
         List(s"classpath:db/migration/postgresql", "classpath:db/migration/h2")
