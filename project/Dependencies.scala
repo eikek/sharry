@@ -117,8 +117,8 @@ object Dependencies {
     "org.scalameta" %% "munit-scalacheck" % MUnitVersion
   )
 
-  val kindProjectorPlugin = "org.typelevel" %% "kind-projector"     % KindProjectorVersion
-  val betterMonadicFor    = "com.olegpy"    %% "better-monadic-for" % BetterMonadicForVersion
+  val kindProjectorPlugin = "org.typelevel" %% "kind-projector" % KindProjectorVersion
+  val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % BetterMonadicForVersion
 
   val webjars = Seq(
     "org.webjars"     % "swagger-ui"    % SwaggerVersion,

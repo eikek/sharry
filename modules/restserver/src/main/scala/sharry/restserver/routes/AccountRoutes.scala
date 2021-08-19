@@ -24,7 +24,7 @@ object AccountRoutes {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
-    val r1 = HttpRoutes[F]({
+    val r1 = HttpRoutes[F] {
       case GET -> Root / Ident(id) =>
         for {
           _    <- OptionT.liftF(logger.fdebug(s"Loading accout $id"))
@@ -33,7 +33,7 @@ object AccountRoutes {
         } yield resp
       case _ =>
         OptionT.liftF(NotFound())
-    })
+    }
     val r2 = HttpRoutes.of[F] {
       case req @ POST -> Root / Ident(id) =>
         for {
@@ -47,7 +47,7 @@ object AccountRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          _   <- logger.finfo(s"Requested to delete account: ${id}")
+          _   <- logger.finfo(s"Requested to delete account: $id")
           res <- backend.account.delete(id).value
           resp <- res match {
             case Some(_) =>

@@ -11,14 +11,12 @@ import org.log4s._
 
 /** Provides authentication from the configuration.
   *
-  * This simply compares the password agains the fix string in the
-  * config, but only if the username matches. Otherwise it let's the
-  * next login module try to authenticate.
+  * This simply compares the password agains the fix string in the config, but only if the
+  * username matches. Otherwise it let's the next login module try to authenticate.
   *
-  * Note that this login module does ignore the AccountState on
-  * purpose. The config file should not really be used, but serves as
-  * a fallback to easily access the application in case other
-  * authentication is not possible.
+  * Note that this login module does ignore the AccountState on purpose. The config file
+  * should not really be used, but serves as a fallback to easily access the application
+  * in case other authentication is not possible.
   */
 final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 

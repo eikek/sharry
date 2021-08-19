@@ -36,7 +36,7 @@ object ConfigFile {
             case "none"     => Right(SSLType.NoEncryption)
             case "starttls" => Right(SSLType.StartTLS)
             case "ssl"      => Right(SSLType.SSL)
-            case _          => Left(s"Invalid ssl type '$s'. Use one of none, ssl or starttls.")
+            case _ => Left(s"Invalid ssl type '$s'. Use one of none, ssl or starttls.")
           }
         )
       )

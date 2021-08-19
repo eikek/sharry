@@ -37,7 +37,7 @@ object Login {
         }
 
       def loginUserPass(config: AuthConfig)(up: UserPassData): F[LoginResult] =
-        logger.fdebug(s"Trying to login ${up}") *>
+        logger.fdebug(s"Trying to login $up") *>
           createLoginModule[F](config, oacc).run(up)
 
       def loginAlias(config: AuthConfig)(alias: String): F[LoginResult] =

@@ -99,7 +99,7 @@ object OMail {
               logger.finfo(
                 "Send notification mails about upload. " +
                   s"Success ${res.filter(_.isSuccess).size}/${res.size}. " +
-                  s"Sending failures for: ${failedReceiver}"
+                  s"Sending failures for: $failedReceiver"
               )
             )
           } yield res).getOrElse(List(NotifyResult.InvalidAlias))
@@ -179,6 +179,6 @@ object OMail {
   case class ListId[F[_]](listId: String) extends Trans[F] {
     def apply(mail: Mail[F]): Mail[F] =
       if (listId.trim.isEmpty) mail
-      else CustomHeader("List-Id", s"<${listId}>").apply(mail)
+      else CustomHeader("List-Id", s"<$listId>").apply(mail)
   }
 }

@@ -66,7 +66,7 @@ object ShareUploadRoutes {
 
       case req @ POST -> Root / Ident(id) / "files" / "add" =>
         (for {
-          _         <- OptionT.liftF(logger.fdebug("Uploading a file to an existing share"))
+          _ <- OptionT.liftF(logger.fdebug("Uploading a file to an existing share"))
           multipart <- OptionT.liftF(req.as[Multipart[F]])
           updata    <- OptionT.liftF(readMultipart(multipart))
           ur        <- backend.share.addFile(id, token.account, updata.files)

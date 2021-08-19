@@ -151,7 +151,7 @@ object LoginRoutes {
         } yield resp
       case _ =>
         logger.info(
-          s"Authentication attempt failure for username ${accountName} from ip ${req.from.map(_.toInetAddress.getHostAddress).getOrElse("Unknown ip")}"
+          s"Authentication attempt failure for username $accountName from ip ${req.from.map(_.toInetAddress.getHostAddress).getOrElse("Unknown ip")}"
         )
         Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))
     }

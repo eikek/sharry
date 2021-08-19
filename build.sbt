@@ -78,8 +78,8 @@ val webjarSettings = Seq(
 )
 
 val debianSettings = Seq(
-  maintainer := "Eike Kettner <eike.kettner@posteo.de>",
-  packageSummary := description.value,
+  maintainer         := "Eike Kettner <eike.kettner@posteo.de>",
+  packageSummary     := description.value,
   packageDescription := description.value,
   Universal / mappings += {
     val conf = (Compile / resourceDirectory).value / "reference.conf"
@@ -149,15 +149,15 @@ val restapi = project
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
-    openapiPackage := Pkg("sharry.restapi.model"),
-    openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
-    openapiStaticGen := OpenApiDocGenerator.Redoc,
+    openapiPackage        := Pkg("sharry.restapi.model"),
+    openapiSpec           := (Compile / resourceDirectory).value / "sharry-openapi.yml",
+    openapiStaticGen      := OpenApiDocGenerator.Redoc,
     openapiScalaConfig := ScalaConfig()
       .withJson(ScalaJson.circeSemiauto)
-      .addMapping(CustomMapping.forType({ case TypeDef("LocalDateTime", _) =>
+      .addMapping(CustomMapping.forType { case TypeDef("LocalDateTime", _) =>
         TypeDef("Timestamp", Imports("sharry.common.Timestamp"))
-      }))
-      .addMapping(CustomMapping.forFormatType({
+      })
+      .addMapping(CustomMapping.forFormatType {
         case "ident" =>
           field => field.copy(typeDef = TypeDef("Ident", Imports("sharry.common.Ident")))
         case "accountstate" =>
@@ -187,7 +187,7 @@ val restapi = project
         case "size" =>
           field =>
             field.copy(typeDef = TypeDef("ByteSize", Imports("sharry.common.ByteSize")))
-      }))
+      })
   )
   .dependsOn(common)
 
@@ -216,9 +216,9 @@ val webapp = project
   .settings(webjarSettings)
   .settings(stylesSettings)
   .settings(
-    name := "sharry-webapp",
+    name                  := "sharry-webapp",
     openapiTargetLanguage := Language.Elm,
-    openapiPackage := Pkg("Api.Model"),
+    openapiPackage        := Pkg("Api.Model"),
     openapiSpec := (restapi / Compile / resourceDirectory).value / "sharry-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
@@ -274,24 +274,24 @@ lazy val microsite = project
   .disablePlugins(ReleasePlugin, RevolverPlugin)
   .settings(sharedSettings)
   .settings(
-    name := "sharry-microsite",
+    name            := "sharry-microsite",
     publishArtifact := false,
-    publish / skip := true,
+    publish / skip  := true,
     micrositeFooterText := Some(
       """
         |<p>&copy; 2021 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
         |""".stripMargin
     ),
-    micrositeName := "Sharry",
-    micrositeDescription := "Sharry – Share files conveniently",
+    micrositeName             := "Sharry",
+    micrositeDescription      := "Sharry – Share files conveniently",
     micrositeDocumentationUrl := "/sharry/doc",
     micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon-32x32.png", "32x32")),
-    micrositeBaseUrl := "/sharry",
-    micrositeAuthor := "eikek",
-    micrositeGithubOwner := "eikek",
-    micrositeGithubRepo := "sharry",
-    micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
-    micrositePushSiteWith := GitHub4s,
+    micrositeBaseUrl  := "/sharry",
+    micrositeAuthor   := "eikek",
+    micrositeGithubOwner   := "eikek",
+    micrositeGithubRepo    := "sharry",
+    micrositeGithubToken   := sys.env.get("GITHUB_TOKEN"),
+    micrositePushSiteWith  := GitHub4s,
     micrositeGitterChannel := false,
     micrositeShareOnSocial := false,
     micrositePalette := Map(
