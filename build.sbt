@@ -225,7 +225,13 @@ val webapp = project
 
 val restserver = project
   .in(file("modules/restserver"))
-  .enablePlugins(BuildInfoPlugin, JavaServerAppPackaging, DebianPlugin, SystemdPlugin)
+  .enablePlugins(
+    BuildInfoPlugin,
+    JavaServerAppPackaging,
+    DebianPlugin,
+    SystemdPlugin,
+    ClasspathJarPlugin
+  )
   .settings(sharedSettings)
   .settings(testSettingsMUnit)
   .settings(debianSettings)
