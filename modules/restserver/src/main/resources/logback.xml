@@ -8,6 +8,8 @@
   </appender>
 
   <logger name="sharry" level="debug" />
+  <logger name="sharry.store.FileStore" level="debug"/>
+
   <logger name="emil" level="debug" />
   <logger name="org.http4s" level="info"/>
 

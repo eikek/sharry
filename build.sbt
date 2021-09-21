@@ -129,7 +129,7 @@ val store = project
     name := "sharry-store",
     libraryDependencies ++=
       Dependencies.doobie ++
-        Dependencies.bitpeace ++
+        Dependencies.binny ++
         Dependencies.tika ++
         Dependencies.fs2 ++
         Dependencies.databases ++
@@ -253,7 +253,7 @@ val restserver = project
     reStart / javaOptions ++=
       Seq(
         s"-Dconfig.file=${(LocalRootProject / baseDirectory).value / "local" / "dev.conf"}",
-        "-Dsharry.migrate-old-dbschema=false",
+        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005",
         "-Xmx512M"
       ),
     Compile / resourceGenerators += Def.task {

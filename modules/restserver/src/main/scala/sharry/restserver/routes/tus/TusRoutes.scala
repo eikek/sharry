@@ -11,7 +11,6 @@ import sharry.common._
 import sharry.common.syntax.all._
 import sharry.restserver.Config
 
-import bitpeace.Mimetype
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
@@ -106,13 +105,14 @@ object TusRoutes {
   }
 
   object TusHeader {
+    private val octetStream = "application/octet-stream"
 
     def fileInfo[F[_]](req: Request[F]): Option[FileInfo] = {
       val name = SharryFileName(req)
       val len  = SharryFileLength(req)
-      val mime = SharryFileType(req).getOrElse(Mimetype.applicationOctetStream)
+      val mime = SharryFileType(req).getOrElse(octetStream)
 
-      len.map(l => FileInfo(l.bytes, name, mime))
+      len.map(l => FileInfo(l, name, mime))
     }
 
     def resumable =

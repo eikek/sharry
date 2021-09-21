@@ -72,7 +72,7 @@ object ShareDetailResponse {
         f.id,
         f.name.getOrElse(""),
         f.length,
-        f.mimetype.asString,
+        f.mimetype,
         f.checksum,
         f.saved
       )

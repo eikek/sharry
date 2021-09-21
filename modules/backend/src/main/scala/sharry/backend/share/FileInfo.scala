@@ -1,8 +1,9 @@
 package sharry.backend.share
-import bitpeace.Mimetype
+
+import sharry.common.ByteSize
 
 case class FileInfo(
-    length: Long,
+    length: ByteSize,
     name: Option[String],
-    mime: Mimetype
+    mime: String
 )

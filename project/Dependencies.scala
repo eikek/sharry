@@ -4,7 +4,7 @@ object Dependencies {
 
   val BcryptVersion           = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BitpeaceVersion         = "0.9.0-M3"
+  val BinnyVersion            = "0.1.0"
   val CirceVersion            = "0.14.1"
   val ClipboardJsVersion      = "2.0.6"
   val DoobieVersion           = "1.0.0-RC1"
@@ -89,8 +89,10 @@ object Dependencies {
     "org.tpolecat" %% "doobie-hikari" % DoobieVersion
   )
 
-  val bitpeace = Seq(
-    "com.github.eikek" %% "bitpeace-core" % BitpeaceVersion
+  val binny = Seq(
+    "com.github.eikek" %% "binny-core"        % BinnyVersion,
+    "com.github.eikek" %% "binny-jdbc"        % BinnyVersion,
+    "com.github.eikek" %% "binny-tika-detect" % BinnyVersion
   )
 
   val emil = Seq(

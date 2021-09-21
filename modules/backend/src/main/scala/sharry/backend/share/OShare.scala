@@ -1,27 +1,19 @@
 package sharry.backend.share
 
+import binny.{ByteRange, ChunkDef, Hint}
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-
 import sharry.backend.PasswordCrypt
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.AddResult
 import sharry.store.PermanentError
 import sharry.store.Store
-import sharry.store.records.RAlias
-import sharry.store.records.RPublishShare
-import sharry.store.records.RShare
-import sharry.store.records.RShareFile
-
-import bitpeace.FileChunk
-import bitpeace.FileMeta
-import bitpeace.MimetypeHint
-import bitpeace.Outcome
-import bitpeace.RangeDef
+import sharry.store.records.{RAlias, RFileMeta, RPublishShare, RShare, RShareFile}
 import org.log4s.getLogger
+import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
 
@@ -116,7 +108,7 @@ trait OShare[F[_]] {
       id: ShareId,
       file: Ident,
       pass: Option[Password],
-      range: RangeDef
+      range: ByteRange
   ): OptionT[F, FileRange[F]]
 
   def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit]
@@ -171,7 +163,7 @@ object OShare {
 
         val storeFiles = (id: Ident) =>
           data.files
-            .evalMap(createFile(store, id, cfg.chunkSize, cfg.maxSize))
+            .evalMap(createFile(store, id, cfg.maxSize))
             .evalMap(ur =>
               ur.toOption match {
                 case Some(t) =>
@@ -205,7 +197,7 @@ object OShare {
       ): OptionT[F, UploadResult[Ident]] = {
         val storeFiles =
           files
-            .evalMap(createFile(store, shareId, cfg.chunkSize, cfg.maxSize))
+            .evalMap(createFile(store, shareId, cfg.maxSize))
             .evalMap(ur =>
               ur.toOption match {
                 case Some(t) =>
@@ -232,19 +224,15 @@ object OShare {
           fid <- Ident.randomId[F]
           sid <- Ident.randomId[F]
           now <- Timestamp.current[F]
-          rest   = if (info.length % cfg.chunkSize.bytes == 0) 0 else 1
-          chunks = info.length / cfg.chunkSize.bytes + rest
-          fm = FileMeta(
-            fid.id,
-            now.value,
+          fm = RFileMeta(
+            fid,
+            now,
             info.mime,
             info.length,
-            "",
-            chunks.toInt,
-            cfg.chunkSize.bytes.toInt
+            ByteVector.empty
           )
           rf = RShareFile(sid, share, fid, info.name, now, ByteSize.zero)
-          _ <- store.bitpeace.saveFileMeta(fm).compile.drain
+          _ <- store.fileStore.insertMeta(fm)
           _ <- store.transact(RShareFile.insert(rf))
           _ <- logger.fdebug(s"Created empty file: ${sid.id}")
         } yield rf.id
@@ -252,7 +240,7 @@ object OShare {
         for {
           _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
           res <- OptionT.liftF(
-            checkShareSize(store, cfg.maxSize, share, ByteSize(info.length))
+            checkShareSize(store, cfg.maxSize, share, info.length)
           )
           r <- OptionT.liftF(res.mapF(_ => insert))
         } yield r
@@ -272,7 +260,7 @@ object OShare {
         def storeChunk(
             fileMetaId: Ident,
             length: ByteSize,
-            mimeHint: MimetypeHint,
+            mimeHint: Hint,
             sizeLeft: ByteSize
         ): F[UploadResult[ByteSize]] =
           logger.fdebug(s"Start storing request of size ${reqLen.toHuman}") *>
@@ -280,30 +268,21 @@ object OShare {
               .take(sizeLeft.bytes + 1)
               .chunkN(cfg.chunkSize.bytes.toInt)
               .zipWithIndex
-              .map(tc => FileChunk(fileMetaId.id, tc._2 + startChunk, tc._1.toByteVector))
-              .flatMap(chunk =>
-                Stream.eval(
-                  logger.ftrace(
-                    s"Storing chunk ${chunk.chunkNr} of size ${chunk.chunkData.size}"
+              .evalMap { case (chunk, index) =>
+                store.fileStore
+                  .addChunk(
+                    fileMetaId,
+                    mimeHint,
+                    ChunkDef.fromLength(index.toInt + startChunk, length.bytes),
+                    chunk
                   )
-                ) >>
-                  store.bitpeace
-                    .addChunkByLength(
-                      chunk,
-                      cfg.chunkSize.bytes.toInt,
-                      length.bytes,
-                      mimeHint
+                  .flatMap { _ =>
+                    store.transact(
+                      RShareFile.addRealSize(fileId, ByteSize(chunk.size.toLong))
                     )
-                    .evalMap {
-                      case Outcome.Created(_) =>
-                        store.transact(
-                          RShareFile.addRealSize(fileId, ByteSize(chunk.chunkData.size))
-                        )
-                      case Outcome.Unmodified(_) =>
-                        0.pure[F]
-                    }
-                    .map(_ => chunk.chunkData.size)
-              )
+                  }
+                  .map(_ => chunk.size.toLong)
+              }
               .fold1(_ + _)
               .compile
               .last
@@ -341,7 +320,7 @@ object OShare {
               storeChunk(
                 desc.metaId,
                 desc.length,
-                MimetypeHint(desc.name, desc.mime.some),
+                Hint(desc.name, desc.mime.some),
                 rem
               )
             )
@@ -404,7 +383,7 @@ object OShare {
           shareId: ShareId,
           file: Ident,
           pass: Option[Password],
-          range: RangeDef
+          range: ByteRange
       ): OptionT[F, FileRange[F]] = {
         val checkQuery = shareId.fold(
           pub => Queries.checkFilePublish(pub.id, file),
@@ -560,17 +539,16 @@ object OShare {
   def createFile[F[_]: Sync](
       store: Store[F],
       shareId: Ident,
-      chunkSz: ByteSize,
       maxSize: ByteSize
   )(
       file: File[F]
-  ): F[UploadResult[(FileMeta, RShareFile)]] = {
+  ): F[UploadResult[(RFileMeta, RShareFile)]] = {
 
-    def deleteFileMeta(fm: FileMeta) =
+    def deleteFile(fm: RFileMeta) =
       for {
-        _ <- logger.fdebug(s"Deleting too large (${ByteSize(fm.length)}) file ${fm.id}")
-        _ <- store.bitpeace.delete(fm.id).compile.lastOrError
-      } yield UploadResult.sizeExceeded[FileMeta](maxSize)
+        _ <- logger.fdebug(s"Deleting too large (${fm.length}) file ${fm.id}")
+        _ <- store.fileStore.delete(fm.id)
+      } yield UploadResult.sizeExceeded[RFileMeta](maxSize)
 
     def insertFileData(now: Timestamp) =
       for {
@@ -580,36 +558,32 @@ object OShare {
 
         // store file, at most max-size +1 bytes
         urfm <- result.mapF(sizeLeft =>
-          store.bitpeace
-            .saveNew(
+          store.fileStore
+            .insert(
               file.data.take(sizeLeft.bytes + 1L),
-              chunkSz.bytes.toInt,
-              MimetypeHint(file.name, file.advertisedMime.map(_.asString)),
-              None,
-              now.value
+              Hint(file.name, file.advertisedMime),
+              now
             )
-            .compile
-            .lastOrError
         )
 
         // check again against db state, because of parallel uploads
         currentSize2 <- store.transact(Queries.shareSize(shareId))
         ur <- urfm.flatMapF { fm =>
-          if (currentSize2 >= maxSize) deleteFileMeta(fm)
+          if (currentSize2 >= maxSize) deleteFile(fm)
           else urfm.pure[F]
         }
       } yield ur
 
-    def saveShareFile(fm: FileMeta, now: Timestamp) =
+    def saveShareFile(fm: RFileMeta, now: Timestamp) =
       for {
         sfid <- Ident.randomId[F]
         sf = RShareFile(
           sfid,
           shareId,
-          Ident.unsafe(fm.id),
+          fm.id,
           file.name,
           now,
-          ByteSize(fm.length)
+          fm.length
         )
         _ <- store.transact(RShareFile.insert(sf))
       } yield UploadResult((fm, sf))

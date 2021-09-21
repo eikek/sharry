@@ -15,7 +15,6 @@ import sharry.restserver.Config
 import sharry.restserver.http4s.ClientRequestInfo
 import sharry.restserver.routes.tus.TusRoutes
 
-import bitpeace.Mimetype
 import org.http4s.HttpRoutes
 import org.http4s.Request
 import org.http4s.Uri
@@ -99,8 +98,8 @@ object ShareUploadRoutes {
           )
         )
 
-    def fromContentType(header: `Content-Type`): Mimetype =
-      Mimetype(header.mediaType.mainType, header.mediaType.subType)
+    def fromContentType(header: `Content-Type`): String =
+      s"${header.mediaType.mainType}/${header.mediaType.subType}"
 
     val meta: F[ShareProperties] = mp.parts
       .find(_.name.exists(_.equalsIgnoreCase("meta")))

@@ -2,7 +2,6 @@ package sharry.backend.mustache
 
 import sharry.common._
 
-import bitpeace.Mimetype
 import yamusca.imports._
 
 trait YamuscaCommon {
@@ -14,9 +13,6 @@ trait YamuscaCommon {
 
   implicit val yamuscaIdentConverter: ValueConverter[Ident] =
     ValueConverter.of(m => Value.fromString(m.id))
-
-  implicit val yamuscaMimetypeConverter: ValueConverter[Mimetype] =
-    ValueConverter.of(m => Value.fromString(m.asString))
 
   implicit val yamuscaBytesizeConverter: ValueConverter[ByteSize] =
     ValueConverter.of(m => Value.fromString(m.bytes.toString))

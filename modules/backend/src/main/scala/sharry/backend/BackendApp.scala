@@ -54,7 +54,7 @@ object BackendApp {
       connectEC: ExecutionContext
   ): Resource[F, BackendApp[F]] =
     for {
-      store   <- Store.create(cfg.jdbc, connectEC, true)
+      store   <- Store.create(cfg.jdbc, cfg.share.chunkSize, connectEC, true)
       backend <- create(cfg, store)
       _ <-
         PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)

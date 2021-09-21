@@ -4,20 +4,12 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.Store
 import sharry.store.doobie.DoobieMeta._
 import sharry.store.doobie._
-import sharry.store.records.RAccount
-import sharry.store.records.RAlias
-import sharry.store.records.RAliasMember
-import sharry.store.records.RPublishShare
-import sharry.store.records.RShare
-import sharry.store.records.RShareFile
-
-import bitpeace.Mimetype
+import sharry.store.records._
 import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
@@ -25,23 +17,11 @@ import org.log4s.getLogger
 object Queries {
   private[this] val logger = getLogger
 
-  object FileMetaCols {
-    val id        = Column("id")
-    val timestamp = Column("timestamp")
-    val mimetype  = Column("mimetype")
-    val length    = Column("length")
-    val checksum  = Column("checksum")
-    val chunks    = Column("chunks")
-    val chunksize = Column("chunksize")
-
-    val all   = List(id, timestamp, mimetype, length, checksum, chunks, chunksize)
-    val table = fr"filemeta"
-  }
   object FileChunkCols {
     val table       = fr"filechunk"
-    val fileId      = Column("fileId")
-    val chunkLength = Column("chunkLength")
-    val chunkNr     = Column("chunkNr")
+    val fileId      = Column("file_id")
+    val chunkLength = Column("chunk_len")
+    val chunkNr     = Column("chunk_nr")
   }
 
   case class FileDesc(
@@ -49,39 +29,38 @@ object Queries {
       name: Option[String],
       mime: String,
       length: ByteSize
-  ) {
-    def mimeType: Mimetype =
-      Mimetype.parse(mime).fold(throw _, identity)
-  }
+  )
 
   def fileDesc(shareFileId: Ident): ConnectionIO[Option[FileDesc]] = {
-    val SF = RShareFile.Columns
+    val mFileId = "m" :: RFileMeta.Columns.id
+    val fFileId = "f" :: RShareFile.Columns.fileId
+    val SF      = RShareFile.Columns
     val cols =
       Seq(
-        "m" :: FileMetaCols.id,
+        mFileId,
         "f" :: SF.filename,
-        "m" :: FileMetaCols.mimetype,
-        "m" :: FileMetaCols.length
+        "m" :: RFileMeta.Columns.mimetype,
+        "m" :: RFileMeta.Columns.length
       )
-    val from = RShareFile.table ++ fr"f INNER JOIN filemeta m ON f.file_id = m.id"
+    val from =
+      RShareFile.table ++ fr"f INNER JOIN " ++ RFileMeta.table ++
+        fr" m ON" ++ fFileId.is(mFileId)
     Sql.selectSimple(cols, from, ("f" :: SF.id).is(shareFileId)).query[FileDesc].option
   }
 
   private def fileDataFragment0(where: Fragment): Fragment = {
     val fId   = "f" :: RShareFile.Columns.id
     val fFile = "f" :: RShareFile.Columns.fileId
-    val mId   = "m" :: FileMetaCols.id
+    val mId   = "m" :: RFileMeta.Columns.id
 
     val cols = Seq(
       fId,
       "f" :: RShareFile.Columns.shareId,
-      "m" :: FileMetaCols.id,
+      "m" :: RFileMeta.Columns.id,
       "f" :: RShareFile.Columns.filename,
-      "m" :: FileMetaCols.mimetype,
-      "m" :: FileMetaCols.length,
-      "m" :: FileMetaCols.checksum,
-      "m" :: FileMetaCols.chunks,
-      "m" :: FileMetaCols.chunksize,
+      "m" :: RFileMeta.Columns.mimetype,
+      "m" :: RFileMeta.Columns.length,
+      "m" :: RFileMeta.Columns.checksum,
       "f" :: RShareFile.Columns.created,
       "f" :: RShareFile.Columns.realSize
     )
@@ -194,8 +173,8 @@ object Queries {
   }
 
   private def fileSummary: Fragment = {
-    val fileId = "m" :: FileMetaCols.id
-    val size   = "m" :: FileMetaCols.length
+    val fileId = "m" :: RFileMeta.Columns.id
+    val size   = "m" :: RFileMeta.Columns.length
     val rFile  = "r" :: RShareFile.Columns.fileId
     val rShare = "r" :: RShareFile.Columns.shareId
 
@@ -356,10 +335,10 @@ object Queries {
   def findOrphanedFiles: Stream[ConnectionIO, Ident] = {
     val fId   = "f" :: RShareFile.Columns.id
     val fFile = "f" :: RShareFile.Columns.fileId
-    val mId   = "m" :: FileMetaCols.id
+    val mId   = "m" :: RFileMeta.Columns.id
 
     val from =
-      FileMetaCols.table ++ fr"m LEFT OUTER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fFile
+      RFileMeta.table ++ fr"m LEFT OUTER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fFile
         .is(mId)
     val q = Sql.selectSimple(Seq(mId), from, fId.isNull)
     logger.trace(s"findOrphaned: $q")
@@ -396,7 +375,7 @@ object Queries {
     def deleteFileMeta(fid: Ident): F[Int] =
       store.transact(for {
         a <- RShareFile.deleteByFileId(fid)
-        c <- Sql.deleteFrom(FileMetaCols.table, FileMetaCols.id.is(fid)).update.run
+        c <- Sql.deleteFrom(RFileMeta.table, RFileMeta.Columns.id.is(fid)).update.run
       } yield a + c)
 
     deleteFileData(fileMetaId) *> deleteFileMeta(fileMetaId)

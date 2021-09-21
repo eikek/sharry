@@ -6,7 +6,6 @@ import cats.effect._
 import cats.implicits._
 
 import sharry.common._
-import sharry.store.migrate.MigrateFrom06
 
 import org.log4s._
 
@@ -63,16 +62,11 @@ object Main extends IOApp {
     logger.info(s"Alias-Member feature enabled: ${cfg.aliasMemberEnabled}")
 
     pools.use { p =>
-      if ("true" == System.getProperty("sharry.migrate-old-dbschema"))
-        MigrateFrom06[IO](cfg.backend.jdbc, p.connectEC)
-          .use(mig => mig.migrate)
-          .as(ExitCode.Success)
-      else
-        RestServer
-          .stream[IO](cfg, p)
-          .compile
-          .drain
-          .as(ExitCode.Success)
+      RestServer
+        .stream[IO](cfg, p)
+        .compile
+        .drain
+        .as(ExitCode.Success)
     }
   }
 }
