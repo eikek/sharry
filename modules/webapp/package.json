@@ -10,7 +10,7 @@
     "cssnano": "^5.0.7",
     "flag-icon-css": "^3.5.0",
     "postcss": "^8.3.6",
-    "postcss-cli": "^8.3.1",
+    "postcss-cli": "^9.0.0",
     "postcss-import": "^14.0.2",
     "tailwindcss": "^2.2.7"
   }
