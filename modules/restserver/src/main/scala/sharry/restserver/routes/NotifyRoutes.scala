@@ -34,8 +34,8 @@ object NotifyRoutes {
         case Some(alias) =>
           val baseurl = ClientRequestInfo.getBaseUrl(cfg, req) / "app" / "upload"
           for {
-            _    <- logger.fdebug("Notify about alias upload")
-            res  <- backend.mail.notifyAliasUpload(alias, id, baseurl)
+            _ <- logger.fdebug("Notify about alias upload")
+            res <- backend.mail.notifyAliasUpload(alias, id, baseurl)
             resp <- Ok(basicResult(res))
           } yield resp
 
@@ -58,7 +58,7 @@ object NotifyRoutes {
 
       case _ =>
         val success = n.filter(_.isSuccess).size
-        val fails   = n.filter(_.isError).size
+        val fails = n.filter(_.isError).size
         if (fails > 0 && success == 0)
           BasicResult(false, s"Sending failed to all recipients ($fails)")
         else if (fails > 0)

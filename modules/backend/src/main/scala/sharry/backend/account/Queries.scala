@@ -33,9 +33,9 @@ object Queries {
   }
 
   private def findAccountFragment(where1: Fragment): Query0[AccountItem] = {
-    val aId  = "a" :: RAccount.Columns.id
+    val aId = "a" :: RAccount.Columns.id
     val sAcc = "s" :: RShare.Columns.accountId
-    val sId  = "s" :: RShare.Columns.id
+    val sId = "s" :: RShare.Columns.id
 
     val cols = RAccount.Columns.all
       .map("a" :: _)

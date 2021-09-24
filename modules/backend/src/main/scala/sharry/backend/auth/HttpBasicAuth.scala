@@ -33,10 +33,10 @@ final class HttpBasicAuth[F[_]: Async](
                 )
 
             for {
-              _    <- logger.fdebug(s"HttpBasicAuth: starting login $up")
-              res  <- executeReq(up, cfg.httpBasic)
+              _ <- logger.fdebug(s"HttpBasicAuth: starting login $up")
+              res <- executeReq(up, cfg.httpBasic)
               resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-              _    <- logger.fdebug(s"HttpBasicAuth: $up => $resp")
+              _ <- logger.fdebug(s"HttpBasicAuth: $up => $resp")
             } yield resp
 
           case Left(_) =>

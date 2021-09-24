@@ -17,8 +17,7 @@ trait OSignup[F[_]] {
 
   def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult]
 
-  /** Removes unused and expired invites.
-    */
+  /** Removes unused and expired invites. */
   def cleanInvites(cfg: SignupConfig): F[Int]
 }
 

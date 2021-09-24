@@ -6,10 +6,11 @@ import java.time.{Instant, LocalDate}
 import sharry.common._
 import sharry.common.syntax.all._
 
-import bitpeace.Mimetype
 import doobie._
+import doobie.implicits.legacy.instant._
 import doobie.util.log.Success
 import io.circe.{Decoder, Encoder}
+import scodec.bits.ByteVector
 
 trait DoobieMeta {
 
@@ -36,7 +37,7 @@ trait DoobieMeta {
     metaIdent.timap(CIIdent.apply)(_.value)
 
   implicit val metaTimestamp: Meta[Timestamp] =
-    Meta[String].timap(s => Timestamp(Instant.parse(s)))(_.value.toString)
+    Meta[Instant].imap(Timestamp(_))(_.value)
 
   implicit val metaLocalDate: Meta[LocalDate] =
     Meta[String].timap(str => LocalDate.parse(str))(_.format(DateTimeFormatter.ISO_DATE))
@@ -47,9 +48,8 @@ trait DoobieMeta {
   implicit val metaByteSize: Meta[ByteSize] =
     Meta[Long].timap(n => ByteSize(n))(_.bytes)
 
-  implicit val metaMimetype: Meta[Mimetype] =
-    Meta[String].imap(Mimetype.parse(_).fold(ex => throw ex, identity))(_.asString)
-
+  implicit val byteVectorMeta: Meta[ByteVector] =
+    Meta[String].timap(s => ByteVector.fromValidHex(s))(_.toHex)
 }
 
 object DoobieMeta extends DoobieMeta {

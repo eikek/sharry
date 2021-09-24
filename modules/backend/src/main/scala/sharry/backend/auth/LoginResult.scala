@@ -16,6 +16,6 @@ object LoginResult {
   }
 
   def ok(session: AuthToken): LoginResult = Ok(session)
-  def invalidAuth: LoginResult            = InvalidAuth
-  def invalidTime: LoginResult            = InvalidTime
+  def invalidAuth: LoginResult = InvalidAuth
+  def invalidTime: LoginResult = InvalidTime
 }

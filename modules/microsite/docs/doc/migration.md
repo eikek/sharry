@@ -6,6 +6,12 @@ permalink: doc/migration
 
 # {{ page.title }}
 
+**NOTE: This migration has been available for 2 years and was removed
+in version 1.10.0. Should you need it, please use a version prior to
+1.10.0 to run the migration from 0.6.x. After this you can start the
+newest version.**
+
+
 For users of Sharry version 0.6.x, the database schema must be
 migrated (kind of) manually. The application doesn't do it
 automatically. However, there is a built-in script that converts the

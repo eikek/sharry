@@ -8,10 +8,10 @@ import org.typelevel.ci.CIString
 
 case class CookieData(auth: AuthToken) {
   def accountId: AccountId = auth.account
-  def asString: String     = auth.asString
+  def asString: String = auth.asString
 
   def asCookie(baseUrl: LenientUri): ResponseCookie = {
-    val sec  = baseUrl.scheme.exists(_.endsWith("s"))
+    val sec = baseUrl.scheme.exists(_.endsWith("s"))
     val path = baseUrl.path / "api" / "v2"
     ResponseCookie(
       CookieData.cookieName,

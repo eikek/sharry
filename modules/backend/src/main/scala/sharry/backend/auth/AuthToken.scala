@@ -43,8 +43,8 @@ object AuthToken {
       case Array(ms, as, salt, sig) =>
         for {
           millis <- asInt(ms).toRight("Cannot read authenticator data")
-          acc    <- b64dec(as).toRight("Cannot read authenticator data")
-          accId  <- AccountId.parse(acc)
+          acc <- b64dec(as).toRight("Cannot read authenticator data")
+          accId <- AccountId.parse(acc)
         } yield AuthToken(millis, accId, salt, sig)
 
       case _ =>
@@ -55,8 +55,8 @@ object AuthToken {
     for {
       salt <- Common.genSaltString[F]
       millis = Instant.now.toEpochMilli
-      cd     = AuthToken(millis, accountId, salt, "")
-      sig    = sign(cd, key)
+      cd = AuthToken(millis, accountId, salt, "")
+      sig = sign(cd, key)
     } yield cd.copy(sig = sig)
 
   private def sign(cd: AuthToken, key: ByteVector): String = {

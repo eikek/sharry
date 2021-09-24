@@ -27,7 +27,7 @@ class PermanentErrorTest extends FunSuite {
 
   test("don't find when donmain not included in error message") {
     val errorMsg = """value blabla violates unique constraint"""
-    val checks   = Seq(DomainCheckConfig(false, nativePart, "Oh no, a virus!"))
+    val checks = Seq(DomainCheckConfig(false, nativePart, "Oh no, a virus!"))
     PermanentError.create(checks).unapply(new Exception(errorMsg)) match {
       case Some(_) => fail("Unexpected check found!")
       case None    => //ok

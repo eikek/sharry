@@ -15,7 +15,6 @@ import sharry.restserver.Config
 import sharry.restserver.http4s.ClientRequestInfo
 import sharry.restserver.routes.tus.TusRoutes
 
-import bitpeace.Mimetype
 import org.http4s.HttpRoutes
 import org.http4s.Request
 import org.http4s.Uri
@@ -41,16 +40,16 @@ object ShareUploadRoutes {
     HttpRoutes.of {
       case req @ POST -> Root =>
         for {
-          _         <- logger.fdebug("Uploading files to create a new share.")
+          _ <- logger.fdebug("Uploading files to create a new share.")
           multipart <- req.as[Multipart[F]]
-          updata    <- readMultipart(multipart)
-          upid      <- backend.share.create(updata, token.account)
-          res       <- Ok(Conv.uploadResult("Share created.")(upid))
+          updata <- readMultipart(multipart)
+          upid <- backend.share.create(updata, token.account)
+          res <- Ok(Conv.uploadResult("Share created.")(upid))
         } yield res
 
       case req @ POST -> Root / "new" =>
         for {
-          _  <- logger.fdebug("Create empty share")
+          _ <- logger.fdebug("Create empty share")
           in <- req.as[ShareProperties]
           updata = ShareData[F](
             in.validity,
@@ -61,22 +60,22 @@ object ShareUploadRoutes {
             Stream.empty
           )
           upid <- backend.share.create(updata, token.account)
-          res  <- Ok(Conv.uploadResult("Share created.")(upid))
+          res <- Ok(Conv.uploadResult("Share created.")(upid))
         } yield res
 
       case req @ POST -> Root / Ident(id) / "files" / "add" =>
         (for {
           _ <- OptionT.liftF(logger.fdebug("Uploading a file to an existing share"))
           multipart <- OptionT.liftF(req.as[Multipart[F]])
-          updata    <- OptionT.liftF(readMultipart(multipart))
-          ur        <- backend.share.addFile(id, token.account, updata.files)
-          resp      <- OptionT.liftF(Ok(Conv.uploadBasicResult("File(s) added")(ur)))
+          updata <- OptionT.liftF(readMultipart(multipart))
+          ur <- backend.share.addFile(id, token.account, updata.files)
+          resp <- OptionT.liftF(Ok(Conv.uploadBasicResult("File(s) added")(ur)))
         } yield resp).getOrElseF(NotFound())
 
       case req @ (PATCH | POST | GET | OPTIONS | HEAD) -> Ident(
             id
           ) /: "files" /: "tus" /: _ =>
-        val pi      = req.pathInfo.renderString.substring(id.id.length() + 11)
+        val pi = req.pathInfo.renderString.substring(id.id.length() + 11)
         val rootUri = getBaseUrl(cfg, req) ++ uploadPathPrefix / id.id / "files" / "tus"
         TusRoutes(id, backend, token, cfg, rootUri)
           .run(req.withPathInfo(Uri.Path.unsafeFromString(pi)))
@@ -99,8 +98,8 @@ object ShareUploadRoutes {
           )
         )
 
-    def fromContentType(header: `Content-Type`): Mimetype =
-      Mimetype(header.mediaType.mainType, header.mediaType.subType)
+    def fromContentType(header: `Content-Type`): String =
+      s"${header.mediaType.mainType}/${header.mediaType.subType}"
 
     val meta: F[ShareProperties] = mp.parts
       .find(_.name.exists(_.equalsIgnoreCase("meta")))
@@ -120,7 +119,7 @@ object ShareUploadRoutes {
 
     for {
       metaData <- meta
-      _        <- logger.fdebug(s"Parsed upload meta data: $metaData")
+      _ <- logger.fdebug(s"Parsed upload meta data: $metaData")
       shd = ShareData[F](
         metaData.validity,
         metaData.maxViews,

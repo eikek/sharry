@@ -24,12 +24,12 @@ object RAlias {
   val table = fr"alias_"
 
   object Columns {
-    val id       = Column("id")
-    val account  = Column("account_id")
-    val name     = Column("name_")
+    val id = Column("id")
+    val account = Column("account_id")
+    val name = Column("name_")
     val validity = Column("validity")
-    val enabled  = Column("enabled")
-    val created  = Column("created")
+    val enabled = Column("enabled")
+    val created = Column("created")
 
     val all = List(id, account, name, validity, enabled, created)
   }
@@ -41,7 +41,7 @@ object RAlias {
       enabled: Boolean
   ): F[RAlias] =
     for {
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RAlias(id, account, name, validity, enabled, now)
 
@@ -88,10 +88,10 @@ object RAlias {
   }
 
   private def find0(accId: Ident, cond: Fragment) = {
-    val aId      = "a" :: id
+    val aId = "a" :: id
     val aAccount = "a" :: account
-    val cId      = "c" :: RAccount.Columns.id
-    val cLogin   = "c" :: RAccount.Columns.login
+    val cId = "c" :: RAccount.Columns.id
+    val cLogin = "c" :: RAccount.Columns.login
 
     val from =
       table ++ fr"a" ++

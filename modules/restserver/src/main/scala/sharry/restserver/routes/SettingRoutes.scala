@@ -28,16 +28,16 @@ object SettingRoutes {
     HttpRoutes.of {
       case req @ POST -> Root / "email" =>
         for {
-          in   <- req.as[EmailChange]
-          _    <- logger.fdebug(s"Changing email for ${token.account} to $in")
-          res  <- backend.account.setEmail(token.account.id, in.email.some)
+          in <- req.as[EmailChange]
+          _ <- logger.fdebug(s"Changing email for ${token.account} to $in")
+          res <- backend.account.setEmail(token.account.id, in.email.some)
           resp <- Ok(Conv.basicResult(res, "E-Mail successfully changed."))
         } yield resp
 
       case DELETE -> Root / "email" =>
         for {
-          _    <- logger.fdebug(s"Delete email for ${token.account}")
-          res  <- backend.account.setEmail(token.account.id, None)
+          _ <- logger.fdebug(s"Delete email for ${token.account}")
+          res <- backend.account.setEmail(token.account.id, None)
           resp <- Ok(Conv.basicResult(res, "E-Mail successfully deleted."))
         } yield resp
 
@@ -51,7 +51,7 @@ object SettingRoutes {
       case req @ POST -> Root / "password" =>
         for {
           in <- req.as[PasswordChange]
-          _  <- logger.fdebug(s"Changing password for ${token.account}")
+          _ <- logger.fdebug(s"Changing password for ${token.account}")
           res <- backend.account.changePassword(
             token.account.id,
             in.oldPassword,

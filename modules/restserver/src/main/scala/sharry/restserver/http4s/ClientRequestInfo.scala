@@ -10,8 +10,7 @@ import org.http4s._
 import org.http4s.headers._
 import org.typelevel.ci.CIString
 
-/** Obtain information about the client by inspecting the request.
-  */
+/** Obtain information about the client by inspecting the request. */
 object ClientRequestInfo {
 
   def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
@@ -21,8 +20,8 @@ object ClientRequestInfo {
   private def getBaseUrl[F[_]](req: Request[F], serverPort: Int): Option[LenientUri] =
     for {
       scheme <- NonEmptyList.fromList(getProtocol(req).toList)
-      host   <- getHostname(req)
-      port     = xForwardedPort(req).getOrElse(serverPort)
+      host <- getHostname(req)
+      port = xForwardedPort(req).getOrElse(serverPort)
       hostPort = if (port == 80 || port == 443) host else s"$host:$port"
     } yield LenientUri(scheme, Some(hostPort), LenientUri.EmptyPath, None, None)
 

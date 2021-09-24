@@ -31,16 +31,16 @@ object RAccount {
   val table = fr"account_"
 
   object Columns {
-    val id         = Column("id")
-    val login      = Column("login")
-    val source     = Column("source")
-    val state      = Column("state")
-    val password   = Column("password")
-    val email      = Column("email")
-    val admin      = Column("admin")
+    val id = Column("id")
+    val login = Column("login")
+    val source = Column("source")
+    val state = Column("state")
+    val password = Column("password")
+    val email = Column("email")
+    val admin = Column("admin")
     val loginCount = Column("logincount")
-    val lastLogin  = Column("lastlogin")
-    val created    = Column("created")
+    val lastLogin = Column("lastlogin")
+    val created = Column("created")
 
     val all = List(
       id,
@@ -127,10 +127,10 @@ object RAccount {
     Sql.selectSimple(all, table, id.is(uid)).query[RAccount].option
 
   def findByAlias(alias: Ident): ConnectionIO[Option[RAccount]] = {
-    val aliasId      = "n" :: RAlias.Columns.id
+    val aliasId = "n" :: RAlias.Columns.id
     val aliasEnabled = "n" :: RAlias.Columns.enabled
     val aliasAccount = "n" :: RAlias.Columns.account
-    val accId        = "a" :: Columns.id
+    val accId = "a" :: Columns.id
     val from =
       table ++ fr"a INNER JOIN" ++ RAlias.table ++ fr"n ON" ++ accId.is(aliasAccount)
     Sql

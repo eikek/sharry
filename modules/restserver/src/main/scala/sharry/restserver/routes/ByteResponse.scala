@@ -1,6 +1,5 @@
 package sharry.restserver.routes
 
-import cats.data.Ior
 import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
@@ -8,9 +7,9 @@ import cats.implicits._
 import sharry.backend.BackendApp
 import sharry.backend.share._
 import sharry.common._
+import sharry.store.records.RFileMeta
 
-import bitpeace.FileMeta
-import bitpeace.RangeDef
+import binny.ByteRange
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
@@ -42,11 +41,11 @@ object ByteResponse {
   ): F[Response[F]] = {
     import dsl._
 
-    val rangeDef = sr.second
-      .map(until => RangeDef.byteRange(Ior.both(sr.first.toInt, until.toInt)))
+    val rangeDef: ByteRange = sr.second
+      .map(until => ByteRange(sr.first, (until - sr.first + 1).toInt))
       .getOrElse {
-        if (sr.first == 0) RangeDef.all
-        else RangeDef.byteRange(Ior.left(sr.first.toInt))
+        if (sr.first == 0) ByteRange.All
+        else ByteRange(sr.first, Int.MaxValue)
       }
 
     (for {
@@ -69,7 +68,7 @@ object ByteResponse {
     import dsl._
 
     (for {
-      file <- backend.share.loadFile(shareId, fid, pass, RangeDef.all)
+      file <- backend.share.loadFile(shareId, fid, pass, ByteRange.All)
       resp <- OptionT.liftF(
         etag(dsl, req, file).getOrElseF(
           Ok(file.data).map(
@@ -78,8 +77,8 @@ object ByteResponse {
               `Accept-Ranges`.bytes,
               `Last-Modified`(timestamp(file)),
               `Content-Disposition`("inline", fileNameMap(file)),
-              ETag(file.fileMeta.checksum),
-              `Content-Length`.unsafeFromLong(file.fileMeta.length)
+              ETag(file.fileMeta.checksum.toHex),
+              `Content-Length`.unsafeFromLong(file.fileMeta.length.bytes)
             )
           )
         )
@@ -114,8 +113,8 @@ object ByteResponse {
         `Last-Modified`(timestamp(file)),
         `Content-Disposition`("inline", fileNameMap(file)),
         `Content-Length`
-          .unsafeFromLong(range.second.getOrElse(len) - range.first),
-        `Content-Range`(RangeUnit.Bytes, subRangeResp(range, len), Some(len))
+          .unsafeFromLong(range.second.getOrElse(len.bytes) - range.first),
+        `Content-Range`(RangeUnit.Bytes, subRangeResp(range, len.bytes), Some(len.bytes))
       )
     )
   }
@@ -128,14 +127,14 @@ object ByteResponse {
         Range.SubRange(n, Some(t))
     }
 
-  private def rangeInvalid(file: FileMeta, range: Range.SubRange): Boolean =
-    range.first < 0 || range.second.exists(t => t < range.first || t > file.length)
+  private def rangeInvalid(file: RFileMeta, range: Range.SubRange): Boolean =
+    range.first < 0 || range.second.exists(t => t < range.first || t > file.length.bytes)
 
   private def mediaType[F[_]](file: FileRange[F]) =
-    MediaType.unsafeParse(file.fileMeta.mimetype.asString)
+    MediaType.unsafeParse(file.fileMeta.mimetype)
 
   private def timestamp[F[_]](file: FileRange[F]) =
-    HttpDate.unsafeFromInstant(file.fileMeta.timestamp)
+    HttpDate.unsafeFromInstant(file.fileMeta.created.value)
 
   private def fileNameMap[F[_]](file: FileRange[F]) =
     file.shareFile.filename.map(n => Map(CIString("filename") -> n)).getOrElse(Map.empty)

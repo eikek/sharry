@@ -25,9 +25,9 @@ object AccountId {
     parts match {
       case List(id, acc, adm, ali) =>
         for {
-          aid   <- Ident.fromString(id)
-          name  <- Ident.fromString(acc)
-          flag  <- Either.catchNonFatal(adm.trim.toBoolean).leftMap(_.getMessage)
+          aid <- Ident.fromString(id)
+          name <- Ident.fromString(acc)
+          flag <- Either.catchNonFatal(adm.trim.toBoolean).leftMap(_.getMessage)
           alias <- Ident.fromString(ali)
         } yield AccountId(aid, name, flag, Option(alias).filter(_.nonEmpty))
       case _ =>

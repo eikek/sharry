@@ -3,7 +3,6 @@ package sharry.backend.share
 import sharry.backend.mustache.YamuscaCommon
 import sharry.common._
 
-import bitpeace.Mimetype
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -52,7 +51,7 @@ object DescriptionTemplate {
   case class FileInfo(
       id: Ident,
       name: Option[String],
-      mimetype: Mimetype,
+      mimetype: String,
       length: ByteSize,
       size: String,
       checksum: String,

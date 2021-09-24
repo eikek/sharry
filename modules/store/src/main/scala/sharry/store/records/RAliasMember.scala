@@ -20,8 +20,8 @@ object RAliasMember {
   val table = fr"alias_member"
 
   object Columns {
-    val id        = Column("id")
-    val aliasId   = Column("alias_id")
+    val id = Column("id")
+    val aliasId = Column("alias_id")
     val accountId = Column("account_id")
 
     val all = List(id, aliasId, accountId)
@@ -49,7 +49,7 @@ object RAliasMember {
   def insertForAlias(aId: Ident, accountIds: List[Ident]): ConnectionIO[Int] =
     for {
       all <- accountIds.traverse(accId => createNew[ConnectionIO](aId, accId))
-      n   <- all.traverse(insert).map(_.sum)
+      n <- all.traverse(insert).map(_.sum)
     } yield n
 
   def updateForAlias(aId: Ident, logins: List[Ident]): ConnectionIO[Int] =
@@ -75,10 +75,10 @@ object RAliasMember {
       .run
 
   def findForAlias(aId: Ident): ConnectionIO[List[(RAliasMember, Ident)]] = {
-    val accId    = "a" :: RAccount.Columns.id
-    val aLogin   = "a" :: RAccount.Columns.login
+    val accId = "a" :: RAccount.Columns.id
+    val aLogin = "a" :: RAccount.Columns.login
     val mAccount = "m" :: RAliasMember.Columns.accountId
-    val mAlias   = "m" :: RAliasMember.Columns.aliasId
+    val mAlias = "m" :: RAliasMember.Columns.aliasId
 
     val from =
       table ++ fr"as m INNER JOIN" ++ RAccount.table ++ fr"as a ON" ++ accId.is(mAccount)

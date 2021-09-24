@@ -133,7 +133,7 @@ class LoginModuleTest extends FunSuite {
     val ops =
       for {
         store <- StoreFixture.makeStore[IO]
-        ops   <- storeOps(store)
+        ops <- storeOps(store)
       } yield (ops, store)
 
     val data = UserPassData("jdoe", Password("test"))
@@ -146,10 +146,10 @@ class LoginModuleTest extends FunSuite {
           httpBasicModule(true, op)
         )
         for {
-          _   <- modules.traverse(_.apply(data).map(checkNewAccount)).map(_.combineAll)
+          _ <- modules.traverse(_.apply(data).map(checkNewAccount)).map(_.combineAll)
           as1 <- store.transact(RAccount.findAll("")).compile.toVector
           _ = as1.foreach(a => assertEquals(a.admin, false))
-          _   <- store.transact(updateAdmin(true))
+          _ <- store.transact(updateAdmin(true))
           as2 <- store.transact(RAccount.findAll("")).compile.toVector
           _ = as2.foreach(a => assertEquals(a.admin, true))
           _ <- modules.traverse(_.apply(data).map(checkAdminAccount)).map(_.combineAll)

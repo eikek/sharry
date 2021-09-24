@@ -43,13 +43,13 @@ object MailRoutes {
     HttpRoutes.of {
       case req @ GET -> Root / "template" / "alias" / Ident(id) =>
         for {
-          md   <- backend.mail.getAliasTemplate(token.account, id, baseurl(req) / "share")
+          md <- backend.mail.getAliasTemplate(token.account, id, baseurl(req) / "share")
           resp <- Ok(MailTemplate(md.subject, md.body))
         } yield resp
 
       case req @ GET -> Root / "template" / "share" / Ident(id) =>
         (for {
-          md   <- backend.mail.getShareTemplate(token.account, id, baseurl(req) / "open")
+          md <- backend.mail.getShareTemplate(token.account, id, baseurl(req) / "open")
           resp <- OptionT.liftF(Ok(MailTemplate(md.subject, md.body)))
         } yield resp).getOrElseF(NotFound())
 
@@ -63,9 +63,9 @@ object MailRoutes {
 
         val res = for {
           mail <- EitherT.liftF(req.as[SimpleMail])
-          rec  <- EitherT.fromEither[F](parseAddress(mail))
-          res  <- EitherT.liftF[F, String, MailSendResult](send(rec, mail))
-          _    <- EitherT.liftF[F, String, Unit](logger.fdebug(s"Sending mail: $res"))
+          rec <- EitherT.fromEither[F](parseAddress(mail))
+          res <- EitherT.liftF[F, String, MailSendResult](send(rec, mail))
+          _ <- EitherT.liftF[F, String, Unit](logger.fdebug(s"Sending mail: $res"))
         } yield res
 
         res.foldF(

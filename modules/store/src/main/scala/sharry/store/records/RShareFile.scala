@@ -21,13 +21,13 @@ object RShareFile {
   val table = fr"share_file"
 
   object Columns {
-    val id       = Column("id")
-    val shareId  = Column("share_id")
-    val fileId   = Column("file_id")
+    val id = Column("id")
+    val shareId = Column("share_id")
+    val fileId = Column("file_id")
     val filename = Column("filename")
-    val created  = Column("created")
+    val created = Column("created")
     val realSize = Column("real_size")
-    val all      = List(id, shareId, fileId, filename, created, realSize)
+    val all = List(id, shareId, fileId, filename, created, realSize)
   }
 
   import Columns._
