@@ -26,14 +26,14 @@ object RPublishShare {
 
   object Columns {
 
-    val id           = Column("id")
-    val shareId      = Column("share_id")
-    val enabled      = Column("enabled")
-    val views        = Column("views")
-    val lastAccess   = Column("last_access")
-    val publishDate  = Column("publish_date")
+    val id = Column("id")
+    val shareId = Column("share_id")
+    val enabled = Column("enabled")
+    val views = Column("views")
+    val lastAccess = Column("last_access")
+    val publishDate = Column("publish_date")
     val publishUntil = Column("publish_until")
-    val created      = Column("created")
+    val created = Column("created")
 
     val all =
       List(id, shareId, enabled, views, lastAccess, publishDate, publishUntil, created)
@@ -78,8 +78,8 @@ object RPublishShare {
 
   def initialInsert[F[_]](share: Ident): ConnectionIO[RPublishShare] =
     for {
-      now      <- Timestamp.current[ConnectionIO]
-      id       <- Ident.randomId[ConnectionIO]
+      now <- Timestamp.current[ConnectionIO]
+      id <- Ident.randomId[ConnectionIO]
       validity <- RShare.getDuration(share)
       record = RPublishShare(id, share, true, 0, None, now, now.plus(validity), now)
       _ <- insert(record)
@@ -111,9 +111,9 @@ object RPublishShare {
 
   def update(share: Ident, enable: Boolean, reuseId: Boolean): ConnectionIO[Int] =
     for {
-      nid      <- Ident.randomId[ConnectionIO]
+      nid <- Ident.randomId[ConnectionIO]
       validity <- RShare.getDuration(share)
-      now      <- Timestamp.current[ConnectionIO]
+      now <- Timestamp.current[ConnectionIO]
       sets =
         Seq(enabled.setTo(enable)) ++
           (if (enable) Seq(publishDate.setTo(now), publishUntil.setTo(now.plus(validity)))

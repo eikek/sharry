@@ -1,16 +1,18 @@
 package sharry.store
 
-import binny._
+import javax.sql.DataSource
+
 import cats.data.OptionT
-import fs2.Chunk
-import sharry.common._
-import doobie.AttributeStore
-import sharry.store.records.RFileMeta
 import cats.effect._
 import cats.implicits._
+import fs2.Chunk
 
-import javax.sql.DataSource
+import sharry.common._
+import sharry.store.doobie.AttributeStore
+import sharry.store.records.RFileMeta
+
 import _root_.doobie._
+import binny._
 import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
 import binny.tika.TikaContentTypeDetect
 import binny.util.Logger
@@ -38,10 +40,10 @@ object FileStore {
       xa: Transactor[F],
       chunkSize: Int
   ): FileStore[F] = {
-    val cfg    = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
-    val as     = AttributeStore(xa)
+    val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
+    val as = AttributeStore(xa)
     val logger = Log4sLogger(org.log4s.getLogger)
-    val bs     = GenericJdbcStore[F](ds, logger, cfg, as)
+    val bs = GenericJdbcStore[F](ds, logger, cfg, as)
     new Impl[F](bs, as, chunkSize)
   }
 

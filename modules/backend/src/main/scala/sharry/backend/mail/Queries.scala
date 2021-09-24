@@ -14,15 +14,15 @@ import emil.MailAddress
 object Queries {
 
   def findNotifyData(aliasId: Ident, shareId: Ident): ConnectionIO[Option[NotifyData]] = {
-    val aId      = "a" :: RAlias.Columns.id
+    val aId = "a" :: RAlias.Columns.id
     val aAccount = "a" :: RAlias.Columns.account
-    val aName    = "a" :: RAlias.Columns.name
-    val uId      = "u" :: RAccount.Columns.id
-    val uLogin   = "u" :: RAccount.Columns.login
-    val uEmail   = "u" :: RAccount.Columns.email
-    val sId      = "s" :: RShare.Columns.id
-    val sAlias   = "s" :: RShare.Columns.aliasId
-    val mAlias   = "m" :: RAliasMember.Columns.aliasId
+    val aName = "a" :: RAlias.Columns.name
+    val uId = "u" :: RAccount.Columns.id
+    val uLogin = "u" :: RAccount.Columns.login
+    val uEmail = "u" :: RAccount.Columns.email
+    val sId = "s" :: RShare.Columns.id
+    val sAlias = "s" :: RShare.Columns.aliasId
+    val mAlias = "m" :: RAliasMember.Columns.aliasId
     val mAccount = "m" :: RAliasMember.Columns.accountId
 
     val baseQuery =
@@ -70,11 +70,11 @@ object Queries {
       accId: Ident,
       shareId: Ident
   ): ConnectionIO[Option[(Boolean, Ident)]] = {
-    val sId    = "s" :: RShare.Columns.id
-    val sAcc   = "s" :: RShare.Columns.accountId
-    val sPass  = "s" :: RShare.Columns.password
+    val sId = "s" :: RShare.Columns.id
+    val sAcc = "s" :: RShare.Columns.accountId
+    val sPass = "s" :: RShare.Columns.password
     val sAlias = "s" :: RShare.Columns.aliasId
-    val pId    = "p" :: RPublishShare.Columns.id
+    val pId = "p" :: RPublishShare.Columns.id
     val pShare = "p" :: RPublishShare.Columns.shareId
 
     val from =

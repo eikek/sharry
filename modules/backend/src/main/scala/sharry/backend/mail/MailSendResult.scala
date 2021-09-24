@@ -4,11 +4,11 @@ sealed trait MailSendResult {}
 
 object MailSendResult {
 
-  def success: MailSendResult                    = Success
+  def success: MailSendResult = Success
   def sendFailure(ex: Throwable): MailSendResult = SendFailure(ex)
-  def noRecipients: MailSendResult               = NoRecipients
-  def noSender: MailSendResult                   = NoSender
-  def featureDisabled: MailSendResult            = FeatureDisabled
+  def noRecipients: MailSendResult = NoRecipients
+  def noSender: MailSendResult = NoSender
+  def featureDisabled: MailSendResult = FeatureDisabled
 
   case object Success extends MailSendResult
 

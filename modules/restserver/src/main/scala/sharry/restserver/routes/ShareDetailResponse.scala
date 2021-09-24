@@ -40,7 +40,7 @@ object ShareDetailResponse {
     val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))
 
     (for {
-      now    <- OptionT.liftF(Timestamp.current[F])
+      now <- OptionT.liftF(Timestamp.current[F])
       detail <- backend.share.shareDetails(shareId, pass)
       resp <- OptionT.liftF(
         detail.fold(

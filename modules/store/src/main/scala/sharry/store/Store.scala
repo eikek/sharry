@@ -1,13 +1,16 @@
 package sharry.store
 
 import scala.concurrent.ExecutionContext
+
 import cats.effect._
 import fs2._
+
+import sharry.common.ByteSize
 import sharry.store.doobie.StoreImpl
+
 import _root_.doobie._
 import _root_.doobie.hikari.HikariTransactor
 import com.zaxxer.hikari.HikariDataSource
-import sharry.common.ByteSize
 
 trait Store[F[_]] {
 

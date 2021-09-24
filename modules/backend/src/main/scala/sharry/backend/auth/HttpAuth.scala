@@ -34,10 +34,10 @@ final class HttpAuth[F[_]: Async](
                 )
 
             for {
-              _    <- logger.fdebug(s"HttpAuth: starting login $up")
-              res  <- executeReq(up, cfg.http)
+              _ <- logger.fdebug(s"HttpAuth: starting login $up")
+              res <- executeReq(up, cfg.http)
               resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-              _    <- logger.fdebug(s"HttpAuth: $up => $resp")
+              _ <- logger.fdebug(s"HttpAuth: $up => $resp")
             } yield resp
 
           case Left(_) =>

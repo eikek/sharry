@@ -78,7 +78,7 @@ object LoginRoutes {
           )
         } yield token
 
-        val uri      = getBaseUrl(cfg, req).withQuery("oauth", "1") / "app" / "login"
+        val uri = getBaseUrl(cfg, req).withQuery("oauth", "1") / "app" / "login"
         val location = Location(Uri.unsafeFromString(uri.asString))
         userId.value.flatMap {
           case Some(t) =>

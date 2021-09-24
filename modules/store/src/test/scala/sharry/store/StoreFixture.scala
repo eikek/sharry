@@ -1,11 +1,15 @@
 package sharry.store
 
 import java.nio.file.Paths
+
 import scala.util.Random
+
 import cats.effect._
 import cats.effect.unsafe.implicits.global
+
 import sharry.common._
 import sharry.store.doobie._
+
 import _root_.doobie._
 import org.h2.jdbcx.JdbcConnectionPool
 import org.log4s.getLogger
@@ -32,7 +36,7 @@ object StoreFixture {
       val bytes = new Array[Byte](16)
       Random.nextBytes(bytes)
       val name = ByteVector.view(bytes).toBase64NoPad
-      val db   = Paths.get("./target", name).normalize.toAbsolutePath
+      val db = Paths.get("./target", name).normalize.toAbsolutePath
       logger.debug(s"Using db: $db")
       db.toString
     }
@@ -44,7 +48,7 @@ object StoreFixture {
         "sa",
         ""
       )
-      ds        <- dataSource(jdbc)
+      ds <- dataSource(jdbc)
       connectEC <- ExecutionContexts.cachedThreadPool[F]
       tx = Transactor.fromDataSource[F](ds, connectEC)
       fs = FileStore[F](ds, tx, 64 * 1024)

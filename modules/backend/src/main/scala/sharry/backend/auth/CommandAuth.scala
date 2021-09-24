@@ -33,10 +33,10 @@ final class CommandAuth[F[_]: Async](
                 )
 
             for {
-              _    <- logger.fdebug(s"CommandAuth: starting login $up")
-              res  <- runCommand(up, cfg.command)
+              _ <- logger.fdebug(s"CommandAuth: starting login $up")
+              res <- runCommand(up, cfg.command)
               resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-              _    <- logger.fdebug(s"CommandAuth: $up => $resp")
+              _ <- logger.fdebug(s"CommandAuth: $up => $resp")
             } yield resp
 
           case Left(_) =>

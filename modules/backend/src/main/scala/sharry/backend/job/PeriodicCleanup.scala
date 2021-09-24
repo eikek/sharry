@@ -72,15 +72,15 @@ object PeriodicCleanup {
       signupOps: OSignup[F]
   ): F[Unit] =
     for {
-      _      <- logger.fdebug("Cleanup expired shares...")
+      _ <- logger.fdebug("Cleanup expired shares...")
       shareN <- shareOps.cleanupExpired(cleanupCfg.invalidAge)
-      _      <- logger.finfo(s"Cleaned up $shareN expired shares.")
-      _      <- logger.fdebug("Cleanup expired invites...")
-      invN   <- signupOps.cleanInvites(signupCfg)
-      _      <- logger.finfo(s"Removed $invN expired invitations.")
-      _      <- logger.fdebug("Deleting orphaned files ...")
-      orphN  <- shareOps.deleteOrphanedFiles
-      _      <- logger.finfo(s"Deleted $orphN orphaned files.")
+      _ <- logger.finfo(s"Cleaned up $shareN expired shares.")
+      _ <- logger.fdebug("Cleanup expired invites...")
+      invN <- signupOps.cleanInvites(signupCfg)
+      _ <- logger.finfo(s"Removed $invN expired invitations.")
+      _ <- logger.fdebug("Deleting orphaned files ...")
+      orphN <- shareOps.deleteOrphanedFiles
+      _ <- logger.finfo(s"Deleted $orphN orphaned files.")
     } yield ()
 
 }

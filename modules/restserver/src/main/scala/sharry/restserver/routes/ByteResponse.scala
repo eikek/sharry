@@ -1,17 +1,19 @@
 package sharry.restserver.routes
 
-import binny.ByteRange
 import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
+
 import sharry.backend.BackendApp
 import sharry.backend.share._
 import sharry.common._
+import sharry.store.records.RFileMeta
+
+import binny.ByteRange
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.typelevel.ci.CIString
-import sharry.store.records.RFileMeta
 
 object ByteResponse {
 

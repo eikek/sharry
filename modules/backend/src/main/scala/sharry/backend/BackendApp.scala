@@ -35,18 +35,18 @@ object BackendApp {
   def create[F[_]: Async](cfg: Config, store: Store[F]): Resource[F, BackendApp[F]] =
     for {
       accountImpl <- OAccount[F](store)
-      loginImpl   <- Login[F](accountImpl)
-      signupImpl  <- OSignup[F](store)
-      aliasImpl   <- OAlias[F](store)
-      shareImpl   <- OShare[F](store, cfg.share)
-      mailImpl    <- OMail[F](store, cfg.mail, JavaMailEmil[F]())
+      loginImpl <- Login[F](accountImpl)
+      signupImpl <- OSignup[F](store)
+      aliasImpl <- OAlias[F](store)
+      shareImpl <- OShare[F](store, cfg.share)
+      mailImpl <- OMail[F](store, cfg.mail, JavaMailEmil[F]())
     } yield new BackendApp[F] {
-      val login: Login[F]      = loginImpl
-      val signup: OSignup[F]   = signupImpl
+      val login: Login[F] = loginImpl
+      val signup: OSignup[F] = signupImpl
       val account: OAccount[F] = accountImpl
-      val alias: OAlias[F]     = aliasImpl
-      val share: OShare[F]     = shareImpl
-      val mail: OMail[F]       = mailImpl
+      val alias: OAlias[F] = aliasImpl
+      val share: OShare[F] = shareImpl
+      val mail: OMail[F] = mailImpl
     }
 
   def apply[F[_]: Async](
@@ -54,7 +54,7 @@ object BackendApp {
       connectEC: ExecutionContext
   ): Resource[F, BackendApp[F]] =
     for {
-      store   <- Store.create(cfg.jdbc, cfg.share.chunkSize, connectEC, true)
+      store <- Store.create(cfg.jdbc, cfg.share.chunkSize, connectEC, true)
       backend <- create(cfg, store)
       _ <-
         PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)

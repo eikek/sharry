@@ -1,13 +1,15 @@
 package sharry.store.doobie
 
-import binny._
 import cats.data.OptionT
-import doobie._
-import doobie.implicits._
-import sharry.store.records.RFileMeta
-import sharry.common._
 import cats.effect._
 import cats.implicits._
+
+import sharry.common._
+import sharry.store.records.RFileMeta
+
+import binny._
+import doobie._
+import doobie.implicits._
 
 final private[store] class AttributeStore[F[_]: Sync](xa: Transactor[F])
     extends BinaryAttributeStore[F] {
@@ -15,7 +17,7 @@ final private[store] class AttributeStore[F[_]: Sync](xa: Transactor[F])
   def saveAttr(id: BinaryId, attrs: F[BinaryAttributes]): F[Unit] =
     for {
       now <- Timestamp.current[F]
-      a   <- attrs
+      a <- attrs
       fm = RFileMeta(
         Ident.unsafe(id.id),
         now,

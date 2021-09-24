@@ -35,7 +35,7 @@ object ShareRoutes {
       case req @ GET -> Root / "search" =>
         val q = req.params.getOrElse("q", "")
         for {
-          _   <- logger.ftrace(s"Listing shares: $q")
+          _ <- logger.ftrace(s"Listing shares: $q")
           now <- Timestamp.current[F]
           all <- backend.share.findShares(q, token.account).take(100).compile.toVector
           list = ShareList(all.map(shareListItem(now)).toList)

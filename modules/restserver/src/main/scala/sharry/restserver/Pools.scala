@@ -2,8 +2,7 @@ package sharry.restserver
 
 import scala.concurrent.ExecutionContext
 
-/** Captures thread pools to use in an application.
-  */
+/** Captures thread pools to use in an application. */
 case class Pools(
     connectEC: ExecutionContext,
     httpClientEC: ExecutionContext,

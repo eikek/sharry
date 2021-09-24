@@ -28,8 +28,8 @@ final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
         (None: Option[LoginResult]).pure[F]
       else if (up.pass == cfg.fixed.password)
         for {
-          _     <- logger.fdebug(s"Fixed auth: success for user ${cfg.fixed.user}")
-          id    <- addAccount(cfg.fixed)
+          _ <- logger.fdebug(s"Fixed auth: success for user ${cfg.fixed.user}")
+          id <- addAccount(cfg.fixed)
           token <- AuthToken.user(id, cfg.serverSecret)
         } yield LoginResult.ok(token).some
       else

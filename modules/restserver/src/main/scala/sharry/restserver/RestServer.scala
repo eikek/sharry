@@ -34,8 +34,8 @@ object RestServer {
     val templates = TemplateRoutes[F](cfg)
     val app = for {
       restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
-      _       <- Resource.eval(restApp.init)
-      client  <- BlazeClientBuilder[F](pools.httpClientEC).resource
+      _ <- Resource.eval(restApp.init)
+      client <- BlazeClientBuilder[F](pools.httpClientEC).resource
 
       httpApp = Router(
         "/api/v2/open/" -> openRoutes(cfg, client, restApp),
@@ -51,11 +51,11 @@ object RestServer {
             if (token.account.admin) adminRoutes(cfg, restApp)
             else notFound[F](token)
         },
-        "/api/doc"    -> templates.doc,
+        "/api/doc" -> templates.doc,
         "/app/assets" -> EnvMiddleware(WebjarRoutes.appRoutes[F]),
-        "/app"        -> EnvMiddleware(templates.app),
-        "/sw.js"      -> EnvMiddleware(templates.serviceWorker),
-        "/"           -> redirectTo("/app")
+        "/app" -> EnvMiddleware(templates.app),
+        "/sw.js" -> EnvMiddleware(templates.serviceWorker),
+        "/" -> redirectTo("/app")
       ).orNotFound
 
       // With Middlewares in place
@@ -98,7 +98,7 @@ object RestServer {
       token: AuthToken
   ): HttpRoutes[F] =
     Router(
-      "auth"     -> LoginRoutes.session(restApp.backend.login, cfg),
+      "auth" -> LoginRoutes.session(restApp.backend.login, cfg),
       "settings" -> SettingRoutes(restApp.backend, token),
       "alias-member" ->
         (if (cfg.aliasMemberEnabled) AliasMemberRoutes(restApp.backend, token)
@@ -119,7 +119,7 @@ object RestServer {
       restApp: RestApp[F]
   ): HttpRoutes[F] =
     Router(
-      "signup"  -> RegisterRoutes(restApp.backend, cfg).genInvite,
+      "signup" -> RegisterRoutes(restApp.backend, cfg).genInvite,
       "account" -> AccountRoutes(restApp.backend)
     )
 
@@ -129,10 +129,10 @@ object RestServer {
       restApp: RestApp[F]
   ): HttpRoutes[F] =
     Router(
-      "info"   -> InfoRoutes(cfg),
-      "auth"   -> LoginRoutes.login(restApp.backend, client, cfg),
+      "info" -> InfoRoutes(cfg),
+      "auth" -> LoginRoutes.login(restApp.backend, client, cfg),
       "signup" -> RegisterRoutes(restApp.backend, cfg).signup,
-      "share"  -> OpenShareRoutes(restApp.backend, cfg)
+      "share" -> OpenShareRoutes(restApp.backend, cfg)
     )
 
   def notFound[F[_]: Async](token: AuthToken): HttpRoutes[F] =

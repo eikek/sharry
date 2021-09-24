@@ -4,12 +4,14 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.Store
 import sharry.store.doobie.DoobieMeta._
 import sharry.store.doobie._
 import sharry.store.records._
+
 import doobie._
 import doobie.implicits._
 import org.log4s.getLogger
@@ -18,10 +20,10 @@ object Queries {
   private[this] val logger = getLogger
 
   object FileChunkCols {
-    val table       = fr"filechunk"
-    val fileId      = Column("file_id")
+    val table = fr"filechunk"
+    val fileId = Column("file_id")
     val chunkLength = Column("chunk_len")
-    val chunkNr     = Column("chunk_nr")
+    val chunkNr = Column("chunk_nr")
   }
 
   case class FileDesc(
@@ -34,7 +36,7 @@ object Queries {
   def fileDesc(shareFileId: Ident): ConnectionIO[Option[FileDesc]] = {
     val mFileId = "m" :: RFileMeta.Columns.id
     val fFileId = "f" :: RShareFile.Columns.fileId
-    val SF      = RShareFile.Columns
+    val SF = RShareFile.Columns
     val cols =
       Seq(
         mFileId,
@@ -49,9 +51,9 @@ object Queries {
   }
 
   private def fileDataFragment0(where: Fragment): Fragment = {
-    val fId   = "f" :: RShareFile.Columns.id
+    val fId = "f" :: RShareFile.Columns.id
     val fFile = "f" :: RShareFile.Columns.fileId
-    val mId   = "m" :: RFileMeta.Columns.id
+    val mId = "m" :: RFileMeta.Columns.id
 
     val cols = Seq(
       fId,
@@ -86,7 +88,7 @@ object Queries {
 
   def shareSize(shareId: Ident): ConnectionIO[ByteSize] = {
     val fShare = "f" :: RShareFile.Columns.shareId
-    val fSize  = "f" :: RShareFile.Columns.realSize
+    val fSize = "f" :: RShareFile.Columns.realSize
 
     val qSize = Sql.selectSimple(
       fr"COALESCE(SUM(" ++ fSize.f ++ fr"), 0) as size",
@@ -101,8 +103,8 @@ object Queries {
   }
 
   def checkShare(share: Ident, accId: AccountId): ConnectionIO[Option[Unit]] = {
-    val sId      = "s" :: RShare.Columns.id
-    val sAlias   = "s" :: RShare.Columns.aliasId
+    val sId = "s" :: RShare.Columns.id
+    val sAlias = "s" :: RShare.Columns.aliasId
     val sAccount = "s" :: RShare.Columns.accountId
 
     val from = RShare.table ++ fr"s"
@@ -124,14 +126,14 @@ object Queries {
       sharePublic: Ident,
       fileId: Ident
   ): ConnectionIO[Option[Option[Password]]] = {
-    val sId     = "s" :: RShare.Columns.id
-    val sPass   = "s" :: RShare.Columns.password
-    val pShare  = "p" :: RPublishShare.Columns.shareId
-    val pId     = "p" :: RPublishShare.Columns.id
-    val fShare  = "f" :: RShareFile.Columns.shareId
-    val fId     = "f" :: RShareFile.Columns.id
+    val sId = "s" :: RShare.Columns.id
+    val sPass = "s" :: RShare.Columns.password
+    val pShare = "p" :: RPublishShare.Columns.shareId
+    val pId = "p" :: RPublishShare.Columns.id
+    val fShare = "f" :: RShareFile.Columns.shareId
+    val fId = "f" :: RShareFile.Columns.id
     val pEnable = "p" :: RPublishShare.Columns.enabled
-    val pUntil  = "p" :: RPublishShare.Columns.publishUntil
+    val pUntil = "p" :: RPublishShare.Columns.publishUntil
 
     val from = RPublishShare.table ++ fr"p INNER JOIN" ++
       RShare.table ++ fr"s ON" ++ pShare.is(sId) ++
@@ -151,11 +153,11 @@ object Queries {
   }
 
   def checkFile(fileId: Ident, accId: AccountId): ConnectionIO[Option[Unit]] = {
-    val sId      = "s" :: RShare.Columns.id
+    val sId = "s" :: RShare.Columns.id
     val sAccount = "s" :: RShare.Columns.accountId
-    val sAlias   = "s" :: RShare.Columns.aliasId
-    val fShare   = "f" :: RShareFile.Columns.shareId
-    val fId      = "f" :: RShareFile.Columns.id
+    val sAlias = "s" :: RShare.Columns.aliasId
+    val fShare = "f" :: RShareFile.Columns.shareId
+    val fId = "f" :: RShareFile.Columns.id
 
     val from = RShare.table ++ fr"s" ++
       fr"INNER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fShare.is(sId)
@@ -174,8 +176,8 @@ object Queries {
 
   private def fileSummary: Fragment = {
     val fileId = "m" :: RFileMeta.Columns.id
-    val size   = "m" :: RFileMeta.Columns.length
-    val rFile  = "r" :: RShareFile.Columns.fileId
+    val size = "m" :: RFileMeta.Columns.length
+    val rFile = "r" :: RShareFile.Columns.fileId
     val rShare = "r" :: RShareFile.Columns.shareId
 
     val cols =
@@ -191,17 +193,17 @@ object Queries {
     RAliasMember.aliasMemberOf(accId)
 
   def findShares(q: String, accId: AccountId): Stream[ConnectionIO, ShareItem] = {
-    val nfiles     = Column("files")
-    val nsize      = Column("size")
-    val shareId    = "s" :: RShare.Columns.id
-    val account    = "s" :: RShare.Columns.accountId
-    val pShare     = "p" :: RPublishShare.Columns.shareId
-    val name       = "s" :: RShare.Columns.name
-    val sid        = "s" :: RShare.Columns.id
-    val aliasName  = "a" :: RAlias.Columns.name
-    val aliasId    = "a" :: RAlias.Columns.id
+    val nfiles = Column("files")
+    val nsize = Column("size")
+    val shareId = "s" :: RShare.Columns.id
+    val account = "s" :: RShare.Columns.accountId
+    val pShare = "p" :: RPublishShare.Columns.shareId
+    val name = "s" :: RShare.Columns.name
+    val sid = "s" :: RShare.Columns.id
+    val aliasName = "a" :: RAlias.Columns.name
+    val aliasId = "a" :: RAlias.Columns.id
     val shareAlias = "s" :: RShare.Columns.aliasId
-    val created    = "s" :: RShare.Columns.created
+    val created = "s" :: RShare.Columns.created
     val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ Seq(
       ("p" :: RPublishShare.Columns.enabled).f,
       ("p" :: RPublishShare.Columns.publishUntil).f,
@@ -230,16 +232,16 @@ object Queries {
   }
 
   def shareDetail(shareId: ShareId): OptionT[ConnectionIO, ShareDetail] = {
-    val account   = "s" :: RShare.Columns.accountId
-    val sId       = "s" :: RShare.Columns.id
-    val sAlias    = "s" :: RShare.Columns.aliasId
+    val account = "s" :: RShare.Columns.accountId
+    val sId = "s" :: RShare.Columns.id
+    val sAlias = "s" :: RShare.Columns.aliasId
     val sMaxViews = "s" :: RShare.Columns.maxViews
-    val pShare    = "p" :: RPublishShare.Columns.shareId
-    val pEnable   = "p" :: RPublishShare.Columns.enabled
-    val pUntil    = "p" :: RPublishShare.Columns.publishUntil
-    val pId       = "p" :: RPublishShare.Columns.id
-    val pViews    = "p" :: RPublishShare.Columns.views
-    val aId       = "a" :: RAlias.Columns.id
+    val pShare = "p" :: RPublishShare.Columns.shareId
+    val pEnable = "p" :: RPublishShare.Columns.enabled
+    val pUntil = "p" :: RPublishShare.Columns.publishUntil
+    val pId = "p" :: RPublishShare.Columns.id
+    val pViews = "p" :: RPublishShare.Columns.views
+    val aId = "a" :: RAlias.Columns.id
 
     val cols = RShare.Columns.all.map("s" :: _) ++
       RPublishShare.Columns.all.map("p" :: _) ++
@@ -285,8 +287,8 @@ object Queries {
         Sync[ConnectionIO].pure(())
 
       case ShareId.PublicId(id) =>
-        val pId         = RPublishShare.Columns.id
-        val pViews      = RPublishShare.Columns.views
+        val pId = RPublishShare.Columns.id
+        val pViews = RPublishShare.Columns.views
         val pLastAccess = RPublishShare.Columns.lastAccess
 
         for {
@@ -307,13 +309,13 @@ object Queries {
     }
 
   def findExpired(point: Timestamp): Stream[ConnectionIO, (RShare, RAccount)] = {
-    val pShare  = "p" :: RPublishShare.Columns.shareId
-    val pUntil  = "p" :: RPublishShare.Columns.publishUntil
+    val pShare = "p" :: RPublishShare.Columns.shareId
+    val pUntil = "p" :: RPublishShare.Columns.publishUntil
     val pEnable = "p" :: RPublishShare.Columns.enabled
 
     val aId = "a" :: RAccount.Columns.id
 
-    val sId        = "s" :: RShare.Columns.id
+    val sId = "s" :: RShare.Columns.id
     val sAccountId = "s" :: RShare.Columns.accountId
 
     val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ RAccount.Columns.all
@@ -333,9 +335,9 @@ object Queries {
   }
 
   def findOrphanedFiles: Stream[ConnectionIO, Ident] = {
-    val fId   = "f" :: RShareFile.Columns.id
+    val fId = "f" :: RShareFile.Columns.id
     val fFile = "f" :: RShareFile.Columns.fileId
-    val mId   = "m" :: RFileMeta.Columns.id
+    val mId = "m" :: RFileMeta.Columns.id
 
     val from =
       RFileMeta.table ++ fr"m LEFT OUTER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fFile
@@ -384,7 +386,7 @@ object Queries {
   def deleteShare[F[_]: Async](share: Ident, background: Boolean)(
       store: Store[F]
   ): F[Unit] = {
-    val rFileId  = RShareFile.Columns.fileId
+    val rFileId = RShareFile.Columns.fileId
     val rShareId = RShareFile.Columns.shareId
 
     def allFileIds: F[Vector[Ident]] =
@@ -401,9 +403,9 @@ object Queries {
       )
 
     for {
-      _    <- logger.fdebug[F](s"Going to delete share: ${share.id}")
+      _ <- logger.fdebug[F](s"Going to delete share: ${share.id}")
       fids <- allFileIds
-      _    <- store.transact(RShare.delete(share))
+      _ <- store.transact(RShare.delete(share))
       _ <-
         if (background) Async[F].start(deleteAllFiles(fids))
         else deleteAllFiles(fids)

@@ -112,7 +112,7 @@ object OMail {
       ): OptionT[F, MailData] =
         for {
           t <- OptionT(store.transact(Queries.publishIdAndPassword(acc.id, shareId)))
-          td  = TemplateData(acc.userLogin, baseUrl / t._2.id, t._1, "")
+          td = TemplateData(acc.userLogin, baseUrl / t._2.id, t._1, "")
           tpl = cfg.templates.download
         } yield MailData(td.render(tpl.subject), td.render(tpl.body))
 
@@ -122,7 +122,7 @@ object OMail {
           baseUrl: LenientUri
       ): F[MailData] = {
         val tpl = cfg.templates.alias
-        val td  = TemplateData(acc.userLogin, baseUrl / aliasId.id, false, "")
+        val td = TemplateData(acc.userLogin, baseUrl / aliasId.id, false, "")
         MailData(td.render(tpl.subject), td.render(tpl.body)).pure[F]
       }
 

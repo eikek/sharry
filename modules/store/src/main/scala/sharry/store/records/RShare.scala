@@ -25,15 +25,15 @@ object RShare {
 
   object Columns {
 
-    val id          = Column("id")
-    val accountId   = Column("account_id")
-    val aliasId     = Column("alias_id")
-    val name        = Column("name_")
-    val validity    = Column("validity")
-    val maxViews    = Column("max_views")
-    val password    = Column("password")
+    val id = Column("id")
+    val accountId = Column("account_id")
+    val aliasId = Column("alias_id")
+    val name = Column("name_")
+    val validity = Column("validity")
+    val maxViews = Column("max_views")
+    val password = Column("password")
     val description = Column("description")
-    val created     = Column("created")
+    val created = Column("created")
 
     val all = List(
       id,

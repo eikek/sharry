@@ -31,28 +31,28 @@ object AliasRoutes {
     HttpRoutes.of {
       case req @ POST -> Root =>
         for {
-          in      <- req.as[AliasChange]
+          in <- req.as[AliasChange]
           members <- Conv.readIds[F](in.members)
-          _       <- logger.fdebug(s"Create new alias for ${token.account}")
+          _ <- logger.fdebug(s"Create new alias for ${token.account}")
           na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
           data = OAlias.AliasInput(na, members)
-          res  <- backend.alias.create(data)
+          res <- backend.alias.create(data)
           resp <- Ok(convert(Conv.basicResult(res, "Alias successfully created."), na.id))
         } yield resp
 
       case req @ GET -> Root =>
         val q = req.params.getOrElse("q", "")
         for {
-          _    <- logger.ftrace(s"Listing aliases for ${token.account}")
+          _ <- logger.ftrace(s"Listing aliases for ${token.account}")
           list <- backend.alias.findAll(token.account.id, q).take(100).compile.toVector
           resp <- Ok(AliasList(list.map(convert).toList))
         } yield resp
 
       case req @ POST -> Root / Ident(id) =>
         for {
-          in      <- req.as[AliasChange]
+          in <- req.as[AliasChange]
           members <- Conv.readIds[F](in.members)
-          _       <- logger.fdebug(s"Change alias $id to $in")
+          _ <- logger.fdebug(s"Change alias $id to $in")
           na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
           data = OAlias.AliasInput(na, members)
           res <- backend.alias.modify(
@@ -70,14 +70,14 @@ object AliasRoutes {
 
       case GET -> Root / Ident(id) =>
         val opt = for {
-          adb  <- OptionT(backend.alias.findById(id, token.account.id))
+          adb <- OptionT(backend.alias.findById(id, token.account.id))
           resp <- OptionT.liftF(Ok(convert(adb)))
         } yield resp
         opt.getOrElseF(NotFound())
 
       case DELETE -> Root / Ident(id) =>
         for {
-          res  <- backend.alias.delete(id, token.account.id)
+          res <- backend.alias.delete(id, token.account.id)
           resp <- Ok(BasicResult(res, if (res) "Alias deleted." else "Alias not found"))
         } yield resp
     }

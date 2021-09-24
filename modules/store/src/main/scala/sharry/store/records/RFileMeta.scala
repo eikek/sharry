@@ -1,12 +1,14 @@
 package sharry.store.records
 
+import cats.implicits._
+
+import sharry.common._
+import sharry.store.doobie.DoobieMeta._
+import sharry.store.doobie._
+
 import doobie._
 import doobie.implicits._
 import scodec.bits.ByteVector
-import sharry.common._
-import sharry.store.doobie._
-import sharry.store.doobie.DoobieMeta._
-import cats.implicits._
 
 case class RFileMeta(
     id: Ident,
@@ -21,10 +23,10 @@ object RFileMeta {
   val table = fr"filemeta"
 
   object Columns {
-    val id       = Column("file_id")
-    val created  = Column("created")
+    val id = Column("file_id")
+    val created = Column("created")
     val mimetype = Column("mimetype")
-    val length   = Column("length")
+    val length = Column("length")
     val checksum = Column("checksum")
 
     val all = List(id, created, mimetype, length, checksum)

@@ -22,7 +22,7 @@ case class Ident(id: String) {
 
 object Ident {
   val atSign: Ident = new Ident("@")
-  val empty: Ident  = new Ident("")
+  val empty: Ident = new Ident("")
 
   val chars: Set[Char] = (('A' to 'Z') ++ ('a' to 'z') ++ ('0' to '9') ++ "-_@.").toSet
 

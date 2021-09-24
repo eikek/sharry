@@ -17,9 +17,9 @@ object RInvitation {
   val table = fr"invitation"
 
   object Columns {
-    val id      = Column("id")
+    val id = Column("id")
     val created = Column("created")
-    val all     = List(id, created)
+    val all = List(id, created)
   }
   import Columns._
 
@@ -49,7 +49,7 @@ object RInvitation {
         .unique
     for {
       inv <- get
-      _   <- delete(invite)
+      _ <- delete(invite)
     } yield inv > 0
   }
 

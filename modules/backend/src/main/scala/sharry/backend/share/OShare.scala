@@ -1,17 +1,19 @@
 package sharry.backend.share
 
-import binny.{ByteRange, ChunkDef, Hint}
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
+
 import sharry.backend.PasswordCrypt
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.store.AddResult
 import sharry.store.PermanentError
 import sharry.store.Store
-import sharry.store.records.{RAlias, RFileMeta, RPublishShare, RShare, RShareFile}
+import sharry.store.records._
+
+import binny.{ByteRange, ChunkDef, Hint}
 import org.log4s.getLogger
 import scodec.bits.ByteVector
 
@@ -28,8 +30,7 @@ trait OShare[F[_]] {
     */
   def create(data: ShareData[F], accId: AccountId): F[UploadResult[Ident]]
 
-  /** Adds more files to an existing share.
-    */
+  /** Adds more files to an existing share. */
   def addFile(
       shareId: Ident,
       accId: AccountId,
@@ -86,8 +87,7 @@ trait OShare[F[_]] {
     */
   def findShares(q: String, accId: AccountId): Stream[F, ShareItem]
 
-  /** Get all details about a share.
-    */
+  /** Get all details about a share. */
   def shareDetails(
       id: ShareId,
       pass: Option[Password]
@@ -186,7 +186,7 @@ object OShare {
         for {
           shareId <- createShare
           advSize <- advertisedSize
-          _       <- shareId.checkSize(cfg.maxSize)(_ => advSize).mapF(storeFiles)
+          _ <- shareId.checkSize(cfg.maxSize)(_ => advSize).mapF(storeFiles)
         } yield shareId
       }
 
@@ -254,8 +254,8 @@ object OShare {
           offset: ByteSize,
           data: Stream[F, Byte]
       ): OptionT[F, UploadResult[ByteSize]] = {
-        val startChunk     = (offset.bytes / cfg.chunkSize.bytes).toInt
-        val reqLen         = length.getOrElse(ByteSize.zero)
+        val startChunk = (offset.bytes / cfg.chunkSize.bytes).toInt
+        val reqLen = length.getOrElse(ByteSize.zero)
         val permanentError = PermanentError.create(cfg.databaseDomainChecks)
         def storeChunk(
             fileMetaId: Ident,
@@ -394,16 +394,16 @@ object OShare {
         )
 
         for {
-          _    <- OptionT(store.transact(checkQuery))
+          _ <- OptionT(store.transact(checkQuery))
           file <- ByteResult.load(store)(file, range)
         } yield file
       }
 
       def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit] =
         for {
-          _  <- OptionT(store.transact(Queries.checkFile(file, accId)))
+          _ <- OptionT(store.transact(Queries.checkFile(file, accId)))
           fd <- OptionT(store.transact(Queries.fileDesc(file)))
-          _  <- OptionT.liftF(store.transact(RShareFile.delete(file)))
+          _ <- OptionT.liftF(store.transact(RShareFile.delete(file)))
           _ <- OptionT.liftF(
             Async[F].start(
               Queries.deleteFile(store)(fd.metaId) *> logger.fdebug(
@@ -589,7 +589,7 @@ object OShare {
       } yield UploadResult((fm, sf))
 
     for {
-      now  <- Timestamp.current[F]
+      now <- Timestamp.current[F]
       urfm <- insertFileData(now)
       ursf <- urfm.flatMapF(fm => saveShareFile(fm, now))
     } yield ursf
@@ -604,7 +604,7 @@ object OShare {
     for {
       dbalias <-
         alias.map(a => store.transact(RAlias.findById(a, accId))).getOrElse(None.pure[F])
-      id  <- Ident.randomId[F]
+      id <- Ident.randomId[F]
       now <- Timestamp.current[F]
     } yield RShare(
       id,

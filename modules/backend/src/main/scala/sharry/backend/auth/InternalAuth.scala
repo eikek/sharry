@@ -26,9 +26,9 @@ final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
                 AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
 
             for {
-              _    <- logger.ftrace(s"Internal auth: doing account lookup: ${login.id}")
+              _ <- logger.ftrace(s"Internal auth: doing account lookup: ${login.id}")
               data <- op.findByLogin(login)
-              _    <- logger.ftrace(s"Internal auth: Account lookup: $data")
+              _ <- logger.ftrace(s"Internal auth: Account lookup: $data")
               res <-
                 data
                   .filter(check(up.pass))

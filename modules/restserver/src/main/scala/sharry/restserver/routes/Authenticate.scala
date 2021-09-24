@@ -27,7 +27,7 @@ object Authenticate {
       pf: PartialFunction[AuthedRequest[F, AuthToken], F[Response[F]]]
   ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
-    val middleware        = createAuthMiddleware(dsl, S, cfg)
+    val middleware = createAuthMiddleware(dsl, S, cfg)
 
     middleware(AuthedRoutes.of(pf))
   }
@@ -36,7 +36,7 @@ object Authenticate {
       f: AuthToken => HttpRoutes[F]
   ): HttpRoutes[F] = {
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
-    val middleware        = createAuthMiddleware(dsl, S, cfg)
+    val middleware = createAuthMiddleware(dsl, S, cfg)
 
     middleware(AuthedRoutes(authReq => f(authReq.context).run(authReq.req)))
   }

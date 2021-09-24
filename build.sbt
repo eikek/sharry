@@ -5,7 +5,7 @@ import com.typesafe.sbt.SbtGit.GitKeys._
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 val scalafixSettings = Seq(
-  semanticdbEnabled := true,                        // enable SemanticDB
+  semanticdbEnabled := true, // enable SemanticDB
   semanticdbVersion := scalafixSemanticdb.revision, //"4.4.0"
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
@@ -78,8 +78,8 @@ val webjarSettings = Seq(
 )
 
 val debianSettings = Seq(
-  maintainer         := "Eike Kettner <eike.kettner@posteo.de>",
-  packageSummary     := description.value,
+  maintainer := "Eike Kettner <eike.kettner@posteo.de>",
+  packageSummary := description.value,
   packageDescription := description.value,
   Universal / mappings += {
     val conf = (Compile / resourceDirectory).value / "reference.conf"
@@ -149,9 +149,9 @@ val restapi = project
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
-    openapiPackage        := Pkg("sharry.restapi.model"),
-    openapiSpec           := (Compile / resourceDirectory).value / "sharry-openapi.yml",
-    openapiStaticGen      := OpenApiDocGenerator.Redoc,
+    openapiPackage := Pkg("sharry.restapi.model"),
+    openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
+    openapiStaticGen := OpenApiDocGenerator.Redoc,
     openapiScalaConfig := ScalaConfig()
       .withJson(ScalaJson.circeSemiauto)
       .addMapping(CustomMapping.forType { case TypeDef("LocalDateTime", _) =>
@@ -216,9 +216,9 @@ val webapp = project
   .settings(webjarSettings)
   .settings(stylesSettings)
   .settings(
-    name                  := "sharry-webapp",
+    name := "sharry-webapp",
     openapiTargetLanguage := Language.Elm,
-    openapiPackage        := Pkg("Api.Model"),
+    openapiPackage := Pkg("Api.Model"),
     openapiSpec := (restapi / Compile / resourceDirectory).value / "sharry-openapi.yml",
     openapiElmConfig := ElmConfig().withJson(ElmJson.decodePipeline)
   )
@@ -280,39 +280,39 @@ lazy val microsite = project
   .disablePlugins(ReleasePlugin, RevolverPlugin)
   .settings(sharedSettings)
   .settings(
-    name            := "sharry-microsite",
+    name := "sharry-microsite",
     publishArtifact := false,
-    publish / skip  := true,
+    publish / skip := true,
     micrositeFooterText := Some(
       """
         |<p>&copy; 2021 <a href="https://eikek.github.io/sharry">Sharry, v{{site.version}}</a></p>
         |""".stripMargin
     ),
-    micrositeName             := "Sharry",
-    micrositeDescription      := "Sharry – Share files conveniently",
+    micrositeName := "Sharry",
+    micrositeDescription := "Sharry – Share files conveniently",
     micrositeDocumentationUrl := "/sharry/doc",
     micrositeFavicons := Seq(microsites.MicrositeFavicon("favicon-32x32.png", "32x32")),
-    micrositeBaseUrl  := "/sharry",
-    micrositeAuthor   := "eikek",
-    micrositeGithubOwner   := "eikek",
-    micrositeGithubRepo    := "sharry",
-    micrositeGithubToken   := sys.env.get("GITHUB_TOKEN"),
-    micrositePushSiteWith  := GitHub4s,
+    micrositeBaseUrl := "/sharry",
+    micrositeAuthor := "eikek",
+    micrositeGithubOwner := "eikek",
+    micrositeGithubRepo := "sharry",
+    micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
+    micrositePushSiteWith := GitHub4s,
     micrositeGitterChannel := false,
     micrositeShareOnSocial := false,
     micrositePalette := Map(
-      "brand-primary"   -> "#7a1800",
+      "brand-primary" -> "#7a1800",
       "brand-secondary" -> "#009ADA",
-      "white-color"     -> "#FFFFFF"
+      "white-color" -> "#FFFFFF"
     ),
     run / fork := true,
     mdocVariables := Map(
-      "VERSION"  -> version.value,
+      "VERSION" -> version.value,
       "PVERSION" -> version.value.replace('.', '_')
     ),
     Compile / resourceGenerators += Def.task {
       val conf1 = (restserver / Compile / resourceDirectory).value / "reference.conf"
-      val out1  = resourceManaged.value / "main" / "jekyll" / "_includes" / "server.conf"
+      val out1 = resourceManaged.value / "main" / "jekyll" / "_includes" / "server.conf"
       streams.value.log.info(s"Copying reference.conf: $conf1 -> $out1")
       IO.write(out1, "{% raw %}\n")
       IO.append(out1, IO.readBytes(conf1))
@@ -391,7 +391,7 @@ def compileElm(
 }
 
 def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
-  val target       = out / "Webjars.scala"
+  val target = out / "Webjars.scala"
   val invalidChars = "-.".toSet
   val fields = wj
     .map(m =>
@@ -400,10 +400,10 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
     )
     .mkString("\n\n")
   val content = s"""package sharry.restserver.webapp
-    |object Webjars {
-    |$fields
-    |}
-    |""".stripMargin
+                   |object Webjars {
+                   |$fields
+                   |}
+                   |""".stripMargin
 
   IO.write(target, content)
   Seq(target)

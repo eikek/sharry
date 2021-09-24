@@ -86,7 +86,7 @@ object TusRoutes {
 
       case HEAD -> Root / Ident(fileId) =>
         (for {
-          _    <- OptionT.liftF(logger.fdebug(s"Return info for file ${fileId.id}"))
+          _ <- OptionT.liftF(logger.fdebug(s"Return info for file ${fileId.id}"))
           data <- backend.share.getFileData(fileId, token.account)
           resp <- OptionT.liftF(
             Ok().map(
@@ -109,7 +109,7 @@ object TusRoutes {
 
     def fileInfo[F[_]](req: Request[F]): Option[FileInfo] = {
       val name = SharryFileName(req)
-      val len  = SharryFileLength(req)
+      val len = SharryFileLength(req)
       val mime = SharryFileType(req).getOrElse(octetStream)
 
       len.map(l => FileInfo(l, name, mime))

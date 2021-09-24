@@ -27,8 +27,8 @@ object AccountRoutes {
     val r1 = HttpRoutes[F] {
       case GET -> Root / Ident(id) =>
         for {
-          _    <- OptionT.liftF(logger.fdebug(s"Loading accout $id"))
-          acc  <- OptionT(backend.account.findDetailById(id))
+          _ <- OptionT.liftF(logger.fdebug(s"Loading accout $id"))
+          acc <- OptionT(backend.account.findDetailById(id))
           resp <- OptionT.liftF(Ok(accountDetail(acc)))
         } yield resp
       case _ =>
@@ -47,7 +47,7 @@ object AccountRoutes {
 
       case DELETE -> Root / Ident(id) =>
         for {
-          _   <- logger.finfo(s"Requested to delete account: $id")
+          _ <- logger.finfo(s"Requested to delete account: $id")
           res <- backend.account.delete(id).value
           resp <- res match {
             case Some(_) =>
@@ -60,7 +60,7 @@ object AccountRoutes {
       case req @ GET -> Root =>
         val q = req.params.getOrElse("q", "")
         for {
-          _   <- logger.ftrace(s"Listing accounts: $q")
+          _ <- logger.ftrace(s"Listing accounts: $q")
           all <- backend.account.findAccounts(q).take(100).compile.toVector
           list = AccountList(all.map(accountDetail).toList)
           resp <- Ok(list)
@@ -77,7 +77,7 @@ object AccountRoutes {
             in.email,
             in.admin
           )
-          res  <- backend.account.create(acc)
+          res <- backend.account.create(acc)
           resp <- Ok(Conv.basicResult(res, "Account successfully created."))
         } yield resp
     }

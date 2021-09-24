@@ -24,7 +24,7 @@ object SignupMode {
   def unsafe(str: String): SignupMode =
     fromString(str).fold(sys.error, identity)
 
-  def open: SignupMode   = Open
+  def open: SignupMode = Open
   def invite: SignupMode = Invite
   def closed: SignupMode = Closed
 

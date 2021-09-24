@@ -32,8 +32,8 @@ object AccountSource {
   def unsafe(str: String): AccountSource =
     parse(str).fold(sys.error, identity)
 
-  def intern: AccountSource                 = Intern
-  def extern: AccountSource                 = Extern
+  def intern: AccountSource = Intern
+  def extern: AccountSource = Extern
   def oauth(context: String): AccountSource = OAuth(context)
 
   implicit val jsonDecoder: Decoder[AccountSource] =

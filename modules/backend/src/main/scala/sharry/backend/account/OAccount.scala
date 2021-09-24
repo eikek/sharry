@@ -66,7 +66,7 @@ object OAccount {
         val change = for {
           acc <- OptionT(findById(id))
           pwmatch = PasswordCrypt.check(oldPw, acc.password)
-          intern  = acc.source == AccountSource.Intern
+          intern = acc.source == AccountSource.Intern
           res <-
             if (!intern) OptionT.some[F](notInternal)
             else if (!pwmatch) OptionT.some[F](wrongPassword)
@@ -78,8 +78,8 @@ object OAccount {
 
       def delete(id: Ident): OptionT[F, RAccount] =
         for {
-          _      <- OptionT.liftF(logger.finfo(s"Delete account $id"))
-          acc    <- OptionT(store.transact(RAccount.findById(id)))
+          _ <- OptionT.liftF(logger.finfo(s"Delete account $id"))
+          acc <- OptionT(store.transact(RAccount.findById(id)))
           shares <- OptionT.liftF(store.transact(RShare.getAllByAccount(id)))
           _ <- OptionT.liftF(logger.finfo(s"Delete ${shares.size} shares of account $id"))
           _ <- OptionT.liftF(
@@ -140,7 +140,7 @@ object OAccount {
           _ => {
             val msg = s"The account '${acc.login.id}' already exists."
             for {
-              acc  <- makeRecord
+              acc <- makeRecord
               save <- store.add(insert(acc), accountExists)
             } yield save.fold(identity, _.withMsg(msg), identity)
           }

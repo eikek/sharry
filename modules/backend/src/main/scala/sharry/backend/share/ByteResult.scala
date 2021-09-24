@@ -1,11 +1,13 @@
 package sharry.backend.share
 
-import binny.ByteRange
 import cats.data.OptionT
 import cats.effect._
+
 import sharry.common.Ident
 import sharry.store.Store
 import sharry.store.records.{RFileMeta, RShareFile}
+
+import binny.ByteRange
 
 object ByteResult {
 
