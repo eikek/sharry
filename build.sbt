@@ -6,7 +6,7 @@ val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
 val scalafixSettings = Seq(
   semanticdbEnabled := true, // enable SemanticDB
-  semanticdbVersion := scalafixSemanticdb.revision, //"4.4.0"
+  semanticdbVersion := scalafixSemanticdb.revision, // "4.4.0"
   ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
 )
 

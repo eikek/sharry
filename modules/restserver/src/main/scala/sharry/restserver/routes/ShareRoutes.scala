@@ -75,7 +75,7 @@ object ShareRoutes {
         val pw = SharryPassword(req)
         ByteResponse(dsl, req, backend, ShareId.secured(id, token.account), pw, fid)
 
-      //make it safer by also using the share id
+      // make it safer by also using the share id
       case DELETE -> Root / Ident(_) / "file" / Ident(fid) =>
         (for {
           e <-
