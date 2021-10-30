@@ -21,7 +21,7 @@ class PermanentErrorTest extends FunSuite {
     val checks = Seq(DomainCheckConfig(false, nativePart, "Oh no, a virus!"))
     PermanentError.create(checks).unapply(new Exception(errorMsg)) match {
       case Some(_) => fail("Check was not disabled!")
-      case None    => //ok
+      case None    => // ok
     }
   }
 
@@ -30,7 +30,7 @@ class PermanentErrorTest extends FunSuite {
     val checks = Seq(DomainCheckConfig(false, nativePart, "Oh no, a virus!"))
     PermanentError.create(checks).unapply(new Exception(errorMsg)) match {
       case Some(_) => fail("Unexpected check found!")
-      case None    => //ok
+      case None    => // ok
     }
   }
 }
