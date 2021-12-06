@@ -9,9 +9,9 @@ object Dependencies {
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC1"
   val EmilVersion = "0.10.0-M3"
-  val FlywayVersion = "8.1.0"
-  val Fs2Version = "3.2.2"
-  val H2Version = "2.0.202"
+  val FlywayVersion = "8.2.0"
+  val Fs2Version = "3.2.3"
+  val H2Version = "1.4.200"
   val Http4sVersion = "0.23.4"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
@@ -25,7 +25,7 @@ object Dependencies {
   val SwaggerVersion = "4.1.2"
   val TikaVersion = "2.1.0"
   val TusClientVersion = "1.8.0-1"
-  val YamuscaVersion = "0.8.1"
+  val YamuscaVersion = "0.8.2"
 
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % Fs2Version
