@@ -12,6 +12,6 @@
     "postcss": "^8.3.6",
     "postcss-cli": "^9.0.0",
     "postcss-import": "^14.0.2",
-    "tailwindcss": "^2.2.7"
+    "tailwindcss": "^3.0.0"
   }
 }
