@@ -17,7 +17,7 @@ object Dependencies {
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.10.0"
   val LogbackVersion = "1.2.10"
-  val MariaDbVersion = "2.7.4"
+  val MariaDbVersion = "2.7.5"
   val MUnitVersion = "0.7.29"
   val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.3.1"
