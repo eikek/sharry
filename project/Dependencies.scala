@@ -4,7 +4,7 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion = "0.2.2"
+  val BinnyVersion = "0.3.0"
   val CirceVersion = "0.14.1"
   val ClipboardJsVersion = "2.0.6"
   val DoobieVersion = "1.0.0-RC2"
