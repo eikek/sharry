@@ -396,7 +396,7 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
   val fields = wj
     .map(m =>
       s"""val ${m.name.toLowerCase
-        .filterNot(invalidChars.contains)} = "/${m.name}/${m.revision}" """
+          .filterNot(invalidChars.contains)} = "/${m.name}/${m.revision}" """
     )
     .mkString("\n\n")
   val content = s"""package sharry.restserver.webapp
