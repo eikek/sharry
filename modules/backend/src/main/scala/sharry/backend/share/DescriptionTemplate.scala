@@ -3,6 +3,7 @@ package sharry.backend.share
 import sharry.backend.mustache.YamuscaCommon
 import sharry.common._
 
+import yamusca.derive._
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -45,7 +46,7 @@ object DescriptionTemplate {
       )
 
     implicit val contextConv: ValueConverter[ShareContext] =
-      ValueConverter.deriveConverter[ShareContext]
+      deriveValueConverter[ShareContext]
   }
 
   case class FileInfo(
@@ -81,7 +82,6 @@ object DescriptionTemplate {
       )
 
     implicit val fileInfoConverter: ValueConverter[FileInfo] =
-      ValueConverter.deriveConverter[FileInfo]
+      deriveValueConverter[FileInfo]
   }
-
 }
