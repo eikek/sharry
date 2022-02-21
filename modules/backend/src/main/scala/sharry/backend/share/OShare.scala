@@ -502,14 +502,14 @@ object OShare {
 
   private def checkPassword(
       shareId: ShareId,
-      given: Option[Password],
+      givenPw: Option[Password],
       sharePw: Option[Password]
   ): ShareResult[Unit] =
     shareId match {
       case ShareId.PrivateId(_, _) =>
         ShareResult.Success(())
       case ShareId.PublicId(_) =>
-        (given, sharePw) match {
+        (givenPw, sharePw) match {
           case (Some(plain), Some(pw)) =>
             if (PasswordCrypt.check(plain, pw)) ShareResult.Success(())
             else ShareResult.PasswordMismatch

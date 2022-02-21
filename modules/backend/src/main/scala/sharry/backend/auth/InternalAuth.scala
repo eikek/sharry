@@ -44,9 +44,9 @@ final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
   def withPosition: (Int, LoginModule[F]) = (cfg.internal.order, login)
 
-  private def check(given: Password)(data: RAccount): Boolean = {
+  private def check(givenPw: Password)(data: RAccount): Boolean = {
     val userOk = data.state == AccountState.Active
-    val passOk = PasswordCrypt.check(given, data.password)
+    val passOk = PasswordCrypt.check(givenPw, data.password)
     userOk && passOk
   }
 }
