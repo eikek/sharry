@@ -97,7 +97,7 @@ object StylesPlugin extends AutoPlugin {
       Seq(
         npx,
         "postcss",
-        s"$inDir/*.css",
+        s"$inDir/index.css",
         "-o",
         target.absolutePath,
         "--env",

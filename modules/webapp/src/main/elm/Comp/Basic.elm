@@ -215,7 +215,7 @@ editLinkLabel label click =
                     ++ "dark:border-orange-500 dark:text-orange-500"
             , hover =
                 "hover:bg-blue-500 hover:text-gray-100 "
-                    ++ "dark:hover:bg-orange-500 dark:hover:text-warmgray-900"
+                    ++ "dark:hover:bg-orange-500 dark:hover:text-stone-900"
             }
         }
 
@@ -233,7 +233,7 @@ showLinkLabel label click =
                     ++ "dark:border-orange-500 dark:text-orange-500"
             , hover =
                 "hover:bg-blue-500 hover:text-gray-100 "
-                    ++ "dark:hover:bg-orange-500 dark:hover:text-warmgray-900"
+                    ++ "dark:hover:bg-orange-500 dark:hover:text-stone-900"
             }
         }
 

@@ -137,11 +137,11 @@ fileCard texts settings model file =
             }
     in
     div
-        [ class "relative hover:shadow-lg rounded flex flex-col break-words border border-gray-400 dark:border-warmgray-600 dark:hover:border-warmgray-500"
+        [ class "relative hover:shadow-lg rounded flex flex-col break-words border border-gray-400 dark:border-stone-600 dark:hover:border-stone-500"
         , id file.id
         ]
         [ Comp.ConfirmModal.view deleteModal
-        , div [ class "overflow-hidden block bg-gray-50 dark:bg-warmgray-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-warmgray-500 rounded-t max-h-52" ]
+        , div [ class "overflow-hidden block bg-gray-50 dark:bg-stone-700 dark:bg-opacity-40  border-gray-400 dark:hover:border-stone-500 rounded-t max-h-52" ]
             [ fileEmbed texts settings model file
             ]
         , div [ class "flex flex-col flex-grow px-2 my-2" ]
@@ -258,7 +258,7 @@ fileEmbed texts settings model file =
     if previewFor previewDirect mime || Set.member file.id model.embedOn then
         iframe
             [ src (settings.baseUrl ++ file.id)
-            , class "mx-auto min-h-preview dark:bg-warmgray-300 bg-gray-50"
+            , class "mx-auto min-h-preview dark:bg-stone-300 bg-gray-50"
             , if mime == "application/pdf" then
                 sandbox "allow-scripts"
 

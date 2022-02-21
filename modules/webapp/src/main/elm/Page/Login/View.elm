@@ -158,7 +158,7 @@ renderOAuthButtons texts flags _ =
                 { label = texts.or
                 , topCss = "w-full mb-4 hidden md:inline-flex"
                 , labelCss = "px-4 bg-gray-200 bg-opacity-50"
-                , lineColor = "bg-gray-300 dark:bg-bluegray-600"
+                , lineColor = "bg-gray-300 dark:bg-slate-600"
                 }
         , div
             [ class "flex flex-row space-x-2 items-center justify-center"
