@@ -32,10 +32,9 @@ object AliasRoutes {
       case req @ POST -> Root =>
         for {
           in <- req.as[AliasChange]
-          members <- Conv.readIds[F](in.members)
           _ <- logger.fdebug(s"Create new alias for ${token.account}")
           na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
-          data = OAlias.AliasInput(na, members)
+          data = OAlias.AliasInput(na, in.members)
           res <- backend.alias.create(data)
           resp <- Ok(convert(Conv.basicResult(res, "Alias successfully created."), na.id))
         } yield resp
@@ -51,10 +50,9 @@ object AliasRoutes {
       case req @ POST -> Root / Ident(id) =>
         for {
           in <- req.as[AliasChange]
-          members <- Conv.readIds[F](in.members)
           _ <- logger.fdebug(s"Change alias $id to $in")
           na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
-          data = OAlias.AliasInput(na, members)
+          data = OAlias.AliasInput(na, in.members)
           res <- backend.alias.modify(
             id,
             token.account.id,
