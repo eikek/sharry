@@ -35,7 +35,7 @@ object RestServer {
     val app = for {
       restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
       _ <- Resource.eval(restApp.init)
-      client <- BlazeClientBuilder[F](pools.httpClientEC).resource
+      client <- BlazeClientBuilder[F].resource
 
       httpApp = Router(
         "/api/v2/open/" -> openRoutes(cfg, client, restApp),
@@ -66,7 +66,7 @@ object RestServer {
     Stream
       .resource(app)
       .flatMap(httpApp =>
-        BlazeServerBuilder[F](pools.restEC)
+        BlazeServerBuilder[F]
           .bindHttp(cfg.bind.port, cfg.bind.address)
           .withResponseHeaderTimeout(cfg.responseTimeout.toScala)
           .withIdleTimeout(cfg.responseTimeout.toScala + 30.seconds)

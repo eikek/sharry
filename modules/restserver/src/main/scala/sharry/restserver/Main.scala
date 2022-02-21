@@ -3,7 +3,6 @@ package sharry.restserver
 import java.nio.file.{Files, Paths}
 
 import cats.effect._
-import cats.implicits._
 
 import sharry.common._
 
@@ -51,10 +50,8 @@ object Main extends IOApp {
     logger.info(s"\n${banner.render("***>")}")
 
     val pools = for {
-      bec <- blockingEC
       cec <- connectEC
-      rec <- restEC
-    } yield Pools(cec, bec, rec)
+    } yield Pools(cec)
 
     if (EnvMode.current.isDev) {
       logger.warn(">>>>>   Sharry is running in DEV mode!   <<<<<")
