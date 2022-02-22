@@ -94,7 +94,7 @@ topMenuAnon texts model =
 headerNavItem : Model -> Html Msg
 headerNavItem model =
     a
-        [ class "inline-flex font-bold hover:bg-indigo-200 dark:hover:bg-warmgray-800 items-center px-4"
+        [ class "inline-flex font-bold hover:bg-indigo-200 dark:hover:bg-stone-800 items-center px-4"
         , if isAuthenticated model then
             Page.href HomePage
 
@@ -138,7 +138,7 @@ languageMenu texts model =
             a
                 [ classList
                     [ ( dropdownItem, True )
-                    , ( "bg-gray-200 dark:bg-warmgray-700", lang == texts.lang )
+                    , ( "bg-gray-200 dark:bg-stone-700", lang == texts.lang )
                     ]
                 , onClick (SetLanguage lang)
                 , href "#"
@@ -171,7 +171,7 @@ userMenu2 texts model acc =
     let
         activeClass page =
             classList
-                [ ( "bg-gray-200 dark:bg-warmgray-700", model.page == page )
+                [ ( "bg-gray-200 dark:bg-stone-700", model.page == page )
                 ]
 
         pageLink page content =
@@ -430,12 +430,12 @@ footer model =
 
 styleTopNav : String
 styleTopNav =
-    "top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-indigo-100 dark:bg-warmgray-900 text-gray-800 dark:text-warmgray-200 antialiased"
+    "top-0 fixed z-50 w-full flex flex-row justify-start shadow-sm h-12 bg-indigo-100 dark:bg-stone-900 text-gray-800 dark:text-stone-200 antialiased"
 
 
 styleMain : String
 styleMain =
-    "mt-12 flex flex-col w-full min-h-screen-12  bg-white dark:bg-warmgray-800 text-gray-800 dark:text-warmgray-300 antialiased"
+    "mt-12 flex flex-col w-full min-h-screen-12  bg-white dark:bg-stone-800 text-gray-800 dark:text-stone-300 antialiased"
 
 
 styleContent : String
@@ -450,12 +450,12 @@ styleFooter =
 
 dropdownLink : String
 dropdownLink =
-    "px-4 py-2 w-12 font-bold inline-flex h-full items-center hover:bg-indigo-200 dark:hover:bg-warmgray-800"
+    "px-4 py-2 w-12 font-bold inline-flex h-full items-center hover:bg-indigo-200 dark:hover:bg-stone-800"
 
 
 dropdownItem : String
 dropdownItem =
-    "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-warmgray-700 dark:hover:text-warmgray-50"
+    "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-stone-700 dark:hover:text-stone-50"
 
 
 dropdownHeadItem : String
@@ -465,4 +465,4 @@ dropdownHeadItem =
 
 dropdownMenu : String
 dropdownMenu =
-    " absolute right-0 bg-white dark:bg-warmgray-800 border dark:border-warmgray-700 dark:text-warmgray-300 shadow-lg opacity-1 transition duration-200 min-w-max "
+    " absolute right-0 bg-white dark:bg-stone-800 border dark:border-stone-700 dark:text-stone-300 shadow-lg opacity-1 transition duration-200 min-w-max "

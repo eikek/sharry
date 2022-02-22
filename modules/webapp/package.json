@@ -1,17 +1,18 @@
 {
-  "name": "sharry-css",
+  "name": "docspell-css",
   "version": "1.0.0",
   "private": true,
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",
-    "@fullhuman/postcss-purgecss": "^4.0.3",
     "@tailwindcss/forms": "^0.4.0",
-    "autoprefixer": "^10.3.1",
-    "cssnano": "^5.0.7",
+    "autoprefixer": "^10.4.2",
+    "cssnano": "^5.0.16",
     "flag-icon-css": "^3.5.0",
-    "postcss": "^8.3.6",
-    "postcss-cli": "^9.0.0",
+    "postcss": "^8.4.6",
+    "postcss-cli": "^9.1.0",
     "postcss-import": "^14.0.2",
-    "tailwindcss": "^3.0.0"
+    "postcss-purgecss": "^2.0.3",
+    "tailwindcss": "^3.0.18"
   }
 }

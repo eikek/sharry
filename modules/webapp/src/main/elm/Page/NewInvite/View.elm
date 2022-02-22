@@ -36,7 +36,7 @@ view texts flags model =
                     [ div
                         [ class "inline-flex items-center justify-center"
                         , class "absolute left-0 top-0 h-full w-10"
-                        , class "text-gray-400 dark:text-bluegray-400"
+                        , class "text-gray-400 dark:text-slate-400"
                         ]
                         [ i [ class "fa fa-key" ] []
                         ]

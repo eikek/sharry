@@ -159,7 +159,7 @@ view texts sett model =
                 { label = texts.or
                 , topCss = "w-2/3 mb-4 hidden md:inline-flex"
                 , labelCss = "px-4 bg-gray-200 bg-opacity-50"
-                , lineColor = "bg-gray-300 dark:bg-warmgray-600"
+                , lineColor = "bg-gray-300 dark:bg-stone-600"
                 }
             , div [ class "py-1" ]
                 [ label [ class S.primaryBasicButton ]
@@ -190,7 +190,7 @@ view texts sett model =
             [ classList
                 [ ( "hidden", files == [] )
                 ]
-            , class "flex flex-col divide-y dark:divide-warmgray-600"
+            , class "flex flex-col divide-y dark:divide-stone-600"
             ]
             (List.indexedMap (renderFile sett) files)
         ]
@@ -243,7 +243,7 @@ renderFile sett index file =
         , div [ class "flex-grow mx-2" ]
             [ if isUploading fileState then
                 Comp.Progress.progress2
-                    { parent = "h-6 border dark:border-warmgray-600 rounded"
+                    { parent = "h-6 border dark:border-stone-600 rounded"
                     , bar = "h-full rounded"
                     , label = "text-sm"
                     }

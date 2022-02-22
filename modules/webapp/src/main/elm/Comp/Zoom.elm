@@ -92,7 +92,7 @@ view fileUrl model onSelect onQuit =
                     [ classList
                         [ ( "", isPdf file || isText file )
                         ]
-                    , class " mx-auto flex flex-col bg-gray-800 dark:bg-warmgray-800 bg-opacity-90 h-screen-5/6 w-full md:w-11/12"
+                    , class " mx-auto flex flex-col bg-gray-800 dark:bg-stone-800 bg-opacity-90 h-screen-5/6 w-full md:w-11/12"
                     ]
                     [ div [ class "h-full" ]
                         [ filePreview fileUrl model file
@@ -127,7 +127,7 @@ filePreview fileUrl _ file =
             []
 
     else if isPdf file then
-        div [ class "dark:bg-warmgray-300 bg-white" ]
+        div [ class "dark:bg-stone-300 bg-white" ]
             [ iframe
                 [ src url
                 , sandbox "allow-scripts"
@@ -139,7 +139,7 @@ filePreview fileUrl _ file =
             ]
 
     else
-        div [ class "dark:bg-warmgray-300 bg-white" ]
+        div [ class "dark:bg-stone-300 bg-white" ]
             [ iframe
                 [ src url
                 , sandbox ""

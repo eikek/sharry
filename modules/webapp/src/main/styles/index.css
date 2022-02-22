@@ -3,9 +3,9 @@
 
 /* all @import must be above this line */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 
 @layer components {
@@ -14,21 +14,21 @@
   }
 
   .ds-item-card.current {
-      @apply shadow-lg dark:border-lightblue-600;
+      @apply shadow-lg dark:border-sky-600;
   }
 
   .elm-datepicker--input {
-      @apply pl-10 placeholder-gray-400 bg-blue-50 dark:text-bluegray-200 dark:bg-bluegray-700 dark:border-bluegray-500 border-gray-500 rounded w-full;
+      @apply pl-10 placeholder-gray-400 bg-blue-50 dark:text-slate-200 dark:bg-slate-700 dark:border-slate-500 border-gray-500 rounded w-full;
   }
 
   .elm-datepicker--container {
       @apply w-full;
   }
   .elm-datepicker--picker {
-      @apply absolute top-11 z-50 bg-white dark:bg-bluegray-800 w-full flex flex-col border border-gray-300 dark:border-bluegray-500 shadow-lg;
+      @apply absolute top-11 z-50 bg-white dark:bg-slate-800 w-full flex flex-col border border-gray-300 dark:border-slate-500 shadow-lg;
   }
   .elm-datepicker--picker-header {
-      @apply flex flex-row items-center py-2 bg-blue-50 dark:bg-bluegray-700;
+      @apply flex flex-row items-center py-2 bg-blue-50 dark:bg-slate-700;
   }
   .elm-datepicker--prev-container {
       @apply flex-none px-2;
@@ -46,14 +46,14 @@
       @apply fa fa-chevron-right inline-flex block px-2 py-2 focus:outline-none hover:opacity-75;
   }
   .elm-datepicker--year-menu {
-      @apply dark:text-bluegray-200 dark:bg-bluegray-600 dark:border-bluegray-400 rounded text-sm py-1 focus:ring focus:ring-black focus:ring-opacity-50 focus:ring-offset-0 dark:focus:ring-bluegray-400;
+      @apply dark:text-slate-200 dark:bg-slate-600 dark:border-slate-400 rounded text-sm py-1 focus:ring focus:ring-black focus:ring-opacity-50 focus:ring-offset-0 dark:focus:ring-slate-400;
   }
 
   .elm-datepicker--table {
       @apply border-collapse w-full text-lg;
   }
   .elm-datepicker--weekdays {
-      @apply font-semibold text-sm  border-0 border-b dark:border-bluegray-500;
+      @apply font-semibold text-sm  border-0 border-b dark:border-slate-500;
   }
   .elm-datepicker--year {
       @apply h-8;
@@ -68,7 +68,7 @@
       @apply opacity-50;
   }
   .elm-datepicker--day.elm-datepicker--today {
-      @apply border-2 rounded-full border-blue-500 dark:border-lightblue-500 h-5/6 w-5/6 flex items-center justify-center ;
+      @apply border-2 rounded-full border-blue-500 dark:border-sky-500 h-5/6 w-5/6 flex items-center justify-center ;
   }
 
 
@@ -94,7 +94,7 @@
       @apply py-2;
   }
   .markdown-preview a {
-      @apply text-blue-400 hover:text-blue-500 dark:text-lightblue-200 dark:hover:text-lightblue-100 cursor-pointer;
+      @apply text-blue-400 hover:text-blue-500 dark:text-sky-200 dark:hover:text-sky-100 cursor-pointer;
   }
 }
 
@@ -192,6 +192,6 @@
     }
 
     .ds-card-search-hl strong {
-        @apply bg-lime-200 dark:bg-lightblue-700 italic font-bold px-1;
+        @apply bg-lime-200 dark:bg-sky-700 italic font-bold px-1;
     }
 }

@@ -24,7 +24,7 @@ mainStyle =
     , link = dropdownLinkStyle ++ mainLink
     , menu = dropdownMenuStyle ++ mainMenu
     , item = dropdownItemStyle ++ mainItem
-    , itemActive = "bg-gray-200 dark:bg-warmgray-700"
+    , itemActive = "bg-gray-200 dark:bg-stone-700"
     , input = mainInputStyle
     }
 
@@ -44,7 +44,7 @@ sidebarStyle =
     , link = dropdownLinkStyle ++ sidebarLink
     , menu = dropdownMenuStyle ++ sidebarMenu
     , item = dropdownItemStyle ++ sidebarItem
-    , itemActive = "bg-gray-300 dark:bg-warmgray-600"
+    , itemActive = "bg-gray-300 dark:bg-stone-600"
     , input = sidebarInputStyle
     }
 
@@ -57,12 +57,12 @@ dropdownLinkStyle =
 
 mainLink : String
 mainLink =
-    " bg-white border-gray-500 hover:border-gray-500 dark:bg-warmgray-800 dark:border-warmgray-500 dark:hover:border-warmgray-500"
+    " bg-white border-gray-500 hover:border-gray-500 dark:bg-stone-800 dark:border-stone-500 dark:hover:border-stone-500"
 
 
 sidebarLink : String
 sidebarLink =
-    " bg-blue-50 border-gray-500 hover:border-gray-500 dark:bg-warmgray-700 dark:border-warmgray-400 dark:hover:border-warmgray-400"
+    " bg-blue-50 border-gray-500 hover:border-gray-500 dark:bg-stone-700 dark:border-stone-400 dark:hover:border-stone-400"
 
 
 dropdownMenuStyle : String
@@ -72,12 +72,12 @@ dropdownMenuStyle =
 
 mainMenu : String
 mainMenu =
-    "bg-white dark:bg-warmgray-800 dark:border-warmgray-700 dark:text-warmgray-300"
+    "bg-white dark:bg-stone-800 dark:border-stone-700 dark:text-stone-300"
 
 
 sidebarMenu : String
 sidebarMenu =
-    "bg-blue-50 dark:bg-warmgray-700 dark:border-warmgray-600 dark:text-warmgray-200"
+    "bg-blue-50 dark:bg-stone-700 dark:border-stone-600 dark:text-stone-200"
 
 
 dropdownItemStyle : String
@@ -87,19 +87,19 @@ dropdownItemStyle =
 
 mainItem : String
 mainItem =
-    " hover:bg-gray-200 dark:hover:bg-warmgray-700 dark:hover:text-warmgray-100"
+    " hover:bg-gray-200 dark:hover:bg-stone-700 dark:hover:text-stone-100"
 
 
 sidebarItem : String
 sidebarItem =
-    " hover:bg-gray-300 dark:hover:bg-warmgray-600 dark:hover:text-warmgray-50"
+    " hover:bg-gray-300 dark:hover:bg-stone-600 dark:hover:text-stone-50"
 
 
 mainInputStyle : String
 mainInputStyle =
-    "dark:text-warmgray-200 dark:bg-warmgray-800 dark:border-warmgray-500"
+    "dark:text-stone-200 dark:bg-stone-800 dark:border-stone-500"
 
 
 sidebarInputStyle : String
 sidebarInputStyle =
-    "bg-blue-50 dark:text-warmgray-200 dark:bg-warmgray-700 dark:border-warmgray-400"
+    "bg-blue-50 dark:text-stone-200 dark:bg-stone-700 dark:border-stone-400"

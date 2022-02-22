@@ -126,7 +126,7 @@ splitDisplay txt =
             ]
         , div
             [ class "w-full md:w-1/2 border-t md:border-t-0 md:border-l pt-2 md:pl-1"
-            , class "dark:border-warmgray-600"
+            , class "dark:border-stone-600"
             ]
             [ previewDisplay txt
             ]

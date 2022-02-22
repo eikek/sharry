@@ -17,7 +17,7 @@ view texts _ =
         [ div
             [ class "w-full px-4 py-4 mt-2 flex flex-col items-center"
             , class "md:w-2/3 md:mx-auto md:bg-gray-100 md:mt-8 md:px-8 md:py-8 md:shadow md:rounded-lg"
-            , class "md:dark:bg-warmgray-700"
+            , class "md:dark:bg-stone-700"
             ]
             [ div [ class "flex flex-col items-center text-4xl" ]
                 [ i [ class "fa fa-share-alt" ] []

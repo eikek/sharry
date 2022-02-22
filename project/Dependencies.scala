@@ -12,7 +12,7 @@ object Dependencies {
   val FlywayVersion = "8.5.0"
   val Fs2Version = "3.2.5"
   val H2Version = "2.1.210"
-  val Http4sVersion = "0.23.4"
+  val Http4sVersion = "0.23.10"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
   val Log4sVersion = "1.10.0"
@@ -25,7 +25,7 @@ object Dependencies {
   val SwaggerVersion = "4.5.0"
   val TikaVersion = "2.3.0"
   val TusClientVersion = "1.8.0-1"
-  val YamuscaVersion = "0.8.2"
+  val YamuscaVersion = "0.9.0"
 
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % Fs2Version
@@ -107,7 +107,8 @@ object Dependencies {
   )
 
   val yamusca = Seq(
-    "com.github.eikek" %% "yamusca-core" % YamuscaVersion
+    "com.github.eikek" %% "yamusca-core" % YamuscaVersion,
+    "com.github.eikek" %% "yamusca-derive" % YamuscaVersion
   )
 
   val bcrypt = Seq(

@@ -104,12 +104,12 @@ type alias DropdownMenu msg =
 
 view : MenuBar msg -> Html msg
 view =
-    view1 "bg-white dark:bg-warmgray-800"
+    view1 "bg-white dark:bg-stone-800"
 
 
 viewSide : MenuBar msg -> Html msg
 viewSide =
-    view1 "bg-blue-50 dark:bg-warmgray-700"
+    view1 "bg-blue-50 dark:bg-stone-700"
 
 
 view1 : String -> MenuBar msg -> Html msg
@@ -120,7 +120,7 @@ view1 classes mb =
                 (List.map viewItem mb.start)
 
         right =
-            div [ class "flex-grow flex-row flex justify-end space-x-2 w-full" ]
+            div [ class "flex-grow flex-row flex justify-end space-x-2 h-10 w-full" ]
                 (List.map viewItem mb.end)
     in
     div
@@ -175,10 +175,10 @@ makeDropdown : DropdownData msg -> Html msg
 makeDropdown model =
     let
         menuStyle =
-            "absolute right-0 bg-white dark:bg-warmgray-800 border dark:border-warmgray-700 z-50 dark:text-warmgray-300 shadow-lg transition duration-200 min-w-max  "
+            "absolute right-0 bg-white dark:bg-stone-800 border dark:border-stone-700 z-50 dark:text-stone-300 shadow-lg transition duration-200 min-w-max  "
 
         itemStyle =
-            "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-warmgray-700 dark:hover:text-warmgray-50"
+            "transition-colors duration-200 items-center block px-4 py-2 text-normal hover:bg-gray-200 dark:hover:bg-stone-700 dark:hover:text-stone-50"
 
         menuItem m =
             a
@@ -271,7 +271,7 @@ makeButton btnType model =
             class "inline-flex items-center h-full py-0"
 
           else
-            class "h-full"
+            class ""
         , href "#"
         , onClick model.tagger
         , title model.title

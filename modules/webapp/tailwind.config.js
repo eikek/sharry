@@ -3,26 +3,28 @@
 const colors = require('tailwindcss/colors')
 
 module.exports = {
+    darkMode: 'class', // or 'media' or 'class'
+    content: [ "./src/main/elm/**/*.elm",
+               "./src/main/styles/keep.txt",
+               "../restserver/src/main/templates/*.html"
+             ],
+    theme: {
+        extend: {
+            screens: {
+                '3xl': '1792px',
+                '4xl': '2048px',
+                '5xl': '2560px',
+                '6xl': '3072px',
+                '7xl': '3584px'
+            }
+        }
+    },
     variants: {
         extend: {
             backgroundOpacity: ['dark']
         }
     },
     purge: false,
-    darkMode: 'class', // or 'media' or 'class'
-    theme: {
-        extend: {
-            colors: {
-                bluegray: colors.blueGray,
-                warmgray: colors.warmGray,
-                amber: colors.amber,
-                orange: colors.orange,
-                teal: colors.teal,
-                lime: colors.lime,
-                lightblue: colors.sky
-            }
-        }
-    },
     plugins: [
         require('@tailwindcss/forms')
     ]
