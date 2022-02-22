@@ -271,7 +271,7 @@ makeButton btnType model =
             class "inline-flex items-center h-full py-0"
 
           else
-            class "h-full"
+            class ""
         , href "#"
         , onClick model.tagger
         , title model.title

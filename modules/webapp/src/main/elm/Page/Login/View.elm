@@ -161,7 +161,7 @@ renderOAuthButtons texts flags _ =
                 , lineColor = "bg-gray-300 dark:bg-slate-600"
                 }
         , div
-            [ class "flex flex-row space-x-2 items-center justify-center"
+            [ class "flex flex-row space-x-2 flex-wrap items-center justify-center"
             , classList [ ( "mt-2", flags.config.oauthOnly ) ]
             ]
             (List.map (renderOAuthButton texts flags) flags.config.oauthConfig)
@@ -179,6 +179,7 @@ renderOAuthButton texts flags item =
     in
     a
         [ class S.primaryBasicButton
+        , class "mt-1"
         , href url
         ]
         [ i [ class icon ] []

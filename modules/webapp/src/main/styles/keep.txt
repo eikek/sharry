@@ -1,2 +1,4 @@
 fab
 fa-github
+fa-openid
+fa-google

@@ -18,6 +18,7 @@ type alias Texts =
     , size : String
     , created : String
     , dateTime : Int -> String
+    , open : String
     }
 
 
@@ -30,6 +31,7 @@ gb =
     , nFiles = "#Files"
     , size = "Size"
     , created = "Created"
+    , open = "Open"
     , dateTime = Messages.DateFormat.formatDateTime Language.English
     }
 
@@ -43,6 +45,7 @@ de =
     , nFiles = "#Dateien"
     , size = "Größe"
     , created = "Erstellt"
+    , open = "Öffnen"
     , dateTime = Messages.DateFormat.formatDateTime Language.German
     }
 
@@ -56,5 +59,6 @@ fr =
     , nFiles = "#Fichiers"
     , size = "Taille"
     , created = "Créé"
+    , open = "Ouvrir"
     , dateTime = Messages.DateFormat.formatDateTime Language.French
     }

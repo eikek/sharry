@@ -75,7 +75,7 @@ viewTableLine texts model item =
             ]
         , class S.tableRow
         ]
-        [ B.editLinkTableCell "Edit" (Select item)
+        [ B.editLinkTableCell texts.open (Select item)
         , td [ class "text-left" ]
             [ Maybe.withDefault (Util.String.shorten 12 item.id) item.name
                 |> text
