@@ -3,6 +3,9 @@ openapi: 3.0.0
 info:
   title: Sharry
   version: 1.10.0-SNAPSHOT
+  license:
+    name: GPLv3
+    url: https://spdx.org/licenses/GPL-3.0-or-later.html
   description: |
     Sharry provides a way to share files with others in a convenient
     way. The core functionality is provided by a server that can be
@@ -49,11 +52,14 @@ servers:
 paths:
   /open/info/version:
     get:
+      operationId: "open-info-version"
       tags: [ Information ]
       summary: Version information.
       description: |
         Returns version information about server application.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -62,11 +68,14 @@ paths:
                 $ref: "#/components/schemas/VersionInfo"
   /open/info/appconfig:
     get:
+      operationId: "open-info-appconfig"
       tags: [ Information ]
       summary: Basic configuration.
       description: |
         Return basic information for setting up a web client.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -76,6 +85,7 @@ paths:
 
   /open/auth/login:
     post:
+      operationId: "open-auth-login-post"
       tags: [ Authentication ]
       summary: Authenticate with account name and password.
       description: |
@@ -89,6 +99,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UserPass"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -97,6 +109,7 @@ paths:
                 $ref: "#/components/schemas/AuthResult"
   /open/auth/oauth/{id}:
     get:
+      operationId: "open-auth-oauth-id"
       tags: [ Authentication ]
       summary: Authenticate via OAuth2
       description: |
@@ -110,10 +123,13 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
-        '303':
+        422:
+          description: BadRequest
+        303:
           description: See other
   /open/auth/oauth/{id}/resume:
     post:
+      operationId: "open-auth-oauth-id-resume"
       tags: [ Authentication ]
       summary: Callback url from OAuth2 providers.
       description: |
@@ -137,6 +153,7 @@ paths:
           description: Forbidden
   /sec/auth/session:
     post:
+      operationId: "sec-auth-session"
       tags: [ Authentication ]
       summary: Authentication with a token
       description: |
@@ -145,6 +162,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -153,6 +172,7 @@ paths:
                 $ref: "#/components/schemas/AuthResult"
   /sec/auth/logout:
     post:
+      operationId: "sec-auth-logout"
       tags: [ Authentication ]
       summary: Logout.
       description: |
@@ -161,10 +181,13 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
   /open/signup/register:
     post:
+      operationId: "open-signup-register"
       tags: [ Registration ]
       summary: Register a new account.
       description: |
@@ -175,6 +198,8 @@ paths:
             schema:
               $ref: "#/components/schemas/Registration"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -183,6 +208,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
   /admin/signup/newinvite:
     post:
+      operationId: "admin-signup-newinivite"
       tags: [ Registration ]
       summary: Generate a new invite.
       description: |
@@ -198,6 +224,8 @@ paths:
             schema:
               $ref: "#/components/schemas/GenInvite"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -207,6 +235,7 @@ paths:
 
   /admin/account:
     get:
+      operationId: "admin-account-get"
       tags: [ Account Management ]
       summary: List all accounts.
       description: |
@@ -219,6 +248,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -226,6 +257,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AccountList"
     post:
+      operationId: "admin-account-post"
       tags: [ Account Management ]
       summary: Create a new account.
       description: |
@@ -244,6 +276,8 @@ paths:
             schema:
               $ref: "#/components/schemas/AccountCreate"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -251,10 +285,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
-  /admin/account/{id}:
+  /admin/account/{accountId}:
     parameters:
-      - $ref: "#/components/parameters/id"
+      - $ref: "#/components/parameters/accountId"
     get:
+      operationId: "admin-ccount-id-get"
       tags: [ Account Management ]
       summary: Details about one account.
       description: |
@@ -263,6 +298,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -270,6 +307,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AccountDetail"
     post:
+      operationId: "admin-account-id-post"
       tags: [ Account Management ]
       summary: Modify an account.
       description: |
@@ -290,6 +328,8 @@ paths:
             schema:
               $ref: "#/components/schemas/AccountModify"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -297,6 +337,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     delete:
+      operationId: "admin-account-id-delete"
       tags: [ Account Management ]
       summary: Deletes an account.
       description: |
@@ -304,6 +345,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -313,6 +356,7 @@ paths:
 
   /sec/settings/email:
     get:
+      operationId: "sec-settings-email-get"
       tags: [ Account Management ]
       summary: Get your E-Mail address.
       description: |
@@ -320,6 +364,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -327,6 +373,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EmailInfo"
     post:
+      operationId: "sec-settings-email-post"
       tags: [ Account Management ]
       summary: Edit your E-Mail.
       description: |
@@ -339,6 +386,8 @@ paths:
             schema:
               $ref: "#/components/schemas/EmailChange"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -346,6 +395,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     delete:
+      operationId: "sec-settings-email-delete"
       tags: [ Account Management ]
       summary: Removed your E-Mail.
       description: |
@@ -353,6 +403,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -362,6 +414,7 @@ paths:
 
   /sec/settings/password:
     get:
+      operationId: "sec-settings-password-get"
       tags: [ Account Management ]
       summary: Check for password change.
       description: |
@@ -371,6 +424,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -378,6 +433,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     post:
+      operationId: "sec-settings-password-post"
       tags: [ Account Management ]
       summary: Change your password.
       description: |
@@ -391,6 +447,8 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordChange"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -400,6 +458,7 @@ paths:
 
   /sec/alias:
     get:
+      operationId: "sec-alias-get"
       tags: [ Alias ]
       summary: List all aliases.
       description: |
@@ -409,6 +468,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -416,6 +477,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AliasList"
     post:
+      operationId: "sec-alias-post"
       tags: [ Alias ]
       summary: Create new alias
       description: |
@@ -430,6 +492,8 @@ paths:
             schema:
               $ref: "#/components/schemas/AliasChange"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -440,6 +504,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/id"
     get:
+      operationId: "sec-alias-id-get"
       tags: [ Alias ]
       summary: Details about one alias.
       description: |
@@ -447,6 +512,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -454,6 +521,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/AliasDetail"
     post:
+      operationId: "sec-alias-id-post"
       tags: [ Alias ]
       summary: Change an alias
       description: |
@@ -469,6 +537,8 @@ paths:
             schema:
               $ref: "#/components/schemas/AliasChange"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -476,6 +546,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/IdResult"
     delete:
+      operationId: "sec-alias-id-delete"
       tags: [ Alias ]
       summary: Delete an alias.
       description: |
@@ -483,6 +554,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -492,6 +565,7 @@ paths:
 
   /sec/alias-member:
     get:
+      operationId: "sec-alias-member-get"
       tags: [ Alias ]
       summary: Get a list of accounts
       description: |
@@ -502,6 +576,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -514,6 +590,7 @@ paths:
 
   /sec/upload:
     post:
+      operationId: "sec-upload-post"
       tags:
         - Shares Upload
       summary: Upload files to create a share.
@@ -549,6 +626,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -558,6 +637,7 @@ paths:
 
   /sec/share/search:
     get:
+      operationId: "sec-share-search-get"
       tags:
         - Shares
       summary: Search your shares.
@@ -568,6 +648,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/q"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -580,6 +662,7 @@ paths:
 
   /sec/upload/new:
     post:
+      operationId: "sec-upload-new-post"
       tags:
         - Shares Upload
       summary: Create a new empty share.
@@ -601,6 +684,8 @@ paths:
             schema:
               $ref: "#/components/schemas/ShareProperties"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -610,6 +695,7 @@ paths:
 
   /open/share/{pid}:
     get:
+      operationId: "open-share-pid-get"
       tags:
         - Shares (Public)
       summary: Get details about a share.
@@ -639,6 +725,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/id"
     get:
+      operationId: "sec-share-id-get"
       tags:
         - Shares
       summary: Get details about a share.
@@ -647,6 +734,8 @@ paths:
       description: |
         Returns all details about a share.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -655,6 +744,7 @@ paths:
                 $ref: "#/components/schemas/ShareDetail"
 
     delete:
+      operationId: "sec-share-id-delete"
       tags:
         - Shares
       summary: Delete a share.
@@ -663,6 +753,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -675,6 +767,7 @@ paths:
 
   /sec/upload/{id}/files/add:
     post:
+      operationId: "sec-upload-id-files-add"
       tags:
         - Shares Upload
       summary: Add more files to a share.
@@ -701,6 +794,8 @@ paths:
                     type: string
                     format: binary
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -710,6 +805,7 @@ paths:
 
   /sec/share/{id}/name:
     post:
+      operationId: "sec-share-id-name-post"
       tags:
         - Shares
       summary: Set a new name.
@@ -725,6 +821,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SingleString"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -732,6 +830,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
     delete:
+      operationId: "sec-share-id-name-delete"
       tags:
         - Shares
       summary: Deletes the name of a share.
@@ -742,6 +841,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -752,6 +853,7 @@ paths:
 
   /sec/share/{id}/validity:
     post:
+      operationId: "sec-share-id-validity-post"
       tags:
         - Shares
       summary: Set a new validity time.
@@ -767,6 +869,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SingleNumber"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -777,6 +881,7 @@ paths:
 
   /sec/share/{id}/description:
     post:
+      operationId: "sec-share-id-description-post"
       tags:
         - Shares
       summary: Set a new description.
@@ -792,6 +897,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SingleString"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -801,6 +908,7 @@ paths:
 
   /sec/share/{id}/maxviews:
     post:
+      operationId: "sec-share-id-maxviews-post"
       tags:
         - Shares
       summary: Set new maximum downloads.
@@ -816,6 +924,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SingleNumber"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -827,6 +937,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/id"
     post:
+      operationId: "sec-share-id-password-post"
       tags:
         - Shares
       summary: Sets a password to this share.
@@ -842,6 +953,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SingleString"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -850,6 +963,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
     delete:
+      operationId: "sec-share-id-password-delete"
       tags:
         - Shares
       summary: Removes the password from the share.
@@ -859,6 +973,8 @@ paths:
         Removes the password that has been set for this share. If this
         share has no password set, a successful response is sent.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -870,6 +986,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/id"
     post:
+      operationId: "sec-share-id-publish-post"
       tags:
         - Shares
       summary: Publishes a share.
@@ -893,6 +1010,8 @@ paths:
             schema:
               $ref: "#/components/schemas/PublishData"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -901,6 +1020,7 @@ paths:
                 $ref: "#/components/schemas/BasicResult"
 
     delete:
+      operationId: "sec-share-id-publish-delete"
       tags:
         - Shares
       summary: Unpublish a share.
@@ -910,6 +1030,8 @@ paths:
         If a share is currently published it can be un-published using
         this endpoint.
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -919,6 +1041,7 @@ paths:
 
   /open/share/{pid}/file/{fid}:
     get:
+      operationId: "open-share-pid-file-fid-get"
       tags:
         - Shares (Public)
       summary: Retrieve a file from the share.
@@ -930,6 +1053,8 @@ paths:
         - $ref: "#/components/parameters/pid"
         - $ref: "#/components/parameters/fid"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -943,6 +1068,7 @@ paths:
       - $ref: "#/components/parameters/id"
       - $ref: "#/components/parameters/fid"
     get:
+      operationId: "sec-share-id-file-fid-get"
       tags:
         - Shares
       summary: Retrieve a file from the share.
@@ -953,6 +1079,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -961,6 +1089,7 @@ paths:
                 type: string
                 format: binary
     delete:
+      operationId: "sec-share-id-file-fid-delete"
       tags:
         - Shares
       summary: Remove a file from a share.
@@ -969,6 +1098,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -983,6 +1114,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/id"
     options:
+      operationId: "sec-upload-id-files-tus-options"
       tags:
         - Shares Upload
       summary: "[Tus] Protocol information."
@@ -1000,6 +1132,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         204:
           description: NoContent
           headers:
@@ -1013,6 +1147,7 @@ paths:
               schema:
                 type: string
     post:
+      operationId: "sec-upload-id-files-tus-post"
       tags:
         - Shares Upload
       summary: "[Tus] Create new (empty) files using tus protocol"
@@ -1045,6 +1180,8 @@ paths:
         - $ref: "#/components/parameters/SharryFileLength"
         - $ref: "#/components/parameters/UploadLength"
       responses:
+        422:
+          description: BadRequest
         201:
           description: Created
           headers:
@@ -1063,6 +1200,7 @@ paths:
       - $ref: "#/components/parameters/id"
       - $ref: "#/components/parameters/fid"
     patch:
+      operationId: "sec-upload-id-files-tus-fid-patch"
       tags:
         - Shares Upload
       summary: "[Tus] Upload binary data"
@@ -1090,6 +1228,8 @@ paths:
               type: string
               format: binary
       responses:
+        422:
+          description: BadRequest
         204:
           description: NoContent
           headers:
@@ -1103,6 +1243,7 @@ paths:
         404:
           description: Not Found
     head:
+      operationId: "sec-upload-id-files-tus-fid-head"
       tags:
         - Shares Upload
       summary: "[Tus] Information about a file."
@@ -1118,6 +1259,8 @@ paths:
       security:
         - authTokenHeader: []
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           headers:
@@ -1135,6 +1278,7 @@ paths:
 
   /alias/mail/notify/{id}:
     post:
+      operationId: "alias-mail-notify-id-post"
       tags:
         - Mail
       summary: Notify the owner.
@@ -1151,6 +1295,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1160,6 +1306,7 @@ paths:
 
   /sec/mail/template/share/{id}:
     get:
+      operationId: "sec-mail-template-share-id-get"
       tags:
         - Mail
       summary: Get the mail template for a published share.
@@ -1173,6 +1320,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1181,6 +1330,7 @@ paths:
                 $ref: "#/components/schemas/MailTemplate"
   /sec/mail/template/alias/{aid}:
     get:
+      operationId: "sec-mail-template-alias-aid-get"
       tags:
         - Mail
       summary: Get the mail template for a published share.
@@ -1194,6 +1344,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/aliasId"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
@@ -1202,6 +1354,7 @@ paths:
                 $ref: "#/components/schemas/MailTemplate"
   /sec/mail/send:
     post:
+      operationId: "sec-mail-send-post"
       tags:
         - Mail
       summary: Send an e-mail.
@@ -1217,6 +1370,8 @@ paths:
             schema:
               $ref: "#/components/schemas/SimpleMail"
       responses:
+        422:
+          description: BadRequest
         200:
           description: Ok
           content:
