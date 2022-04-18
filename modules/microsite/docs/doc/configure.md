@@ -408,9 +408,8 @@ Let's go through the config values of one entry:
 - `id`: the id that is used in the url behind the button on the login
   screen. It is also used to amend the account name.
 - `name`: The name rendered as button text.
-- `icon`: a [fontawesome (free) icon
-  name](https://fontawesome.com/icons?d=gallery&p=2&m=free) for the
-  button
+- `icon`: an icon for the button, included are `fa-github`,
+  `fa-openid`, `fa-google`, `fa-user`, `fa-right-to-bracket`
 - `authorize-url` this is the URL of the provider where sharry
   redirects to at first, attaching `client_id` and the redirect uri
   back to sharry.
@@ -465,37 +464,13 @@ cleans up the following resources:
 ## Logging
 
 By default, sharry logs to stdout. This works well, when managed by
-systemd or other inits. Logging is done by
-[logback](https://logback.qos.ch/). Please refer to its documentation
-for how to configure logging.
+systemd or other inits. Logging can be configured with two settings in
+the config file:
 
-If you created your logback config file, it can be added as argument
-to the executable using this syntax:
-
-```
-/path/to/sharry -Dlogback.configurationFile=/path/to/your/logging-config-file
-```
-
-To get started, the default config looks like this:
-
-``` xml
-<configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <withJansi>true</withJansi>
-
-    <encoder>
-      <pattern>[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</pattern>
-    </encoder>
-  </appender>
-
-  <logger name="sharry" level="debug" />
-  <root level="INFO">
-    <appender-ref ref="STDOUT" />
-  </root>
-</configuration>
-```
-
-The `<root level="INFO">` means, that only log statements with level
-"INFO" will be printed. But the `<logger name="sharry"
-level="debug">` above says, that for loggers with name "sharry"
-statements from level "DEBUG" on will be printed, too.
+- `logging.minimum-level` specifies the log level to control the
+  verbosity. Levels are ordered from: *Trace*, *Debug*, *Info*, *Warn*
+  and *Error*
+- `logging.format` this defines how the logs are formatted. There are
+  two formats for humans: *Plain* and *Fancy*. And two more suited for
+  machine consumption: *Json* and *Logfmt*. The *Json* format contains
+  all details, while the others may omit some for readability

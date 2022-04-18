@@ -10,7 +10,7 @@ import fs2.Stream
 
 import sharry.backend.auth.AuthToken
 import sharry.common.LenientUri
-import sharry.common.syntax.all._
+import sharry.logging.Logger
 import sharry.restserver.http4s.EnvMiddleware
 import sharry.restserver.routes._
 import sharry.restserver.webapp._
@@ -23,13 +23,11 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.middleware.Logger
-import org.log4s.getLogger
+import org.http4s.server.middleware.{Logger => Http4sLogger}
 
 object RestServer {
-  private[this] val logger = getLogger
-
   def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
+    implicit val logger = sharry.logging.getLogger[F]
 
     val templates = TemplateRoutes[F](cfg)
     val app = for {
@@ -59,7 +57,7 @@ object RestServer {
       ).orNotFound
 
       // With Middlewares in place
-      finalHttpApp = Logger.httpApp(false, false)(httpApp)
+      finalHttpApp = Http4sLogger.httpApp(false, false)(httpApp)
 
     } yield finalHttpApp
 
@@ -96,7 +94,7 @@ object RestServer {
       cfg: Config,
       restApp: RestApp[F],
       token: AuthToken
-  ): HttpRoutes[F] =
+  )(implicit logger: Logger[F]): HttpRoutes[F] =
     Router(
       "auth" -> LoginRoutes.session(restApp.backend.login, cfg),
       "settings" -> SettingRoutes(restApp.backend, token),
@@ -135,11 +133,11 @@ object RestServer {
       "share" -> OpenShareRoutes(restApp.backend, cfg)
     )
 
-  def notFound[F[_]: Async](token: AuthToken): HttpRoutes[F] =
+  def notFound[F[_]: Async](token: AuthToken)(implicit logger: Logger[F]): HttpRoutes[F] =
     Kleisli(_ =>
       OptionT.liftF(
         logger
-          .finfo[F](s"Non-admin '${token.account}' calling admin routes")
+          .info(s"Non-admin '${token.account}' calling admin routes")
           .map(_ => Response.notFound[F])
       )
     )

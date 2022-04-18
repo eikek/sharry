@@ -7,7 +7,6 @@ import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.mail.NotifyResult
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.restapi.model.BasicResult
 import sharry.restserver.Config
 import sharry.restserver.http4s.ClientRequestInfo
@@ -15,17 +14,15 @@ import sharry.restserver.http4s.ClientRequestInfo
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
 
 object NotifyRoutes {
-
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -34,7 +31,7 @@ object NotifyRoutes {
         case Some(alias) =>
           val baseurl = ClientRequestInfo.getBaseUrl(cfg, req) / "app" / "upload"
           for {
-            _ <- logger.fdebug("Notify about alias upload")
+            _ <- logger.debug("Notify about alias upload")
             res <- backend.mail.notifyAliasUpload(alias, id, baseurl)
             resp <- Ok(basicResult(res))
           } yield resp

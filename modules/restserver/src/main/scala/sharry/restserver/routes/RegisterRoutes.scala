@@ -13,10 +13,8 @@ import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s._
 
 object RegisterRoutes {
-  private[this] val logger = getLogger
 
   trait InternRoutes[F[_]] {
     def signup: HttpRoutes[F]
@@ -66,7 +64,6 @@ object RegisterRoutes {
       case SignupResult.SignupClosed =>
         BasicResult(false, "Sorry, registration is closed.")
       case SignupResult.Failure(ex) =>
-        logger.error(ex)("Error signing up")
         BasicResult(false, s"Internal error: ${ex.getMessage}")
       case SignupResult.Success =>
         BasicResult(true, "Signup successful")

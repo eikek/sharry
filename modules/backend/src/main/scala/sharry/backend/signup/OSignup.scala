@@ -5,11 +5,8 @@ import cats.implicits._
 
 import sharry.backend.account._
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.store.records.RInvitation
 import sharry.store.{AddResult, Store}
-
-import org.log4s.getLogger
 
 trait OSignup[F[_]] {
 
@@ -22,12 +19,11 @@ trait OSignup[F[_]] {
 }
 
 object OSignup {
-  private[this] val logger = getLogger
-
   case class RegisterData(login: Ident, password: Password, invite: Option[Ident])
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure[F, OSignup[F]](new OSignup[F] {
+      private[this] val logger = sharry.logging.getLogger[F]
 
       def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult] =
         if (cfg.mode != SignupMode.Invite)
@@ -64,7 +60,7 @@ object OSignup {
                     else SignupResult.invalidInvitationKey.pure[F]
                   _ <-
                     if (retryInvite(res))
-                      logger.fdebug(
+                      logger.debug(
                         s"Adding account failed ($res). Allow retry with invite."
                       ) *> store
                         .transact(

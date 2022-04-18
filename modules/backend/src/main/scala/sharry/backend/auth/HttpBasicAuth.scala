@@ -1,6 +1,5 @@
 package sharry.backend.auth
 
-import java.net.HttpURLConnection
 import java.nio.charset.StandardCharsets
 import java.{util => ju}
 
@@ -9,9 +8,6 @@ import cats.effect._
 import cats.implicits._
 
 import sharry.common._
-import sharry.common.syntax.all._
-
-import org.log4s.getLogger
 
 final class HttpBasicAuth[F[_]: Async](
     cfg: AuthConfig,
@@ -19,7 +15,7 @@ final class HttpBasicAuth[F[_]: Async](
     runner: HttpBasicAuth.RunRequest[F]
 ) {
 
-  private[this] val logger = getLogger
+  private[this] val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.httpBasic.enabled)(
@@ -33,14 +29,14 @@ final class HttpBasicAuth[F[_]: Async](
                 )
 
             for {
-              _ <- logger.fdebug(s"HttpBasicAuth: starting login $up")
+              _ <- logger.debug(s"HttpBasicAuth: starting login $up")
               res <- executeReq(up, cfg.httpBasic)
               resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-              _ <- logger.fdebug(s"HttpBasicAuth: $up => $resp")
+              _ <- logger.debug(s"HttpBasicAuth: $up => $resp")
             } yield resp
 
           case Left(_) =>
-            logger.fdebug(s"HttpBasicAuth: failed.") *>
+            logger.debug(s"HttpBasicAuth: failed.") *>
               LoginResult.invalidAuth.pure[F]
         }
       )
@@ -67,16 +63,13 @@ object HttpBasicAuth {
   }
 
   object RunRequest {
-    private[this] val logger = getLogger
-
     def apply[F[_]](
         f: (UserPassData, AuthConfig.HttpBasic) => F[Boolean]
     ): RunRequest[F] =
-      new RunRequest[F] {
-        def exec(up: UserPassData, cfg: AuthConfig.HttpBasic): F[Boolean] = f(up, cfg)
-      }
+      (up: UserPassData, cfg: AuthConfig.HttpBasic) => f(up, cfg)
 
-    def javaConn[F[_]: Sync] =
+    def javaConn[F[_]: Sync] = {
+      val logger = sharry.logging.getLogger[F]
       RunRequest { (up, cfg) =>
         val header = ju.Base64.getEncoder
           .encodeToString(s"${up.user}:${up.pass.pass}".getBytes(StandardCharsets.UTF_8))
@@ -89,16 +82,17 @@ object HttpBasicAuth {
                 conn.setRequestMethod(cfg.method)
                 conn.connect()
 
-                val code = conn.asInstanceOf[HttpURLConnection].getResponseCode()
+                val code = conn.getResponseCode
                 code >= 200 && code <= 299
               }
             )
 
           case Left(err) =>
             logger
-              .fwarn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err")
+              .warn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err")
               .map(_ => false)
         }
       }
+    }
   }
 }

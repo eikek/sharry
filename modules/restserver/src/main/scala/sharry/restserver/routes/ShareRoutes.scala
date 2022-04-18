@@ -8,7 +8,6 @@ import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.share._
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.restapi.model._
 import sharry.restserver.Config
 import sharry.restserver.routes.headers.SharryPassword
@@ -18,16 +17,15 @@ import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s._
 
 object ShareRoutes {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -35,7 +33,7 @@ object ShareRoutes {
       case req @ GET -> Root / "search" =>
         val q = req.params.getOrElse("q", "")
         for {
-          _ <- logger.ftrace(s"Listing shares: $q")
+          _ <- logger.trace(s"Listing shares: $q")
           now <- Timestamp.current[F]
           all <- backend.share.findShares(q, token.account).take(100).compile.toVector
           list = ShareList(all.map(shareListItem(now)).toList)
@@ -174,7 +172,7 @@ object ShareRoutes {
       item.alias.map(a => AliasIdName(a.id, a.name)),
       item.share.validity,
       item.share.maxViews,
-      item.share.password != None,
+      item.share.password.isDefined,
       item.share.created,
       item.files.count,
       item.files.size,

@@ -7,14 +7,11 @@ import cats.implicits._
 import sharry.backend.PasswordCrypt
 import sharry.backend.account.OAccount
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.store.records.RAccount
-
-import org.log4s._
 
 final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
-  private[this] val logger = getLogger
+  private[this] val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.enabledState(cfg.internal.enabled, op, AccountSource.intern)(
@@ -26,9 +23,9 @@ final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
                 AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
 
             for {
-              _ <- logger.ftrace(s"Internal auth: doing account lookup: ${login.id}")
+              _ <- logger.trace(s"Internal auth: doing account lookup: ${login.id}")
               data <- op.findByLogin(login)
-              _ <- logger.ftrace(s"Internal auth: Account lookup: $data")
+              _ <- logger.trace(s"Internal auth: Account lookup: $data")
               res <-
                 data
                   .filter(check(up.pass))
@@ -36,7 +33,7 @@ final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
                   .getOrElse(LoginResult.invalidAuth.pure[F])
             } yield res
           case Left(_) =>
-            logger.fdebug(s"Internal auth: failed.") *>
+            logger.debug(s"Internal auth: failed.") *>
               LoginResult.invalidAuth.pure[F]
         }
       )

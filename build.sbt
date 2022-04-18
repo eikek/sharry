@@ -33,7 +33,7 @@ val sharedSettings = Seq(
 
 val testSettingsMUnit = Seq(
   libraryDependencies ++= Dependencies.munit.map(_ % Test),
-  testFrameworks += new TestFramework("munit.Framework")
+  testFrameworks += TestFrameworks.MUnit
 )
 
 val elmSettings = Seq(
@@ -105,6 +105,20 @@ val buildInfoSettings = Seq(
   buildInfoOptions += BuildInfoOption.BuildTime
 )
 
+val loggingApi = project
+  .in(file("modules/logging/api"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "sharry-logging-api",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.circeCore ++
+        Dependencies.fs2 ++
+        Dependencies.sourcecode
+  )
+
 val common = project
   .in(file("modules/common"))
   .disablePlugins(RevolverPlugin)
@@ -113,12 +127,26 @@ val common = project
   .settings(
     name := "sharry-common",
     libraryDependencies ++=
-      Dependencies.loggingApi ++
-        Dependencies.fs2 ++
+      Dependencies.fs2 ++
         Dependencies.fs2io ++
         Dependencies.circe ++
         Dependencies.pureconfig
   )
+
+val loggingScribe = project
+  .in(file("modules/logging/scribe"))
+  .disablePlugins(RevolverPlugin)
+  .settings(sharedSettings)
+  .settings(testSettingsMUnit)
+  .settings(
+    name := "sharry-logging-scribe",
+    addCompilerPlugin(Dependencies.kindProjectorPlugin),
+    libraryDependencies ++=
+      Dependencies.scribe ++
+        Dependencies.circeCore ++
+        Dependencies.fs2
+  )
+  .dependsOn(loggingApi)
 
 val store = project
   .in(file("modules/store"))
@@ -133,10 +161,9 @@ val store = project
         Dependencies.tika ++
         Dependencies.fs2 ++
         Dependencies.databases ++
-        Dependencies.flyway ++
-        Dependencies.loggingApi
+        Dependencies.flyway
   )
-  .dependsOn(common)
+  .dependsOn(common, loggingScribe)
 
 val restapi = project
   .in(file("modules/restapi"))
@@ -199,8 +226,7 @@ val backend = project
   .settings(
     name := "sharry-backend",
     libraryDependencies ++=
-      Dependencies.loggingApi ++
-        Dependencies.fs2 ++
+      Dependencies.fs2 ++
         Dependencies.bcrypt ++
         Dependencies.yamusca ++
         Dependencies.emil
@@ -244,9 +270,7 @@ val restserver = project
         Dependencies.circe ++
         Dependencies.pureconfig ++
         Dependencies.yamusca ++
-        Dependencies.webjars ++
-        Dependencies.loggingApi ++
-        Dependencies.logging,
+        Dependencies.webjars,
     addCompilerPlugin(Dependencies.kindProjectorPlugin),
     addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "sharry.restserver",
@@ -272,7 +296,7 @@ val restserver = project
       (Compile / resourceDirectory).value.getParentFile / "templates"
     )
   )
-  .dependsOn(restapi, backend, webapp)
+  .dependsOn(restapi, backend, webapp, loggingScribe)
 
 lazy val microsite = project
   .in(file("modules/microsite"))

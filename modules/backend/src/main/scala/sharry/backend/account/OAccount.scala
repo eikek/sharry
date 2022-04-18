@@ -8,14 +8,12 @@ import fs2.Stream
 import sharry.backend.PasswordCrypt
 import sharry.backend.share.{Queries => ShareQueries}
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.store.AddResult
 import sharry.store.Store
 import sharry.store.doobie.DoobieMeta
 import sharry.store.records._
 
 import doobie._
-import org.log4s._
 
 trait OAccount[F[_]] {
 
@@ -45,10 +43,10 @@ trait OAccount[F[_]] {
 }
 
 object OAccount {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OAccount[F]] =
     Resource.pure[F, OAccount[F]](new OAccount[F] {
+      private[this] val logger = sharry.logging.getLogger[F]
 
       def changePassword(id: Ident, oldPw: Password, newPw: Password): F[AddResult] = {
         val update =
@@ -78,10 +76,10 @@ object OAccount {
 
       def delete(id: Ident): OptionT[F, RAccount] =
         for {
-          _ <- OptionT.liftF(logger.finfo(s"Delete account $id"))
+          _ <- OptionT.liftF(logger.info(s"Delete account $id"))
           acc <- OptionT(store.transact(RAccount.findById(id)))
           shares <- OptionT.liftF(store.transact(RShare.getAllByAccount(id)))
-          _ <- OptionT.liftF(logger.finfo(s"Delete ${shares.size} shares of account $id"))
+          _ <- OptionT.liftF(logger.info(s"Delete ${shares.size} shares of account $id"))
           _ <- OptionT.liftF(
             shares.traverse(shareId => ShareQueries.deleteShare(shareId, false)(store))
           )
@@ -162,7 +160,7 @@ object OAccount {
                     .raiseError(new Exception("Currently saved account not found!"))
               }
           case AddResult.EntityExists(msg) =>
-            logger.fdebug[F](msg) *>
+            logger.debug(msg) *>
               store
                 .transact(RAccount.findByLogin(acc.login))
                 .flatMap {

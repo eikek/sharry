@@ -2,12 +2,14 @@ package sharry.restserver
 
 import sharry.backend.{Config => BackendConfig}
 import sharry.common._
+import sharry.logging.LogConfig
 
 case class Config(
     baseUrl: LenientUri,
     responseTimeout: Duration,
     aliasMemberEnabled: Boolean,
     bind: Config.Bind,
+    logging: LogConfig,
     webapp: Config.Webapp,
     backend: BackendConfig
 ) {

@@ -23,24 +23,22 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import org.http4s.multipart.Multipart
-import org.log4s.getLogger
 
 object ShareUploadRoutes {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config,
       uploadPathPrefix: LenientUri.Path
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
     HttpRoutes.of {
       case req @ POST -> Root =>
         for {
-          _ <- logger.fdebug("Uploading files to create a new share.")
+          _ <- logger.debug("Uploading files to create a new share.")
           multipart <- req.as[Multipart[F]]
           updata <- readMultipart(multipart)
           upid <- backend.share.create(updata, token.account)
@@ -49,7 +47,7 @@ object ShareUploadRoutes {
 
       case req @ POST -> Root / "new" =>
         for {
-          _ <- logger.fdebug("Create empty share")
+          _ <- logger.debug("Create empty share")
           in <- req.as[ShareProperties]
           updata = ShareData[F](
             in.validity,
@@ -65,7 +63,7 @@ object ShareUploadRoutes {
 
       case req @ POST -> Root / Ident(id) / "files" / "add" =>
         (for {
-          _ <- OptionT.liftF(logger.fdebug("Uploading a file to an existing share"))
+          _ <- OptionT.liftF(logger.debug("Uploading a file to an existing share"))
           multipart <- OptionT.liftF(req.as[Multipart[F]])
           updata <- OptionT.liftF(readMultipart(multipart))
           ur <- backend.share.addFile(id, token.account, updata.files)
@@ -84,6 +82,8 @@ object ShareUploadRoutes {
   }
 
   def readMultipart[F[_]: Async](mp: Multipart[F]): F[ShareData[F]] = {
+    val logger = sharry.logging.getLogger[F]
+
     def parseMeta(body: Stream[F, Byte]): F[ShareProperties] =
       body
         .through(fs2.text.utf8.decode)
@@ -119,7 +119,7 @@ object ShareUploadRoutes {
 
     for {
       metaData <- meta
-      _ <- logger.fdebug(s"Parsed upload meta data: $metaData")
+      _ <- logger.debug(s"Parsed upload meta data: $metaData")
       shd = ShareData[F](
         metaData.validity,
         metaData.maxViews,

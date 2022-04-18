@@ -2,3 +2,5 @@ fab
 fa-github
 fa-openid
 fa-google
+fa-user
+fa-right-to-bracket

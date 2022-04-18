@@ -7,13 +7,11 @@ import cats.implicits._
 
 import sharry.backend.mail.MailConfig.MailTpl
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.store.Store
 
 import emil.builder._
 import emil.javamail.syntax._
 import emil.{MailConfig => _, _}
-import org.log4s.getLogger
 import yamusca.implicits._
 
 trait OMail[F[_]] {
@@ -40,15 +38,13 @@ trait OMail[F[_]] {
 }
 
 object OMail {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](
       store: Store[F],
       cfg: MailConfig,
       emil: Emil[F]
   ): Resource[F, OMail[F]] =
     Resource.pure[F, OMail[F]](new OMail[F] {
-
+      private[this] val logger = sharry.logging.getLogger[F]
       def notifyAliasUpload(
           aliasId: Ident,
           shareId: Ident,
@@ -96,7 +92,7 @@ object OMail {
               .map(_.displayString)
               .mkString(", ")
             _ <- OptionT.liftF(
-              logger.finfo(
+              logger.info(
                 "Send notification mails about upload. " +
                   s"Success ${res.filter(_.isSuccess).size}/${res.size}. " +
                   s"Sending failures for: $failedReceiver"

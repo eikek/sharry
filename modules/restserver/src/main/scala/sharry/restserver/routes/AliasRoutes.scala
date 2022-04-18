@@ -8,7 +8,6 @@ import sharry.backend.BackendApp
 import sharry.backend.alias.OAlias
 import sharry.backend.auth.AuthToken
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.restapi.model._
 import sharry.store.records.RAlias
 
@@ -16,15 +15,13 @@ import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
 
 object AliasRoutes {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -32,7 +29,7 @@ object AliasRoutes {
       case req @ POST -> Root =>
         for {
           in <- req.as[AliasChange]
-          _ <- logger.fdebug(s"Create new alias for ${token.account}")
+          _ <- logger.debug(s"Create new alias for ${token.account}")
           na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
           data = OAlias.AliasInput(na, in.members)
           res <- backend.alias.create(data)
@@ -42,7 +39,7 @@ object AliasRoutes {
       case req @ GET -> Root =>
         val q = req.params.getOrElse("q", "")
         for {
-          _ <- logger.ftrace(s"Listing aliases for ${token.account}")
+          _ <- logger.trace(s"Listing aliases for ${token.account}")
           list <- backend.alias.findAll(token.account.id, q).take(100).compile.toVector
           resp <- Ok(AliasList(list.map(convert).toList))
         } yield resp
@@ -50,7 +47,7 @@ object AliasRoutes {
       case req @ POST -> Root / Ident(id) =>
         for {
           in <- req.as[AliasChange]
-          _ <- logger.fdebug(s"Change alias $id to $in")
+          _ <- logger.debug(s"Change alias $id to $in")
           na <- RAlias.createNew[F](token.account.id, in.name, in.validity, in.enabled)
           data = OAlias.AliasInput(na, in.members)
           res <- backend.alias.modify(

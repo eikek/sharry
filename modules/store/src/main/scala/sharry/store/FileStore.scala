@@ -42,7 +42,7 @@ object FileStore {
   ): FileStore[F] = {
     val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
     val as = AttributeStore(xa)
-    val logger = Log4sLogger(org.log4s.getLogger)
+    val logger = SharryLogger(sharry.logging.getLogger[F])
     val bs = GenericJdbcStore[F](ds, logger, cfg, as)
     new Impl[F](bs, as, chunkSize)
   }
@@ -84,27 +84,27 @@ object FileStore {
         .map(_ => ())
   }
 
-  private object Log4sLogger {
+  private object SharryLogger {
 
-    def apply[F[_]: Sync](log: org.log4s.Logger): Logger[F] =
+    def apply[F[_]](log: sharry.logging.Logger[F]): Logger[F] =
       new Logger[F] {
         override def trace(msg: => String): F[Unit] =
-          Sync[F].delay(log.trace(msg))
+          log.trace(msg)
 
         override def debug(msg: => String): F[Unit] =
-          Sync[F].delay(log.debug(msg))
+          log.debug(msg)
 
         override def info(msg: => String): F[Unit] =
-          Sync[F].delay(log.info(msg))
+          log.info(msg)
 
         override def warn(msg: => String): F[Unit] =
-          Sync[F].delay(log.warn(msg))
+          log.warn(msg)
 
         override def error(msg: => String): F[Unit] =
-          Sync[F].delay(log.error(msg))
+          log.error(msg)
 
         override def error(ex: Throwable)(msg: => String): F[Unit] =
-          Sync[F].delay(log.error(ex)(msg))
+          log.error(ex)(msg)
       }
   }
 }

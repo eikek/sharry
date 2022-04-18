@@ -7,9 +7,7 @@ import cats.effect._
 import cats.implicits._
 
 import sharry.common._
-import sharry.common.syntax.all._
 
-import org.log4s.getLogger
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -18,8 +16,7 @@ final class CommandAuth[F[_]: Async](
     ops: AddAccount.AccountOps[F],
     runner: CommandAuth.RunCommand[F]
 ) {
-
-  private[this] val logger = getLogger
+  private[this] val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.command.enabled)(
@@ -33,14 +30,14 @@ final class CommandAuth[F[_]: Async](
                 )
 
             for {
-              _ <- logger.fdebug(s"CommandAuth: starting login $up")
+              _ <- logger.debug(s"CommandAuth: starting login $up")
               res <- runCommand(up, cfg.command)
               resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-              _ <- logger.fdebug(s"CommandAuth: $up => $resp")
+              _ <- logger.debug(s"CommandAuth: $up => $resp")
             } yield resp
 
           case Left(_) =>
-            logger.fdebug(s"CommandAuth: failed.") *>
+            logger.debug(s"CommandAuth: failed.") *>
               LoginResult.invalidAuth.pure[F]
         }
       )
@@ -67,15 +64,13 @@ object CommandAuth {
   }
 
   object RunCommand {
-    private[this] val logger = getLogger
-
     def apply[F[_]](f: (UserPassData, AuthConfig.Command) => F[Boolean]): RunCommand[F] =
-      new RunCommand[F] {
-        def exec(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] = f(up, cfg)
-      }
+      (up: UserPassData, cfg: AuthConfig.Command) => f(up, cfg)
 
     def systemProcess[F[_]: Sync]: RunCommand[F] =
       new RunCommand[F] {
+        private[this] val logger = sharry.logging.getLogger[F]
+
         def exec(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] =
           Sync[F].delay {
             val prg = cfg.program.map(s =>
