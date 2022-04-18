@@ -7,9 +7,6 @@ import cats.implicits._
 
 import sharry.backend.account.OAccount
 import sharry.common.Ident
-import sharry.common.syntax.all._
-
-import org.log4s._
 
 trait Login[F[_]] {
 
@@ -21,10 +18,10 @@ trait Login[F[_]] {
 }
 
 object Login {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](oacc: OAccount[F]): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
+      private[this] val logger = sharry.logging.getLogger[F]
 
       def loginSession(config: AuthConfig)(sessionKey: String): F[LoginResult] =
         AuthToken.fromString(sessionKey) match {
@@ -37,7 +34,7 @@ object Login {
         }
 
       def loginUserPass(config: AuthConfig)(up: UserPassData): F[LoginResult] =
-        logger.fdebug(s"Trying to login $up") *>
+        logger.debug(s"Trying to login $up") *>
           createLoginModule[F](config, oacc).run(up)
 
       def loginAlias(config: AuthConfig)(alias: String): F[LoginResult] =

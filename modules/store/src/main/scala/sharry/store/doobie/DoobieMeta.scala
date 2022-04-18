@@ -53,15 +53,15 @@ trait DoobieMeta {
 }
 
 object DoobieMeta extends DoobieMeta {
-  private val logger = org.log4s.getLogger
+  private[this] val logger = sharry.logging.unsafeLogger("DoobieMeta")
 
   object TraceLogging {
     implicit val handler =
       LogHandler {
         case e @ Success(_, _, _, _) =>
-          DoobieMeta.logger.trace("SQL success: " + e)
+          logger.trace("SQL success: " + e)
         case e =>
-          DoobieMeta.logger.trace(s"SQL failure: $e")
+          logger.trace(s"SQL failure: $e")
       }
   }
 
@@ -69,9 +69,9 @@ object DoobieMeta extends DoobieMeta {
     implicit val handler =
       LogHandler {
         case e @ Success(_, _, _, _) =>
-          DoobieMeta.logger.trace("SQL success: " + e)
+          logger.trace("SQL success: " + e)
         case e =>
-          DoobieMeta.logger.warn(s"SQL failure: $e")
+          logger.warn(s"SQL failure: $e")
       }
   }
 }

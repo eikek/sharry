@@ -6,7 +6,6 @@ import cats.implicits._
 import fs2.Stream
 
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.store.Store
 import sharry.store.doobie.DoobieMeta._
 import sharry.store.doobie._
@@ -14,10 +13,9 @@ import sharry.store.records._
 
 import doobie._
 import doobie.implicits._
-import org.log4s.getLogger
 
 object Queries {
-  private[this] val logger = getLogger
+  val logger = sharry.logging.getLogger[ConnectionIO]
 
   object FileChunkCols {
     val table = fr"filechunk"
@@ -227,8 +225,8 @@ object Queries {
         Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs))
       )
     ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC"
-    logger.trace(s"$frag")
-    frag.query[ShareItem].stream
+    logger.stream.trace(s"$frag").drain ++
+      frag.query[ShareItem].stream
   }
 
   def shareDetail(shareId: ShareId): OptionT[ConnectionIO, ShareDetail] = {
@@ -330,8 +328,8 @@ object Queries {
       from,
       Sql.and(pEnable.is(true), pUntil.isLt(point))
     )
-    logger.trace(s"$frag")
-    frag.query[(RShare, RAccount)].stream
+    logger.stream.trace(s"$frag").drain ++
+      frag.query[(RShare, RAccount)].stream
   }
 
   def findOrphanedFiles: Stream[ConnectionIO, Ident] = {
@@ -343,8 +341,8 @@ object Queries {
       RFileMeta.table ++ fr"m LEFT OUTER JOIN" ++ RShareFile.table ++ fr"f ON" ++ fFile
         .is(mId)
     val q = Sql.selectSimple(Seq(mId), from, fId.isNull)
-    logger.trace(s"findOrphaned: $q")
-    q.query[Ident].stream
+    logger.stream.trace(s"findOrphaned: $q").drain ++
+      q.query[Ident].stream
   }
 
   def deleteFile[F[_]: Async](store: Store[F])(fileMetaId: Ident) = {
@@ -388,6 +386,7 @@ object Queries {
   ): F[Unit] = {
     val rFileId = RShareFile.Columns.fileId
     val rShareId = RShareFile.Columns.shareId
+    val log = sharry.logging.getLogger[F]
 
     def allFileIds: F[Vector[Ident]] =
       store.transact(
@@ -398,12 +397,12 @@ object Queries {
       )
 
     def deleteAllFiles(ids: Vector[Ident]) =
-      ids.traverse(deleteFile(store)) *> logger.fdebug[F](
+      ids.traverse(deleteFile(store)) *> log.debug(
         s"All files of share ${share.id} deleted"
       )
 
     for {
-      _ <- logger.fdebug[F](s"Going to delete share: ${share.id}")
+      _ <- log.debug(s"Going to delete share: ${share.id}")
       fids <- allFileIds
       _ <- store.transact(RShare.delete(share))
       _ <-

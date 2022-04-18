@@ -5,9 +5,6 @@ import cats.implicits._
 
 import sharry.backend.account._
 import sharry.common._
-import sharry.common.syntax.all._
-
-import org.log4s._
 
 /** Provides authentication from the configuration.
   *
@@ -20,7 +17,7 @@ import org.log4s._
   */
 final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
-  private[this] val logger = getLogger
+  private[this] val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule { up =>
@@ -28,12 +25,12 @@ final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
         (None: Option[LoginResult]).pure[F]
       else if (up.pass == cfg.fixed.password)
         for {
-          _ <- logger.fdebug(s"Fixed auth: success for user ${cfg.fixed.user}")
+          _ <- logger.debug(s"Fixed auth: success for user ${cfg.fixed.user}")
           id <- addAccount(cfg.fixed)
           token <- AuthToken.user(id, cfg.serverSecret)
         } yield LoginResult.ok(token).some
       else
-        logger.fdebug("Fixed auth: failed.") *>
+        logger.debug("Fixed auth: failed.") *>
           Option(LoginResult.invalidAuth).pure[F]
     }
 

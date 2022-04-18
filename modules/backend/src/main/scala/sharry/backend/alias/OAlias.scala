@@ -7,14 +7,12 @@ import fs2.Stream
 
 import sharry.backend.alias.OAlias.{AliasDetail, AliasInput}
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.store.AddResult
 import sharry.store.Store
 import sharry.store.records.RAlias
 import sharry.store.records.RAliasMember
 
 import doobie._
-import org.log4s._
 
 trait OAlias[F[_]] {
 
@@ -32,7 +30,6 @@ trait OAlias[F[_]] {
 }
 
 object OAlias {
-  private[this] val logger = getLogger
 
   /** Details about an alias including a list of user-ids that make up its members. */
   case class AliasInput(alias: RAlias, members: List[Ident])
@@ -43,6 +40,8 @@ object OAlias {
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OAlias[F]] =
     Resource.pure[F, OAlias[F]](new OAlias[F] {
+      private[this] val logger = sharry.logging.getLogger[F]
+
       def create(detail: AliasInput): F[AddResult] =
         store.add(
           for {
@@ -72,7 +71,7 @@ object OAlias {
         } yield n + k
 
         for {
-          _ <- logger.fdebug(s"Modify alias '${aliasId.id}' to ${detail.alias}")
+          _ <- logger.debug(s"Modify alias '${aliasId.id}' to ${detail.alias}")
           n <- store.transact(doUpdate)
           res =
             if (n > 0) AddResult.Success

@@ -5,7 +5,6 @@ in
 {
   imports = sharry.modules;
 
-  console.keyMap = "neo";
   i18n = {
     defaultLocale = "en_US.UTF-8";
   };
@@ -57,6 +56,6 @@ in
     firewall.allowedTCPPorts = [ 9090 ];
   };
 
-  system.stateVersion = "20.03";
+  system.stateVersion = "21.11";
 
 }

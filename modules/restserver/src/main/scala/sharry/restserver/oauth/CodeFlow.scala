@@ -6,7 +6,7 @@ import cats.implicits._
 
 import sharry.backend.auth.AuthConfig
 import sharry.common.Ident
-import sharry.common.syntax.all._
+import sharry.logging.Logger
 
 import io.circe.Json
 import org.http4s.Method._
@@ -18,27 +18,24 @@ import org.http4s.client.middleware.RequestLogger
 import org.http4s.client.middleware.ResponseLogger
 import org.http4s.headers.Accept
 import org.http4s.headers.Authorization
-import org.log4s.getLogger
 
 object CodeFlow {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](
       client: Client[F]
   )(cfg: AuthConfig.OAuth, redirectUri: String, code: String): OptionT[F, Ident] = {
-
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sClientDsl[F] {}
-    val c = logRequests[F](logResponses[F](client))
+    val c = logRequestResponses[F](client, logger)
 
     for {
       _ <- OptionT.liftF(
-        logger.fdebug[F](
+        logger.debug(
           s"Obtaining access_token for provider ${cfg.id.id} and code $code"
         )
       )
       token <- codeToToken[F](c, dsl, cfg, redirectUri, code)
       _ <- OptionT.liftF(
-        logger.fdebug[F](
+        logger.debug(
           s"Obtaining user-info for provider ${cfg.id.id} and token $token"
         )
       )
@@ -54,7 +51,7 @@ object CodeFlow {
       code: String
   ): OptionT[F, String] = {
     import dsl._
-
+    val logger = sharry.logging.getLogger[F]
     val req = POST(
       UrlForm(
         "client_id" -> cfg.clientId,
@@ -71,10 +68,10 @@ object CodeFlow {
         val u1 = r.as[UrlForm].map(_.getFirst("access_token"))
         val u2 =
           r.as[Json].map(_.asObject.flatMap(_.apply("access_token")).flatMap(_.asString))
-        u1.recoverWith(_ => u2).flatTap(at => logger.finfo(s"Got token: $at"))
+        u1.recoverWith(_ => u2).flatTap(at => logger.info(s"Got token: $at"))
       case r =>
         logger
-          .ferror[F](s"Error obtaining access token '${r.status.code}' / ${r.as[String]}")
+          .error(s"Error obtaining access token '${r.status.code}' / ${r.as[String]}")
           .map(_ => None)
     })
   }
@@ -86,7 +83,7 @@ object CodeFlow {
       token: String
   ): OptionT[F, Ident] = {
     import dsl._
-
+    val logger = sharry.logging.getLogger[F]
     val req = GET(
       Uri.unsafeFromString(cfg.userUrl.asString),
       Authorization(Credentials.Token(AuthScheme.Bearer, token)),
@@ -96,14 +93,14 @@ object CodeFlow {
     val resp: F[Option[Ident]] = c.run(req).use {
       case Status.Successful(r) =>
         r.as[Json]
-          .flatTap(j => logger.ftrace(s"user structure: ${j.noSpaces}"))
+          .flatTap(j => logger.trace(s"user structure: ${j.noSpaces}"))
           .map(j => j.findAllByKey(cfg.userIdKey).find(_.isString).flatMap(_.asString))
           .map(_.map(normalizeUid))
-          .flatTap(uid => logger.finfo(s"Got user id: $uid"))
+          .flatTap(uid => logger.info(s"Got user id: $uid"))
       case r =>
         r.as[String]
           .flatMap(err =>
-            logger.ferror(s"Cannot obtain user info: ${r.status.code} / $err")
+            logger.error(s"Cannot obtain user info: ${r.status.code} / $err")
           )
           .map(_ => None)
 
@@ -115,18 +112,22 @@ object CodeFlow {
   private def normalizeUid(uid: String): Ident =
     Ident.unsafe(uid.filter(Ident.chars.contains))
 
-  private def logRequests[F[_]: Async](c: Client[F]): Client[F] =
-    RequestLogger(
+  private def logRequestResponses[F[_]: Async](
+      c: Client[F],
+      logger: Logger[F]
+  ): Client[F] = {
+    val lreq = RequestLogger(
       logHeaders = true,
       logBody = true,
-      logAction = Some((msg: String) => logger.ftrace[F](msg))
-    )(c)
+      logAction = Some((msg: String) => logger.trace(msg))
+    ) _
 
-  private def logResponses[F[_]: Async](c: Client[F]): Client[F] =
-    ResponseLogger(
+    val lres = ResponseLogger(
       logHeaders = true,
       logBody = true,
-      logAction = Some((msg: String) => logger.ftrace[F](msg))
-    )(c)
+      logAction = Some((msg: String) => logger.trace(msg))
+    ) _
 
+    (lreq.andThen(lres))(c)
+  }
 }

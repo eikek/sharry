@@ -1,6 +1,5 @@
 package sharry.backend.auth
 
-import java.net.HttpURLConnection
 import java.nio.charset.StandardCharsets
 
 import cats.data.Kleisli
@@ -8,9 +7,7 @@ import cats.effect._
 import cats.implicits._
 
 import sharry.common._
-import sharry.common.syntax.all._
 
-import org.log4s.getLogger
 import yamusca.implicits._
 import yamusca.imports._
 
@@ -20,7 +17,7 @@ final class HttpAuth[F[_]: Async](
     runner: HttpAuth.RunRequest[F]
 ) {
 
-  private[this] val logger = getLogger
+  private[this] val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.http.enabled)(
@@ -34,14 +31,14 @@ final class HttpAuth[F[_]: Async](
                 )
 
             for {
-              _ <- logger.fdebug(s"HttpAuth: starting login $up")
+              _ <- logger.debug(s"HttpAuth: starting login $up")
               res <- executeReq(up, cfg.http)
               resp <- if (res) okResult else LoginResult.invalidAuth.pure[F]
-              _ <- logger.fdebug(s"HttpAuth: $up => $resp")
+              _ <- logger.debug(s"HttpAuth: $up => $resp")
             } yield resp
 
           case Left(_) =>
-            logger.fdebug(s"HttpAuth: failed.") *>
+            logger.debug(s"HttpAuth: failed.") *>
               LoginResult.invalidAuth.pure[F]
         }
       )
@@ -68,14 +65,12 @@ object HttpAuth {
   }
 
   object RunRequest {
-    private[this] val logger = getLogger
 
     def apply[F[_]](f: (UserPassData, AuthConfig.Http) => F[Boolean]): RunRequest[F] =
-      new RunRequest[F] {
-        def exec(up: UserPassData, cfg: AuthConfig.Http): F[Boolean] = f(up, cfg)
-      }
+      (up: UserPassData, cfg: AuthConfig.Http) => f(up, cfg)
 
-    def javaConn[F[_]: Sync]: RunRequest[F] =
+    def javaConn[F[_]: Sync]: RunRequest[F] = {
+      val logger = sharry.logging.getLogger[F]
       apply { (up, cfg) =>
         val url =
           mustache
@@ -100,23 +95,24 @@ object HttpAuth {
                       logger.warn(s"Invalid mustache template for http body: $err")
                       cfg.body
                   }
-                  val outs = conn.getOutputStream()
+                  val outs = conn.getOutputStream
                   outs.write(body.getBytes(StandardCharsets.UTF_8))
                   outs.flush()
                   outs.close()
                 }
                 conn.connect()
 
-                val code = conn.asInstanceOf[HttpURLConnection].getResponseCode()
+                val code = conn.getResponseCode
                 code >= 200 && code <= 299
               }
             )
 
           case Left(err) =>
             logger
-              .fwarn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err")
+              .warn(s"Invalid url for http-basic-auth '${cfg.url.asString}': $err")
               .map(_ => false)
         }
       }
+    }
   }
 }

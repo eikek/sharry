@@ -2,6 +2,7 @@ package sharry.restserver.routes
 
 import cats.data.OptionT
 import cats.effect._
+import cats.syntax.all._
 
 import sharry.backend.BackendApp
 import sharry.backend.share._
@@ -14,10 +15,8 @@ import org.http4s._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
-import org.log4s.getLogger
 
 object ShareDetailResponse {
-  private[this] val logger = getLogger
 
   private def getBaseUrl[F[_]](cfg: Config, req: Request[F]): LenientUri =
     ClientRequestInfo.getBaseUrl(cfg, req)
@@ -31,6 +30,7 @@ object ShareDetailResponse {
       pass: Option[Password]
   ): F[Response[F]] = {
     import dsl._
+    val logger = sharry.logging.getLogger[F]
 
     val baseUri = shareId.fold(
       pub => getBaseUrl(cfg, req) / "api" / "v2" / "open" / "share" / pub.id.id / "file",
@@ -45,22 +45,21 @@ object ShareDetailResponse {
       resp <- OptionT.liftF(
         detail.fold(
           d => Ok(shareDetail(now, baseUri)(d)),
-          _ => {
-            logger.info(
-              s"Password challenge failure for share id ${shareId
-                  .fold(pub => pub.id.id, priv => priv.id.id)} from ip ${req.from.map(_.toUriString).getOrElse("Unknown ip")}"
-            )
-            Forbidden()
-          },
+          _ =>
+            logger
+              .info(
+                s"Password challenge failure for share id ${shareId
+                    .fold(pub => pub.id.id, priv => priv.id.id)} from ip ${req.from.map(_.toUriString).getOrElse("Unknown ip")}"
+              ) *> Forbidden(),
           _ => Unauthorized(authChallenge)
         )
       )
     } yield resp).getOrElseF {
-      logger.info(
-        s"No share with id ${shareId
-            .fold(pub => pub.id.id, priv => priv.id.id)}. Attempt by ip ${req.from.map(_.toUriString).getOrElse("Unknown ip")}"
-      )
-      NotFound()
+      logger
+        .info(
+          s"No share with id ${shareId
+              .fold(pub => pub.id.id, priv => priv.id.id)}. Attempt by ip ${req.from.map(_.toUriString).getOrElse("Unknown ip")}"
+        ) *> NotFound()
     }
   }
 

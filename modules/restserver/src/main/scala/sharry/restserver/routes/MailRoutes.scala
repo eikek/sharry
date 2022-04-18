@@ -9,7 +9,6 @@ import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.mail.{MailData, MailSendResult}
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.restapi.model.BasicResult
 import sharry.restapi.model.MailTemplate
 import sharry.restapi.model.SimpleMail
@@ -23,17 +22,15 @@ import org.http4s.Request
 import org.http4s.circe.CirceEntityDecoder._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
-import org.log4s.getLogger
 
 object MailRoutes {
-
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](
       backend: BackendApp[F],
       token: AuthToken,
       cfg: Config
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -65,7 +62,7 @@ object MailRoutes {
           mail <- EitherT.liftF(req.as[SimpleMail])
           rec <- EitherT.fromEither[F](parseAddress(mail))
           res <- EitherT.liftF[F, String, MailSendResult](send(rec, mail))
-          _ <- EitherT.liftF[F, String, Unit](logger.fdebug(s"Sending mail: $res"))
+          _ <- EitherT.liftF[F, String, Unit](logger.debug(s"Sending mail: $res"))
         } yield res
 
         res.foldF(

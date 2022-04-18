@@ -4,6 +4,7 @@ import cats.implicits._
 
 import sharry.common.SignupMode
 import sharry.common.pureconfig.Implicits._
+import sharry.logging.{Level, LogConfig}
 
 import _root_.pureconfig._
 import _root_.pureconfig.generic.auto._
@@ -47,5 +48,11 @@ object ConfigFile {
           mustache.parse(s).leftMap(err => s"Error parsing template at ${err._1.pos}")
         )
       )
+
+    implicit val logFormatReader: ConfigReader[LogConfig.Format] =
+      ConfigReader[String].emap(reason(LogConfig.Format.fromString))
+
+    implicit val logLevelReader: ConfigReader[Level] =
+      ConfigReader[String].emap(reason(Level.fromString))
   }
 }

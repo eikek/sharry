@@ -15,17 +15,26 @@ object Dependencies {
   val Http4sVersion = "0.23.11"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
-  val Log4sVersion = "1.10.0"
-  val LogbackVersion = "1.2.11"
   val MariaDbVersion = "3.0.4"
   val MUnitVersion = "0.7.29"
   val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.3.4"
   val PureConfigVersion = "0.17.1"
+  val ScribeVersion = "3.8.0"
+  val SourcecodeVersion = "0.2.8"
   val SwaggerVersion = "4.10.3"
   val TikaVersion = "2.3.0"
   val TusClientVersion = "1.8.0-1"
   val YamuscaVersion = "0.9.0"
+
+  val scribe = Seq(
+    "com.outr" %% "scribe" % ScribeVersion,
+    "com.outr" %% "scribe-slf4j" % ScribeVersion
+  )
+
+  val sourcecode = Seq(
+    "com.lihaoyi" %% "sourcecode" % SourcecodeVersion
+  )
 
   val fs2 = Seq(
     "co.fs2" %% "fs2-core" % Fs2Version
@@ -49,18 +58,12 @@ object Dependencies {
     "org.http4s" %% "http4s-blaze-client" % Http4sVersion
   )
 
+  val circeCore = Seq(
+    "io.circe" %% "circe-core" % CirceVersion
+  )
   val circe = Seq(
     "io.circe" %% "circe-generic" % CirceVersion,
     "io.circe" %% "circe-parser" % CirceVersion
-  )
-
-  // https://github.com/Log4s/log4s;ASL 2.0
-  val loggingApi = Seq(
-    "org.log4s" %% "log4s" % Log4sVersion
-  )
-
-  val logging = Seq(
-    "ch.qos.logback" % "logback-classic" % LogbackVersion % Runtime
   )
 
   // https://github.com/melrief/pureconfig

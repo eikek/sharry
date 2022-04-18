@@ -8,17 +8,14 @@ import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.share.{FileInfo, UploadResult}
 import sharry.common._
-import sharry.common.syntax.all._
 import sharry.restserver.Config
 
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
-import org.log4s.getLogger
 import org.typelevel.ci.CIString
 
 object TusRoutes {
-  private[this] val logger = getLogger
 
   def apply[F[_]: Async](
       shareId: Ident,
@@ -27,6 +24,7 @@ object TusRoutes {
       cfg: Config,
       rootUrl: LenientUri
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -86,7 +84,7 @@ object TusRoutes {
 
       case HEAD -> Root / Ident(fileId) =>
         (for {
-          _ <- OptionT.liftF(logger.fdebug(s"Return info for file ${fileId.id}"))
+          _ <- OptionT.liftF(logger.debug(s"Return info for file ${fileId.id}"))
           data <- backend.share.getFileData(fileId, token.account)
           resp <- OptionT.liftF(
             Ok().map(

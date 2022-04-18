@@ -7,14 +7,13 @@ import fs2.Stream
 
 import sharry.backend.PasswordCrypt
 import sharry.common._
-import sharry.common.syntax.all._
+import sharry.logging.Logger
 import sharry.store.AddResult
 import sharry.store.PermanentError
 import sharry.store.Store
 import sharry.store.records._
 
 import binny.{ByteRange, ChunkDef, Hint}
-import org.log4s.getLogger
 import scodec.bits.ByteVector
 
 trait OShare[F[_]] {
@@ -140,13 +139,12 @@ trait OShare[F[_]] {
 }
 
 object OShare {
-  private[this] val logger = getLogger
-
   def apply[F[_]: Async](
       store: Store[F],
       cfg: ShareConfig
   ): Resource[F, OShare[F]] =
     Resource.pure[F, OShare[F]](new OShare[F] {
+      private[this] val logger = sharry.logging.getLogger[F]
 
       def create(data: ShareData[F], accId: AccountId): F[UploadResult[Ident]] = {
         val createShare = for {
@@ -158,18 +156,18 @@ object OShare {
           )
           valid = UploadResult(share).checkValidity(cfg.maxValidity)(_.validity)
           _ <- valid.mapF(r => store.transact(RShare.insert(r)))
-          _ <- logger.fdebug(s"Result creating share for '${accId.id.id}': $valid")
+          _ <- logger.debug(s"Result creating share for '${accId.id.id}': $valid")
         } yield valid.map(_.id)
 
         val storeFiles = (id: Ident) =>
           data.files
-            .evalMap(createFile(store, id, cfg.maxSize))
+            .evalMap(createFile(store, id, cfg.maxSize, logger))
             .evalMap(ur =>
               ur.toOption match {
                 case Some(t) =>
-                  logger.fdebug(s"Successfully stored file ${t._2.filename}")
+                  logger.debug(s"Successfully stored file ${t._2.filename}")
                 case None =>
-                  logger.fwarn(s"Unable to store file: $ur")
+                  logger.warn(s"Unable to store file: $ur")
               }
             )
             .compile
@@ -197,13 +195,13 @@ object OShare {
       ): OptionT[F, UploadResult[Ident]] = {
         val storeFiles =
           files
-            .evalMap(createFile(store, shareId, cfg.maxSize))
+            .evalMap(createFile(store, shareId, cfg.maxSize, logger))
             .evalMap(ur =>
               ur.toOption match {
                 case Some(t) =>
-                  logger.fdebug(s"Successfully stored file ${t._2.filename}")
+                  logger.debug(s"Successfully stored file ${t._2.filename}")
                 case None =>
-                  logger.fwarn(s"Unable to store file: $ur")
+                  logger.warn(s"Unable to store file: $ur")
               }
             )
             .compile
@@ -234,7 +232,7 @@ object OShare {
           rf = RShareFile(sid, share, fid, info.name, now, ByteSize.zero)
           _ <- store.fileStore.insertMeta(fm)
           _ <- store.transact(RShareFile.insert(rf))
-          _ <- logger.fdebug(s"Created empty file: ${sid.id}")
+          _ <- logger.debug(s"Created empty file: ${sid.id}")
         } yield rf.id
 
         for {
@@ -263,7 +261,7 @@ object OShare {
             mimeHint: Hint,
             sizeLeft: ByteSize
         ): F[UploadResult[ByteSize]] =
-          logger.fdebug(s"Start storing request of size ${reqLen.toHuman}") *>
+          logger.debug(s"Start storing request of size ${reqLen.toHuman}") *>
             data
               .take(sizeLeft.bytes + 1)
               .chunkN(cfg.chunkSize.bytes.toInt)
@@ -304,7 +302,7 @@ object OShare {
         val deleteFile = store
           .transact(RShareFile.delete(fileId))
           .flatTap(_ =>
-            logger.fwarn("Deleting file due to max-size when uploading chunk!")
+            logger.warn("Deleting file due to max-size when uploading chunk!")
           )
           .map(_ => UploadResult.sizeExceeded[Long](cfg.maxSize))
           .map(_.map(ByteSize.apply))
@@ -390,7 +388,7 @@ object OShare {
           priv =>
             Queries
               .checkFile(file, priv.account)
-              .map(opt => opt.map(_ => (None: Option[Password])))
+              .map(opt => opt.map(_ => None: Option[Password]))
         )
 
         for {
@@ -406,7 +404,7 @@ object OShare {
           _ <- OptionT.liftF(store.transact(RShareFile.delete(file)))
           _ <- OptionT.liftF(
             Async[F].start(
-              Queries.deleteFile(store)(fd.metaId) *> logger.fdebug(
+              Queries.deleteFile(store)(fd.metaId) *> logger.debug(
                 s"File deleted: ${file.id}"
               )
             )
@@ -471,7 +469,7 @@ object OShare {
               .transact(Queries.findExpired(point))
               .evalMap { case (share, account) =>
                 logger
-                  .finfo(
+                  .info(
                     s"Cleaning up expired share '${share.name.getOrElse("")}' " +
                       s"owned by '${account.login.value.id}' (${share.id.id})"
                   ) *> Queries
@@ -489,7 +487,7 @@ object OShare {
             store
               .transact(Queries.findOrphanedFiles)
               .evalMap(id =>
-                logger.fdebug(s"Delete orphaned file '${id.id}'") *> Queries.deleteFile(
+                logger.debug(s"Delete orphaned file '${id.id}'") *> Queries.deleteFile(
                   store
                 )(id)
               )
@@ -539,14 +537,15 @@ object OShare {
   def createFile[F[_]: Sync](
       store: Store[F],
       shareId: Ident,
-      maxSize: ByteSize
+      maxSize: ByteSize,
+      logger: Logger[F]
   )(
       file: File[F]
   ): F[UploadResult[(RFileMeta, RShareFile)]] = {
 
     def deleteFile(fm: RFileMeta) =
       for {
-        _ <- logger.fdebug(s"Deleting too large (${fm.length}) file ${fm.id}")
+        _ <- logger.debug(s"Deleting too large (${fm.length}) file ${fm.id}")
         _ <- store.fileStore.delete(fm.id)
       } yield UploadResult.sizeExceeded[RFileMeta](maxSize)
 

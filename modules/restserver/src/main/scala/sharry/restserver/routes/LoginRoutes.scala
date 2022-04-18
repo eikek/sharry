@@ -19,16 +19,15 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
-import org.log4s._
 
 object LoginRoutes {
-  private[this] val logger = getLogger
 
   def login[F[_]: Async](
       S: BackendApp[F],
       client: Client[F],
       cfg: Config
   ): HttpRoutes[F] = {
+    val logger = sharry.logging.getLogger[F]
     val dsl: Http4sDsl[F] = new Http4sDsl[F] {}
     import dsl._
 
@@ -52,11 +51,10 @@ object LoginRoutes {
                 redirectUri(cfg, req, p).asString
               )
               .withQuery("response_type", "code")
-            logger.debug(s"Redirecting to OAuth provider ${p.id.id}: ${uri.asString}")
-            SeeOther().map(_.withHeaders(Location(Uri.unsafeFromString(uri.asString))))
+            logger.debug(s"Redirecting to OAuth provider ${p.id.id}: ${uri.asString}") *>
+              SeeOther().map(_.withHeaders(Location(Uri.unsafeFromString(uri.asString))))
           case None =>
-            logger.debug(s"No oauth provider found with id '$id'")
-            BadRequest()
+            logger.debug(s"No oauth provider found with id '$id'") *> BadRequest()
         }
 
       case req @ GET -> Root / "oauth" / id / "resume" =>
@@ -130,6 +128,8 @@ object LoginRoutes {
       accountName: String
   ): F[Response[F]] = {
     import dsl._
+    val logger = sharry.logging.getLogger[F]
+
     res match {
       case LoginResult.Ok(token) =>
         for {
@@ -152,8 +152,10 @@ object LoginRoutes {
       case _ =>
         logger.info(
           s"Authentication attempt failure for username $accountName from ip ${req.from.map(_.toInetAddress.getHostAddress).getOrElse("Unknown ip")}"
-        )
-        Ok(AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L))
+        ) *>
+          Ok(
+            AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L)
+          )
     }
   }
 

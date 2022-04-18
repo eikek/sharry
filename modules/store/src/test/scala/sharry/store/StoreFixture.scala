@@ -12,7 +12,6 @@ import sharry.store.doobie._
 
 import _root_.doobie._
 import org.h2.jdbcx.JdbcConnectionPool
-import org.log4s.getLogger
 import scodec.bits.ByteVector
 
 trait StoreFixture {
@@ -22,7 +21,7 @@ trait StoreFixture {
 }
 
 object StoreFixture {
-  private[this] val logger = getLogger
+  private[this] val logger = sharry.logging.unsafeLogger("StoreFixture")
 
   def makeStore[F[_]: Async]: Resource[F, Store[F]] = {
     def dataSource(jdbc: JdbcConfig): Resource[F, JdbcConnectionPool] = {
