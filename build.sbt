@@ -444,6 +444,6 @@ addCommandAlias("make-pkg", ";clean ;make ;make-zip ;make-deb")
 addCommandAlias("ci", "make; lint; test")
 addCommandAlias(
   "lint",
-  "scalafmtSbtCheck; scalafmtCheckAll; Compile/scalafix --check; Test/scalafix --check"
+  "scalafmtSbtCheck; scalafmtCheckAll; restapi/openapiLint; Compile/scalafix --check; Test/scalafix --check"
 )
 addCommandAlias("fix", "Compile/scalafix; Test/scalafix; scalafmtSbt; scalafmtAll")
