@@ -27,9 +27,9 @@ final class StoreImpl[F[_]: Async](jdbc: JdbcConfig, fs: FileStore[F], xa: Trans
       exist <- save.swap.traverse(ex => transact(exists).map(b => (ex, b)))
     } yield exist.swap match {
       case Right(_) => AddResult.Success
-      case Left((_, true)) =>
+      case Left(_, true) =>
         AddResult.EntityExists("Adding failed, because the entity already exists.")
-      case Left((ex, _)) => AddResult.Failure(ex)
+      case Left(ex, _) => AddResult.Failure(ex)
     }
 
   val fileStore: FileStore[F] = fs

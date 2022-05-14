@@ -96,8 +96,8 @@ object TemplateRoutes {
   def parseTemplate[F[_]: Sync](str: String): F[Template] =
     Sync[F].delay {
       mustache.parse(str) match {
-        case Right(t)       => t
-        case Left((_, err)) => sys.error(err)
+        case Right(t)     => t
+        case Left(_, err) => sys.error(err)
       }
     }
 
@@ -154,7 +154,7 @@ object TemplateRoutes {
   }
 
   private def memo[F[_]: Sync, A](fa: => F[A]): F[A] = {
-    val ref = new AtomicReference[A]()
+    val ref = new AtomicReference[A]
     Sync[F].defer {
       Option(ref.get) match {
         case Some(a) => a.pure[F]

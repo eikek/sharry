@@ -17,7 +17,7 @@ case class Config(
   def validate: List[String] = {
     val threshold = Duration.seconds(30)
     List(
-      if (backend.auth.sessionValid >= (webapp.authRenewal + threshold)) ""
+      if (backend.auth.sessionValid >= webapp.authRenewal + threshold) ""
       else
         s"session-valid time (${backend.auth.sessionValid}) must be " +
           s"at least 30s greater than webapp.auth-renewal (${webapp.authRenewal})",

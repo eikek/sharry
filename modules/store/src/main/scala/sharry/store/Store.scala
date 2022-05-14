@@ -32,7 +32,7 @@ object Store {
       runMigration: Boolean
   ): Resource[F, Store[F]] =
     for {
-      ds <- Resource.make(Async[F].delay(new HikariDataSource()))(s =>
+      ds <- Resource.make(Async[F].delay(new HikariDataSource))(s =>
         Async[F].delay(s.close())
       )
       _ <- Resource.pure {
