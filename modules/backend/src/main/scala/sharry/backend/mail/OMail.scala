@@ -158,7 +158,7 @@ object OMail {
 
         val res = for {
           recs <- recipients
-          from <- (sender: EitherT[F, MailSendResult, MailAddress])
+          from <- sender: EitherT[F, MailSendResult, MailAddress]
         } yield createMail(recs, from)
 
         if (!cfg.enabled) MailSendResult.featureDisabled.pure[F]
