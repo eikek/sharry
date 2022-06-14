@@ -128,6 +128,6 @@ object CodeFlow {
       logAction = Some((msg: String) => logger.trace(msg))
     ) _
 
-    (lreq.andThen(lres))(c)
+    lreq.andThen(lres)(c)
   }
 }
