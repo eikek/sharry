@@ -5,7 +5,7 @@ import cats.effect._
 import sharry.backend.BackendApp
 import sharry.backend.share._
 import sharry.common._
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 import sharry.restserver.routes.headers.SharryPassword
 
 import org.http4s._

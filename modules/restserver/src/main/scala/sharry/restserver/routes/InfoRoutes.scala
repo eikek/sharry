@@ -3,7 +3,8 @@ package sharry.restserver.routes
 import cats.effect._
 
 import sharry.restapi.model._
-import sharry.restserver.{BuildInfo, Config}
+import sharry.restserver.BuildInfo
+import sharry.restserver.config.Config
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder._

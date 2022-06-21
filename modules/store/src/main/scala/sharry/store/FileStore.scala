@@ -13,7 +13,9 @@ import sharry.store.records.RFileMeta
 
 import _root_.doobie._
 import binny._
+import binny.fs.{FsChunkedBinaryStore, FsChunkedStoreConfig}
 import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
+import binny.minio.{MinioChunkedBinaryStore, MinioConfig, S3KeyMapping}
 import binny.tika.TikaContentTypeDetect
 import binny.util.Logger
 
@@ -35,7 +37,25 @@ trait FileStore[F[_]] {
 }
 
 object FileStore {
-  def apply[F[_]: Sync](
+
+  def apply[F[_]: Async](
+      ds: DataSource,
+      xa: Transactor[F],
+      chunkSize: Int,
+      config: FileStoreConfig
+  ): FileStore[F] =
+    config match {
+      case FileStoreConfig.DefaultDatabase(_) =>
+        forDatabase(ds, xa, chunkSize)
+
+      case c: FileStoreConfig.S3 =>
+        forS3(xa, c, chunkSize)
+
+      case c: FileStoreConfig.FileSystem =>
+        forFs(xa, c, chunkSize)
+    }
+
+  def forDatabase[F[_]: Async](
       ds: DataSource,
       xa: Transactor[F],
       chunkSize: Int
@@ -44,6 +64,41 @@ object FileStore {
     val as = AttributeStore(xa)
     val logger = SharryLogger(sharry.logging.getLogger[F])
     val bs = GenericJdbcStore[F](ds, logger, cfg, as)
+    new Impl[F](bs, as, chunkSize)
+  }
+
+  def forFs[F[_]: Async](
+      xa: Transactor[F],
+      fsCfg: FileStoreConfig.FileSystem,
+      chunkSize: Int
+  ): FileStore[F] = {
+    val as = AttributeStore(xa)
+    val logger = SharryLogger(sharry.logging.getLogger[F])
+    val cfg = FsChunkedStoreConfig
+      .defaults(fsCfg.directory)
+      .copy(chunkSize = chunkSize)
+      .withContentTypeDetect(TikaContentTypeDetect.default)
+    val bs = FsChunkedBinaryStore(cfg, logger, as)
+    new Impl[F](bs, as, chunkSize)
+  }
+
+  def forS3[F[_]: Async](
+      xa: Transactor[F],
+      s3: FileStoreConfig.S3,
+      chunkSize: Int
+  ): FileStore[F] = {
+    val as = AttributeStore(xa)
+    val logger = SharryLogger(sharry.logging.getLogger[F])
+    val cfg = MinioConfig
+      .default(
+        s3.endpoint,
+        s3.accessKey,
+        s3.secretKey,
+        S3KeyMapping.constant(s3.bucket)
+      )
+      .copy(chunkSize = chunkSize)
+      .withContentTypeDetect(TikaContentTypeDetect.default)
+    val bs = MinioChunkedBinaryStore(cfg, as, logger)
     new Impl[F](bs, as, chunkSize)
   }
 
@@ -80,8 +135,10 @@ object FileStore {
         chunkDef: ChunkDef,
         data: Chunk[Byte]
     ): F[Unit] =
-      bs.insertChunk(BinaryId(id.id), chunkDef, hint, data.toByteVector)
-        .map(_ => ())
+      bs.insertChunk(BinaryId(id.id), chunkDef, hint, data.toByteVector).flatMap {
+        case _: InsertChunkResult.Success => ().pure[F]
+        case fail => Sync[F].raiseError(new Exception(s"Inserting chunk failed: $fail"))
+      }
   }
 
   private object SharryLogger {

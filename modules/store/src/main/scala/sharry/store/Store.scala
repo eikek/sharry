@@ -28,6 +28,7 @@ object Store {
   def create[F[_]: Async](
       jdbc: JdbcConfig,
       chunkSize: ByteSize,
+      fileStoreCfg: FileStoreConfig,
       connectEC: ExecutionContext,
       runMigration: Boolean
   ): Resource[F, Store[F]] =
@@ -42,7 +43,7 @@ object Store {
         ds.setDriverClassName(jdbc.driverClass)
       }
       xa <- Resource.pure(HikariTransactor[F](ds, connectEC))
-      fs = FileStore[F](ds, xa, chunkSize.bytes.toInt)
+      fs = FileStore[F](ds, xa, chunkSize.bytes.toInt, fileStoreCfg)
       st = new StoreImpl[F](jdbc, fs, xa)
       _ <- if (runMigration) Resource.eval(st.migrate) else Resource.pure[F, Int](0)
     } yield st: Store[F]

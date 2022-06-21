@@ -1,28 +1,25 @@
-package sharry.restserver
+package sharry.restserver.config
 
-import cats.implicits._
-
-import sharry.common.SignupMode
-import sharry.common.pureconfig.Implicits._
+import sharry.common.config.Implicits._
 import sharry.logging.{Level, LogConfig}
+import sharry.store.{FileStoreConfig, FileStoreType}
 
-import _root_.pureconfig._
-import _root_.pureconfig.generic.auto._
 import emil.MailAddress
 import emil.SSLType
 import emil.javamail.syntax._
-import yamusca.imports._
+import pureconfig._
+import pureconfig.generic.auto._
+import pureconfig.generic.{CoproductHint, FieldCoproductHint}
+import yamusca.imports.{Template, mustache}
 
 object ConfigFile {
+
   import Implicits._
 
   def loadConfig: Config =
     ConfigSource.default.at("sharry.restserver").loadOrThrow[Config].validOrThrow
 
   object Implicits {
-    implicit val signupModeReader: ConfigReader[SignupMode] =
-      ConfigReader[String].emap(reason(SignupMode.fromString))
-
     implicit val mailAddressReader: ConfigReader[Option[MailAddress]] =
       ConfigReader[String].emap(
         reason(s =>
@@ -45,7 +42,7 @@ object ConfigFile {
     implicit val templateReader: ConfigReader[Template] =
       ConfigReader[String].emap(
         reason(s =>
-          mustache.parse(s).leftMap(err => s"Error parsing template at ${err._1.pos}")
+          mustache.parse(s).left.map(err => s"Error parsing template at ${err._1.pos}")
         )
       )
 
@@ -54,5 +51,16 @@ object ConfigFile {
 
     implicit val logLevelReader: ConfigReader[Level] =
       ConfigReader[String].emap(reason(Level.fromString))
+
+    implicit val fileStoreTypeReader: ConfigReader[FileStoreType] =
+      ConfigReader[String].emap(reason(FileStoreType.fromString))
+
+    // the value "s-3" looks strange, this is to allow to write "s3" in the config
+    implicit val fileStoreCoproductHint: CoproductHint[FileStoreConfig] =
+      new FieldCoproductHint[FileStoreConfig]("type") {
+        override def fieldValue(name: String) =
+          if (name.equalsIgnoreCase("S3")) "s3"
+          else super.fieldValue(name)
+      }
   }
 }

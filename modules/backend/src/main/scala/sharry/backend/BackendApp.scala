@@ -7,6 +7,7 @@ import cats.effect._
 import sharry.backend.account._
 import sharry.backend.alias.OAlias
 import sharry.backend.auth.Login
+import sharry.backend.config.Config
 import sharry.backend.job.PeriodicCleanup
 import sharry.backend.mail.OMail
 import sharry.backend.share.OShare
@@ -54,7 +55,13 @@ object BackendApp {
       connectEC: ExecutionContext
   ): Resource[F, BackendApp[F]] =
     for {
-      store <- Store.create(cfg.jdbc, cfg.share.chunkSize, connectEC, true)
+      store <- Store.create(
+        cfg.jdbc,
+        cfg.share.chunkSize,
+        cfg.files.defaultStoreConfig,
+        connectEC,
+        true
+      )
       backend <- create(cfg, store)
       _ <-
         PeriodicCleanup.resource(cfg.cleanup, cfg.signup, backend.share, backend.signup)

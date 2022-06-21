@@ -1,4 +1,6 @@
-package sharry.backend
+package sharry.backend.config
+
+import cats.data.ValidatedNec
 
 import sharry.backend.auth.AuthConfig
 import sharry.backend.job.CleanupConfig
@@ -13,7 +15,11 @@ case class Config(
     auth: AuthConfig,
     share: ShareConfig,
     cleanup: CleanupConfig,
-    mail: MailConfig
-)
+    mail: MailConfig,
+    files: Files
+) {
 
-object Config {}
+  def validate: ValidatedNec[String, Config] =
+    files.validate.map(fc => copy(files = fc))
+
+}

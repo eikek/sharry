@@ -8,9 +8,10 @@ import cats.implicits._
 import fs2._
 
 import sharry.restapi.model.AppConfig
+import sharry.restserver.BuildInfo
+import sharry.restserver.config.Config
 import sharry.restserver.routes.InfoRoutes
 import sharry.restserver.webapp.YamuscaConverter._
-import sharry.restserver.{BuildInfo, Config}
 
 import _root_.io.circe.syntax._
 import org.http4s.HttpRoutes

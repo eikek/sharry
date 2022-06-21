@@ -6,6 +6,7 @@ import cats.effect._
 
 import sharry.common._
 import sharry.logging.impl.ScribeConfigure
+import sharry.restserver.config.ConfigFile
 
 object Main extends IOApp {
   private[this] val logger = sharry.logging.getLogger[IO]
@@ -46,10 +47,12 @@ object Main extends IOApp {
         BuildInfo.gitHeadCommit,
         cfg.backend.jdbc.url,
         Option(System.getProperty("config.file")),
-        cfg.baseUrl
+        cfg.baseUrl,
+        cfg.backend.files.defaultStoreConfig.toString
       )
 
       _ <- logger.info(s"\n${banner.render("***>")}")
+      _ <- logger.info(s"\n${cfg.backend.files.stores}\n")
 
       pools = connectEC.map(Pools.apply)
       _ <-

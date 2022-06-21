@@ -7,7 +7,7 @@ import sharry.backend.BackendApp
 import sharry.backend.signup.OSignup.RegisterData
 import sharry.backend.signup.{NewInviteResult, SignupResult}
 import sharry.restapi.model._
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityDecoder._

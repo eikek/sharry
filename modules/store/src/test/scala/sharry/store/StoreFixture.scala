@@ -50,7 +50,7 @@ object StoreFixture {
       ds <- dataSource(jdbc)
       connectEC <- ExecutionContexts.cachedThreadPool[F]
       tx = Transactor.fromDataSource[F](ds, connectEC)
-      fs = FileStore[F](ds, tx, 64 * 1024)
+      fs = FileStore[F](ds, tx, 64 * 1024, FileStoreConfig.DefaultDatabase(true))
       st = new StoreImpl[F](jdbc, fs, tx)
       _ <- Resource.eval(st.migrate)
     } yield st

@@ -1,6 +1,6 @@
-package sharry.restserver
+package sharry.restserver.config
 
-import sharry.backend.{Config => BackendConfig}
+import sharry.backend.config.{Config => BackendConfig}
 import sharry.common._
 import sharry.logging.LogConfig
 

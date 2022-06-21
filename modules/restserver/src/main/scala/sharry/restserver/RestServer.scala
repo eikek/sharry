@@ -11,6 +11,7 @@ import fs2.Stream
 import sharry.backend.auth.AuthToken
 import sharry.common.LenientUri
 import sharry.logging.Logger
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.EnvMiddleware
 import sharry.restserver.routes._
 import sharry.restserver.webapp._
