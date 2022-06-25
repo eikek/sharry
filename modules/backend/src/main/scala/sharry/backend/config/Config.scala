@@ -2,6 +2,7 @@ package sharry.backend.config
 
 import cats.data.ValidatedNec
 import cats.syntax.all._
+
 import sharry.backend.auth.AuthConfig
 import sharry.backend.job.CleanupConfig
 import sharry.backend.mail.MailConfig
@@ -16,7 +17,7 @@ case class Config(
     share: ShareConfig,
     cleanup: CleanupConfig,
     mail: MailConfig,
-    files: Files,
+    files: FilesConfig,
     computeChecksum: ComputeChecksumConfig
 ) {
 

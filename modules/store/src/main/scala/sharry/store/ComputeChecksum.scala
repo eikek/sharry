@@ -1,13 +1,15 @@
 package sharry.store
 
-import binny._
-import binny.util.Stopwatch
 import cats.effect._
 import cats.effect.std.Queue
 import cats.syntax.all._
 import fs2.{Pipe, Stream}
+
 import sharry.common.{ByteSize, Ident, Timestamp}
 import sharry.store.records.RFileMeta
+
+import binny._
+import binny.util.Stopwatch
 
 trait ComputeChecksum[F[_]] {
 

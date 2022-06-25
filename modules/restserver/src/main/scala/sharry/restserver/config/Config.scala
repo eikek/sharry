@@ -2,6 +2,7 @@ package sharry.restserver.config
 
 import cats.data.{Validated, ValidatedNec}
 import cats.syntax.all._
+
 import sharry.backend.config.{Config => BackendConfig}
 import sharry.common._
 import sharry.logging.LogConfig

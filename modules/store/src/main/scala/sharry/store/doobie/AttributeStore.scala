@@ -3,8 +3,10 @@ package sharry.store.doobie
 import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
+
 import sharry.common._
 import sharry.store.records.RFileMeta
+
 import binny._
 import doobie._
 import doobie.implicits._

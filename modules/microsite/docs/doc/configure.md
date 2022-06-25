@@ -138,6 +138,93 @@ The following steps must be done manually:
 Then add the above setting into your config file. Test files can be
 found [here](https://www.eicar.org/?page_id=3950).
 
+### Files
+
+By default, the files are also stored in the configured database. This
+works quite well, but you can also choose to store the files somewhere
+else: either in the local filesystem or in an S3 compatible object
+storage.
+
+This is configured in the `files` section:
+
+```
+    # How files are stored.
+    files {
+      # The id of an enabled store from the `stores` array that should
+      # be used.
+      default-store = "database"
+
+      # A list of possible file stores. Each entry must have a unique
+      # id. The `type` is one of: default-database, filesystem, s3.
+      #
+      # All stores with enabled=false are
+      # removed from the list. The `default-store` must be enabled.
+      stores = {
+        database =
+          { enabled = true
+            type = "default-database"
+          }
+
+        filesystem =
+          { enabled = false
+            type = "file-system"
+            directory = "/some/directory"
+          }
+
+        minio =
+          { enabled = false
+            type = "s3"
+            endpoint = "http://localhost:9000"
+            access-key = "username"
+            secret-key = "password"
+            bucket = "sharry"
+          }
+      }
+      ...
+    }
+
+```
+
+This config section requires to define a file store in `stores` and
+then reference the key in `default-store`. Within `stores` you can
+define what kind of storage to use via the `type` attribute. This can
+be one of: `s3`, `file-system` or `default-database`. Depending on
+`type` more information is required. For example, the filesystem needs
+the base directory to use, or the above example for
+[Minio](https://min.io) requires credentials and a bucket.
+
+#### Changing file stores
+
+The last part in the `files` section looks like this:
+
+```
+ # Allows to copy files from one store to the other *before* sharry
+ # will be available. It is recommended to set the `enabled` flag to
+ # false afterwards and restart sharry.
+ #
+ # Files are only copied, they are *not* removed from the source
+ # store.
+ copy-files = {
+   enable = false
+
+   # A key in the `backend.files` config identifying the store to
+   # copy from.
+   source = "database"
+
+   # A key in the `backend.files` config identifying the store to
+   # copy the files to.
+   target = "minio"
+
+   # How many files to copy in parallel.
+   parallel = 2
+ }
+```
+
+This allows you to have Sharry copy all files from one store to the
+other on startup. So to change from `database` to `minio` as in the
+example, set `enabled` to `true` and change the `default-store` to
+`minio` (the target store). When starting up sharry it will first copy
+all files to the `minio` store before it is available.
 
 ### Bind
 
