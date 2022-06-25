@@ -48,7 +48,6 @@ object RFileMeta {
         table,
         Columns.id.is(r.id),
         Sql.commas(
-          Columns.created.setTo(r.created),
           Columns.checksum.setTo(r.checksum),
           Columns.mimetype.setTo(r.mimetype),
           Columns.length.setTo(r.length)
@@ -70,6 +69,9 @@ object RFileMeta {
 
   def updateCreated(id: Ident, created: Timestamp): ConnectionIO[Int] =
     Sql.updateRow(table, Columns.id.is(id), Columns.created.setTo(created)).update.run
+
+  def updateChecksum(id: Ident, checksum: ByteVector): ConnectionIO[Int] =
+    Sql.updateRow(table, Columns.id.is(id), Columns.checksum.setTo(checksum)).update.run
 
   def delete(id: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, Columns.id.is(id)).update.run

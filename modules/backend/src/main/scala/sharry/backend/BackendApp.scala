@@ -58,6 +58,7 @@ object BackendApp {
       store <- Store.create(
         cfg.jdbc,
         cfg.share.chunkSize,
+        cfg.computeChecksum,
         cfg.files.defaultStoreConfig,
         connectEC,
         true

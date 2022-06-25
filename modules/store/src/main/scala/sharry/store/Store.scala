@@ -1,15 +1,13 @@
 package sharry.store
 
 import scala.concurrent.ExecutionContext
-
 import cats.effect._
 import fs2._
-
 import sharry.common.ByteSize
 import sharry.store.doobie.StoreImpl
-
 import _root_.doobie._
 import _root_.doobie.hikari.HikariTransactor
+import binny.AttributeName
 import com.zaxxer.hikari.HikariDataSource
 
 trait Store[F[_]] {
@@ -28,6 +26,7 @@ object Store {
   def create[F[_]: Async](
       jdbc: JdbcConfig,
       chunkSize: ByteSize,
+      computeChecksumConfig: ComputeChecksumConfig,
       fileStoreCfg: FileStoreConfig,
       connectEC: ExecutionContext,
       runMigration: Boolean
@@ -43,7 +42,17 @@ object Store {
         ds.setDriverClassName(jdbc.driverClass)
       }
       xa <- Resource.pure(HikariTransactor[F](ds, connectEC))
-      fs = FileStore[F](ds, xa, chunkSize.bytes.toInt, fileStoreCfg)
+      fs <- Resource.eval(
+        FileStore[F](ds, xa, chunkSize.bytes.toInt, computeChecksumConfig, fileStoreCfg)
+      )
+      _ <- Async[F].background(
+        fs.computeAttributes
+          .consumeAll(AttributeName.all)
+          .evalMap(fs.updateChecksum)
+          .compile
+          .drain
+      )
+
       st = new StoreImpl[F](jdbc, fs, xa)
       _ <- if (runMigration) Resource.eval(st.migrate) else Resource.pure[F, Int](0)
     } yield st: Store[F]

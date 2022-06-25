@@ -33,7 +33,11 @@ trait FileStore[F[_]] {
 
   def insertMeta(meta: RFileMeta): F[Unit]
 
+  def updateChecksum(meta: RFileMeta): F[Unit]
+
   def addChunk(id: Ident, hint: Hint, chunkDef: ChunkDef, data: Chunk[Byte]): F[Unit]
+
+  def computeAttributes: ComputeChecksum[F]
 }
 
 object FileStore {
@@ -42,51 +46,59 @@ object FileStore {
       ds: DataSource,
       xa: Transactor[F],
       chunkSize: Int,
+      computeChecksumConfig: ComputeChecksumConfig,
       config: FileStoreConfig
-  ): FileStore[F] =
+  ): F[FileStore[F]] =
     config match {
       case FileStoreConfig.DefaultDatabase(_) =>
-        forDatabase(ds, xa, chunkSize)
+        forDatabase(ds, xa, chunkSize, computeChecksumConfig)
 
       case c: FileStoreConfig.S3 =>
-        forS3(xa, c, chunkSize)
+        forS3(xa, c, chunkSize, computeChecksumConfig)
 
       case c: FileStoreConfig.FileSystem =>
-        forFs(xa, c, chunkSize)
+        forFs(xa, c, chunkSize, computeChecksumConfig)
     }
 
   def forDatabase[F[_]: Async](
       ds: DataSource,
       xa: Transactor[F],
-      chunkSize: Int
-  ): FileStore[F] = {
+      chunkSize: Int,
+      computeChecksumConfig: ComputeChecksumConfig
+  ): F[FileStore[F]] = {
     val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
     val as = AttributeStore(xa)
     val logger = SharryLogger(sharry.logging.getLogger[F])
-    val bs = GenericJdbcStore[F](ds, logger, cfg, as)
-    new Impl[F](bs, as, chunkSize)
+    val bs = GenericJdbcStore[F](ds, logger, cfg)
+    ComputeChecksum[F](bs, computeChecksumConfig).map(cc =>
+      new Impl[F](bs, as, chunkSize, cc)
+    )
   }
 
   def forFs[F[_]: Async](
       xa: Transactor[F],
       fsCfg: FileStoreConfig.FileSystem,
-      chunkSize: Int
-  ): FileStore[F] = {
+      chunkSize: Int,
+      computeChecksumConfig: ComputeChecksumConfig
+  ): F[FileStore[F]] = {
     val as = AttributeStore(xa)
     val logger = SharryLogger(sharry.logging.getLogger[F])
     val cfg = FsChunkedStoreConfig
       .defaults(fsCfg.directory)
       .copy(chunkSize = chunkSize)
       .withContentTypeDetect(TikaContentTypeDetect.default)
-    val bs = FsChunkedBinaryStore(cfg, logger, as)
-    new Impl[F](bs, as, chunkSize)
+    val bs = FsChunkedBinaryStore(logger, cfg)
+    ComputeChecksum[F](bs, computeChecksumConfig).map(cc =>
+      new Impl[F](bs, as, chunkSize, cc)
+    )
   }
 
   def forS3[F[_]: Async](
       xa: Transactor[F],
       s3: FileStoreConfig.S3,
-      chunkSize: Int
-  ): FileStore[F] = {
+      chunkSize: Int,
+      computeChecksumConfig: ComputeChecksumConfig
+  ): F[FileStore[F]] = {
     val as = AttributeStore(xa)
     val logger = SharryLogger(sharry.logging.getLogger[F])
     val cfg = MinioConfig
@@ -98,14 +110,17 @@ object FileStore {
       )
       .copy(chunkSize = chunkSize)
       .withContentTypeDetect(TikaContentTypeDetect.default)
-    val bs = MinioChunkedBinaryStore(cfg, as, logger)
-    new Impl[F](bs, as, chunkSize)
+    val bs = MinioChunkedBinaryStore(cfg, logger)
+    ComputeChecksum[F](bs, computeChecksumConfig).map(cc =>
+      new Impl[F](bs, as, chunkSize, cc)
+    )
   }
 
   final private class Impl[F[_]: Sync](
       bs: ChunkedBinaryStore[F],
       attrStore: AttributeStore[F],
-      val chunkSize: Int
+      val chunkSize: Int,
+      val computeAttributes: ComputeChecksum[F]
   ) extends FileStore[F] {
 
     def delete(id: Ident): F[Unit] =
@@ -119,15 +134,21 @@ object FileStore {
 
     def insert(data: Binary[F], hint: Hint, created: Timestamp): F[RFileMeta] =
       data
-        .through(bs.insert(hint))
-        .evalTap(id => attrStore.updateCreated(id, created))
-        .evalMap(id => attrStore.findMeta(id).value)
-        .unNoneTerminate
+        .through(bs.insert)
+        .evalMap { id =>
+          computeAttributes.submit(id, hint) *>
+            computeAttributes
+              .computeSync(id, hint, AttributeName.excludeSha256)
+              .flatTap(insertMeta)
+        }
         .compile
         .lastOrError
 
     def insertMeta(meta: RFileMeta): F[Unit] =
       attrStore.saveMeta(meta)
+
+    def updateChecksum(meta: RFileMeta): F[Unit] =
+      attrStore.updateChecksum(meta.id, meta.checksum)
 
     def addChunk(
         id: Ident,
@@ -136,8 +157,14 @@ object FileStore {
         data: Chunk[Byte]
     ): F[Unit] =
       bs.insertChunk(BinaryId(id.id), chunkDef, hint, data.toByteVector).flatMap {
-        case _: InsertChunkResult.Success => ().pure[F]
-        case fail => Sync[F].raiseError(new Exception(s"Inserting chunk failed: $fail"))
+        case InsertChunkResult.Complete =>
+          computeAttributes.submit(BinaryId(id.id), hint) *>
+            computeAttributes
+              .computeSync(BinaryId(id.id), hint, AttributeName.excludeSha256)
+              .flatMap(insertMeta)
+        case InsertChunkResult.Incomplete => ().pure[F]
+        case fail: InsertChunkResult.Failure =>
+          Sync[F].raiseError(new Exception(s"Inserting chunk failed: $fail"))
       }
   }
 
