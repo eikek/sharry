@@ -16,11 +16,7 @@ trait TestLoggingConfig extends Suite {
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    val docspellLogger = scribe.Logger("docspell")
-    ScribeConfigure.unsafeConfigure(docspellLogger, docspellLogConfig)
-    val rootCfg = docspellLogConfig.copy(minimumLevel = rootMinimumLevel)
-    ScribeConfigure.unsafeConfigure(scribe.Logger.root, rootCfg)
-    ()
+    ScribeConfigure.unsafeConfigure(docspellLogConfig)
   }
 
 }

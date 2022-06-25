@@ -10,9 +10,24 @@ import cats.data.NonEmptyList
 
 import io.circe.{Decoder, Encoder}
 
-final case class LogConfig(minimumLevel: Level, format: LogConfig.Format) {}
+final case class LogConfig(
+    minimumLevel: Level,
+    format: LogConfig.Format,
+    levels: LogConfig.ExtraLevels
+) {
+
+  def clearLevels: LogConfig =
+    copy(levels = Map.empty)
+
+  def withLevel(logger: String, level: Level): LogConfig =
+    copy(levels = levels.updated(logger, level))
+
+  def sharryLevel(level: Level): LogConfig =
+    withLevel("sharry", level)
+}
 
 object LogConfig {
+  type ExtraLevels = Map[String, Level]
 
   sealed trait Format { self: Product =>
     def name: String =
@@ -38,8 +53,10 @@ object LogConfig {
   }
 
   implicit val jsonDecoder: Decoder[LogConfig] =
-    Decoder.forProduct2("minimumLevel", "format")(LogConfig.apply)
+    Decoder.forProduct3("minimumLevel", "format", "levels")(LogConfig.apply)
 
   implicit val jsonEncoder: Encoder[LogConfig] =
-    Encoder.forProduct2("minimumLevel", "format")(r => (r.minimumLevel, r.format))
+    Encoder.forProduct3("minimumLevel", "format", "levels")(r =>
+      (r.minimumLevel, r.format, r.levels)
+    )
 }

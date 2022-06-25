@@ -550,9 +550,9 @@ cleans up the following resources:
 
 ## Logging
 
-By default, sharry logs to stdout. This works well, when managed by
-systemd or other inits. Logging can be configured with two settings in
-the config file:
+Sharry logs to stdout. This works well, when managed by systemd or
+similar tools. Logging can be configured with these settings in the
+config file:
 
 - `logging.minimum-level` specifies the log level to control the
   verbosity. Levels are ordered from: *Trace*, *Debug*, *Info*, *Warn*
@@ -561,3 +561,8 @@ the config file:
   two formats for humans: *Plain* and *Fancy*. And two more suited for
   machine consumption: *Json* and *Logfmt*. The *Json* format contains
   all details, while the others may omit some for readability
+- `levels` optional _logger name_ to _level_ mappings to override the
+  log level for specific loggers. If not mentioned here, everything is
+  logged with `minimum-level`.
+
+The default sets some selected loggers to info and the others to warn.
