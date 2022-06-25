@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import cats.implicits._
 
 import sharry.common._
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 
 import org.http4s._
 import org.http4s.headers._

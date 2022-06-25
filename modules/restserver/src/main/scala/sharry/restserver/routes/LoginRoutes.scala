@@ -10,6 +10,7 @@ import sharry.backend.auth._
 import sharry.common._
 import sharry.restapi.model._
 import sharry.restserver._
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 import sharry.restserver.oauth.CodeFlow
 

@@ -11,7 +11,7 @@ import sharry.backend.share.{File, ShareData}
 import sharry.common._
 import sharry.common.syntax.all._
 import sharry.restapi.model._
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 import sharry.restserver.routes.tus.TusRoutes
 

@@ -8,7 +8,7 @@ import sharry.backend.BackendApp
 import sharry.backend.share._
 import sharry.common._
 import sharry.restapi.model.{ShareDetail => ShareDetailDto, _}
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 
 import org.http4s._

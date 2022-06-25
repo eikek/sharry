@@ -8,7 +8,7 @@ import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.share.{FileInfo, UploadResult}
 import sharry.common._
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 
 import org.http4s._
 import org.http4s.dsl.Http4sDsl

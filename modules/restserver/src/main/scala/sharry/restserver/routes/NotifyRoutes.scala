@@ -8,7 +8,7 @@ import sharry.backend.auth.AuthToken
 import sharry.backend.mail.NotifyResult
 import sharry.common._
 import sharry.restapi.model.BasicResult
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 
 import org.http4s.HttpRoutes

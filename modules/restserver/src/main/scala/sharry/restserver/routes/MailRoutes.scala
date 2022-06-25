@@ -12,7 +12,7 @@ import sharry.common._
 import sharry.restapi.model.BasicResult
 import sharry.restapi.model.MailTemplate
 import sharry.restapi.model.SimpleMail
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 
 import emil.MailAddress

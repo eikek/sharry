@@ -1,14 +1,22 @@
-package sharry.common.pureconfig
+package sharry.common.config
+
+import java.nio.file.{Path => JPath}
 
 import scala.reflect.ClassTag
 
+import fs2.io.file.Path
+
 import sharry.common._
 
-import _root_.pureconfig._
-import _root_.pureconfig.error.{CannotConvert, FailureReason}
+import pureconfig._
+import pureconfig.configurable.genericMapReader
+import pureconfig.error.{CannotConvert, FailureReason}
 import scodec.bits.ByteVector
 
-object Implicits {
+trait Implicits {
+  implicit val pathReader: ConfigReader[Path] =
+    ConfigReader[JPath].map(Path.fromNioPath)
+
   implicit val lenientUriReader: ConfigReader[LenientUri] =
     ConfigReader[String].emap(reason(LenientUri.parse))
 
@@ -20,6 +28,9 @@ object Implicits {
 
   implicit val identReader: ConfigReader[Ident] =
     ConfigReader[String].emap(reason(Ident.fromString))
+
+  implicit def identMapReader[B: ConfigReader]: ConfigReader[Map[Ident, B]] =
+    genericMapReader[Ident, B](reason(Ident.fromString))
 
   implicit val byteVectorReader: ConfigReader[ByteVector] =
     ConfigReader[String].emap(reason { str =>
@@ -33,6 +44,9 @@ object Implicits {
   implicit val byteSizeReader: ConfigReader[ByteSize] =
     ConfigReader[String].emap(reason(ByteSize.parse))
 
+  implicit val signupModeReader: ConfigReader[SignupMode] =
+    ConfigReader[String].emap(reason(SignupMode.fromString))
+
   def reason[A: ClassTag](
       f: String => Either[String, A]
   ): String => Either[FailureReason, A] =
@@ -41,3 +55,5 @@ object Implicits {
         CannotConvert(in, implicitly[ClassTag[A]].runtimeClass.toString, str)
       )
 }
+
+object Implicits extends Implicits

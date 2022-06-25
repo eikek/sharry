@@ -5,7 +5,8 @@ case class Banner(
     gitHash: Option[String],
     jdbcUrl: LenientUri,
     configFile: Option[String],
-    baseUrl: LenientUri
+    baseUrl: LenientUri,
+    fileStoreConfig: String
 ) {
 
   private val banner =
@@ -23,6 +24,7 @@ case class Banner(
       s"Base-Url: ${baseUrl.asString}",
       s"Database: ${jdbcUrl.asString}",
       s"Config:   ${configFile.getOrElse("")}",
+      s"FileRepo: $fileStoreConfig",
       ""
     )
 

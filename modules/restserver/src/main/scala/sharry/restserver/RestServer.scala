@@ -5,12 +5,13 @@ import scala.concurrent.duration._
 import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import fs2.Stream
 
 import sharry.backend.auth.AuthToken
 import sharry.common.LenientUri
 import sharry.logging.Logger
+import sharry.restserver.config.Config
 import sharry.restserver.http4s.EnvMiddleware
 import sharry.restserver.routes._
 import sharry.restserver.webapp._
@@ -32,7 +33,6 @@ object RestServer {
     val templates = TemplateRoutes[F](cfg)
     val app = for {
       restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
-      _ <- Resource.eval(restApp.init)
       client <- BlazeClientBuilder[F].resource
 
       httpApp = Router(

@@ -9,7 +9,7 @@ import sharry.backend.auth.AuthToken
 import sharry.backend.share._
 import sharry.common._
 import sharry.restapi.model._
-import sharry.restserver.Config
+import sharry.restserver.config.Config
 import sharry.restserver.routes.headers.SharryPassword
 import sharry.store.AddResult
 

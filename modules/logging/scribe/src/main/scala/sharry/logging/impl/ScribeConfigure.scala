@@ -24,7 +24,7 @@ object ScribeConfigure {
       unsafeConfigure(sharryLogger, cfg)
       unsafeConfigure(scribe.Logger("org.flywaydb"), cfg)
       unsafeConfigure(scribe.Logger("binny"), cfg)
-      unsafeConfigure(scribe.Logger("org.http4s"), cfg)
+      // unsafeConfigure(scribe.Logger("org.http4s"), cfg)
     }
 
   def getRootMinimumLevel: Level =

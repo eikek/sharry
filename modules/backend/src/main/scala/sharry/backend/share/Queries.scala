@@ -346,31 +346,8 @@ object Queries {
   }
 
   def deleteFile[F[_]: Async](store: Store[F])(fileMetaId: Ident) = {
-    def deleteChunk(fid: Ident, chunk: Int): F[Int] =
-      store
-        .transact(
-          Sql
-            .deleteFrom(
-              FileChunkCols.table,
-              Sql.and(FileChunkCols.fileId.is(fid), FileChunkCols.chunkNr.is(chunk))
-            )
-            .update
-            .run
-        )
-
-    // When deleting large files, doing it in one transaction may blow
-    // memory. It is not important to be all-or-nothing, so here each
-    // chunk is deleted in one tx. This is slow, of course, but can be
-    // moved to a background thread. The cleanup job also detects
-    // orphaned files and removes them.
-    def deleteFileData(fid: Ident): F[Unit] =
-      Stream
-        .iterate(0)(_ + 1)
-        .covary[F]
-        .evalMap(n => deleteChunk(fid, n))
-        .takeWhile(_ > 0)
-        .compile
-        .drain
+    val deleteFileData =
+      store.fileStore.delete(fileMetaId)
 
     def deleteFileMeta(fid: Ident): F[Int] =
       store.transact(for {
@@ -378,7 +355,7 @@ object Queries {
         c <- Sql.deleteFrom(RFileMeta.table, RFileMeta.Columns.id.is(fid)).update.run
       } yield a + c)
 
-    deleteFileData(fileMetaId) *> deleteFileMeta(fileMetaId)
+    deleteFileData *> deleteFileMeta(fileMetaId)
   }
 
   def deleteShare[F[_]: Async](share: Ident, background: Boolean)(
