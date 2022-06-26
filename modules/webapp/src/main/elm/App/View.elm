@@ -440,7 +440,7 @@ styleMain =
 
 styleContent : String
 styleContent =
-    "h-full flex-grow"
+    "flex flex-grow"
 
 
 styleFooter : String

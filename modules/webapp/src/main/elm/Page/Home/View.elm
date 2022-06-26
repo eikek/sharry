@@ -12,7 +12,7 @@ import Styles as S
 view : Texts -> Model -> Html msg
 view texts _ =
     div
-        [ class "h-full md:h-5/6 flex flex-col justify-center items-center"
+        [ class "h-full md:h-5/6 flex flex-col justify-center items-center flex-grow flex"
         ]
         [ div
             [ class "w-full px-4 py-4 mt-2 flex flex-col items-center"
