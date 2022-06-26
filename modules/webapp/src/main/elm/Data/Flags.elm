@@ -17,6 +17,11 @@ type alias Flags =
     }
 
 
+isOAuthAutoRedirect : Flags -> Bool
+isOAuthAutoRedirect flags =
+    flags.config.oauthAutoRedirect && flags.config.oauthOnly
+
+
 getToken : Flags -> Maybe String
 getToken flags =
     flags.account

@@ -75,7 +75,8 @@ object InfoRoutes {
       cfg.backend.auth.isOAuthOnly,
       cfg.aliasMemberEnabled,
       cfg.webapp.defaultValidity,
-      cfg.webapp.initialTheme
+      cfg.webapp.initialTheme,
+      cfg.webapp.oauthAutoRedirect
     )
   }
 

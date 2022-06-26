@@ -75,7 +75,8 @@ object Config {
       authRenewal: Duration,
       initialPage: String,
       defaultValidity: Duration,
-      initialTheme: String
+      initialTheme: String,
+      oauthAutoRedirect: Boolean
   )
 
   private def validateTheme(str: String): String =

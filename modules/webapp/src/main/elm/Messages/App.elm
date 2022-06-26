@@ -17,6 +17,8 @@ type alias Texts =
     , login : String
     , register : String
     , lightDark : String
+    , logoutSharry : String
+    , logoutOAuth : String
     }
 
 
@@ -32,6 +34,8 @@ gb =
     , login = "Login"
     , register = "Register"
     , lightDark = "Light/Dark"
+    , logoutSharry = "Logout from Sharry"
+    , logoutOAuth = "Logout at your authentication provider"
     }
 
 
@@ -47,6 +51,8 @@ de =
     , login = "Anmelden"
     , register = "Registrieren"
     , lightDark = "Hell/Dunkel"
+    , logoutSharry = "Von Sharry abmelden"
+    , logoutOAuth = "Abmelden nur über den Authentifizierungs-Provider möglich"
     }
 
 
@@ -62,4 +68,6 @@ fr =
     , login = "Connexion"
     , register = "Inscription"
     , lightDark = gb.lightDark
+    , logoutSharry = "Déconnexion de Sharry"
+    , logoutOAuth = "Déconnexion de votre fournisseur d'authentification"
     }
