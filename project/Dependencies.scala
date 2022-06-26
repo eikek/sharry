@@ -108,7 +108,8 @@ object Dependencies {
   // https://github.com/flyway/flyway
   // ASL 2.0
   val flyway = Seq(
-    "org.flywaydb" % "flyway-core" % FlywayVersion
+    "org.flywaydb" % "flyway-core" % FlywayVersion,
+    "org.flywaydb" % "flyway-mysql" % FlywayVersion
   )
 
   val yamusca = Seq(
