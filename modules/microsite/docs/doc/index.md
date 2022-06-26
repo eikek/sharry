@@ -59,8 +59,10 @@ notified via email.
 - *Send E-Mails* from within Sharry (if configured)
 - *DBMS* Data is stored in a relational database, supporting
   [PostgreSQL](https://postgresql.org), [MariaDB](https://mariadb.org)
-  and [H2](https://h2database.com) (not using a separate database
-  server).
+  and [H2](https://h2database.com) (h2 is an in-process db, not
+  requiring a separate database server).
+- Files can be stored in the database as well. Other options are the
+  filesystem or an S3 compatible object storage
 
 ## License
 
