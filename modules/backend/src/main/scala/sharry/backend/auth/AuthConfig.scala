@@ -63,6 +63,7 @@ object AuthConfig {
       tokenUrl: LenientUri,
       userUrl: LenientUri,
       userIdKey: String,
+      userEmailKey: Option[String],
       clientId: String,
       clientSecret: String,
       icon: Option[String]
@@ -79,6 +80,7 @@ object AuthConfig {
         LenientUri.unsafe("https://github.com/login/oauth/access_token"),
         LenientUri.unsafe("https://api.github.com/user"),
         "login",
+        None,
         clientId,
         clientSecret,
         Some("github")

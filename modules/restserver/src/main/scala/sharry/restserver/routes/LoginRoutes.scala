@@ -67,7 +67,11 @@ object LoginRoutes {
           c <- code
           u <- CodeFlow(client)(p, redirectUri(cfg, req, p).asString, c)
           newAcc <- OptionT.liftF(
-            NewAccount.create(u ++ Ident.atSign ++ p.id, AccountSource.OAuth(p.id.id))
+            NewAccount.create(
+              u.id ++ Ident.atSign ++ p.id,
+              AccountSource.OAuth(p.id.id),
+              email = u.email
+            )
           )
           acc <- OptionT.liftF(S.account.createIfMissing(newAcc))
           accId = acc.accountId(None)
