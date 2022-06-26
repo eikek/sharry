@@ -8,7 +8,7 @@ styleQr =
 
 content : String
 content =
-    "container mx-auto px-2 overflow-y-auto scrollbar-main scrollbar-thin"
+    "container mx-auto px-2 overflow-y-auto scrollbar-main scrollbar-thin flex-grow"
 
 
 successMessage : String
