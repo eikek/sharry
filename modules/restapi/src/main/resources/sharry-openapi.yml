@@ -1610,7 +1610,8 @@ components:
         checksum:
           type: string
           description: |
-            The (sha256) checksum of the file's contents.
+            The (sha256) checksum of the file's contents. It might be
+            empty if it hasn't been computed yet.
         storedSize:
           type: integer
           format: size

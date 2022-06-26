@@ -6,10 +6,9 @@ permalink: doc/webapp
 
 # Webapplication
 
-The web client is written in [Elm](https://elm-lang.org), an awesome
-programming language for the web :-). The [tus javascript client
-library](https://github.com/tus/tus-js-client) is used to realize the
-resumable uploads. All the css is provided by
+The web client is written in [Elm](https://elm-lang.org). The [tus
+javascript client library](https://github.com/tus/tus-js-client) is
+used to realize the resumable uploads. All the css is provided by
 [TailwindCSS](https://tailwindcss.com/).
 
 
