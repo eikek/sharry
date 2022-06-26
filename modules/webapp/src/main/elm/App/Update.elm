@@ -5,6 +5,7 @@ import App.Data exposing (..)
 import Browser exposing (UrlRequest(..))
 import Browser.Navigation as Nav
 import Data.Flags
+import Data.InitialView exposing (InitialView)
 import Data.UiTheme
 import Page exposing (Page(..))
 import Page.Account.Data
@@ -90,7 +91,16 @@ update msg model =
             updateDetail lm model
 
         OpenDetailMsg lm ->
-            updateOpenDetail lm model
+            let
+                initialView =
+                    case model.page of
+                        Page.OpenDetailPage _ iv ->
+                            Data.InitialView.get iv
+
+                        _ ->
+                            Data.InitialView.default
+            in
+            updateOpenDetail initialView lm model
 
         SetPage p ->
             ( { model | page = p }
@@ -246,11 +256,11 @@ update msg model =
             )
 
 
-updateOpenDetail : Page.OpenDetail.Data.Msg -> Model -> ( Model, Cmd Msg )
-updateOpenDetail lmsg model =
+updateOpenDetail : InitialView -> Page.OpenDetail.Data.Msg -> Model -> ( Model, Cmd Msg )
+updateOpenDetail initialView lmsg model =
     let
         ( lm, lc ) =
-            Page.OpenDetail.Update.update model.flags lmsg model.openDetailModel
+            Page.OpenDetail.Update.update model.flags initialView lmsg model.openDetailModel
     in
     ( { model | openDetailModel = lm }
     , Cmd.map OpenDetailMsg lc
@@ -440,5 +450,5 @@ initPage model page =
         DetailPage id ->
             updateDetail (Page.Detail.Data.Init id) model
 
-        OpenDetailPage id ->
-            updateOpenDetail (Page.OpenDetail.Data.Init id) model
+        OpenDetailPage id initialView ->
+            updateOpenDetail (Data.InitialView.get initialView) (Page.OpenDetail.Data.Init id) model

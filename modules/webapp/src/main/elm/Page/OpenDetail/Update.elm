@@ -5,14 +5,15 @@ import Api.Model.BasicResult exposing (BasicResult)
 import Comp.PasswordInput
 import Comp.ShareFileList
 import Data.Flags exposing (Flags)
+import Data.InitialView exposing (InitialView)
 import Http
 import Page.OpenDetail.Data exposing (Model, Msg(..), emptyPassModel)
 import Ports
 import Util.Http
 
 
-update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
-update flags msg model =
+update : Flags -> InitialView -> Msg -> Model -> ( Model, Cmd Msg )
+update flags initialView msg model =
     case msg of
         Init id ->
             let
@@ -27,11 +28,28 @@ update flags msg model =
             )
 
         DetailResp (Ok details) ->
-            ( { model
-                | share = details
-                , message = Nothing
-                , password = emptyPassModel
-              }
+            let
+                setView m =
+                    case initialView of
+                        Data.InitialView.Listing ->
+                            { m | fileView = Comp.ShareFileList.ViewList }
+
+                        Data.InitialView.Cards ->
+                            { m | fileView = Comp.ShareFileList.ViewCard }
+
+                        Data.InitialView.Zoom ->
+                            { m
+                                | fileView = Comp.ShareFileList.ViewList
+                                , zoom = List.sortBy .filename details.files |> List.head
+                            }
+            in
+            ( setView
+                { model
+                    | share = details
+                    , message = Nothing
+                    , password = emptyPassModel
+                    , fileListModel = Comp.ShareFileList.reset model.fileListModel
+                }
             , Cmd.none
             )
 
@@ -115,4 +133,4 @@ update flags msg model =
             ( { model | password = next }, Cmd.none )
 
         SubmitPassword ->
-            update flags (Init model.share.id) model
+            update flags initialView (Init model.share.id) model

@@ -36,7 +36,7 @@ type Page
     | OpenSharePage String
     | SettingsPage
     | DetailPage String
-    | OpenDetailPage String
+    | OpenDetailPage String (Maybe Int)
 
 
 isSecured : Page -> Bool
@@ -78,7 +78,7 @@ isSecured page =
         DetailPage _ ->
             True
 
-        OpenDetailPage _ ->
+        OpenDetailPage _ _ ->
             False
 
 
@@ -142,7 +142,7 @@ pageToString page =
         HomePage ->
             "/app/home"
 
-        LoginPage ( referer, oauth ) ->
+        LoginPage ( referer, _ ) ->
             Maybe.map (\p -> "?r=" ++ p) referer
                 |> Maybe.withDefault ""
                 |> (++) "/app/login"
@@ -187,8 +187,17 @@ pageToString page =
         DetailPage id ->
             "/app/upload/" ++ id
 
-        OpenDetailPage id ->
-            "/app/open/" ++ id
+        OpenDetailPage id initialView ->
+            let
+                viewParam =
+                    case initialView of
+                        Just n ->
+                            "?view=" ++ String.fromInt n
+
+                        Nothing ->
+                            ""
+            in
+            "/app/open/" ++ id ++ viewParam
 
 
 pageFromString : String -> Maybe Page
@@ -245,7 +254,7 @@ parser =
         , Parser.map OpenSharePage (s pathPrefix </> s "share" </> string)
         , Parser.map SharePage (s pathPrefix </> s "share")
         , Parser.map SettingsPage (s pathPrefix </> s "settings")
-        , Parser.map OpenDetailPage (s pathPrefix </> s "open" </> string)
+        , Parser.map OpenDetailPage (s pathPrefix </> s "open" </> string <?> Query.int "view")
         ]
 
 

@@ -26,6 +26,7 @@ import Comp.PasswordInput
 import Comp.ShareFileList
 import Comp.ValidityField
 import Data.Flags exposing (Flags)
+import Data.InitialView exposing (InitialView)
 import Data.UploadDict exposing (UploadDict)
 import Data.UploadState exposing (UploadState)
 import Data.ValidityValue exposing (ValidityValue)
@@ -49,6 +50,7 @@ type alias Model =
     , uploadPaused : Bool
     , uploadFormState : BasicResult
     , mailForm : Maybe Comp.MailSend.Model
+    , shareUrlMode : InitialView
     }
 
 
@@ -109,6 +111,7 @@ emptyModel =
     , uploadPaused = True
     , uploadFormState = BasicResult True ""
     , mailForm = Nothing
+    , shareUrlMode = Data.InitialView.default
     }
 
 
@@ -191,6 +194,7 @@ type Msg
     | InitMail
     | CopyToClipboard String
     | EditKey (Maybe KeyCode)
+    | SetShareUrlMode InitialView
 
 
 isPublished : ShareDetail -> PublishState

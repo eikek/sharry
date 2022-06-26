@@ -3,6 +3,7 @@ module App.View exposing (view)
 import Api.Model.AuthResult exposing (AuthResult)
 import App.Data exposing (..)
 import Data.Flags
+import Data.InitialView exposing (InitialView)
 import Data.UiTheme
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -328,7 +329,7 @@ mainContent texts model =
             DetailPage id ->
                 viewDetail id texts model
 
-            OpenDetailPage id ->
+            OpenDetailPage id _ ->
                 viewOpenDetail id texts model
         ]
 

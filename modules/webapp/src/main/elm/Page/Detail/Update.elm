@@ -467,6 +467,9 @@ update flags msg model =
         CopyToClipboard _ ->
             ( model, Cmd.none )
 
+        SetShareUrlMode iv ->
+            ( { model | shareUrlMode = iv }, Cmd.none )
+
 
 trackUpload : Model -> UploadState -> Model
 trackUpload model state =

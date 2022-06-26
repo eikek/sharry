@@ -14,6 +14,7 @@ import Comp.ShareFileList exposing (ViewMode(..))
 import Comp.ValidityField
 import Comp.Zoom
 import Data.Flags exposing (Flags)
+import Data.InitialView
 import Data.ValidityOptions
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -171,7 +172,7 @@ shareLinkPublished texts flags model =
                 |> Maybe.withDefault ""
 
         url =
-            flags.config.baseUrl ++ Page.pageToString (OpenDetailPage pid)
+            flags.config.baseUrl ++ Page.pageToString (OpenDetailPage pid (Just <| Data.InitialView.toInt model.shareUrlMode))
 
         qrCodeView : String -> Html msg
         qrCodeView message =
@@ -191,6 +192,12 @@ shareLinkPublished texts flags model =
                 ]
             ]
         , text texts.shareAsYouLike
+        ]
+    , div [ class "flex flex-row space-x-2 items-center" ]
+        [ div [ class "flex-grow text-right" ]
+            [ text texts.initialViewField
+            ]
+        , showUrlSwitch texts model
         ]
     , case model.mailForm of
         Just mf ->
@@ -237,6 +244,27 @@ shareLinkPublished texts flags model =
                     ]
                 ]
     ]
+
+
+showUrlSwitch : Texts -> Model -> Html Msg
+showUrlSwitch texts model =
+    MB.view
+        { start = []
+        , end =
+            List.map
+                (\iv ->
+                    MB.ToggleButton
+                        { tagger = SetShareUrlMode iv
+                        , title = texts.initialViewLabel iv
+                        , icon = Just <| Data.InitialView.icon iv
+                        , label = texts.initialViewLabel iv
+                        , active = model.shareUrlMode == iv
+                        }
+                )
+                Data.InitialView.all
+        , rootClasses = "py-1 text-xs"
+        , sticky = False
+        }
 
 
 messageDiv : Model -> Html Msg
