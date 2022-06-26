@@ -20,9 +20,11 @@ import org.http4s.headers.Accept
 import org.http4s.headers.Authorization
 
 object CodeFlow {
+  case class UserInfo(id: Ident, email: Option[String])
+
   def apply[F[_]: Async](
       client: Client[F]
-  )(cfg: AuthConfig.OAuth, redirectUri: String, code: String): OptionT[F, Ident] = {
+  )(cfg: AuthConfig.OAuth, redirectUri: String, code: String): OptionT[F, UserInfo] = {
     val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sClientDsl[F] {}
     val c = logRequestResponses[F](client, logger)
@@ -81,7 +83,7 @@ object CodeFlow {
       dsl: Http4sClientDsl[F],
       cfg: AuthConfig.OAuth,
       token: String
-  ): OptionT[F, Ident] = {
+  ): OptionT[F, UserInfo] = {
     import dsl._
     val logger = sharry.logging.getLogger[F]
     val req = GET(
@@ -90,12 +92,11 @@ object CodeFlow {
       Accept(MediaType.application.json)
     )
 
-    val resp: F[Option[Ident]] = c.run(req).use {
+    val resp: F[Option[UserInfo]] = c.run(req).use {
       case Status.Successful(r) =>
         r.as[Json]
           .flatTap(j => logger.trace(s"user structure: ${j.noSpaces}"))
-          .map(j => j.findAllByKey(cfg.userIdKey).find(_.isString).flatMap(_.asString))
-          .map(_.map(normalizeUid))
+          .map(decode(cfg))
           .flatTap(uid => logger.info(s"Got user id: $uid"))
       case r =>
         r.as[String]
@@ -103,11 +104,21 @@ object CodeFlow {
             logger.error(s"Cannot obtain user info: ${r.status.code} / $err")
           )
           .map(_ => None)
-
     }
 
     OptionT(resp)
   }
+
+  private def decode(cfg: AuthConfig.OAuth)(json: Json): Option[UserInfo] =
+    for {
+      id <- json.findAllByKey(cfg.userIdKey).find(_.isString).flatMap(_.asString)
+      email = cfg.userEmailKey.toList
+        .flatMap(json.findAllByKey)
+        .find(_.isString)
+        .flatMap(_.asString)
+        .map(_.trim)
+        .find(_.nonEmpty)
+    } yield UserInfo(normalizeUid(id), email)
 
   private def normalizeUid(uid: String): Ident =
     Ident.unsafe(uid.filter(Ident.chars.contains))
