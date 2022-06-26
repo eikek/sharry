@@ -19,6 +19,12 @@ let
     logging = {
       minimum-level = "Info";
       format = "Fancy";
+      levels = {
+        "sharry" = "Info";
+        "org.flywaydb" = "Info";
+        "binny" = "Info";
+        "org.http4s" = "Info";
+      };
     };
     response-timeout = "4 minutes";
     alias-member-enabled = true;
@@ -38,6 +44,7 @@ let
       initial-page = "home";
       default-validity = "7 days";
       initial-theme = "light";
+      oauth-auto-redirect = true;
     };
     backend = {
       auth = {
@@ -87,6 +94,7 @@ let
             token-url = "https://github.com/login/oauth/access_token";
             user-url = "https://api.github.com/user";
             user-id-key = "login";
+            user-email-key = null;
             client-id = "<your client id>";
             client-secret = "<your client secret>";
           }
@@ -240,6 +248,11 @@ in {
               default = defaults.logging.format;
               description = "The log format. One of: Fancy, Plain, Json or Logfmt";
             };
+            levels = mkOption {
+              type = types.attrs;
+              default = defaults.logging.levels;
+              description = "Set of logger and their levels";
+            };
           };
         });
         default = defaults.logging;
@@ -377,7 +390,11 @@ in {
               default = defaults.webapp.initial-theme;
               description = "The theme to use initially. One of 'light' or 'dark'.";
             };
-
+            oauth-auto-redirect = mkOption {
+              type = types.bool;
+              default = defaults.webapp.oauth-auto-redirect;
+              description = "Whether to immediately redirect to the single configured oauth provider.";
+            };
           };
         });
         default = defaults.webapp;
@@ -625,6 +642,13 @@ in {
                           default = d.user-id-key;
                           description = ''
                             The name of the field in the json response denoting the user name.
+                          '';
+                        };
+                        user-email-key = mkOption {
+                          type = types.nullOr types.str;
+                          default = d.user-email-key;
+                          description = ''
+                            The name of the field in the json response denoting the users email."
                           '';
                         };
                         client-id = mkOption {
