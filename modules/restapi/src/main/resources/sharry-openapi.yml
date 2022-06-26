@@ -1922,6 +1922,7 @@ components:
         - aliasMemberEnabled
         - defaultValidity
         - initialTheme
+        - oauthAutoRedirect
       properties:
         appName:
           type: string
@@ -1987,6 +1988,8 @@ components:
         initialTheme:
           type: string
           format: theme
+        oauthAutoRedirect:
+          type: boolean
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

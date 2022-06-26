@@ -3,6 +3,7 @@ module Page.Login.Update exposing (update)
 import Api
 import Api.Model.AuthResult exposing (AuthResult)
 import Api.Model.UserPass exposing (UserPass)
+import Browser.Navigation as Nav
 import Comp.LanguageChoose
 import Data.Flags exposing (Flags)
 import Page exposing (Page(..))
@@ -12,8 +13,8 @@ import Util.Http
 import Util.List
 
 
-update : ( Maybe Page, Bool ) -> Flags -> Msg -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
-update ( referrer, oauth ) flags msg model =
+update : ( Maybe Page, Bool ) -> Flags -> Nav.Key -> Msg -> Model -> ( Model, Cmd Msg, Maybe AuthResult )
+update ( referrer, oauth ) flags key msg model =
     case msg of
         -- after logging in via some provider, a cookie has been sent
         -- with a redirection to the login page. So then there must be
@@ -21,6 +22,14 @@ update ( referrer, oauth ) flags msg model =
         Init ->
             if oauth && Util.List.nonEmpty flags.config.oauthConfig then
                 ( model, Api.loginSession flags AuthResp, Nothing )
+
+            else if not oauth && Data.Flags.isOAuthAutoRedirect flags && flags.account == Nothing then
+                case flags.config.oauthConfig of
+                    first :: [] ->
+                        ( model, Nav.load (Api.oauthUrl flags first), Nothing )
+
+                    _ ->
+                        ( model, Cmd.none, Nothing )
 
             else
                 ( model, Cmd.none, Nothing )

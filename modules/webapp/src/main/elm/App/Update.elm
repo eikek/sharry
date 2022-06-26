@@ -368,7 +368,7 @@ updateLogin : Page.Login.Data.Msg -> Model -> ( Model, Cmd Msg )
 updateLogin lmsg model =
     let
         ( lm, lc, ar ) =
-            Page.Login.Update.update (Page.loginPageReferrer model.page) model.flags lmsg model.loginModel
+            Page.Login.Update.update (Page.loginPageReferrer model.page) model.flags model.key lmsg model.loginModel
 
         newFlags =
             Maybe.map (Data.Flags.withAccount model.flags) ar
