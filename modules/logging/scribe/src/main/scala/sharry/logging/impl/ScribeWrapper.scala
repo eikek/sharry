@@ -8,11 +8,9 @@ package sharry.logging.impl
 
 import cats.Id
 import cats.effect.Sync
-
 import sharry.logging.{Level, LogEvent, Logger}
-
 import scribe.LoggerSupport
-import scribe.message.{LoggableMessage, Message}
+import scribe.message.LoggableMessage
 
 private[logging] object ScribeWrapper {
   final class ImplUnsafe(log: scribe.Logger) extends Logger[Id] {
@@ -42,11 +40,11 @@ private[logging] object ScribeWrapper {
     val level = convertLevel(ev.level)
     val additional: List[LoggableMessage] = ev.additional.map { x =>
       x() match {
-        case Right(ex) => Message.static(ex)
-        case Left(msg) => Message.static(msg)
+        case Right(ex) => LoggableMessage.throwable2Message(ex)
+        case Left(msg) => LoggableMessage.string2Message(msg)
       }
     }
-    LoggerSupport(level, ev.msg(), additional, ev.pkg, ev.fileName, ev.name, ev.line)
+    LoggerSupport(level, ev.msg() :: additional, ev.pkg, ev.fileName, ev.name, ev.line)
       .copy(data = ev.data)
   }
 }
