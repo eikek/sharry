@@ -138,11 +138,14 @@ fileList texts flags model =
                 (Api.fileOpenUrl flags (shareId model) "")
                 model.fileView
                 False
+
+        sorted =
+            List.sortBy .filename model.share.files
     in
     Html.map FileListMsg <|
         Comp.ShareFileList.view texts.shareFileList
             sett
-            model.share.files
+            sorted
             model.fileListModel
 
 

@@ -5,6 +5,7 @@ module Messages.DetailPage exposing
     , gb
     )
 
+import Data.InitialView exposing (InitialView)
 import Language
 import Messages.DateFormat
 import Messages.Dropzone2
@@ -68,6 +69,8 @@ type alias Texts =
     , passwordInvalid : String
     , or : String
     , dateTime : Int -> String
+    , initialViewLabel : InitialView -> String
+    , initialViewField : String
     }
 
 
@@ -134,6 +137,18 @@ gb =
     , passwordInvalid = "Password invalid"
     , or = "Or"
     , dateTime = Messages.DateFormat.formatDateTime Language.English
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "Listing"
+
+                Data.InitialView.Cards ->
+                    "Cards"
+
+                Data.InitialView.Zoom ->
+                    "Preview"
+    , initialViewField = "Initial view"
     }
 
 
@@ -201,7 +216,23 @@ de =
     , passwordInvalid = "Passwort ungültig"
     , or = "Oder"
     , dateTime = Messages.DateFormat.formatDateTime Language.German
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "Liste"
+
+                Data.InitialView.Cards ->
+                    "Kacheln"
+
+                Data.InitialView.Zoom ->
+                    "Vorschau"
+    , initialViewField = "Anfangsansicht"
     }
+
+
+
+-- TODO check French translations
 
 
 fr : Texts
@@ -267,4 +298,16 @@ fr =
     , passwordInvalid = "Mot de passe invalide"
     , or = "Ou"
     , dateTime = Messages.DateFormat.formatDateTime Language.French
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "Listing"
+
+                Data.InitialView.Cards ->
+                    "Cards"
+
+                Data.InitialView.Zoom ->
+                    "Preview"
+    , initialViewField = "Initial view"
     }
