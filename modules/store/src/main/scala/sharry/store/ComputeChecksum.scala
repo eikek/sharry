@@ -30,7 +30,8 @@ object ComputeChecksum {
       private[this] val logger = sharry.logging.getLogger[F]
 
       def submit(id: BinaryId, hint: Hint): F[Unit] =
-        queue.offer(Entry(id, hint))
+        if (config.enable) queue.offer(Entry(id, hint))
+        else ().pure[F]
 
       def computeSync(id: BinaryId, hint: Hint, select: AttributeNameSet): F[RFileMeta] =
         for {
@@ -54,12 +55,16 @@ object ComputeChecksum {
         } yield fm
 
       def consumeAll(attr: AttributeNameSet): Stream[F, RFileMeta] =
-        logger.stream
-          .info(
-            s"Starting computing checksum of submitted binaries: $config"
-          )
-          .drain ++
-          Stream.repeatEval(queue.take).through(computePipe(attr))
+        if (config.enable) {
+          logger.stream
+            .info(
+              s"Starting computing checksum of submitted binaries: $config"
+            )
+            .drain ++
+            Stream.repeatEval(queue.take).through(computePipe(attr))
+        } else {
+          logger.stream.info("Checksum computation is disabled!").drain
+        }
 
       private def computePipe(
           attr: AttributeNameSet
