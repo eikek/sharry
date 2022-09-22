@@ -12,7 +12,7 @@ val scalafixSettings = Seq(
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.8",
+  scalaVersion := "2.13.9",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
