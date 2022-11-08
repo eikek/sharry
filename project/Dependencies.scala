@@ -19,7 +19,7 @@ object Dependencies {
   val MUnitVersion = "0.7.29"
   val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.5.0"
-  val PureConfigVersion = "0.17.1"
+  val PureConfigVersion = "0.17.2"
   val ScribeVersion = "3.9.0"
   val SourcecodeVersion = "0.2.8"
   val SwaggerVersion = "4.15.0"
