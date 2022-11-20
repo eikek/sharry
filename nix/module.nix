@@ -5,11 +5,12 @@ let
   cfg = config.services.sharry;
   user = if cfg.runAs == null then "sharry" else cfg.runAs;
   str = e: if (builtins.typeOf e) == "bool" then (if e then "true" else "false") else (builtins.toString e);
-  sharryConf = pkgs.writeText "sharry.conf" ''
-  {"sharry": { "restserver":
-    ${builtins.toJSON cfg}
-  }}
-  '';
+  sharryConf = pkgs.writeText "sharry.conf" (
+    "sharry.restserver = ${builtins.toJSON cfg}\n" +
+    (optionalString (cfg.configOverridesFile != null)
+      ''sharry.restserver = { include "${cfg.configOverridesFile}" }''\n'')
+  );
+
   defaults = {
     base-url = "http://localhost:9090";
     bind = {
@@ -203,7 +204,14 @@ in {
           user is created.
         '';
       };
-
+      configOverridesFile = mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = ''
+          Path to a HOCON/JSON file containing configuration overrides to be
+          merged at runtime. Useful for loading secrets.
+        '';
+      };
 
       base-url = mkOption {
         type = types.str;
