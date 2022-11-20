@@ -106,6 +106,40 @@ let
         user = "sa";
         password = "";
       };
+      files = {
+        default-store = "database";
+        stores = {
+          database = {
+            enabled = true;
+            type = "default-database";
+          };
+          filesystem = {
+            enabled = false;
+            type = "file-system";
+            directory = "/some/directory";
+          };
+          minio = {
+            enabled = false;
+            type = "s3";
+            endpoint = "http://localhost:9000";
+            access-key = "username";
+            secret-key = "password";
+            bucket = "sharry";
+          };
+        };
+        copy-files = {
+          enable = false;
+          source = "database";
+          target = "minio";
+          parallel = 2;
+        };
+      };
+      compute-checksum = {
+        enable = true;
+        capacity = 5000;
+        parallel = 0;
+        use-default = true;
+      };
       signup = {
         mode = "open";
         invite-time = "14 days";
@@ -785,6 +819,113 @@ in {
                 });
                 default = defaults.backend.jdbc;
                 description = "Database connection settings";
+              };
+
+              files = mkOption {
+                type = types.submodule {
+                  options = {
+                    default-store = mkOption {
+                      type = types.str;
+                      default = defaults.backend.files.default-store;
+                      description = ''
+                        The id of an enabled store from the `stores` array that should
+                        be used.
+                      '';
+                    };
+                    stores = mkOption {
+                      type = types.attrsOf (types.attrsOf (types.unspecified));
+                      default = defaults.backend.files.stores;
+                      description = ''
+                        A list of possible file stores. Each entry must have a unique
+                        id. The `type` is one of: default-database, filesystem, s3.
+
+                        All stores with enabled=false are
+                        removed from the list. The `default-store` must be enabled.
+                      '';
+                    };
+                    copy-files = mkOption {
+                      type = types.submodule {
+                        options = {
+                          enable = mkOption {
+                            type = types.bool;
+                            default = defaults.backend.files.copy-files.enable;
+                          };
+                          source = mkOption {
+                            type = types.str;
+                            default = defaults.backend.files.copy-files.source;
+                            description = ''
+                              A key in the `backend.files` config identifying the store to
+                              copy from.
+                            '';
+                          };
+                          target = mkOption {
+                            type = types.str;
+                            default = defaults.backend.files.copy-files.target;
+                            description = ''
+                              A key in the `backend.files` config identifying the store to
+                              copy the files to.
+                            '';
+                          };
+                          parallel = mkOption {
+                            type = types.ints.unsigned;
+                            default = defaults.backend.files.copy-files.parallel;
+                            description = "How many files to copy in parallel.";
+                          };
+                        };
+                      };
+                      default = defaults.backend.files.copy-files;
+                      description = ''
+                        Allows to copy files from one store to the other *before* sharry
+                        will be available. It is recommended to set the `enabled` flag to
+                        false afterwards and restart sharry.
+
+                        Files are only copied, they are *not* removed from the source
+                        store.
+                      '';
+                    };
+                  };
+                };
+                default = defaults.backend.files;
+                description = "How files are stored.";
+              };
+
+              compute-checksum = mkOption {
+                type = types.submodule {
+                  options = {
+                    enable = mkOption {
+                      type = types.bool;
+                      default = defaults.backend.compute-checksum.enable;
+                      description = "Setting this to false disables computation of checksums completely.";
+                    };
+                    capacity = mkOption {
+                      type = types.ints.unsigned;
+                      default = defaults.backend.compute-checksum.capacity;
+                      description = ''
+                        How many ids to queue at most. If full, uploading blocks until
+                        elements are taken off the queue.
+                      '';
+                    };
+                    parallel = mkOption {
+                      type = types.ints.unsigned;
+                      default = defaults.backend.compute-checksum.parallel;
+                      description = ''
+                        How many checksums to compute in parallel, must be > 0. If 1,
+                        they are computed sequentially.
+                      '';
+                    };
+                    use-default = mkOption {
+                      type = types.bool;
+                      default = defaults.backend.compute-checksum.use-default;
+                      description = ''
+                        If true, the `parallel` option above is ignored and it will be
+                        set to the number of available cores - 1 (using 1 for single
+                        core machines).
+                      '';
+                    };
+                  };
+                };
+                default = defaults.backend.compute-checksum;
+                description = "Checksums of uploaded files are computed in the background.";
               };
 
               cleanup = mkOption {
