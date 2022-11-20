@@ -1015,18 +1015,17 @@ in {
       sharry = {};
     };
 
-    systemd.services.sharry =
-    let
-      cmd = "${pkgs.sharry}/bin/sharry-restserver ${sharryConf}";
-    in
-    {
+    systemd.services.sharry = {
       description = "Sharry Rest Server";
       after = [ "networking.target" ];
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.gawk ];
 
-      script =
-        "${pkgs.su}/bin/su -s ${pkgs.bash}/bin/sh ${user} -c \"${cmd}\"";
+      serviceConfig = {
+        User = user;
+        Group = mkIf (cfg.runAs == null) "sharry";
+        ExecStart = "${pkgs.sharry}/bin/sharry-restserver ${sharryConf}";
+      };
     };
   };
 }
