@@ -1,6 +1,6 @@
 import com.github.eikek.sbt.openapi._
 import scala.sys.process._
-import com.typesafe.sbt.SbtGit.GitKeys._
+import com.github.sbt.git.SbtGit.GitKeys._
 
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
 
