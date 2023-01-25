@@ -15,7 +15,7 @@ object Dependencies {
   val Http4sVersion = "0.23.18"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
-  val MariaDbVersion = "3.1.1"
+  val MariaDbVersion = "3.1.2"
   val MUnitVersion = "0.7.29"
   val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.5.1"
