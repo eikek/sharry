@@ -121,6 +121,8 @@ trait Logger[F[_]] extends LoggerExtension[F] {
 }
 
 object Logger {
+  def apply[F[_]](implicit v: Logger[F]): Logger[F] = v
+
   def off: Logger[Id] =
     new Logger[Id] {
       def log(ev: LogEvent): Unit = ()
