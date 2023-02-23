@@ -8,7 +8,9 @@ package sharry.logging.impl
 
 import cats.Id
 import cats.effect.Sync
+
 import sharry.logging.{Level, LogEvent, Logger}
+
 import scribe.LoggerSupport
 import scribe.message.LoggableMessage
 

@@ -6,7 +6,9 @@ import java.util.concurrent.atomic.AtomicReference
 import cats.effect._
 import cats.implicits._
 import fs2._
+import fs2.io.file.{Files, Path}
 
+import sharry.logging.Logger
 import sharry.restapi.model.AppConfig
 import sharry.restserver.BuildInfo
 import sharry.restserver.config.Config
@@ -18,13 +20,11 @@ import org.http4s.HttpRoutes
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
-import org.slf4j._
 import yamusca.derive._
 import yamusca.implicits._
 import yamusca.imports._
 
 object TemplateRoutes {
-  private[this] val logger = LoggerFactory.getLogger(getClass)
 
   val `text/html` = new MediaType("text", "html")
   val `application/javascript` = new MediaType("application", "javascript")
@@ -36,11 +36,13 @@ object TemplateRoutes {
   }
 
   def apply[F[_]: Async](cfg: Config): InnerRoutes[F] = {
+    implicit val logger = sharry.logging.getLogger[F]
     val indexTemplate = memo(
       loadResource("/index.html").flatMap(loadTemplate(_))
     )
     val docTemplate = memo(loadResource("/doc.html").flatMap(loadTemplate(_)))
     val swTemplate = memo(loadResource("/sw.js").flatMap(loadTemplate(_)))
+    val indexData = memo(IndexData(cfg))
 
     val dsl = new Http4sDsl[F] {}
     import dsl._
@@ -59,18 +61,17 @@ object TemplateRoutes {
         HttpRoutes.of[F] { case GET -> _ =>
           for {
             templ <- indexTemplate
-            resp <- Ok(
-              IndexData(cfg).render(templ),
-              `Content-Type`(`text/html`, Charset.`UTF-8`)
-            )
+            data <- indexData
+            resp <- Ok(data.render(templ), `Content-Type`(`text/html`, Charset.`UTF-8`))
           } yield resp
         }
       def serviceWorker =
         HttpRoutes.of[F] { case GET -> _ =>
           for {
             templ <- swTemplate
+            data <- indexData
             resp <- Ok(
-              IndexData(cfg).render(templ),
+              data.render(templ),
               `Content-Type`(`application/javascript`, Charset.`UTF-8`)
             )
           } yield resp
@@ -102,12 +103,11 @@ object TemplateRoutes {
       }
     }
 
-  def loadTemplate[F[_]: Sync](url: URL): F[Template] =
+  def loadTemplate[F[_]: Sync: Logger](url: URL): F[Template] =
     loadUrl[F](url)
       .flatMap(s => parseTemplate(s))
-      .map { t =>
-        logger.info(s"Compiled template $url")
-        t
+      .flatMap { t =>
+        Logger[F].info(s"Compiled template $url").as(t)
       }
 
   case class DocData(swaggerRoot: String, openapiSpec: String)
@@ -125,30 +125,67 @@ object TemplateRoutes {
 
   case class IndexData(
       flags: AppConfig,
-      faviconBase: String,
       cssUrls: Seq[String],
       jsUrls: Seq[String],
       appExtraJs: String,
-      flagsJson: String
+      flagsJson: String,
+      customHead: String
   )
 
   object IndexData {
+    val favIconBase = s"/app/assets/sharry-webapp/${BuildInfo.version}/favicon"
 
-    def apply(cfg: Config): IndexData =
-      IndexData(
-        InfoRoutes.appConfig(cfg),
-        s"/app/assets/sharry-webapp/${BuildInfo.version}/favicon",
-        Seq(
-          s"/app/assets/sharry-webapp/${BuildInfo.version}/css/styles.css"
-        ),
-        Seq(
-          "/app/assets" + Webjars.tusjsclient + "/dist/tus.min.js",
-          "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
-          s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry-app.js"
-        ),
-        s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry.js",
-        InfoRoutes.appConfig(cfg).asJson.spaces2
+    val defaultHead =
+      s"""
+         |<link rel="apple-touch-icon" sizes="180x180" href="$favIconBase/apple-touch-icon.png">
+         |<link rel="icon" type="image/png" sizes="32x32" href="$favIconBase/favicon-32x32.png">
+         |<link rel="icon" type="image/png" sizes="16x16" href="$favIconBase/favicon-16x16.png">
+         |<link rel="manifest" href="$favIconBase/manifest.json">
+         |<link rel="mask-icon" href="$favIconBase/safari-pinned-tab.svg" color="#5bbad5">
+         |<meta name="theme-color" content="#ffffff">
+         |""".stripMargin
+
+    def apply[F[_]: Sync: Files: Logger](cfg: Config): F[IndexData] =
+      loadCustomHead(cfg).map { headSection =>
+        IndexData(
+          InfoRoutes.appConfig(cfg),
+          Seq(
+            s"/app/assets/sharry-webapp/${BuildInfo.version}/css/styles.css"
+          ),
+          Seq(
+            "/app/assets" + Webjars.tusjsclient + "/dist/tus.min.js",
+            "/app/assets" + Webjars.clipboardjs + "/clipboard.min.js",
+            s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry-app.js"
+          ),
+          s"/app/assets/sharry-webapp/${BuildInfo.version}/sharry.js",
+          InfoRoutes.appConfig(cfg).asJson.spaces2,
+          headSection
+        )
+      }
+
+    private def loadCustomHead[F[_]: Sync: Files: Logger](cfg: Config): F[String] = {
+      val nonEmptyHead = Stream.emit(cfg.webapp.customHead).filter(_.nonEmpty).covary[F]
+
+      val readFile =
+        nonEmptyHead
+          .map(Path(_))
+          .evalFilter(Files[F].exists)
+          .evalTap(p => Logger[F].info(s"Including head section from file: $p"))
+          .evalMap(p => Files[F].readUtf8(p).compile.string)
+
+      val plainValue = nonEmptyHead.evalTap { _ =>
+        Logger[F]
+          .info("Use custom head section as plain string into main template")
+      }
+
+      val default = Stream.eval(
+        Logger[F]
+          .info(s"Use default head section for main template")
+          .as(defaultHead)
       )
+
+      (readFile ++ plainValue ++ default).head.compile.lastOrError
+    }
 
     implicit def yamuscaValueConverter: ValueConverter[IndexData] =
       deriveValueConverter[IndexData]

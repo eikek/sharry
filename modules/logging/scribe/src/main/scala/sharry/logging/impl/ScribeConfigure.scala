@@ -7,8 +7,10 @@
 package sharry.logging.impl
 
 import cats.effect.Sync
+
 import sharry.logging.LogConfig.Format
 import sharry.logging.{Level, LogConfig}
+
 import scribe.format.Formatter
 import scribe.jul.JULHandler
 import scribe.writer.SystemOutWriter
