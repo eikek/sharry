@@ -7,9 +7,10 @@ import sharry.backend.config.{Config => BackendConfig}
 import sharry.common._
 import sharry.logging.LogConfig
 
+import com.comcast.ip4s.{Host, Port}
+
 case class Config(
     baseUrl: LenientUri,
-    responseTimeout: Duration,
     aliasMemberEnabled: Boolean,
     bind: Config.Bind,
     logging: LogConfig,
@@ -58,7 +59,7 @@ case class Config(
 
 object Config {
 
-  case class Bind(address: String, port: Int)
+  case class Bind(address: Host, port: Port)
 
   case class Webapp(
       appName: String,

@@ -6,6 +6,7 @@ import cats.implicits._
 import sharry.common._
 import sharry.restserver.config.Config
 
+import com.comcast.ip4s.Port
 import org.http4s._
 import org.http4s.headers._
 import org.typelevel.ci.CIString
@@ -17,11 +18,11 @@ object ClientRequestInfo {
     if (cfg.baseUrl.isLocal) getBaseUrl(req, cfg.bind.port).getOrElse(cfg.baseUrl)
     else cfg.baseUrl
 
-  private def getBaseUrl[F[_]](req: Request[F], serverPort: Int): Option[LenientUri] =
+  private def getBaseUrl[F[_]](req: Request[F], serverPort: Port): Option[LenientUri] =
     for {
       scheme <- NonEmptyList.fromList(getProtocol(req).toList)
       host <- getHostname(req)
-      port = xForwardedPort(req).getOrElse(serverPort)
+      port = xForwardedPort(req).getOrElse(serverPort.value)
       hostPort = if (port == 80 || port == 443) host else s"$host:$port"
     } yield LenientUri(scheme, Some(hostPort), LenientUri.EmptyPath, None, None)
 

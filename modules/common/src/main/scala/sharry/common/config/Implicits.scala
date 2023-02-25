@@ -8,6 +8,7 @@ import fs2.io.file.Path
 
 import sharry.common._
 
+import com.comcast.ip4s.{Host, Port}
 import pureconfig._
 import pureconfig.configurable.genericMapReader
 import pureconfig.error.{CannotConvert, FailureReason}
@@ -47,12 +48,20 @@ trait Implicits {
   implicit val signupModeReader: ConfigReader[SignupMode] =
     ConfigReader[String].emap(reason(SignupMode.fromString))
 
-  def reason[A: ClassTag](
-      f: String => Either[String, A]
-  ): String => Either[FailureReason, A] =
+  implicit val portReader: ConfigReader[Port] =
+    ConfigReader[Int].emap(reason(n => Port.fromInt(n).toRight(s"Invalid port: $n")))
+
+  implicit val hostReader: ConfigReader[Host] =
+    ConfigReader[String].emap(
+      reason(s => Host.fromString(s).toRight(s"Invalid host address: $s"))
+    )
+
+  def reason[I, A: ClassTag](
+      f: I => Either[String, A]
+  ): I => Either[FailureReason, A] =
     in =>
       f(in).left.map(str =>
-        CannotConvert(in, implicitly[ClassTag[A]].runtimeClass.toString, str)
+        CannotConvert(in.toString, implicitly[ClassTag[A]].runtimeClass.toString, str)
       )
 }
 

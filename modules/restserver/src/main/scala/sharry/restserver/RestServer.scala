@@ -1,12 +1,9 @@
 package sharry.restserver
 
-import scala.concurrent.duration._
-
-import cats.data.Kleisli
-import cats.data.OptionT
+import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.syntax.all._
-import fs2.Stream
+import fs2.{Pure, Stream}
 
 import sharry.backend.auth.AuthToken
 import sharry.common.LenientUri
@@ -17,12 +14,11 @@ import sharry.restserver.routes._
 import sharry.restserver.webapp._
 
 import org.http4s._
-import org.http4s.blaze.client.BlazeClientBuilder
-import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers.Location
-import org.http4s.implicits._
+import org.http4s.ember.client.EmberClientBuilder
+import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.headers.{Location, `Content-Length`, `Content-Type`}
 import org.http4s.server.Router
 import org.http4s.server.middleware.{Logger => Http4sLogger}
 
@@ -30,10 +26,31 @@ object RestServer {
   def stream[F[_]: Async](cfg: Config, pools: Pools): Stream[F, Nothing] = {
     implicit val logger = sharry.logging.getLogger[F]
 
+    val server = httpApp(cfg, pools).flatMap(httpServer(cfg, _))
+    Stream
+      .resource(server)
+      .evalTap(s => logger.info(s"Started http server at ${s.baseUri}"))
+      .flatMap(_ => Stream.never)
+  }
+
+  def httpServer[F[_]: Async: Logger](cfg: Config, app: HttpApp[F]) =
+    EmberServerBuilder
+      .default[F]
+      .withHost(cfg.bind.address)
+      .withPort(cfg.bind.port)
+      .withErrorHandler { case ex =>
+        Logger[F]
+          .error(ex)("Error processing request!")
+          .as(internalError(ex.getMessage).covary[F])
+      }
+      .withHttpApp(app)
+      .build
+
+  def httpApp[F[_]: Async: Logger](cfg: Config, pools: Pools): Resource[F, HttpApp[F]] = {
     val templates = TemplateRoutes[F](cfg)
-    val app = for {
+    for {
       restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
-      client <- BlazeClientBuilder[F].resource
+      client <- EmberClientBuilder.default[F].build
 
       httpApp = Router(
         "/api/v2/open/" -> openRoutes(cfg, client, restApp),
@@ -60,20 +77,7 @@ object RestServer {
       finalHttpApp = Http4sLogger.httpApp(false, false)(httpApp)
 
     } yield finalHttpApp
-
-    Stream
-      .resource(app)
-      .flatMap(httpApp =>
-        BlazeServerBuilder[F]
-          .bindHttp(cfg.bind.port, cfg.bind.address)
-          .withResponseHeaderTimeout(cfg.responseTimeout.toScala)
-          .withIdleTimeout(cfg.responseTimeout.toScala + 30.seconds)
-          .withHttpApp(httpApp)
-          .withoutBanner
-          .serve
-      )
-
-  }.drain
+  }
 
   def aliasRoutes[F[_]: Async](
       cfg: Config,
@@ -139,6 +143,16 @@ object RestServer {
         logger
           .info(s"Non-admin '${token.account}' calling admin routes")
           .map(_ => Response.notFound[F])
+      )
+    )
+
+  private def internalError(msg: String): Response[Pure] =
+    Response(
+      status = Status.InternalServerError,
+      body = Stream.emit(s"Internal Error: $msg").through(fs2.text.utf8.encode),
+      headers = Headers(
+        `Content-Type`(MediaType.text.plain, Charset.`UTF-8`),
+        `Content-Length`.unsafeFromLong(16L + msg.length)
       )
     )
 

@@ -27,7 +27,6 @@ let
         "org.http4s" = "Info";
       };
     };
-    response-timeout = "4 minutes";
     alias-member-enabled = true;
     webapp = {
       app-name = "Sharry";
@@ -300,17 +299,6 @@ in {
           });
           default = defaults.logging;
           description = "Settings for logging";
-        };
-
-        response-timeout = mkOption {
-          type = types.str;
-          default = defaults.response-timeout;
-          description = ''
-            The time from receiving a request until the first line of the
-            response is rendered. When uploading big chunks on slow
-            connections, this may have to be increased (or the
-            `webapp.chunk-size' decreased).
-          '';
         };
 
         alias-member-enabled = mkOption {
