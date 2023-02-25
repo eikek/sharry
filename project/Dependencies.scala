@@ -20,7 +20,7 @@ object Dependencies {
   val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.5.4"
   val PureConfigVersion = "0.17.2"
-  val ScribeVersion = "3.9.0"
+  val ScribeVersion = "3.11.1"
   val SourcecodeVersion = "0.3.0"
   val SwaggerVersion = "4.15.5"
   val TikaVersion = "2.7.0"
@@ -29,7 +29,7 @@ object Dependencies {
 
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,
-    "com.outr" %% "scribe-slf4j" % ScribeVersion
+    "com.outr" %% "scribe-slf4j2" % ScribeVersion
   )
 
   val sourcecode = Seq(
