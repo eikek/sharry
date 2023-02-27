@@ -3,9 +3,15 @@ package sharry.store
 import javax.sql.DataSource
 
 import cats.effect.Async
+import cats.syntax.all._
 import fs2.io.file.Path
 
-import binny.fs.{FsChunkedBinaryStore, FsChunkedStoreConfig}
+import binny.ChunkedBinaryStore
+import binny.fs.{
+  FsChunkedBinaryStore,
+  FsChunkedBinaryStoreWithCleanup,
+  FsChunkedStoreConfig
+}
 import binny.jdbc.{GenericJdbcStore, JdbcStoreConfig}
 import binny.minio.{MinioChunkedBinaryStore, MinioConfig, S3KeyMapping}
 import binny.tika.TikaContentTypeDetect
@@ -22,7 +28,8 @@ object FileStoreConfig {
 
   case class FileSystem(
       enabled: Boolean,
-      directory: Path
+      directory: Path,
+      cleanEmptyDirs: Boolean
   ) extends FileStoreConfig {
     val storeType = FileStoreType.FileSystem
   }
@@ -42,19 +49,23 @@ object FileStoreConfig {
 
   def createBinaryStore[F[_]: Async](ds: DataSource, chunkSize: Int)(
       config: FileStoreConfig
-  ) = {
-    val logger = SharryLogger(sharry.logging.getLogger[F])
+  ): F[ChunkedBinaryStore[F]] = {
+    implicit val logger: binny.util.Logger[F] = SharryLogger(sharry.logging.getLogger[F])
     config match {
       case DefaultDatabase(_) =>
         val cfg = JdbcStoreConfig("filechunk", chunkSize, TikaContentTypeDetect.default)
-        GenericJdbcStore[F](ds, logger, cfg)
+        val store: ChunkedBinaryStore[F] = GenericJdbcStore[F](ds, logger, cfg)
+        store.pure[F]
 
-      case FileSystem(_, baseDir) =>
+      case FileSystem(_, baseDir, cleanEmptyDirs) =>
         val cfg = FsChunkedStoreConfig
           .defaults(baseDir)
           .copy(chunkSize = chunkSize)
           .withContentTypeDetect(TikaContentTypeDetect.default)
-        FsChunkedBinaryStore(logger, cfg)
+        val fsStore = FsChunkedBinaryStore(logger, cfg)
+        if (cleanEmptyDirs)
+          FsChunkedBinaryStoreWithCleanup(fsStore).map(a => a: ChunkedBinaryStore[F])
+        else (fsStore: ChunkedBinaryStore[F]).pure[F]
 
       case S3(_, endpoint, accessKey, secretKey, bucket) =>
         val cfg = MinioConfig
@@ -66,7 +77,8 @@ object FileStoreConfig {
           )
           .copy(chunkSize = chunkSize)
           .withContentTypeDetect(TikaContentTypeDetect.default)
-        MinioChunkedBinaryStore(cfg, logger)
+        val store: ChunkedBinaryStore[F] = MinioChunkedBinaryStore(cfg, logger)
+        store.pure[F]
     }
   }
 

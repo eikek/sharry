@@ -169,6 +169,9 @@ This is configured in the `files` section:
           { enabled = false
             type = "file-system"
             directory = "/some/directory"
+            # If true, empty directories that can be left behind after deleting 
+            # a file are removed as well.
+            clean-empty-dirs = true
           }
 
         minio =
