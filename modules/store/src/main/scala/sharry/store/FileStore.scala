@@ -34,7 +34,7 @@ trait FileStore[F[_]] {
 
   def computeAttributes: ComputeChecksum[F]
 
-  def createBinaryStore: FileStoreConfig => ChunkedBinaryStore[F]
+  def createBinaryStore: FileStoreConfig => F[ChunkedBinaryStore[F]]
 }
 
 object FileStore {
@@ -47,11 +47,12 @@ object FileStore {
       config: FileStoreConfig
   ): F[FileStore[F]] = {
     val create = FileStoreConfig.createBinaryStore[F](ds, chunkSize) _
-    val bs = create(config)
     val as = AttributeStore(xa)
-    ComputeChecksum[F](bs, computeChecksumConfig).map(cc =>
-      new Impl[F](bs, as, chunkSize, cc, create)
-    )
+    for {
+      bs <- create(config)
+      cc <- ComputeChecksum[F](bs, computeChecksumConfig)
+      res = new Impl[F](bs, as, chunkSize, cc, create)
+    } yield res
   }
 
   final private class Impl[F[_]: Sync](
@@ -59,7 +60,7 @@ object FileStore {
       attrStore: AttributeStore[F],
       val chunkSize: Int,
       val computeAttributes: ComputeChecksum[F],
-      val createBinaryStore: FileStoreConfig => ChunkedBinaryStore[F]
+      val createBinaryStore: FileStoreConfig => F[ChunkedBinaryStore[F]]
   ) extends FileStore[F] {
 
     def delete(id: Ident): F[Unit] =
