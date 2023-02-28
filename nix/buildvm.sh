@@ -7,4 +7,4 @@ fi
 
 nixos-rebuild build-vm \
   -I nixos-config=./configuration-test.nix \
-  -I nixpkgs=channel:nixos-22.05
+  -I nixpkgs=channel:nixos-22.11
