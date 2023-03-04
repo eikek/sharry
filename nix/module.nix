@@ -95,6 +95,7 @@ let
             user-url = "https://api.github.com/user";
             user-id-key = "login";
             user-email-key = null;
+            scope = "";
             client-id = "<your client id>";
             client-secret = "<your client secret>";
           }
@@ -680,6 +681,13 @@ in {
                             default = d.user-email-key;
                             description = ''
                               The name of the field in the json response denoting the users email."
+                            '';
+                          };
+                          scope = mkOption {
+                            type = types.str;
+                            default = d.scope;
+                            description = ''
+                              A scope definition to use when initiating the authentication flow.
                             '';
                           };
                           client-id = mkOption {
