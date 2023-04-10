@@ -51,27 +51,29 @@ object OFiles {
         )
 
       def copyFiles(source: FileStoreConfig, target: FileStoreConfig): F[Int] = {
-        val src = store.fileStore.createBinaryStore(source)
-        val trg = store.fileStore.createBinaryStore(target)
+        val srcF = store.fileStore.createBinaryStore(source)
+        val trgF = store.fileStore.createBinaryStore(target)
         val binnyLogger = FileStoreConfig.SharryLogger(logger)
 
         logger.info(s"Starting to copy $source -> $target") *>
-          CopyTool
-            .copyAll(
-              binnyLogger,
-              src,
-              trg,
-              store.fileStore.chunkSize,
-              fileConfig.copyFiles.parallel
-            )
-            .flatTap { r =>
-              logger.info(
-                s"Copied ${r.success} files, ${r.exist} existed already and ${r.notFound} were not found."
-              ) *> (if (r.failed.nonEmpty)
-                      logger.warn(s"Failed to copy these files: ${r.failed}")
-                    else ().pure[F])
-            }
-            .map(_.success)
+          (srcF, trgF).flatMapN { (src, trg) =>
+            CopyTool
+              .copyAll(
+                binnyLogger,
+                src,
+                trg,
+                store.fileStore.chunkSize,
+                fileConfig.copyFiles.parallel
+              )
+              .flatTap { r =>
+                logger.info(
+                  s"Copied ${r.success} files, ${r.exist} existed already and ${r.notFound} were not found."
+                ) *> (if (r.failed.nonEmpty)
+                        logger.warn(s"Failed to copy these files: ${r.failed}")
+                      else ().pure[F])
+              }
+              .map(_.success)
+          }
       }
     }
 }

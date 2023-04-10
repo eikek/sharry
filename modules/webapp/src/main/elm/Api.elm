@@ -295,7 +295,7 @@ getOpenShare flags id pass receive =
         , headers =
             case pass of
                 Just pw ->
-                    [ Http.header "Sharry-Password" pw ]
+                    [ Http.header "Sharry-Password" (Url.percentEncode pw) ]
 
                 Nothing ->
                     []

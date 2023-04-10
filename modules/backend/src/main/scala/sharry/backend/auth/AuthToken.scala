@@ -1,14 +1,13 @@
 package sharry.backend.auth
 
 import java.time.Instant
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 
 import cats.effect._
 import cats.implicits._
 
 import sharry.backend.Common
 import sharry.backend.auth.AuthToken._
+import sharry.common.util.SignUtil
 import sharry.common.{AccountId, Duration}
 
 import scodec.bits.ByteVector
@@ -61,9 +60,7 @@ object AuthToken {
 
   private def sign(cd: AuthToken, key: ByteVector): String = {
     val raw = cd.millis.toString + cd.account.asString + cd.salt
-    val mac = Mac.getInstance("HmacSHA1")
-    mac.init(new SecretKeySpec(key.toArray, "HmacSHA1"))
-    ByteVector.view(mac.doFinal(raw.getBytes(utf8))).toBase64
+    SignUtil.signString(raw, key).toBase64
   }
 
   private def b64enc(s: String): String =

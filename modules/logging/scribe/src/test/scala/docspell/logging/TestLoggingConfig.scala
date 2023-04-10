@@ -6,17 +6,18 @@
 
 package docspell.logging
 
-import munit.Suite
 import sharry.logging._
 import sharry.logging.impl.ScribeConfigure
 
+import munit.Suite
+
 trait TestLoggingConfig extends Suite {
-  def docspellLogConfig: LogConfig = LogConfig(Level.Warn, LogConfig.Format.Fancy)
+  def docspellLogConfig: LogConfig =
+    LogConfig(Level.Warn, LogConfig.Format.Fancy, Map.empty)
   def rootMinimumLevel: Level = Level.Error
 
   override def beforeAll(): Unit = {
     super.beforeAll()
     ScribeConfigure.unsafeConfigure(docspellLogConfig)
   }
-
 }

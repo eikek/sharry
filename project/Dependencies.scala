@@ -4,32 +4,33 @@ object Dependencies {
 
   val BcryptVersion = "0.4"
   val BetterMonadicForVersion = "0.3.1"
-  val BinnyVersion = "0.7.0"
-  val CirceVersion = "0.14.4"
+  val BinnyVersion = "0.9.1"
+  val CirceVersion = "0.14.5"
   val ClipboardJsVersion = "2.0.11"
   val DoobieVersion = "1.0.0-RC2"
   val EmilVersion = "0.13.0"
-  val FlywayVersion = "9.15.0"
+  val FlywayVersion = "9.16.3"
   val Fs2Version = "3.6.1"
   val H2Version = "2.1.214"
   val Http4sVersion = "0.23.18"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
-  val MariaDbVersion = "3.1.2"
+  val MariaDbVersion = "3.1.3"
   val MUnitVersion = "0.7.29"
+  val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
-  val PostgresVersion = "42.5.4"
+  val PostgresVersion = "42.6.0"
   val PureConfigVersion = "0.17.2"
-  val ScribeVersion = "3.9.0"
-  val SourcecodeVersion = "0.2.8"
-  val SwaggerVersion = "4.15.5"
+  val ScribeVersion = "3.11.1"
+  val SourcecodeVersion = "0.3.0"
+  val SwaggerVersion = "4.18.2"
   val TikaVersion = "2.7.0"
   val TusClientVersion = "1.8.0-1"
   val YamuscaVersion = "0.10.0"
 
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,
-    "com.outr" %% "scribe-slf4j" % ScribeVersion
+    "com.outr" %% "scribe-slf4j2" % ScribeVersion
   )
 
   val sourcecode = Seq(
@@ -48,14 +49,14 @@ object Dependencies {
   )
 
   val http4s = Seq(
-    "org.http4s" %% "http4s-blaze-server" % "0.23.13",
+    "org.http4s" %% "http4s-ember-server" % Http4sVersion,
     "org.http4s" %% "http4s-circe" % Http4sVersion,
     "org.http4s" %% "http4s-dsl" % Http4sVersion
   )
 
   val http4sclient = Seq(
     "org.http4s" %% "http4s-dsl" % Http4sVersion,
-    "org.http4s" %% "http4s-blaze-client" % "0.23.13"
+    "org.http4s" %% "http4s-ember-client" % Http4sVersion
   )
 
   val circeCore = Seq(
@@ -123,7 +124,8 @@ object Dependencies {
 
   val munit = Seq(
     "org.scalameta" %% "munit" % MUnitVersion,
-    "org.scalameta" %% "munit-scalacheck" % MUnitVersion
+    "org.scalameta" %% "munit-scalacheck" % MUnitVersion,
+    "org.typelevel" %% "munit-cats-effect-3" % MUnitCatsEffectVersion
   )
 
   val kindProjectorPlugin = "org.typelevel" %% "kind-projector" % KindProjectorVersion

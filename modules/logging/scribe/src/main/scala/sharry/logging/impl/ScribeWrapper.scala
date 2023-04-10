@@ -8,8 +8,11 @@ package sharry.logging.impl
 
 import cats.Id
 import cats.effect.Sync
+
 import sharry.logging.{Level, LogEvent, Logger}
+
 import scribe.LoggerSupport
+import scribe.data.MDC
 import scribe.message.LoggableMessage
 
 private[logging] object ScribeWrapper {
@@ -44,7 +47,15 @@ private[logging] object ScribeWrapper {
         case Left(msg) => LoggableMessage.string2Message(msg)
       }
     }
-    LoggerSupport(level, ev.msg() :: additional, ev.pkg, ev.fileName, ev.name, ev.line)
+    LoggerSupport(
+      level,
+      ev.msg() :: additional,
+      ev.pkg,
+      ev.fileName,
+      ev.name,
+      ev.line,
+      MDC.instance
+    )
       .copy(data = ev.data)
   }
 }

@@ -27,22 +27,24 @@ in
 
   services.sharry = {
     enable = true;
-    bind.address = "0.0.0.0";
-    base-url = "http://localhost:9090";
-    webapp = {
-      default-language = "de";
-    };
-    backend = {
-      auth = {
-        oauth = [];
+    config = {
+      bind.address = "0.0.0.0";
+      base-url = "http://localhost:9090";
+      webapp = {
+        default-language = "de";
       };
-      share = {
-        database-domain-checks = [
-          { enabled = true;
-            native = "domain safe_bytea violates check constraint";
-            message = "The uploaded file contains a virus!";
-          }
-        ];
+      backend = {
+        auth = {
+          oauth = [];
+        };
+        share = {
+          database-domain-checks = [
+            { enabled = true;
+              native = "domain safe_bytea violates check constraint";
+              message = "The uploaded file contains a virus!";
+            }
+          ];
+        };
       };
     };
   };
@@ -56,6 +58,6 @@ in
     firewall.allowedTCPPorts = [ 9090 ];
   };
 
-  system.stateVersion = "21.11";
+  system.stateVersion = "22.11";
 
 }

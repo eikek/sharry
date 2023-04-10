@@ -70,7 +70,6 @@ passwordDialog texts model =
                     , class "ml-2 block"
                     , href "#"
                     , type_ "submit"
-                    , onClick SubmitPassword
                     ]
                     [ text texts.submit
                     ]

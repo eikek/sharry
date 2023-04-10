@@ -169,6 +169,9 @@ This is configured in the `files` section:
           { enabled = false
             type = "file-system"
             directory = "/some/directory"
+            # If true, empty directories that can be left behind after deleting 
+            # a file are removed as well.
+            clean-empty-dirs = true
           }
 
         minio =
@@ -469,6 +472,7 @@ oauth = [
        token-url = "https://github.com/login/oauth/access_token"
        user-url = "https://api.github.com/user"
        user-id-key = "login"
+       scope = ""
        client-id = "<your client id>"
        client-secret = "<your client secret>"
      }
@@ -511,9 +515,13 @@ Let's go through the config values of one entry:
   response structure. For example, the github response is a simple
   JSON object, where the login name is at field `login`. The path must
   evaluate to a string. This value is used for the new account inside
-  sharry.
+  sharry. Another value that often works is `preferred_username`.
 - `user-email-key`: optional, if present is used to populated the
   email field of the newly created account.
+- `scope`: optional, can be empty. Allows to specify the open id
+  scopes to use when initiating the authentication. This can be useful
+  to return custom data from the IDP to be used with `user-email-key`
+  or `user-id-key`
 - `client-id` and `client-secret` These are provider specific values
   that you need to obtain there. With github, for example, you
   register a new "app" which generates these values.

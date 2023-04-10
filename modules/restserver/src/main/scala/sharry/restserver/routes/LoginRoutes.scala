@@ -12,7 +12,7 @@ import sharry.restapi.model._
 import sharry.restserver._
 import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
-import sharry.restserver.oauth.CodeFlow
+import sharry.restserver.oauth.{CodeFlow, StateParam}
 
 import org.http4s._
 import org.http4s.circe.CirceEntityDecoder._
@@ -45,15 +45,23 @@ object LoginRoutes {
       case req @ GET -> Root / "oauth" / id =>
         findOAuthProvider(cfg, id) match {
           case Some(p) =>
-            val uri = p.authorizeUrl
-              .withQuery("client_id", p.clientId)
-              .withQuery(
-                "redirect_uri",
-                redirectUri(cfg, req, p).asString
+            for {
+              state <- StateParam.generate[F](cfg.backend.auth.serverSecret)
+              uri = p.authorizeUrl
+                .withQuery("client_id", p.clientId)
+                .withQuery("scope", p.scope)
+                .withQuery(
+                  "redirect_uri",
+                  redirectUri(cfg, req, p).asString
+                )
+                .withQuery("response_type", "code")
+                .withQuery("state", state.asString)
+              _ <- logger.debug(
+                s"Redirecting to OAuth provider ${p.id.id}: ${uri.asString}"
               )
-              .withQuery("response_type", "code")
-            logger.debug(s"Redirecting to OAuth provider ${p.id.id}: ${uri.asString}") *>
-              SeeOther().map(_.withHeaders(Location(Uri.unsafeFromString(uri.asString))))
+              resp <- Found(Location(Uri.unsafeFromString(uri.asString)))
+            } yield resp
+
           case None =>
             logger.debug(s"No oauth provider found with id '$id'") *> BadRequest()
         }
@@ -61,8 +69,21 @@ object LoginRoutes {
       case req @ GET -> Root / "oauth" / id / "resume" =>
         val prov = OptionT.fromOption[F](findOAuthProvider(cfg, id))
         val code = OptionT.fromOption[F](req.params.get("code"))
+        val stateParamValid = req.params
+          .get("state")
+          .exists(state =>
+            StateParam.isValidStateParam(state, cfg.backend.auth.serverSecret)
+          )
 
         val userId = for {
+          _ <-
+            if (stateParamValid) OptionT.pure[F](())
+            else
+              OptionT(
+                logger
+                  .warn(s"Invalid state parameter returned form IDP!")
+                  .as(Option.empty[Unit])
+              )
           p <- prov
           c <- code
           u <- CodeFlow(client)(p, redirectUri(cfg, req, p).asString, c)

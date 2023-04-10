@@ -28,7 +28,8 @@ val sharedSettings = Seq(
     "-Wvalue-discard",
     "-Wnumeric-widen"
   ),
-  Compile / console / scalacOptions := Seq()
+  Compile / console / scalacOptions := Seq(),
+  Test / console / scalacOptions := Seq()
 ) ++ scalafixSettings
 
 val testSettingsMUnit = Seq(
@@ -363,7 +364,16 @@ val root = project
   .settings(
     name := "sharry-root"
   )
-  .aggregate(common, store, backend, webapp, restapi, restserver)
+  .aggregate(
+    common,
+    loggingApi,
+    loggingScribe,
+    store,
+    backend,
+    webapp,
+    restapi,
+    restserver
+  )
 
 def copyWebjarResources(
     src: Seq[File],

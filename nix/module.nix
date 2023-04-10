@@ -27,7 +27,6 @@ let
         "org.http4s" = "Info";
       };
     };
-    response-timeout = "4 minutes";
     alias-member-enabled = true;
     webapp = {
       app-name = "Sharry";
@@ -96,6 +95,7 @@ let
             user-url = "https://api.github.com/user";
             user-id-key = "login";
             user-email-key = null;
+            scope = "";
             client-id = "<your client id>";
             client-secret = "<your client secret>";
           }
@@ -300,17 +300,6 @@ in {
           });
           default = defaults.logging;
           description = "Settings for logging";
-        };
-
-        response-timeout = mkOption {
-          type = types.str;
-          default = defaults.response-timeout;
-          description = ''
-            The time from receiving a request until the first line of the
-            response is rendered. When uploading big chunks on slow
-            connections, this may have to be increased (or the
-            `webapp.chunk-size' decreased).
-          '';
         };
 
         alias-member-enabled = mkOption {
@@ -692,6 +681,13 @@ in {
                             default = d.user-email-key;
                             description = ''
                               The name of the field in the json response denoting the users email."
+                            '';
+                          };
+                          scope = mkOption {
+                            type = types.str;
+                            default = d.scope;
+                            description = ''
+                              A scope definition to use when initiating the authentication flow.
                             '';
                           };
                           client-id = mkOption {
