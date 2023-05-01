@@ -1,0 +1,175 @@
+<!DOCTYPE html><html><head><title>Sharry: Rest Api</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Sharry – Share files conveniently" /><meta name="og:image" content="/sharry/img/poster.png" /><meta name="image" property="og:image" content="/sharry/img/poster.png" /><meta name="og:title" content="Sharry: Rest Api" /><meta name="title" property="og:title" content="Sharry: Rest Api" /><meta name="og:site_name" content="Sharry" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Sharry – Share files conveniently" /><link rel="icon" type="image/png" href="/sharry/img/favicon.png" /><meta name="twitter:title" content="Sharry: Rest Api" /><meta name="twitter:image" content="/sharry/img/poster.png" /><meta name="twitter:description" content="Sharry – Share files conveniently" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="32x32" href="/sharry/img/favicon-32x32.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/sharry/highlight/styles/vs.css" /><link rel="stylesheet" href="/sharry/css/light-style.css" /><link rel="stylesheet" href="/sharry/css/styles.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/sharry/" class="brand"><div class="brand-wrapper"></div><span>Sharry</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/sharry/doc/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/quickstart" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/install" title="Installation" class="drop-nested">Installation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/migration" title="Migration" class="">Migration</a> <a href="/sharry/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/sharry/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/sharry/doc/fail2ban" title="Fail2ban" class="">Fail2ban</a> <a href="/sharry/doc/sharex" title="ShareX" class="">ShareX</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/configure" title="Configuring" class="">Configuring</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/webapp" title="Webapp" class="drop-nested">Webapp</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/screenshots" title="Screenshots" class="">Screenshots</a></div></div> <div class="sidebar-nav-item active "><a href="/sharry/doc/rest" title="REST Api" class="active">REST Api</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/dev" title="Development" class="">Development</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="search-nav"><div id="search-dropdown"><label><i class="fa fa-search"></i>Search</label><input id="search-bar" type="text" placeholder="Enter keywords here..." onclick="displayToggleSearch(event)" /><ul id="search-dropdown-content" class="dropdown dropdown-content"></ul></div></li><li id="gh-eyes-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="sharry"><div class="content-wrapper"><section><h1 id="rest-api">REST Api</h1>
+
+<p>Sharry is provided as a REST server and a web application client. The
+REST Api is specified using openapi 3.0 and it’s static documentation
+can be seen <a href="../openapi/sharry-openapi.html">here</a>.</p>
+
+<p>The “raw” <code class="language-plaintext highlighter-rouge">openapi.yml</code> specification file can be found
+<a href="../openapi/sharry-openapi.yml">here</a>.</p>
+
+<p>The calls are divided into 4 categories:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/open/*</code>: no authentication is required to access</li>
+  <li><code class="language-plaintext highlighter-rouge">/sec/*</code>: an authenticated user is required</li>
+  <li><code class="language-plaintext highlighter-rouge">/alias/*</code>: these routes are allowed with a valid <em>alias id</em> given
+as header <code class="language-plaintext highlighter-rouge">Sharry-Alias</code></li>
+  <li><code class="language-plaintext highlighter-rouge">/admin/*</code>: an authenticated user that is admin is required</li>
+</ul>
+
+<p>Authentication works by logging in with username/password (or an
+oauth2 flow) that generates a token that has to be sent with every
+request to a secured and admin route. It is possible to sent it via a
+<code class="language-plaintext highlighter-rouge">Cookie</code> header or the special <code class="language-plaintext highlighter-rouge">Sharry-Auth</code> header.</p>
+
+<p>Files can be uploaded using different methods. There is an endpoint
+that can take all files and meta data from one single request. For
+more reliable uploads, the server implements the <a href="https://tus.io/protocols/resumable-upload.html">tus
+protocol</a> that allows
+to resume failed or paused uploads.</p>
+
+<h2 id="authentication">Authentication</h2>
+
+<p>The unprotected route <code class="language-plaintext highlighter-rouge">/open/auth/login</code> can be used to login with
+account name and password. The response contains a token that can be
+used for accessing protected routes. The token is only valid for a
+restricted time which can be configured (default is 5 minutes).</p>
+
+<p>New tokens can be generated using an existing valid token and the
+protected route <code class="language-plaintext highlighter-rouge">/sec/auth/session</code>. This will return the same
+response as above, giving a new token.</p>
+
+<p>This token can be added to requests in two ways: as a cookie header or
+a “normal” http header. If a cookie header is used, the cookie name
+must be <code class="language-plaintext highlighter-rouge">sharry_auth</code> and a custom header must be named
+<code class="language-plaintext highlighter-rouge">Sharry-Auth</code>.</p>
+
+<h2 id="live-api">Live Api</h2>
+
+<p>Besides the statically generated documentation at this site, the rest
+server provides a openapi generated documenation, that allows playing
+around with the api. It requires a running sharry rest server. If it
+is deployed at <code class="language-plaintext highlighter-rouge">http://localhost:9090</code>, then check this url:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://localhost:909/api/doc
+</code></pre></div></div>
+
+<h2 id="examples">Examples</h2>
+
+<h3 id="login-with-usernamepassword">Login with username/password</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -d'{"account":"eike", "password":"test"}' http://localhost:9090/api/v2/open/auth/login
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"id":"6ExuF2eYpvd-hFPyEk4jAdy-aGiyyyDRk3q-nHkAE6kjViU","user":"eike","admin":false,"success":true,"message":"Login successful","token":"1577122333196-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$t5OpvGG8/t0.Dw2CO3RSN.-Lnow8nTb4t9nVMBkJEJbaRwABGY=","validMs":300000}
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">token</code> must be used with subsequent requests. It is valid for 5 minutes.</p>
+
+<h3 id="get-a-new-token">Get a new token</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -XPOST -H 'Sharry-Auth: 1577122333196-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$t5OpvGG8/t0.Dw2CO3RSN.-Lnow8nTb4t9nVMBkJEJbaRwABGY=' http://localhost:9090/api/v2/sec/auth/session
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"id":"6ExuF2eYpvd-hFPyEk4jAdy-aGiyyyDRk3q-nHkAE6kjViU","user":"eike","admin":false,"success":true,"message":"Login successful","token":"1577122497189-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$9/VNIq8e3YxHKTLyE0JwbO-bI0CpZnEsmfhDHxsjwhe7qzQaSY=","validMs":300000}
+</code></pre></div></div>
+
+<h3 id="get-your-shares">Get your shares</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -XGET -H 'Sharry-Auth: 1577122333196-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$t5OpvGG8/t0.Dw2CO3RSN.-Lnow8nTb4t9nVMBkJEJbaRwABGY=' http://localhost:9090/api/v2/sec/share/search
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"items":[{"id":"7wNPzKepw4g-gKgSfQ376tJ-HSifxLc33r5-xY8FigeF7wG","name":null,"aliasName":null,"validity":172800000,"maxViews":30,"password":false,"created":1577102005295,"files":
+1,"size":199640,"published":null},{"id":"44EPQPe7Lo2-KnUCp3kiQNg-dJ4oxiAQ5Lh-etMiDwe5KD3","name":null,"aliasName":null,"validity":172800000,"maxViews":30,"password":false,"created
+":1577101969643,"files":1,"size":192886,"published":null}]}
+</code></pre></div></div>
+
+<h3 id="create-an-alias-page">Create an alias page</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -XPOST -H 'Sharry-Auth: 1577122785983-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$kceo1M6cRNpMpptb0F67uO-sZurk/s03VHuzpxLGhT+AUF4TjU=' -d'{"name":"test alias","validity": 172800000, "enabled":true,"members":[]}' http://localhost:9090/api/v2/sec/alias
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"success":true,"message":"Alias successfully created.","id":"HfHViHEN5EM-E6jmgmw1W3H-KVUR2KanbEd-EGvDeZR2RPV"}
+</code></pre></div></div>
+
+<h3 id="upload-a-file-to-the-new-alias-page">Upload a file to the new alias page</h3>
+
+<p>Using the id, upload files via <code class="language-plaintext highlighter-rouge">multipart/form-data</code> requests. You can
+upload multiple files at once.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -XPOST -F file=@P1020416.JPG -F file=@P1020422.JPG -H 'Sharry-Alias: HfHViHEN5EM-E6jmgmw1W3H-KVUR2KanbEd-EGvDeZR2RPV' http://localhost:9090/api/v2/alias/upload
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"success":true,"message":"Share created.","id":"8P7GzxmLGjF-F7K4kXAhe8j-6AhLrQuFJGb-i54TTRZ3xn8"}
+</code></pre></div></div>
+
+<h3 id="get-details-about-the-share">Get Details about the share</h3>
+
+<p>This requires authenticated users, of course. The <code class="language-plaintext highlighter-rouge">| jq</code> pipes the
+one-line json output through a program that formats it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl -H'Sharry-Auth: 1577132299230-NkV4dUYyZVlwdmQtaEZQeUVrNGpBZHktYUdpeXl5RFJrM3EtbkhrQUU2a2pWaVUvZWlrZS9mYWxzZQ==-$2a$10$jFhOEGYktHb8yiLF5mhHjO-CvDL2MniUH+RQv8dTSWPwhSUeIw=' http://localhost:9090/api/v2/sec/share/8P7GzxmLGjF-F7K4kXAhe8j-6AhLrQuFJGb-i54TTRZ3xn8 | jq
+</code></pre></div></div>
+
+<p>Output:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "id": "8P7GzxmLGjF-F7K4kXAhe8j-6AhLrQuFJGb-i54TTRZ3xn8",
+  "name": null,
+  "aliasId": "HfHViHEN5EM-E6jmgmw1W3H-KVUR2KanbEd-EGvDeZR2RPV",
+  "aliasName": "test alias",
+  "validity": 172800000,
+  "maxViews": 30,
+  "password": false,
+  "descriptionRaw": null,
+  "description": null,
+  "created": 1577132473544,
+  "publishInfo": null,
+  "files": [
+    {
+      "id": "6QcXQ9qeSQb-VYF2p9M23XT-bMPRFkmtsPK-ejjJUns3Ymk",
+      "filename": "P1020416.JPG",
+      "size": 2829079,
+      "mimetype": "image/jpeg",
+      "checksum": "8ffe8da9d49b7e6590b78362ed0acd4156f4bccaa724c710560a57bd3c54d74d",
+      "storedSize": 2829079
+    },
+    {
+      "id": "Eur8FJj4uxL-q9NYVBqYi1L-jnsEFKPwCYQ-6Z81iazysjD",
+      "filename": "P1020422.JPG",
+      "size": 3692609,
+      "mimetype": "image/jpeg",
+      "checksum": "424bcfa141f61a73269466102ee1a826f1fae31a847a5861500fc4cbdfb1732f",
+      "storedSize": 3692609
+    }
+  ]
+}
+</code></pre></div></div>
+
+<p>The output contains the two files that have been uploaded. Also
+interesting is the <code class="language-plaintext highlighter-rouge">storedSize</code> property. This indicates how many
+bytes really reached the server. The <code class="language-plaintext highlighter-rouge">size</code> property uses the value as
+advertised by the uploader. If <code class="language-plaintext highlighter-rouge">storedSize</code> does not equal <code class="language-plaintext highlighter-rouge">size</code> then
+the file is not fully uploaded.</p>
+</section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script src="/sharry/lunr/lunr.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash']});
+hljs.initHighlightingOnLoad();
+      </script><script src="/sharry/js/fathom.js"></script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/sharry/js/search.js"></script><script src="/sharry/js/docs.js"></script></body></html>
