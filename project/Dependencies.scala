@@ -21,7 +21,7 @@ object Dependencies {
   val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.6.0"
   val PureConfigVersion = "0.17.4"
-  val ScribeVersion = "3.11.3"
+  val ScribeVersion = "3.11.5"
   val SourcecodeVersion = "0.3.0"
   val SwaggerVersion = "4.18.2"
   val TikaVersion = "2.8.0"
