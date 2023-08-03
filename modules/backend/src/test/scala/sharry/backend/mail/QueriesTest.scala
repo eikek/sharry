@@ -28,7 +28,7 @@ class QueriesTest extends FunSuite with StoreFixture {
       )
 
       for {
-        _ <- store.transact(RAccount.insert(account))
+        _ <- store.transact(RAccount.insert(account, "warn"))
         e <- store.transact(Queries.getEmail(accountId))
         _ <- IO(assertEquals(e, Some(MailAddress(Some("jdoe"), "test@test.com"))))
       } yield ()

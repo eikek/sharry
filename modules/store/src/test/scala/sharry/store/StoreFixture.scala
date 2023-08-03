@@ -6,6 +6,7 @@ import scala.util.Random
 
 import cats.effect._
 import cats.effect.unsafe.implicits.global
+import fs2.io.file.Files
 
 import sharry.common._
 import sharry.store.doobie._
@@ -23,7 +24,7 @@ trait StoreFixture {
 object StoreFixture {
   private[this] val logger = sharry.logging.unsafeLogger("StoreFixture")
 
-  def makeStore[F[_]: Async]: Resource[F, Store[F]] = {
+  def makeStore[F[_]: Async: Files]: Resource[F, Store[F]] = {
     def dataSource(jdbc: JdbcConfig): Resource[F, JdbcConnectionPool] = {
       def jdbcConnPool =
         JdbcConnectionPool.create(jdbc.url.asString, jdbc.user, jdbc.password)

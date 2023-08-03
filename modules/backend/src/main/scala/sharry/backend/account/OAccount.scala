@@ -10,7 +10,6 @@ import sharry.backend.share.{Queries => ShareQueries}
 import sharry.common._
 import sharry.store.AddResult
 import sharry.store.Store
-import sharry.store.doobie.DoobieMeta
 import sharry.store.records._
 
 import doobie._
@@ -128,7 +127,7 @@ object OAccount {
           } yield u
 
         def insert(user: RAccount): ConnectionIO[Int] =
-          RAccount.insert(user)(DoobieMeta.TraceLogging.handler)
+          RAccount.insert(user, "trace")
 
         def accountExists: ConnectionIO[Boolean] =
           RAccount.existsByLogin(acc.login)
