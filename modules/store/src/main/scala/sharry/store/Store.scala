@@ -10,8 +10,8 @@ import sharry.common.ByteSize
 import sharry.store.doobie.StoreImpl
 
 import _root_.doobie._
-import _root_.doobie.util.log.{LogEvent, Success}
 import _root_.doobie.hikari.HikariTransactor
+import _root_.doobie.util.log.{LogEvent, Success}
 import com.zaxxer.hikari.HikariDataSource
 
 trait Store[F[_]] {
@@ -59,7 +59,9 @@ object Store {
         ds.setPassword(jdbc.password)
         ds.setDriverClassName(jdbc.driverClass)
       }
-      xa <- Resource.pure(HikariTransactor[F](ds, connectEC, Some(DefaultLogging.handler[F])))
+      xa <- Resource.pure(
+        HikariTransactor[F](ds, connectEC, Some(DefaultLogging.handler[F]))
+      )
       fs <- Resource.eval(
         FileStore[F](ds, xa, chunkSize.bytes.toInt, computeChecksumConfig, fileStoreCfg)
       )

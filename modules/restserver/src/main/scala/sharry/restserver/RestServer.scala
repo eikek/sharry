@@ -3,9 +3,9 @@ package sharry.restserver
 import cats.data.{Kleisli, OptionT}
 import cats.effect._
 import cats.syntax.all._
-import fs2.{Pure, Stream}
-import fs2.io.net.Network
 import fs2.io.file.Files
+import fs2.io.net.Network
+import fs2.{Pure, Stream}
 
 import sharry.backend.auth.AuthToken
 import sharry.common.LenientUri
@@ -25,7 +25,10 @@ import org.http4s.server.Router
 import org.http4s.server.middleware.{Logger => Http4sLogger}
 
 object RestServer {
-  def stream[F[_]: Async: Files: Network](cfg: Config, pools: Pools): Stream[F, Nothing] = {
+  def stream[F[_]: Async: Files: Network](
+      cfg: Config,
+      pools: Pools
+  ): Stream[F, Nothing] = {
     implicit val logger = sharry.logging.getLogger[F]
 
     val server = httpApp(cfg, pools).flatMap(httpServer(cfg, _))
@@ -48,7 +51,10 @@ object RestServer {
       .withHttpApp(app)
       .build
 
-  def httpApp[F[_]: Async: Files: Network: Logger](cfg: Config, pools: Pools): Resource[F, HttpApp[F]] = {
+  def httpApp[F[_]: Async: Files: Network: Logger](
+      cfg: Config,
+      pools: Pools
+  ): Resource[F, HttpApp[F]] = {
     val templates = TemplateRoutes[F](cfg)
     for {
       restApp <- RestAppImpl.create[F](cfg, pools.connectEC)
