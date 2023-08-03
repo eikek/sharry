@@ -8,13 +8,10 @@ import sharry.common.syntax.all._
 
 import doobie._
 import doobie.implicits.legacy.instant._
-import doobie.util.log.Success
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector
 
 trait DoobieMeta {
-
-  implicit val sqlLogging: LogHandler = DoobieMeta.DefaultLogging.handler
 
   def jsonMeta[A](implicit d: Decoder[A], e: Encoder[A]): Meta[A] =
     Meta[String].imap(str => str.parseJsonAs[A].fold(ex => throw ex, identity))(a =>
@@ -52,26 +49,4 @@ trait DoobieMeta {
     Meta[String].timap(s => ByteVector.fromValidHex(s))(_.toHex)
 }
 
-object DoobieMeta extends DoobieMeta {
-  private[this] val logger = sharry.logging.unsafeLogger("DoobieMeta")
-
-  object TraceLogging {
-    implicit val handler: LogHandler =
-      LogHandler {
-        case e @ Success(_, _, _, _) =>
-          logger.trace("SQL success: " + e)
-        case e =>
-          logger.trace(s"SQL failure: $e")
-      }
-  }
-
-  object DefaultLogging {
-    implicit val handler: LogHandler =
-      LogHandler {
-        case e @ Success(_, _, _, _) =>
-          logger.trace("SQL success: " + e)
-        case e =>
-          logger.warn(s"SQL failure: $e")
-      }
-  }
-}
+object DoobieMeta extends DoobieMeta
