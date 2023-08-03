@@ -4,7 +4,7 @@ import javax.sql.DataSource
 
 import cats.effect.Async
 import cats.syntax.all._
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 
 import binny.ChunkedBinaryStore
 import binny.fs.{
@@ -47,7 +47,7 @@ object FileStoreConfig {
       s"S3(enabled=$enabled, endpoint=$endpoint, bucket=$bucket, accessKey=$accessKey, secretKey=***)"
   }
 
-  def createBinaryStore[F[_]: Async](ds: DataSource, chunkSize: Int)(
+  def createBinaryStore[F[_]: Async: Files](ds: DataSource, chunkSize: Int)(
       config: FileStoreConfig
   ): F[ChunkedBinaryStore[F]] = {
     implicit val logger: binny.util.Logger[F] = SharryLogger(sharry.logging.getLogger[F])

@@ -6,6 +6,7 @@ import cats.data.OptionT
 import cats.effect._
 import cats.implicits._
 import fs2.Chunk
+import fs2.io.file.Files
 
 import sharry.common._
 import sharry.store.doobie.AttributeStore
@@ -39,7 +40,7 @@ trait FileStore[F[_]] {
 
 object FileStore {
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       ds: DataSource,
       xa: Transactor[F],
       chunkSize: Int,

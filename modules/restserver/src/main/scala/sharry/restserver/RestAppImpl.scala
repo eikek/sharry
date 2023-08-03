@@ -4,6 +4,7 @@ import scala.concurrent.ExecutionContext
 
 import cats.effect._
 import cats.implicits._
+import fs2.io.file.Files
 
 import sharry.backend.BackendApp
 import sharry.restserver.config.Config
@@ -28,7 +29,7 @@ final class RestAppImpl[F[_]: Sync](val config: Config, val backend: BackendApp[
 
 object RestAppImpl {
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       cfg: Config,
       connectEC: ExecutionContext
   ): Resource[F, RestApp[F]] =

@@ -3,6 +3,7 @@ package sharry.backend
 import scala.concurrent.ExecutionContext
 
 import cats.effect._
+import fs2.io.file.Files
 
 import sharry.backend.account._
 import sharry.backend.alias.OAlias
@@ -55,7 +56,7 @@ object BackendApp {
       val files: OFiles[F] = filesImpl
     }
 
-  def apply[F[_]: Async](
+  def apply[F[_]: Async: Files](
       cfg: Config,
       connectEC: ExecutionContext
   ): Resource[F, BackendApp[F]] =

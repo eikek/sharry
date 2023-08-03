@@ -4,6 +4,7 @@ import scala.concurrent.ExecutionContext
 
 import cats.effect._
 import fs2._
+import fs2.io.file.Files
 
 import sharry.common.ByteSize
 import sharry.store.doobie.StoreImpl
@@ -40,7 +41,7 @@ object Store {
       }
   }
 
-  def create[F[_]: Async](
+  def create[F[_]: Async: Files](
       jdbc: JdbcConfig,
       chunkSize: ByteSize,
       computeChecksumConfig: ComputeChecksumConfig,
