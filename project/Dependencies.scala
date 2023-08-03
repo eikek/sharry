@@ -12,7 +12,7 @@ object Dependencies {
   val FlywayVersion = "9.21.1"
   val Fs2Version = "3.8.0"
   val H2Version = "2.2.220"
-  val Http4sVersion = "0.23.18"
+  val Http4sVersion = "0.23.23"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
   val MariaDbVersion = "3.1.4"
