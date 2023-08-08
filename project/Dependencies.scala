@@ -23,7 +23,7 @@ object Dependencies {
   val PureConfigVersion = "0.17.4"
   val ScribeVersion = "3.11.9"
   val SourcecodeVersion = "0.3.0"
-  val SwaggerVersion = "5.2.0"
+  val SwaggerVersion = "5.3.1"
   val TikaVersion = "2.8.0"
   val TusClientVersion = "1.8.0-1"
   val YamuscaVersion = "0.10.0"
