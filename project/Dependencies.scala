@@ -22,7 +22,7 @@ object Dependencies {
   val PostgresVersion = "42.6.0"
   val PureConfigVersion = "0.17.4"
   val ScribeVersion = "3.11.9"
-  val SourcecodeVersion = "0.3.0"
+  val SourcecodeVersion = "0.3.1"
   val SwaggerVersion = "5.7.2"
   val TikaVersion = "2.9.0"
   val TusClientVersion = "1.8.0-1"
