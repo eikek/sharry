@@ -3,6 +3,7 @@ module Messages.NewInvitePage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Html exposing (Html, p, text)
@@ -103,6 +104,35 @@ fr =
         , p []
             [ text
                 """Pour créer une invitation, il faut fournir le mot de passe choisi lors de la configuration."""
+            ]
+        ]
+    }
+
+
+ja : Texts
+ja =
+    { createNewTitle = "招待キーの新規作成"
+    , newInvitePassword = "キー"
+    , submit = "保存"
+    , reset = "リセット"
+    , error = "エラー"
+    , success = "成功"
+    , invitationKey = "招待パスワード : "
+    , message =
+        [ p []
+            [ text
+                """このシステムは、招待を受けた方だけがユーザー登録可能です。
+                ここで招待キーを作成することができます。
+                必要な方に招待キーを知らせることで、その方はユーザー登録を進めることができます。"""
+            ]
+        , p []
+            [ text
+                """招待キーは 1 回 ( 1 人のユーザー登録 ) のみ有効です。
+                招待したい方 1 人ずつに招待コードを作る必要があります。"""
+            ]
+        , p []
+            [ text
+                """招待キーの作成には、設定された「招待パスワード」が必要です。"""
             ]
         ]
     }

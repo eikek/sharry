@@ -3,6 +3,7 @@ module Messages.ShareTable exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Language
@@ -62,3 +63,18 @@ fr =
     , open = "Ouvrir"
     , dateTime = Messages.DateFormat.formatDateTime Language.French
     }
+
+
+ja : Texts
+ja =
+    { nameId = "共有名・ID"
+    , aliasLabel = "受信箱"
+    , maxViews = "最大表示回数"
+    , published = "公開 ?"
+    , nFiles = "ファイル数"
+    , size = "サイズ"
+    , created = "作成日時"
+    , open = "開く"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    }
+

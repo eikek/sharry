@@ -3,6 +3,7 @@ module Messages.AccountForm exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Messages.FixedDropdown
@@ -69,4 +70,20 @@ fr =
     , email = "e-mail"
     , yesNo = Messages.YesNoDimmer.gb
     , dropdown = Messages.FixedDropdown.fr
+    }
+
+
+ja : Texts
+ja =
+    { id = "ID"
+    , login = "ログイン"
+    , state = "状態"
+    , admin = "管理者"
+    , password = "パスワード"
+    , submit = "保存"
+    , back = "戻る"
+    , delete = "削除"
+    , email = "メール"
+    , yesNo = Messages.YesNoDimmer.ja
+    , dropdown = Messages.FixedDropdown.ja
     }

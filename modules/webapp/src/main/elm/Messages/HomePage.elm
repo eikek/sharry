@@ -3,6 +3,7 @@ module Messages.HomePage exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 
@@ -46,4 +47,14 @@ fr =
     , viewAliases = "Pages d'Alias"
     , documentation = "Documentation"
     , shareFilesWithOthers = "Partager des fichiers"
+    }
+
+ja : Texts
+ja =
+    { createShare = "共有の新規作成"
+    , viewShares = "共有を表示"
+    , createAlias = "受信箱の新規作成"
+    , viewAliases = "受信箱を表示"
+    , documentation = "ヘルプ"
+    , shareFilesWithOthers = "ファイルの共有 ( 配布 ) と受信"
     }

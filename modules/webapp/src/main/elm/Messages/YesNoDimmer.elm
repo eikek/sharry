@@ -3,6 +3,7 @@ module Messages.YesNoDimmer exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 
@@ -33,4 +34,11 @@ fr =
     { message = "Supprimer définitivement ?"
     , confirmButton = "Oui, Allons-y !"
     , cancelButton = "Non"
+    }
+
+ja : Texts
+ja =
+    { message = "このアイテムを完全に削除します。よろしいですか ?"
+    , confirmButton = "はい、削除してください。"
+    , cancelButton = "いいえ"
     }

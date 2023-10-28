@@ -53,6 +53,9 @@ get lang =
         French ->
             fr
 
+        Japanese ->
+            ja
+
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -159,4 +162,24 @@ fr =
     , upload = Messages.UploadPage.fr
     , newInvite = Messages.NewInvitePage.fr
     , settings = Messages.SettingsPage.fr
+    }
+
+
+ja : Messages
+ja =
+    { lang = Japanese
+    , iso2 = "ja"
+    , label = "日本語"
+    , flagIcon = "flag-icon flag-icon-jp"
+    , app = Messages.App.ja
+    , login = Messages.LoginPage.ja
+    , register = Messages.RegisterPage.ja
+    , account = Messages.AccountPage.ja
+    , aliasPage = Messages.AliasPage.ja
+    , detail = Messages.DetailPage.ja
+    , share = Messages.SharePage.ja
+    , home = Messages.HomePage.ja
+    , upload = Messages.UploadPage.ja
+    , newInvite = Messages.NewInvitePage.ja
+    , settings = Messages.SettingsPage.ja
     }

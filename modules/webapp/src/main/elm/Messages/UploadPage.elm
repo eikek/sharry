@@ -3,6 +3,7 @@ module Messages.UploadPage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.ShareTable
@@ -39,4 +40,13 @@ fr =
     , newShare = "Nouveau partage"
     , search = "Recherche…"
     , shareTable = Messages.ShareTable.fr
+    }
+
+
+ja : Texts
+ja =
+    { yourShares = "あなたの共有"
+    , newShare = "共有の新規作成"
+    , search = "検索…"
+    , shareTable = Messages.ShareTable.ja
     }

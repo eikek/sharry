@@ -3,6 +3,7 @@ module Messages.SettingsPage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 
@@ -61,4 +62,19 @@ fr =
     , currentPassword = "Mot de passe actuel"
     , newPassword = "Nouveau mot de passe"
     , newPasswordRepeat = "Nouveau mot de passe (bis)"
+    }
+
+
+ja : Texts
+ja =
+    { settingsTitle = "設定"
+    , changeMailHeader = "メールアドレスの変更"
+    , newEmail = "新しいメールアドレス"
+    , newEmailPlaceholder = "新しいメールアドレス"
+    , submitEmptyMailInfo = "空のままにすると、メールアドレスを削除します。"
+    , submit = "保存"
+    , changePasswordHeader = "パスワードの変更"
+    , currentPassword = "現在のパスワード"
+    , newPassword = "新しいパスワード"
+    , newPasswordRepeat = "新しいパスワード ( 確認 )"
     }

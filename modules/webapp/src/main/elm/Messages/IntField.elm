@@ -3,6 +3,7 @@ module Messages.IntField exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 
@@ -33,4 +34,12 @@ fr =
     { mustBeLower = "Le nombre doit être <= "
     , mustBeGreater = "Le nombre doit être >= "
     , notANumber = \str -> "'" ++ str ++ "' n'est pas un nombre valide !"
+    }
+
+
+ja : Texts
+ja =
+    { mustBeLower = "最小値 <= "
+    , mustBeGreater = "最大値 >= "
+    , notANumber = \str -> "「" ++ str ++ "」は有効な数値ではありません！"
     }

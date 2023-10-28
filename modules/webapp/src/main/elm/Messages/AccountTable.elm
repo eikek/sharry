@@ -3,6 +3,7 @@ module Messages.AccountTable exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Language
@@ -69,4 +70,19 @@ fr =
     , created = "Créé"
     , edit = "Éditer"
     , dateTime = formatDateTime Language.French
+    }
+
+
+ja : Texts
+ja =
+    { login = "ログイン"
+    , source = "ソース"
+    , state = "状態"
+    , nrShares = "回共有"
+    , admin = "管理者"
+    , nrLogins = "回ログイン"
+    , lastLogin = "最終ログイン"
+    , created = "作成日時"
+    , edit = "編集"
+    , dateTime = formatDateTime Language.Japanese
     }
