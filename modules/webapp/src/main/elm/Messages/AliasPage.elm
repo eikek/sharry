@@ -98,7 +98,7 @@ ja : Texts
 ja =
     { createNew = "受信箱の新規作成"
     , aliasPage = "受信箱 : "
-    , aliasPages = "受信箱"
+    , aliasPages = "あなたの受信箱"
     , newAliasPage = "受信箱の新規作成"
     , searchPlaceholder = "検索..."
     , errorQrCode = "QR コードの生成でエラーが発生しました。"
