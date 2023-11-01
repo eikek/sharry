@@ -103,6 +103,7 @@ fr =
     , lang = french
     }
 
+
 ja : DateTimeMsg
 ja =
     { format =
