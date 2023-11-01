@@ -3,6 +3,7 @@ module Messages.AliasPage exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Messages.AliasForm
@@ -90,4 +91,25 @@ fr =
     , aliasForm = Messages.AliasForm.fr
     , aliasTable = Messages.AliasTable.fr
     , mailSend = Messages.MailSend.fr
+    }
+
+
+ja : Texts
+ja =
+    { createNew = "受信箱の新規作成"
+    , aliasPage = "受信箱 : "
+    , aliasPages = "あなたの受信箱"
+    , newAliasPage = "受信箱の新規作成"
+    , searchPlaceholder = "検索..."
+    , errorQrCode = "QR コードの生成でエラーが発生しました。"
+    , shareThisLink = "このリンクを共有"
+    , aliasPageNowAt = "この受信箱への URL : "
+    , shareThisUrl = "この URL を共有することで、相手からファイルを受信できます。"
+    , sendEmail = "メール送信"
+    , copyLink = "リンクをコピー"
+    , owner = "所有者"
+    , notOwnerInfo = "この受信箱はほかのユーザーが所有していますが、あなたと共同作業しています。情報の変更は所有者でなければできません。"
+    , aliasForm = Messages.AliasForm.ja
+    , aliasTable = Messages.AliasTable.ja
+    , mailSend = Messages.MailSend.ja
     }

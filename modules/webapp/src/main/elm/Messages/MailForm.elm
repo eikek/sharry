@@ -3,6 +3,7 @@ module Messages.MailForm exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 
@@ -45,4 +46,15 @@ fr =
     , body = "Corps"
     , send = "Envoi"
     , cancel = "Annulation"
+    }
+
+
+ja : Texts
+ja =
+    { receivers = "受信者"
+    , separateRecipientsByComma = "複数の受信者を設定する場合は、コンマで区切る"
+    , subject = "件名"
+    , body = "本文"
+    , send = "送信"
+    , cancel = "キャンセル"
     }

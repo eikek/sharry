@@ -3,6 +3,7 @@ module Messages.SharePage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.Dropzone2
@@ -138,4 +139,37 @@ fr =
     , uploadsUpTo =
         \size ->
             "Téléversements possibles jusqu'à " ++ size ++ "."
+    }
+
+
+ja : Texts
+ja =
+    { markdownInput = Messages.MarkdownInput.ja
+    , dropzone = Messages.Dropzone2.ja
+    , validityField = Messages.ValidityField.ja
+    , intField = Messages.IntField.ja
+    , sendFiles = "ファイルアップロード"
+    , description = "説明"
+    , sendMoreFiles = "さらにファイルを追加"
+    , allFilesUploaded = "すべてのファイルをアップロードしました"
+    , someFilesFailedHeader = "いくつかのファイルで失敗"
+    , someFilesFailedText = "いくつかのファイルのアップロードに失敗しました。再度アップロードすることもできます。"
+    , someFilesFailedTextAddon = "共有画面に戻って、同じファイルを再度アップロードしてください。"
+    , submit = "保存"
+    , clearFiles = "ファイルをクリアー"
+    , resume = "再開"
+    , pause = "一時停止"
+    , password = "パスワード"
+    , createShare = "共有の作成"
+    , details = "詳細"
+    , name = "共有名"
+    , namePlaceholder = "共有の名前 (任意)"
+    , validity = "共有期限"
+    , files = "ファイル"
+    , newShare = "共有の新規作成"
+    , gotoShare = "共有へ"
+    , maxPublicViews = "最大表示回数"
+    , uploadsUpTo =
+        \size ->
+            "アップロードは最大 " ++ size ++ " までです。"
     }

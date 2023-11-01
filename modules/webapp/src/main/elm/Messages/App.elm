@@ -3,6 +3,7 @@ module Messages.App exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 
@@ -70,4 +71,21 @@ fr =
     , lightDark = gb.lightDark
     , logoutSharry = "Déconnexion de Sharry"
     , logoutOAuth = "Déconnexion de votre fournisseur d'authentification"
+    }
+
+
+ja : Texts
+ja =
+    { home = "ホーム"
+    , shares = "共有"
+    , aliases = "受信箱"
+    , accounts = "アカウント"
+    , settings = "設定"
+    , newInvites = "招待"
+    , logout = \user -> "ログアウト (" ++ user ++ ")"
+    , login = "ログイン"
+    , register = "登録"
+    , lightDark = "ライト / ダーク"
+    , logoutSharry = "ログアウト"
+    , logoutOAuth = "認証プロバイダーからログアウト"
     }

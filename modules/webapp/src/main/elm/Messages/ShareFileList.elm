@@ -3,6 +3,7 @@ module Messages.ShareFileList exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.YesNoDimmer
@@ -51,4 +52,16 @@ fr =
     , fileIsIncomplete = "Le fichier est incomplet ("
     , tryUploadAgain = "%). Essayer à nouveau."
     , yesNo = Messages.YesNoDimmer.fr
+    }
+
+
+ja : Texts
+ja =
+    { previewNotSupported = "プレビュー未対応"
+    , downloadToDisk = "ダウンロード"
+    , viewInBrowser = "ブラウザで表示"
+    , deleteFile = "ファイルを削除"
+    , fileIsIncomplete = "ファイルが不完全です。 ( "
+    , tryUploadAgain = "% )。再度アップロードしてください。"
+    , yesNo = Messages.YesNoDimmer.ja
     }
