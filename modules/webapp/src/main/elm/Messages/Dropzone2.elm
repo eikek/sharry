@@ -3,6 +3,7 @@ module Messages.Dropzone2 exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 
@@ -37,4 +38,12 @@ fr =
     , filesSelected = " fichiers sélectionnés ("
     , or = "Ou"
     , selectFiles = "Sélectionner des fichiers ..."
+    }
+
+ja : Texts
+ja =
+    { dropHere = "ここにファイルをドロップ"
+    , filesSelected = " 選択ファイル ("
+    , or = "または"
+    , selectFiles = "ファイルを選択..."
     }

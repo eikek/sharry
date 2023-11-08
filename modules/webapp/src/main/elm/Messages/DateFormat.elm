@@ -28,6 +28,8 @@ get lang =
         French ->
             fr
 
+        Japanese ->
+            ja
 
 formatDateTime : Language -> Int -> String
 formatDateTime lang millis =
@@ -102,6 +104,23 @@ fr =
     }
 
 
+ja : DateTimeMsg
+ja =
+    { format =
+        [ DateFormat.yearNumber
+        , DateFormat.text "年 "
+        , DateFormat.monthNameFull
+        , DateFormat.text " "
+        , DateFormat.dayOfMonthNumber
+        , DateFormat.text "日"
+        , DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text " "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = japanese
+    }
 
 --- Languages for the DateFormat module
 -- French
@@ -319,6 +338,84 @@ toGermanWeekdayName weekday =
         Sun ->
             "Sonntag"
 
+-- Japanese
+{-| The Japanese language!
+-}
+japanese : DL.Language
+japanese =
+    let
+        withoutDot str =
+            str ++ ""
+    in
+    DL.Language
+        toJapaneseMonthName
+        (toJapaneseMonthName >> String.left 3 >> withoutDot)
+        toJapaneseWeekdayName
+        (toJapaneseWeekdayName >> String.left 3 >> withoutDot)
+        toEnglishAmPm
+        (\_ -> ".")
+toJapaneseMonthName : Month -> String
+toJapaneseMonthName month =
+    case month of
+        Jan ->
+            "1月"
+
+        Feb ->
+            "2月"
+
+        Mar ->
+            "3月"
+
+        Apr ->
+            "4月"
+
+        May ->
+            "5月"
+
+        Jun ->
+            "6月"
+
+        Jul ->
+            "7月"
+
+        Aug ->
+            "8月"
+
+        Sep ->
+            "9月"
+
+        Oct ->
+            "10月"
+
+        Nov ->
+            "11月"
+
+        Dec ->
+            "12月"
+
+toJapaneseWeekdayName : Weekday -> String
+toJapaneseWeekdayName weekday =
+    case weekday of
+        Mon ->
+            "(月)"
+
+        Tue ->
+            "(火)"
+
+        Wed ->
+            "(水)"
+
+        Thu ->
+            "(木)"
+
+        Fri ->
+            "(金)"
+
+        Sat ->
+            "(土)"
+
+        Sun ->
+            "(日)"
 
 
 --- Copy from DateFormat.Language

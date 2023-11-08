@@ -3,6 +3,7 @@ module Messages.LoginPage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.FixedDropdown
@@ -68,3 +69,19 @@ fr =
     , or = "Ou"
     , dropdown = Messages.FixedDropdown.fr
     }
+
+ja : Texts
+ja =
+    { username = "ユーザー名"
+    , password = "パスワード"
+    , loginPlaceholder = "username"
+    , passwordPlaceholder = "Password"
+    , loginButton = "ログイン"
+    , via = "via"
+    , loginSuccessful = "ログインしました"
+    , noAccount = "未登録 ?"
+    , signupLink = "ユーザー登録"
+    , or = "または"
+    , dropdown = Messages.FixedDropdown.ja
+    }
+

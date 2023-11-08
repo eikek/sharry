@@ -3,6 +3,7 @@ module Messages.DetailPage exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Data.InitialView exposing (InitialView)
@@ -311,3 +312,80 @@ fr =
                     "Preview"
     , initialViewField = "Initial view"
     }
+
+ja : Texts
+ja =
+    { mailSend = Messages.MailSend.ja
+    , save = "保存"
+    , cancel = "キャンセル"
+    , yourShare = "共有 (名前なし)"
+    , markdownInput = Messages.MarkdownInput.ja
+    , shareFileList = Messages.ShareFileList.ja
+    , yesNo = Messages.YesNoDimmer.ja
+    , sharePublished =
+        "共有は公開中ですが、最大表示回数に達しました。"
+            ++ "この値を増やすことで、さらに表示・ダウンロードできるようにすることができます。"
+    , shareNotPublished =
+        "このファイルをだれかと共有する場合は、次に「公開」をしてください。"
+            ++ "生成されるリンクを受け取った人はだれでもこのファイルにアクセスできます。"
+    , shareLinkExpired =
+        "共有を公開しましたが、現在期限切れです。"
+            ++ "一度「未公開」にしてから、再度「公開」できます。"
+    , errorQrCode = "QR コードの生成でエラーが発生しました。"
+    , sharePublicAvailableAt = "この共有の公開 URL : "
+    , shareAsYouLike = "このファイルを共有したい相手に、この URL を知らせてください。"
+    , sendEmail = "メールを送る"
+    , copyLink = "リンクをコピー"
+    , name = "名前"
+    , validity = "有効期限"
+    , maxViews = "最大表示回数"
+    , password = "パスワード"
+    , passwordProtected = "パスワード付"
+    , passwordNone = "なし"
+    , shareSize = "ファイル数/サイズ"
+    , created = "作成日時"
+    , aliasLabel = "受信箱"
+    , publishedOn = "公開日時"
+    , publishedUntil = "公開期限"
+    , lastAccess = "最終アクセス"
+    , views = "表示回数"
+    , publishWithNewLink = "新しいリンクで公開する"
+    , delete = "削除"
+    , edit = "編集"
+    , detailsMenu = "詳細"
+    , shareLinkMenu = "リンクをシェア"
+    , addFilesLinkMenu = "ファイルを追加"
+    , editDescription = "説明を編集"
+    , publish = "公開する"
+    , unpublish = "未公開に戻す"
+    , listView = "リスト表示"
+    , cardView = "カード表示"
+    , submit = "送信"
+    , clear = "クリアー"
+    , resume = "再開"
+    , pause = "一時停止"
+    , uploadsGreaterThan =
+        \size ->
+            "共有するファイルの合計が " ++ size ++ " より大きくならないようにしてください。"
+    , waitDeleteShare = "共有を削除しています。お待ちください。"
+    , loadingData = "データを読み込んでいます..."
+    , dropzone = Messages.Dropzone2.ja
+    , validityField = Messages.ValidityField.ja
+    , passwordRequired = "要パスワード"
+    , passwordInvalid = "パスワードが無効"
+    , or = "または"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "リスト表示"
+
+                Data.InitialView.Cards ->
+                    "カード表示"
+
+                Data.InitialView.Zoom ->
+                    "プレビュー"
+    , initialViewField = "表示の初期状態"
+    }
+

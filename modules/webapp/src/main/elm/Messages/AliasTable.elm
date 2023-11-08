@@ -3,6 +3,7 @@ module Messages.AliasTable exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Language
@@ -62,4 +63,18 @@ fr =
     , owner = "Owner"
     , validityField = Messages.ValidityField.fr
     , dateTime = Messages.DateFormat.formatDateTime Language.French
+    }
+
+
+ja : Texts
+ja =
+    { name = "受信箱名"
+    , enabled = "有効"
+    , validity = "有効期限"
+    , created = "作成日時"
+    , edit = "編集"
+    , show = "表示"
+    , owner = "所有者"
+    , validityField = Messages.ValidityField.ja
+    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
     }

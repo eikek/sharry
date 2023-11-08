@@ -3,6 +3,7 @@ module Messages.AliasForm exposing
     , de
     , fr
     , gb
+    , ja
     )
 
 import Html exposing (..)
@@ -106,4 +107,28 @@ fr =
     , memberInfo = gb.memberInfo
     , yesNo = Messages.YesNoDimmer.fr
     , validityField = Messages.ValidityField.fr
+    }
+
+
+ja : Texts
+ja =
+    { id = "ID"
+    , noteToIdsHead = "ID について"
+    , noteToIds =
+        p []
+            [ text "ID は、だれもがファイルをアップロードできる URL の一部になります。"
+            , text "無作為なものを使うことをおすすめします。"
+            , text "空欄にしておくことで自動生成します。"
+            ]
+    , name = "受信箱名"
+    , validity = "有効期限"
+    , enabled = "有効"
+    , submit = "保存"
+    , back = "戻る"
+    , delete = "削除"
+    , searchPlaceholder = "検索…"
+    , members = "共同編集ユーザー"
+    , memberInfo = "この受信箱を共同作業するユーザーです。この受信箱を共有したり、ここにアップロードされたファイルのすべてを見ることができます。"
+    , yesNo = Messages.YesNoDimmer.ja
+    , validityField = Messages.ValidityField.ja
     }

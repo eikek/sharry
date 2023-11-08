@@ -3,6 +3,7 @@ module Messages.MailSend exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.MailForm
@@ -35,4 +36,12 @@ fr =
     { sendingEmail = "Envoi de l'email ..."
     , loadingTemplate = "Chargement du modèle ..."
     , mailForm = Messages.MailForm.fr
+    }
+
+
+ja : Texts
+ja =
+    { sendingEmail = "メールを送信しています..."
+    , loadingTemplate = "テンプレートを読み込んでいます..."
+    , mailForm = Messages.MailForm.ja
     }

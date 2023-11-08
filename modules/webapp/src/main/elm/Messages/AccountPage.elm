@@ -3,6 +3,7 @@ module Messages.AccountPage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.AccountForm
@@ -48,4 +49,15 @@ fr =
     , newAccount = "Nouveau compte"
     , accountForm = Messages.AccountForm.fr
     , accountTable = Messages.AccountTable.fr
+    }
+
+
+ja : Texts
+ja =
+    { createAccountTitle = "アカウントの新規作成"
+    , accounts = "アカウント"
+    , searchPlaceholder = "検索…"
+    , newAccount = "アカウントの新規作成"
+    , accountForm = Messages.AccountForm.ja
+    , accountTable = Messages.AccountTable.ja
     }

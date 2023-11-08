@@ -3,6 +3,7 @@ module Messages.RegisterPage exposing
     , de
     , gb
     , fr
+    , ja
     )
 
 import Messages.FixedDropdown
@@ -64,3 +65,20 @@ fr =
     , registrationSuccessful = "Inscription réussie."
     , dropdown = Messages.FixedDropdown.fr
     }
+
+
+ja : Texts
+ja =
+    { signup = "ユーザー登録"
+    , userLogin = "ユーザー名"
+    , password = "パスワード"
+    , passwordRepeat = "パスワード ( 確認 )"
+    , invitationKey = "招待キー"
+    , submitButton = "登録"
+    , alreadySignedUp = "登録が済んでいるなら…"
+    , signin = "ログイン"
+    , registrationSuccessful = "登録が完了しました。"
+    , dropdown = Messages.FixedDropdown.ja
+    }
+
+
