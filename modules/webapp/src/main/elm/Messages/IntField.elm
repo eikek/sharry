@@ -39,7 +39,7 @@ fr =
 
 ja : Texts
 ja =
-    { mustBeLower = "最小値 <= "
-    , mustBeGreater = "最大値 >= "
+    { mustBeLower = "最大値 : "
+    , mustBeGreater = "最小値 : "
     , notANumber = \str -> "「" ++ str ++ "」は有効な数値ではありません！"
     }
