@@ -30,9 +30,9 @@ other options.
 It is enough to install the JRE. The JDK is required, if you want to
 build sharry from source.
 
-Sharry has been tested with Java version 1.8 (or sometimes referred
-to as JRE 8 and JDK 8, respectively). The pre-build packages are also
-build using JDK 8. But a later version of Java should work as well.
+Sharry has been tested with Java version 17. The pre-build packages
+are also build using JDK 17. But a later version of Java should work
+as well.
 
 
 ## Database

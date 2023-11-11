@@ -6,9 +6,7 @@ ARG version=
 ARG sharry_url=
 ARG TARGETPLATFORM
 
-RUN JDKPKG="openjdk11"; \
-    if [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then JDKPKG="openjdk8"; fi; \
-    apk -U add --no-cache $JDKPKG tzdata unzip curl bash
+RUN apk -U add --no-cache openjdk17 tzdata unzip curl bash
 
 WORKDIR /opt
 
