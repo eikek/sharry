@@ -32,7 +32,7 @@ cd "$(dirname "$0")"
 
 trap "{ docker buildx rm sharry-builder; }" EXIT
 
-platforms="linux/amd64,linux/aarch64,linux/arm/v7"
+platforms="linux/amd64,linux/arm64"
 docker buildx create --name sharry-builder --use
 
 if [[ $version == *SNAPSHOT* ]]; then

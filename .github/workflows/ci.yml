@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '11' ]
+        java: [ 'openjdk@1.17' ]
     steps:
       - uses: actions/checkout@v4.1.1
         with:
