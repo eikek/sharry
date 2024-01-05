@@ -70,23 +70,28 @@ object ByteResponse {
     (for {
       file <- backend.share.loadFile(shareId, fid, pass, ByteRange.All)
       resp <- OptionT.liftF(
-        etag(dsl, req, file).getOrElseF(
-          Ok(file.data).map(
-            _.withHeaders(
-              `Content-Type`(mediaType(file)),
-              `Accept-Ranges`.bytes,
-              `Last-Modified`(timestamp(file)),
-              `Content-Disposition`("inline", fileNameMap(file)),
-              ETag(file.fileMeta.checksum.toHex),
-              `Content-Length`.unsafeFromLong(file.fileMeta.length.bytes)
+        etagResponse(dsl, req, file).getOrElseF(
+          Ok(file.data)
+            .map(setETag(file.fileMeta))
+            .map(
+              _.putHeaders(
+                `Content-Type`(mediaType(file)),
+                `Accept-Ranges`.bytes,
+                `Last-Modified`(timestamp(file)),
+                `Content-Disposition`("inline", fileNameMap(file)),
+                `Content-Length`.unsafeFromLong(file.fileMeta.length.bytes)
+              )
             )
-          )
         )
       )
     } yield resp).getOrElseF(NotFound())
   }
 
-  private def etag[F[_]: Sync](
+  private def setETag[F[_]](fm: RFileMeta)(r: Response[F]): Response[F] =
+    if (fm.checksum.isEmpty) r
+    else r.putHeaders(ETag(fm.checksum.toHex))
+
+  private def etagResponse[F[_]: Sync](
       dsl: Http4sDsl[F],
       req: Request[F],
       file: FileRange[F]
@@ -95,7 +100,7 @@ object ByteResponse {
 
     val noneMatch = req.headers.get[`If-None-Match`].flatMap(_.tags).map(_.head.tag)
 
-    if (Some(file.fileMeta.checksum) == noneMatch) OptionT.liftF(NotModified())
+    if (noneMatch.contains(file.fileMeta.checksum.toHex)) OptionT.liftF(NotModified())
     else OptionT.none
   }
 
@@ -106,14 +111,14 @@ object ByteResponse {
   ): F[Response[F]] = {
     import dsl._
     val len = file.fileMeta.length
-    PartialContent(file.data).map(
+    val respLen = range.second.getOrElse(len.bytes) - range.first + 1
+    PartialContent(file.data.take(respLen)).map(
       _.withHeaders(
         `Accept-Ranges`.bytes,
         `Content-Type`(mediaType(file)),
         `Last-Modified`(timestamp(file)),
         `Content-Disposition`("inline", fileNameMap(file)),
-        `Content-Length`
-          .unsafeFromLong(range.second.getOrElse(len.bytes) - range.first),
+        `Content-Length`.unsafeFromLong(respLen),
         `Content-Range`(RangeUnit.Bytes, subRangeResp(range, len.bytes), Some(len.bytes))
       )
     )
@@ -122,7 +127,7 @@ object ByteResponse {
   private def subRangeResp(in: Range.SubRange, length: Long): Range.SubRange =
     in match {
       case Range.SubRange(n, None) =>
-        Range.SubRange(n.toLong, Some(length - 1))
+        Range.SubRange(n, Some(length))
       case Range.SubRange(n, Some(t)) =>
         Range.SubRange(n, Some(t))
     }
