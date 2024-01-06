@@ -101,7 +101,7 @@ view texts flags currentTheme model =
 
               else
                 renderOAuthButtons texts flags model
-            , renderProxyAuthButton texts
+            , renderProxyAuthButton texts flags
             , resultMessage texts model
             , renderLangAndSignup texts flags
             ]
@@ -190,10 +190,11 @@ renderOAuthButton texts flags item =
         ]
 
 
-renderProxyAuthButton : Texts -> Html Msg
-renderProxyAuthButton texts =
+renderProxyAuthButton : Texts -> Flags -> Html Msg
+renderProxyAuthButton texts flags =
     div
         [ class "flex flex-row space-x-2 flex-wrap items-center justify-center"
+        , classList [ ( "hidden", not flags.config.proxyAuthEnabled ) ]
         ]
         [ a
             [ class S.primaryBasicButton
