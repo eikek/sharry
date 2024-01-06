@@ -84,6 +84,11 @@ let
           enabled = true;
           order = 50;
         };
+        proxy = {
+          enabled = false;
+          user-header = "";
+          email-header = null;
+        };
         oauth = [
           {
             enabled = false;
@@ -616,6 +621,31 @@ in {
                       default = defaults.backend.auth.internal;
                       description = ''
                         The authentication module checks against the internal database.
+                      '';
+                    };
+                    proxy = mkOption {
+                      type = types.submodule({
+                        options = {
+                          enabled = mkOption {
+                            type = types.bool;
+                            default = defaults.backend.auth.proxy.enabled;
+                            description = "Whether to enable this auth mechanism or not";
+                          };
+                          user-header = mkOption {
+                            type = types.str;
+                            default = defaults.backend.auth.proxy.user-header;
+                            description = "The header name that picks the user id";
+                          };
+                          email-header = mkOption {
+                            type = types.nullOr types.str;
+                            default = defaults.backend.auth.proxy.email-header;
+                            description = "The header name that picks the email";
+                          };
+                        };
+                      });
+                      default = defaults.backend.auth.proxy;
+                      description = ''
+                        Authentication via request headers.
                       '';
                     };
                     oauth = mkOption {

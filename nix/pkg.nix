@@ -1,4 +1,4 @@
-cfg: { lib, stdenv, fetchzip, jre8_headless, unzip, bash }:
+cfg: { lib, stdenv, fetchzip, jdk17, unzip, bash }:
 
 stdenv.mkDerivation rec {
   name = "sharry-restserver-${cfg.version}";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     cp -R * $out/sharry-${cfg.version}/
     cat > $out/bin/sharry-restserver <<-EOF
     #!${bash}/bin/bash
-    $out/sharry-${cfg.version}/bin/sharry-restserver -java-home ${jre8_headless} "\$@"
+    $out/sharry-${cfg.version}/bin/sharry-restserver -java-home ${jdk17} "\$@"
     EOF
     chmod 755 $out/bin/sharry-restserver
   '';
