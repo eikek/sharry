@@ -151,6 +151,20 @@ paths:
           description: OK
         '403':
           description: Forbidden
+  /open/auth/proxy:
+    post:
+      operationId: "open-auth-proxy"
+      tags: [ Authentication ]
+      summary: Authenticate via request headers
+      description: |
+        When using an authenticating proxy in front, this login route
+        can be used to rely on trusted request headers to perform
+        login.
+      responses:
+        '200':
+          description: Ok
+        '403':
+          description: Forbidden
   /sec/auth/session:
     post:
       operationId: "sec-auth-session"
@@ -1923,6 +1937,9 @@ components:
         - defaultValidity
         - initialTheme
         - oauthAutoRedirect
+        - proxyAuthEnabled
+        - proxyOnly
+        - hideLoginForm
       properties:
         appName:
           type: string
@@ -1989,6 +2006,12 @@ components:
           type: string
           format: theme
         oauthAutoRedirect:
+          type: boolean
+        proxyAuthEnabled:
+          type: boolean
+        proxyOnly:
+          type: boolean
+        hideLoginForm:
           type: boolean
     OAuthItem:
       description: |

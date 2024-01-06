@@ -10,6 +10,7 @@ case class AuthConfig(
     http: AuthConfig.Http,
     httpBasic: AuthConfig.HttpBasic,
     command: AuthConfig.Command,
+    proxy: AuthConfig.Proxy,
     internal: AuthConfig.Internal,
     oauth: Seq[AuthConfig.OAuth]
 ) {
@@ -17,11 +18,28 @@ case class AuthConfig(
   def isOAuthOnly: Boolean =
     fixed.disabled && http.disabled &&
       httpBasic.disabled && command.disabled &&
-      internal.disabled && oauth.nonEmpty
+      internal.disabled && proxy.disabled && oauth.exists(_.enabled)
 
+  def isProxyAuthOnly: Boolean =
+    fixed.disabled && http.disabled &&
+      httpBasic.disabled && command.disabled &&
+      internal.disabled && !oauth.exists(_.enabled) && proxy.enabled
+
+  def isAutoLogin: Boolean =
+    fixed.disabled && http.disabled &&
+      httpBasic.disabled && command.disabled &&
+      internal.disabled && (oauth.exists(_.enabled) || proxy.enabled)
 }
 
 object AuthConfig {
+
+  final case class Proxy(
+      enabled: Boolean,
+      userHeader: String,
+      emailHeader: Option[String]
+  ) {
+    def disabled = !enabled
+  }
 
   case class Fixed(enabled: Boolean, user: Ident, password: Password, order: Int) {
     def disabled = !enabled

@@ -26,6 +26,7 @@ class LoginModuleTest extends FunSuite {
     AuthConfig.Http(true, LenientUri.unsafe("http://test.com"), "GET", "", "", 2),
     AuthConfig.HttpBasic(true, LenientUri.unsafe("http://test.com"), "GET", 3),
     AuthConfig.Command(true, Seq.empty, 0, 4),
+    AuthConfig.Proxy(false, "", None),
     AuthConfig.Internal(true, 5),
     Seq.empty
   )

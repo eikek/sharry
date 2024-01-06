@@ -20,6 +20,7 @@ import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
+import org.typelevel.ci.CIString
 
 object LoginRoutes {
 
@@ -40,6 +41,51 @@ object LoginRoutes {
             UserPassData(up.account, Password(up.password))
           )
           resp <- makeResponse(dsl, cfg, req, res, up.account)
+        } yield resp
+
+      case req @ POST -> Root / "proxy" =>
+        val unameOpt =
+          req.headers
+            .get(CIString(cfg.backend.auth.proxy.userHeader))
+            .map(_.head.value)
+            .filter(_ => cfg.backend.auth.proxy.enabled)
+
+        val email = cfg.backend.auth.proxy.emailHeader
+          .map(CIString.apply)
+          .flatMap(req.headers.get(_).map(_.head.value))
+
+        def doLogin(userId: Ident) = for {
+          newAcc <- NewAccount.create(userId, AccountSource.Extern, email = email)
+          token <- finalizeLogin(cfg, S)(newAcc)
+          resp <- makeResponse(dsl, cfg, req, LoginResult.ok(token), userId.id)
+        } yield resp
+
+        for {
+          _ <-
+            if (cfg.backend.auth.proxy.disabled)
+              logger.info("Proxy authentication is disabled in the config!")
+            else logger.debug(s"Use proxy authentication: user=$unameOpt, email=$email")
+
+          resp <- unameOpt.map(Ident.apply) match {
+            case None =>
+              makeResponse(
+                dsl,
+                cfg,
+                req,
+                LoginResult.invalidAuth,
+                unameOpt.getOrElse("<no-user-id>")
+              )
+            case Some(Left(err)) =>
+              logger.error(s"Error reading username from header: $err") >>
+                makeResponse(
+                  dsl,
+                  cfg,
+                  req,
+                  LoginResult.invalidAuth,
+                  unameOpt.getOrElse("<no-user-id>")
+                )
+            case Some(Right(userId)) => doLogin(userId)
+          }
         } yield resp
 
       case req @ GET -> Root / "oauth" / id =>
@@ -94,12 +140,7 @@ object LoginRoutes {
               email = u.email
             )
           )
-          acc <- OptionT.liftF(S.account.createIfMissing(newAcc))
-          accId = acc.accountId(None)
-          _ <- OptionT.liftF(S.account.updateLoginStats(accId))
-          token <- OptionT.liftF(
-            AuthToken.user[F](accId, cfg.backend.auth.serverSecret)
-          )
+          token <- OptionT.liftF(finalizeLogin(cfg, S)(newAcc))
         } yield token
 
         val uri = getBaseUrl(cfg, req).withQuery("oauth", "1") / "app" / "login"
@@ -112,6 +153,16 @@ object LoginRoutes {
         }
     }
   }
+
+  private def finalizeLogin[F[_]: Async](cfg: Config, S: BackendApp[F])(
+      newAcc: NewAccount
+  ) =
+    for {
+      acc <- S.account.createIfMissing(newAcc)
+      accId = acc.accountId(None)
+      _ <- S.account.updateLoginStats(accId)
+      token <- AuthToken.user[F](accId, cfg.backend.auth.serverSecret)
+    } yield token
 
   private def redirectUri[F[_]](
       cfg: Config,

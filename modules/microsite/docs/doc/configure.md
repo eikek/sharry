@@ -449,6 +449,23 @@ The internal login module simply authenticates against the sharry
 database. If it is disabled, you should disable signup, too, because those
 user won't be authenticated.
 
+#### Proxy
+
+The `proxy` option allows automatically authenticate users by trusting
+specific request headers. The configured headers of the login request
+to `open/auth/proxy` are read and a user account is created if
+missing. Be aware that sharry blindly trusts these headers.
+
+```
+proxy {
+  enabled = false
+  user-header = "X-Valid-User"
+  email-header = "X-User-Email"
+}
+```
+
+The webapp automatically logs the user in, if the auth configuration
+only consists of proxy auth and nothing else.
 
 #### OAuth
 

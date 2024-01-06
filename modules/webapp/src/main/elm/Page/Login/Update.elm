@@ -31,6 +31,9 @@ update ( referrer, oauth ) flags key msg model =
                     _ ->
                         ( model, Cmd.none, Nothing )
 
+            else if not oauth && Data.Flags.isProxyAutoRedirect flags && flags.account == Nothing then
+                ( model, Api.loginProxy flags AuthResp, Nothing )
+
             else
                 ( model, Cmd.none, Nothing )
 
@@ -42,6 +45,9 @@ update ( referrer, oauth ) flags key msg model =
 
         Authenticate ->
             ( model, Api.login flags (UserPass model.username model.password) AuthResp, Nothing )
+
+        AuthenticateProxy ->
+            ( model, Api.loginProxy flags AuthResp, Nothing )
 
         AuthResp (Ok lr) ->
             if lr.success then
