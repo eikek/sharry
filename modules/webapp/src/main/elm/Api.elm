@@ -23,6 +23,7 @@ module Api exposing
     , listAliasMember
     , loadAccount
     , login
+    , loginProxy
     , loginSession
     , logout
     , modifyAccount
@@ -533,6 +534,15 @@ login flags up receive =
     Http.post
         { url = flags.config.baseUrl ++ "/api/v2/open/auth/login"
         , body = Http.jsonBody (Api.Model.UserPass.encode up)
+        , expect = Http.expectJson receive Api.Model.AuthResult.decoder
+        }
+
+
+loginProxy : Flags -> (Result Http.Error AuthResult -> msg) -> Cmd msg
+loginProxy flags receive =
+    Http.post
+        { url = flags.config.baseUrl ++ "/api/v2/open/auth/proxy"
+        , body = Http.emptyBody
         , expect = Http.expectJson receive Api.Model.AuthResult.decoder
         }
 

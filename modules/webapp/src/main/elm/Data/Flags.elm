@@ -22,6 +22,16 @@ isOAuthAutoRedirect flags =
     flags.config.oauthAutoRedirect && flags.config.oauthOnly
 
 
+isProxyAutoRedirect : Flags -> Bool
+isProxyAutoRedirect flags =
+    flags.config.oauthAutoRedirect && flags.config.proxyOnly
+
+
+isAutoRedirect : Flags -> Bool
+isAutoRedirect flags =
+    isOAuthAutoRedirect flags || isProxyAutoRedirect flags
+
+
 getToken : Flags -> Maybe String
 getToken flags =
     flags.account

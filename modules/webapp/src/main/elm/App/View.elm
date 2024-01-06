@@ -265,13 +265,13 @@ userMenu2 texts model acc =
             , a
                 [ href "#"
                 , class dropdownItem
-                , classList [ ( "disabled", Data.Flags.isOAuthAutoRedirect model.flags ) ]
-                , if Data.Flags.isOAuthAutoRedirect model.flags then
+                , classList [ ( "disabled", Data.Flags.isAutoRedirect model.flags ) ]
+                , if Data.Flags.isAutoRedirect model.flags then
                     class ""
 
                   else
                     onClick Logout
-                , if Data.Flags.isOAuthAutoRedirect model.flags then
+                , if Data.Flags.isAutoRedirect model.flags then
                     title texts.app.logoutOAuth
 
                   else

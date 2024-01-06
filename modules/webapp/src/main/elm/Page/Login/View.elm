@@ -7,7 +7,7 @@ import Data.Flags exposing (Flags)
 import Data.UiTheme exposing (UiTheme)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Markdown
 import Messages.LoginPage exposing (Texts)
 import Page exposing (Page(..))
@@ -39,7 +39,7 @@ view texts flags currentTheme model =
                 , onSubmit Authenticate
                 , autocomplete False
                 , classList
-                    [ ( "hidden invisible", flags.config.oauthOnly ) ]
+                    [ ( "hidden invisible", flags.config.hideLoginForm ) ]
                 ]
                 [ div [ class "flex flex-col mt-6" ]
                     [ label
@@ -101,6 +101,7 @@ view texts flags currentTheme model =
 
               else
                 renderOAuthButtons texts flags model
+            , renderProxyAuthButton texts
             , resultMessage texts model
             , renderLangAndSignup texts flags
             ]
@@ -185,6 +186,25 @@ renderOAuthButton texts flags item =
         [ i [ class icon ] []
         , span [ class "ml-2" ]
             [ text (texts.via ++ " " ++ item.name)
+            ]
+        ]
+
+
+renderProxyAuthButton : Texts -> Html Msg
+renderProxyAuthButton texts =
+    div
+        [ class "flex flex-row space-x-2 flex-wrap items-center justify-center"
+        ]
+        [ a
+            [ class S.primaryBasicButton
+            , class "mt-1"
+            , href "#"
+            , onClick AuthenticateProxy
+            ]
+            [ i [ class "fa fa-right-to-bracket" ] []
+            , span [ class "ml-2" ]
+                [ text texts.loginButton
+                ]
             ]
         ]
 

@@ -26,6 +26,7 @@ type Msg
     = SetUsername String
     | SetPassword String
     | Authenticate
+    | AuthenticateProxy
     | AuthResp (Result Http.Error AuthResult)
     | Init
     | LangChooseMsg Comp.LanguageChoose.Msg
