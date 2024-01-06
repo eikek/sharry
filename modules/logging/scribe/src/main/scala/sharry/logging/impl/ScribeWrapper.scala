@@ -12,7 +12,7 @@ import cats.effect.Sync
 import sharry.logging.{Level, LogEvent, Logger}
 
 import scribe.LoggerSupport
-import scribe.data.MDC
+import scribe.mdc.{MDC, MDCMap}
 import scribe.message.LoggableMessage
 
 private[logging] object ScribeWrapper {
@@ -39,14 +39,18 @@ private[logging] object ScribeWrapper {
       case Level.Trace => scribe.Level.Trace
     }
 
+  private[this] def emptyMDC: MDC =
+    new MDCMap(None)
+
   private[this] def convert(ev: LogEvent) = {
     val level = convertLevel(ev.level)
-    val additional: List[LoggableMessage] = ev.additional.map { x =>
-      x() match {
-        case Right(ex) => LoggableMessage.throwable2Message(ex)
-        case Left(msg) => LoggableMessage.string2Message(msg)
+    val additional: List[LoggableMessage] = ev.additional
+      .map {
+        case Right(ex) => LoggableMessage.throwableList2Messages(List(ex))
+        case Left(msg) => LoggableMessage.stringList2Messages(List(msg))
       }
-    }
+      .toList
+      .flatten
     LoggerSupport(
       level,
       ev.msg() :: additional,
@@ -54,8 +58,8 @@ private[logging] object ScribeWrapper {
       ev.fileName,
       ev.name,
       ev.line,
-      MDC.instance
+      emptyMDC
     )
-      .copy(data = ev.data)
+      .copy(data = ev.data.toDeferred)
   }
 }
