@@ -202,6 +202,7 @@ object Queries {
     val aliasId = "a" :: RAlias.Columns.id
     val shareAlias = "s" :: RShare.Columns.aliasId
     val created = "s" :: RShare.Columns.created
+    val description = "s" :: RShare.Columns.description
     val cols = RShare.Columns.all.map("s" :: _).map(_.f) ++ Seq(
       ("p" :: RPublishShare.Columns.enabled).f,
       ("p" :: RPublishShare.Columns.publishUntil).f,
@@ -222,7 +223,7 @@ object Queries {
       from,
       Sql.and(
         Sql.or(account.is(accId.id), shareAlias.in(aliasMemberOf(accId.id))),
-        Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs))
+        Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs), description.like(qs))
       )
     ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC"
     logger.stream.trace(s"$frag").drain ++
