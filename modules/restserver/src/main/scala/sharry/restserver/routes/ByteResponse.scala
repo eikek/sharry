@@ -71,7 +71,7 @@ object ByteResponse {
       file <- backend.share.loadFile(shareId, fid, pass, ByteRange.All)
       resp <- OptionT.liftF(
         etagResponse(dsl, req, file).getOrElseF(
-          Ok(file.data)
+          Ok.apply(file.data)
             .map(setETag(file.fileMeta))
             .map(
               _.putHeaders(
@@ -79,7 +79,7 @@ object ByteResponse {
                 `Accept-Ranges`.bytes,
                 `Last-Modified`(timestamp(file)),
                 `Content-Disposition`("inline", fileNameMap(file)),
-                `Content-Length`.unsafeFromLong(file.fileMeta.length.bytes)
+                fileSizeHeader(file.fileMeta.length)
               )
             )
         )
@@ -118,7 +118,7 @@ object ByteResponse {
         `Content-Type`(mediaType(file)),
         `Last-Modified`(timestamp(file)),
         `Content-Disposition`("inline", fileNameMap(file)),
-        `Content-Length`.unsafeFromLong(respLen),
+        fileSizeHeader(ByteSize(respLen)),
         `Content-Range`(RangeUnit.Bytes, subRangeResp(range, len.bytes), Some(len.bytes))
       )
     )
@@ -143,4 +143,7 @@ object ByteResponse {
 
   private def fileNameMap[F[_]](file: FileRange[F]) =
     file.shareFile.filename.map(n => Map(CIString("filename") -> n)).getOrElse(Map.empty)
+
+  private def fileSizeHeader(sz: ByteSize) =
+    Header.Raw(CIString("File-Size"), sz.bytes.toString)
 }
