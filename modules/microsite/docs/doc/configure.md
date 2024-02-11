@@ -553,6 +553,8 @@ information on how it works with other providers.
 
 ## Cleanup
 
+<img src="../diagrams/file-deletion-diagram.svg" class="rounded screenshot">
+
 Sharry has a periodic cleanup job that will delete 'invalid'
 resources. This cleanup job runs in the backend and is triggered
 by a timer every `interval` as defined in the `cleanup` block. It
