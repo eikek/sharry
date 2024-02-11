@@ -1,0 +1,6 @@
+flowchart LR
+    Create["Share is created"] --> Publish["Share is published"]
+    Publish -- Validity time passes --> Private["Share is made private"]
+    Publish -- Max views reached --> Private
+    
+    Private2["Share is private"] -- Cleanup job runs --> Deleted["Files are deleted"]
