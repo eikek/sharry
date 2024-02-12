@@ -18,9 +18,17 @@ Clone the repository using [git](https://git-scm.org).
 git clone https://github.com/eikek/sharry
 ```
 
-Install [Elm](https://elm-lang.org) and [Sbt](https://scala-sbt.org),
-which is used to build the application. Start `sbt` in the source root
-and run inside the sbt shell:
+Install [Elm](https://elm-lang.org), [Sbt](https://scala-sbt.org),
+[npm](https://npmjs.org) and the
+[tailwind-cli](https://github.com/tailwindlabs/tailwindcss/releases),
+which is used to build the application.
+
+A convenient alternative is to install [nix](https://nixos.org/nix)
+(with flakes enabled) and run `nix develop` in the project root. Even
+better with [direnv](https://direnv.net) which takes care of that step
+transitively.
+
+Start `sbt` in the source root and run inside the sbt shell:
 
 - `make` to compile all sources (Elm + Scala)
 - `make-zip` to create zip packages
@@ -83,25 +91,49 @@ sharry.restserver {
 
 ## Nix Expressions
 
-The directory `/nix` contains nix expressions to install sharry via
+The file `flake.nix` contains nix expressions to install sharry via
 the nix package manager and to integrate it into NixOS as a system
 service.
+
+### Update the nix build
+
+The nix build is setup in `flake.nix`, which refers to the
+`nix/package.nix` to build the sharry application. It is build by
+first obtaining all dependencies, so that the actual build can be done
+in a sandbox without network.
+
+Since `npm` and `elm` mess with the users home directory and require
+an internet connection, building the webapp into a webjar is done as
+part of the "dependency phase".
+
+If something changes, run `nix build` *twice* and check whether the
+hash is the same (this to check whether there was something not
+reproducible accidentally included). Then update the `depsSha256`
+attribute in `package.nix`. Run `nix build` again and start the app
+for a quick check.
+
+NOTE: if nix has the dependencies with the given hash cached, *it will
+not* build it again. To be sure, just remove the hash and leave an
+empty string. The build will then fail and give the proper hash.
 
 ### Testing NixOS Modules
 
 The modules can be build by building the `configuration-test.nix` file
-together with some nixpkgs version. For example:
+which is referenced in the flake.
 
 ``` shell
-nixos-rebuild build-vm -I nixos-config=./configuration-test.nix \
-  -I nixpkgs=https://github.com/NixOS/nixpkgs-channels/archive/nixos-19.09.tar.gz
+nixos-rebuild build-vm --flake .#test-vm
 ```
 
-This will build all modules imported in `configuration-test.nix` and
-create a virtual machine containing the system, including sharry.
-After that completes, the system configuration can be found behind the
-`./result/system` symlink. So it is possible to look at the generated
-systemd config for example:
+To build and run with one command:
+``` shell
+nix run .#nixosConfigurations.test-vm.config.system.build.vm
+```
+
+This will build, resp. run, a vm with sharry included. After the
+build-vm command completes, the system configuration can be found
+behind the `./result/system` symlink. So it is possible to look at the
+generated systemd config for example:
 
 ``` shell
 cat result/system/etc/systemd/system/sharry.service
@@ -116,9 +148,8 @@ cat result/system/etc/systemd/system/sharry.service | \
   cut -d'=' -f2 | \
   xargs cat | \
   tail -n1 | \
-  awk '{print $NF}'| \
-  sed 's/.$//' | \
-  xargs cat | jq
+  sed 's/sharry.restserver = //' | \
+  jq
 ```
 
 To see the module in action, the vm can be started (the first line

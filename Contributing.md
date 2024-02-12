@@ -37,8 +37,12 @@ fiddle with dependencies. If you have nix installed, you can create an
 environment with all the tools available:
 
 ``` bash
-$ nix-shell project/microsite.nix
+$ nix develop
 ```
+
+Alternatively, additionally to nix, install
+[direnv](https://direnv.net/) which will take care of that whenever
+entering the project directory.
 
 Run the above in two terminals. Then in one, run `sbt` to generate the site:
 ```
@@ -51,7 +55,7 @@ In the other terminal run jekyll, for example:
 $ jekyll serve -s modules/microsite/target/site --baseurl /sharry
 ```
 
-If you use `nix-shell`, there is a shortcut `jekyll-sharry`.
+If you use `nix`, there is a shortcut `jekyll-sharry` in scope.
 
 Then see the site at `http://localhost:4000/sharry`. You need to run
 `microsite/makeMicrosite` after a change and then reload the page.

@@ -3,6 +3,8 @@ import scala.sys.process._
 import com.github.sbt.git.SbtGit.GitKeys._
 
 val elmCompileMode = settingKey[ElmCompileMode]("How to compile elm sources")
+val elmCompileSkip = settingKey[Boolean]("Whether to skip compiling elm files")
+val webjarSkip = settingKey[Boolean]("Skip copying webjar files")
 
 val scalafixSettings = Seq(
   semanticdbEnabled := true, // enable SemanticDB
@@ -38,16 +40,21 @@ val testSettingsMUnit = Seq(
 )
 
 val elmSettings = Seq(
+  elmCompileSkip := false,
   elmCompileMode := ElmCompileMode.Debug,
   Compile / resourceGenerators += Def.task {
-    compileElm(
-      streams.value.log,
-      (Compile / baseDirectory).value,
-      (Compile / resourceManaged).value,
-      name.value,
-      version.value,
-      elmCompileMode.value
-    )
+    val logger = streams.value.log
+    val skip = elmCompileSkip.value
+    if (skip) Seq.empty
+    else
+      compileElm(
+        logger,
+        (Compile / baseDirectory).value,
+        (Compile / resourceManaged).value,
+        name.value,
+        version.value,
+        elmCompileMode.value
+      )
   }.taskValue,
   watchSources += Watched.WatchSource(
     (Compile / sourceDirectory).value / "elm",
@@ -62,14 +69,19 @@ val stylesSettings = Seq(
 )
 
 val webjarSettings = Seq(
+  webjarSkip := false,
   Compile / resourceGenerators += Def.task {
-    copyWebjarResources(
-      Seq((Compile / sourceDirectory).value / "webjar"),
-      (Compile / resourceManaged).value,
-      name.value,
-      version.value,
-      streams.value.log
-    )
+    val logger = streams.value.log
+    val skip = webjarSkip.value
+    if (skip) Seq.empty
+    else
+      copyWebjarResources(
+        Seq((Compile / sourceDirectory).value / "webjar"),
+        (Compile / resourceManaged).value,
+        name.value,
+        version.value,
+        logger
+      )
   }.taskValue,
   watchSources += Watched.WatchSource(
     (Compile / sourceDirectory).value / "webjar",
@@ -445,7 +457,15 @@ def createWebjarSource(wj: Seq[ModuleID], out: File): Seq[File] = {
 
 addCommandAlias(
   "make",
-  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/test:compile"
+  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod ;root/openapiCodegen ;root/Test/compile"
+)
+addCommandAlias(
+  "make-without-webapp",
+  "; set webapp/webjarSkip := true ;set webapp/elmCompileSkip := true ;set webapp/stylesSkipBuild := true; root/compile"
+)
+addCommandAlias(
+  "make-webapp-only",
+  ";set webapp/elmCompileMode := ElmCompileMode.Production; set webapp/stylesMode := StylesMode.Prod; set webapp/webjarSkip := false ;set webapp/elmCompileSkip := false ;set webapp/stylesSkipBuild := false ;webapp/openapiCodegen ;webapp/compile ;webapp/package"
 )
 addCommandAlias("make-zip", ";restserver/Universal/packageBin")
 addCommandAlias("make-deb", ";restserver/Debian/packageBin")

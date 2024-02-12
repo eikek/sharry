@@ -1,4 +1,4 @@
-{config, lib, pkgs, ...}:
+{ config, lib, pkgs, ... }:
 
 with lib;
 let
@@ -31,7 +31,7 @@ let
     webapp = {
       app-name = "Sharry";
       chunk-size = "100M";
-      retry-delays = [0 3000 6000 12000 24000 48000];
+      retry-delays = [ 0 3000 6000 12000 24000 48000 ];
       app-icon = "";
       app-icon-dark = "";
       app-logo = "";
@@ -155,7 +155,8 @@ let
         max-size = "1.5G";
         max-validity = "365 days";
         database-domain-checks = [
-          { enabled = false;
+          {
+            enabled = false;
             native = "domain safe_bytea violates check constraint";
             message = "The uploaded file contains a virus!";
           }
@@ -226,7 +227,8 @@ Sharry
       };
     };
   };
-in {
+in
+{
 
   ## interface
   options = {
@@ -251,6 +253,13 @@ in {
           merged at runtime. Useful for loading secrets.
         '';
       };
+      package = mkOption {
+        type = types.package;
+        default = pkgs.sharry;
+        description = ''
+          The package providing the sharry binary.
+        '';
+      };
 
       config = {
         base-url = mkOption {
@@ -265,7 +274,7 @@ in {
           '';
         };
         bind = mkOption {
-          type = types.submodule({
+          type = types.submodule ({
             options = {
               address = mkOption {
                 type = types.str;
@@ -284,7 +293,7 @@ in {
         };
 
         logging = mkOption {
-          type = types.submodule({
+          type = types.submodule ({
             options = {
               minimum-level = mkOption {
                 type = types.str;
@@ -314,7 +323,7 @@ in {
         };
 
         webapp = mkOption {
-          type = types.submodule({
+          type = types.submodule ({
             options = {
               app-name = mkOption {
                 type = types.str;
@@ -439,12 +448,12 @@ in {
         };
 
         backend = mkOption {
-          type = types.submodule({
+          type = types.submodule ({
             options = {
               auth = mkOption {
-                type = types.submodule({
+                type = types.submodule ({
                   options = {
-                    server-secret= mkOption {
+                    server-secret = mkOption {
                       type = types.str;
                       default = defaults.backend.auth.server-secret;
                       description = ''
@@ -462,7 +471,7 @@ in {
                       '';
                     };
                     fixed = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -494,7 +503,7 @@ in {
                       '';
                     };
                     http = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -539,7 +548,7 @@ in {
                       '';
                     };
                     http-basic = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -572,7 +581,7 @@ in {
                       '';
                     };
                     command = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -604,7 +613,7 @@ in {
                       '';
                     };
                     internal = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -624,7 +633,7 @@ in {
                       '';
                     };
                     proxy = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -654,83 +663,83 @@ in {
                           let d = builtins.head defaults.backend.auth.oauth;
                           in
                           {
-                          enabled = mkOption {
-                            type = types.bool;
-                            default = d.enabled;
-                            description = "Whether to enable this login module";
+                            enabled = mkOption {
+                              type = types.bool;
+                              default = d.enabled;
+                              description = "Whether to enable this login module";
+                            };
+                            id = mkOption {
+                              type = types.str;
+                              default = d.id;
+                              description = "A unique id that is part of the url";
+                            };
+                            name = mkOption {
+                              type = types.str;
+                              default = d.name;
+                              description = "A name that is displayed inside the button on the login screen";
+                            };
+                            icon = mkOption {
+                              type = types.str;
+                              default = d.icon;
+                              description = "A fontawesome icon name for the button";
+                            };
+                            authorize-url = mkOption {
+                              type = types.str;
+                              default = d.authorize-url;
+                              description = ''
+                                The url of the provider where the user can login and grant the
+                                permission to retrieve the user name.
+                              '';
+                            };
+                            token-url = mkOption {
+                              type = types.str;
+                              default = d.token-url;
+                              description = ''
+                                The url used to obtain a bearer token using the
+                                response from the authentication above. The response from
+                                the provider must be json or url-form-encdode.
+                              '';
+                            };
+                            user-url = mkOption {
+                              type = types.str;
+                              default = d.user-url;
+                              description = ''
+                                The url to finalyy retrieve user information – only JSON responses
+                                are supported.
+                              '';
+                            };
+                            user-id-key = mkOption {
+                              type = types.str;
+                              default = d.user-id-key;
+                              description = ''
+                                The name of the field in the json response denoting the user name.
+                              '';
+                            };
+                            user-email-key = mkOption {
+                              type = types.nullOr types.str;
+                              default = d.user-email-key;
+                              description = ''
+                                The name of the field in the json response denoting the users email."
+                              '';
+                            };
+                            scope = mkOption {
+                              type = types.str;
+                              default = d.scope;
+                              description = ''
+                                A scope definition to use when initiating the authentication flow.
+                              '';
+                            };
+                            client-id = mkOption {
+                              type = types.str;
+                              default = d.client-id;
+                              description = "Your client-id as given by the provider.";
+                            };
+                            client-secret = mkOption {
+                              type = types.str;
+                              default = d.cient-secret;
+                              description = "Your client-secret as given by the provider.";
+                            };
                           };
-                          id = mkOption {
-                            type = types.str;
-                            default = d.id;
-                            description = "A unique id that is part of the url";
-                          };
-                          name = mkOption {
-                            type = types.str;
-                            default = d.name;
-                            description = "A name that is displayed inside the button on the login screen";
-                          };
-                          icon = mkOption {
-                            type = types.str;
-                            default = d.icon;
-                            description = "A fontawesome icon name for the button";
-                          };
-                          authorize-url = mkOption {
-                            type = types.str;
-                            default = d.authorize-url;
-                            description = ''
-                              The url of the provider where the user can login and grant the
-                              permission to retrieve the user name.
-                            '';
-                          };
-                          token-url = mkOption {
-                            type = types.str;
-                            default = d.token-url;
-                            description = ''
-                              The url used to obtain a bearer token using the
-                              response from the authentication above. The response from
-                              the provider must be json or url-form-encdode.
-                            '';
-                          };
-                          user-url = mkOption {
-                            type = types.str;
-                            default = d.user-url;
-                            description = ''
-                              The url to finalyy retrieve user information – only JSON responses
-                              are supported.
-                            '';
-                          };
-                          user-id-key = mkOption {
-                            type = types.str;
-                            default = d.user-id-key;
-                            description = ''
-                              The name of the field in the json response denoting the user name.
-                            '';
-                          };
-                          user-email-key = mkOption {
-                            type = types.nullOr types.str;
-                            default = d.user-email-key;
-                            description = ''
-                              The name of the field in the json response denoting the users email."
-                            '';
-                          };
-                          scope = mkOption {
-                            type = types.str;
-                            default = d.scope;
-                            description = ''
-                              A scope definition to use when initiating the authentication flow.
-                            '';
-                          };
-                          client-id = mkOption {
-                            type = types.str;
-                            default = d.client-id;
-                            description = "Your client-id as given by the provider.";
-                          };
-                          client-secret = mkOption {
-                            type = types.str;
-                            default = d.cient-secret;
-                            description = "Your client-secret as given by the provider.";
-                          };
-                        };
                       });
                       default = defaults.backend.auth.oauth;
                       description = ''
@@ -752,7 +761,7 @@ in {
               };
 
               share = mkOption {
-                type = types.submodule({
+                type = types.submodule ({
                   options = {
                     chunk-size = mkOption {
                       type = types.str;
@@ -776,36 +785,36 @@ in {
                           let
                             d = builtins.head defaults.backend.share.database-domain-checks;
                           in
-                            {
-                              enabled = mkOption {
-                                type = types.bool;
-                                default = d.enabled;
-                                description = "Whether to enable this login module";
-                              };
-                              native = mkOption {
-                                type = types.str;
-                                default = d.native;
-                                description = "The native database error message substring.";
-                              };
-                              message = mkOption {
-                                type = types.str;
-                                default = d.message;
-                                description = "The user message to show in this error case.";
-                              };
+                          {
+                            enabled = mkOption {
+                              type = types.bool;
+                              default = d.enabled;
+                              description = "Whether to enable this login module";
                             };
+                            native = mkOption {
+                              type = types.str;
+                              default = d.native;
+                              description = "The native database error message substring.";
+                            };
+                            message = mkOption {
+                              type = types.str;
+                              default = d.message;
+                              description = "The user message to show in this error case.";
+                            };
+                          };
                       });
                       default = defaults.backend.share.database-domain-checks;
                       description = ''
-                      Allows additional database checks to be translated into some
-                      meaningful message to the user.
+                        Allows additional database checks to be translated into some
+                        meaningful message to the user.
 
-                      This config is used when inspecting database error messages.
-                      If the error message from the database contains the defined
-                      `native` part, then the server returns a 422 with the error
-                      messages given here as `message`.
+                        This config is used when inspecting database error messages.
+                        If the error message from the database contains the defined
+                        `native` part, then the server returns a 422 with the error
+                        messages given here as `message`.
 
-                      See issue https://github.com/eikek/sharry/issues/255 – the
-                      example is a virus check via a postgresql extension "snakeoil".
+                        See issue https://github.com/eikek/sharry/issues/255 – the
+                        example is a virus check via a postgresql extension "snakeoil".
                       '';
                     };
                   };
@@ -955,7 +964,7 @@ in {
               };
 
               cleanup = mkOption {
-                type = types.submodule({
+                type = types.submodule ({
                   options = {
                     enabled = mkOption {
                       type = types.bool;
@@ -1022,7 +1031,7 @@ in {
                 description = "Registration settings. These accounts are checked by the 'internal' auth module.";
               };
               mail = mkOption {
-                type = types.submodule({
+                type = types.submodule ({
                   options = {
                     enabled = mkOption {
                       type = types.bool;
@@ -1037,7 +1046,7 @@ in {
                       '';
                     };
                     smtp = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           host = mkOption {
                             type = types.str;
@@ -1104,10 +1113,10 @@ in {
                       description = "SMTP Settings";
                     };
                     templates = mkOption {
-                      type = types.submodule({
+                      type = types.submodule ({
                         options = {
                           download = mkOption {
-                            type = types.submodule({
+                            type = types.submodule ({
                               options = {
                                 subject = mkOption {
                                   type = types.str;
@@ -1125,7 +1134,7 @@ in {
                             description = "The template used when sending mails for new shares.";
                           };
                           alias = mkOption {
-                            type = types.submodule({
+                            type = types.submodule ({
                               options = {
                                 subject = mkOption {
                                   type = types.str;
@@ -1143,7 +1152,7 @@ in {
                             description = "The templates used when sending alias links.";
                           };
                           upload-notify = mkOption {
-                            type = types.submodule({
+                            type = types.submodule ({
                               options = {
                                 subject = mkOption {
                                   type = types.str;
@@ -1189,7 +1198,7 @@ in {
       group = "sharry";
     };
     users.groups = mkIf (cfg.runAs == null) {
-      sharry = {};
+      sharry = { };
     };
 
     systemd.services.sharry = {
@@ -1201,7 +1210,7 @@ in {
       serviceConfig = {
         User = user;
         Group = mkIf (cfg.runAs == null) "sharry";
-        ExecStart = "${pkgs.sharry}/bin/sharry-restserver ${sharryConf}";
+        ExecStart = "${cfg.package}/bin/sharry ${sharryConf}";
       };
     };
   };

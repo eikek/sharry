@@ -11,53 +11,38 @@ permalink: doc/nix
 Sharry can be installed via the [nix](https://nixos.org/nix) package
 manager, which is available for Linux and OSX. Sharry is currently not
 part of the [nixpkgs collection](https://nixos.org/nixpkgs/), but you
-can use the derivation from this repository. This is sometimes
-referred to as [import from
-derivation](https://nixos.wiki/wiki/Import_From_Derivation).
+can use the derivation from this repository. It uses [nix
+flakes](https://nixos.wiki/wiki/Flakes), which you must enable in your
+nix installation.
 
-For example, the `builtins.fetchTarball` function can be used to
-retrieve the files; then import the `release.nix` file:
-
-``` nix
-let
-  sharrysrc = builtins.fetchTarball "https://github.com/eikek/sharry/archive/master.tar.gz";
-in
-import "${sharrysrc}/nix/release.nix";
+The quickest way to run sharry:
+``` bash
+$ nix run github:eikek/sharry
 ```
 
-This creates a set containing a function for creating a derivation for
-sharry. This then needs to be called like other custom packages. For
-example, in your `~/.nixpkgs/config.nix` you could write this:
-
-``` nix
-let
-  sharrysrc = builtins.fetchTarball "https://github.com/eikek/sharry/archive/master.tar.gz";
-  sharry = import "${sharrysrc}/nix/release.nix";
-in
-{ packageOverrides = pkgs:
-   let
-     callPackage = pkgs.lib.callPackageWith(custom // pkgs);
-     custom = {
-       sharry = callPackage sharry.currentPkg {};
-     };
-   in custom;
-}
-```
-
-Then you can install sharry via `nix-shell` or `nix-env`, for example:
+This will build sharry from its default branch, which is `master`. It
+is recommended to use a tag instead, as `master` may not always work.
+Simply append the tag (starting from 1.14.0). Also a config file should be given:
 
 ``` bash
-$ nix-env -iA nixpkgs.sharry
+$ nix run github:eikek/sharry/v1.14.0 -- /path/to/sharry.conf
 ```
 
-You may need to replace `nixpkgs` with `nixos` when you're on NixOS.
+To make it permanent, install it into your profile:
+``` bash
+$ nix profile install github:eikek/sharry/v1.14.0
+```
 
-The expression `sharry.currentPkg` refers to the most current release
-of Sharry. So even if you use the tarball of the current master
-branch, the `release.nix` file only contains derivations for releases.
-The expression `sharry.currentPkg` is a shortcut for selecting the
-most current release. For example it translates to `sharry.pkg
-sharry.cfg.v@PVERSION@` – if the current version is `@VERSION@`.
+### Latest Release
+
+The flake provides two packages: `sharry` is build from the source
+tree as referenced by the flake url. There is also `sharry-bin` which
+builds the latest (at time of the commit referenced by the flake url)
+release as published to GitHub. In case a tag is referenced by the
+flake url as shown above, both versions are the same.
+
+The NixOS module uses the `sharry` package by default. It can be
+changed via the config to provide a different one.
 
 
 ## Sharry as a service on NixOS
@@ -65,44 +50,28 @@ sharry.cfg.v@PVERSION@` – if the current version is `@VERSION@`.
 If you are running [NixOS](https://nixos.org), there is a module
 definition for installing Sharry as a service using systemd.
 
-You need to import the `release.nix` file as described above in your
-`configuration.nix` and then append the sharry module to your list of
-modules. Here is an example:
+Define this repo in your inputs and refer to its module:
 
 ```nix
-{ config, pkgs, ... }:
-let
-  sharrysrc = builtins.fetchTarball "https://github.com/eikek/sharry/archive/master.tar.gz";
-  sharry = import "${sharrysrc}/nix/release.nix";
-in
 {
-  imports = [ mymodule1 mymodule2 ] ++ sharry.modules;
-
-  nixpkgs = {
-    config = {
-      packageOverrides = pkgs:
-        let
-          callPackage = pkgs.lib.callPackageWith(custom // pkgs);
-          custom = {
-            sharry = callPackage sharry.currentPkg {};
-          };
-        in custom;
-    };
+  inputs = {
+    sharry = "github:eikek/sharry/v1.14.0";
   };
 
-  services.sharry = {
-    enable = true;
-    base-url = "http://sharrytest:7878";
-    backend = {
-      auth = {
-        oauth = [];
+  outputs = attrs@{ nixpkgs, sharry, ... }:
+    {
+      nixosConfigurations.my-machine = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = attrs;
+        modules = [
+          # include sharry
+          sharry.nixosModules.default
+          # your machine config
+          ./configuration.nix
+        ];
       };
     };
-  };
-
-  ...
 }
-
 ```
 
 Please see the `nix/module.nix` file for the set of options. The nixos
