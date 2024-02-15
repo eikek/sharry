@@ -2,8 +2,14 @@ name: CI
 on:
   pull_request:
 jobs:
+  nix-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v25
+      - run: nix build
   ci-matrix:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +24,10 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: modules/webapp
+      - uses: cachix/install-nix-action@v25
+      - name: Install tailwindcss cli
+        run: |
+          nix profile install nixpkgs#tailwindcss
       - name: Fetch tags
         run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
       - uses: olafurpg/setup-scala@v14

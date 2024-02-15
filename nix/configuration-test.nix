@@ -1,29 +1,27 @@
-{ config, pkgs, ... }:
-let
-  sharry = import ./release.nix;
-in
+{ modulesPath, config, pkgs, ... }:
 {
-  imports = sharry.modules;
+  imports = [ (modulesPath + "/virtualisation/qemu-vm.nix") ];
 
-  i18n = {
-    defaultLocale = "en_US.UTF-8";
-  };
+  i18n = { defaultLocale = "de_DE.UTF-8"; };
+  console.keyMap = "de";
 
   users.users.root = {
     password = "root";
   };
 
-  nixpkgs = {
-    config = {
-      packageOverrides = pkgs:
-        let
-          callPackage = pkgs.lib.callPackageWith(custom // pkgs);
-          custom = {
-            sharry = callPackage sharry.currentPkg {};
-          };
-        in custom;
-    };
-  };
+  virtualisation.memorySize = 2048;
+  virtualisation.forwardPorts = [
+    {
+      from = "host";
+      host.port = 64022;
+      guest.port = 22;
+    }
+    {
+      from = "host";
+      host.port = 64080;
+      guest.port = 9090;
+    }
+  ];
 
   services.sharry = {
     enable = true;
@@ -35,11 +33,12 @@ in
       };
       backend = {
         auth = {
-          oauth = [];
+          oauth = [ ];
         };
         share = {
           database-domain-checks = [
-            { enabled = true;
+            {
+              enabled = true;
               native = "domain safe_bytea violates check constraint";
               message = "The uploaded file contains a virus!";
             }
@@ -54,10 +53,9 @@ in
   };
 
   networking = {
-    hostName = "sharrytest";
+    hostName = "sharry-test";
     firewall.allowedTCPPorts = [ 9090 ];
   };
 
-  system.stateVersion = "22.11";
-
+  system.stateVersion = "23.11";
 }

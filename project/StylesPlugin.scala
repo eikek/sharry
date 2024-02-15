@@ -7,8 +7,8 @@ import scala.sys.process._
 /** Integrates the tailwind build into sbt.
   *
   * It assumes the required config (postcss.conf.js, tailwind.config.js) files in the base
-  * directory. It requires to have nodejs installed and the npx command available (or
-  * configured).
+  * directory. It requires to have nodejs installed and the tailwindcss command available
+  * (or configured).
   */
 object StylesPlugin extends AutoPlugin {
 
@@ -20,10 +20,11 @@ object StylesPlugin extends AutoPlugin {
       case object Dev extends StylesMode
     }
 
+    val stylesSkipBuild = settingKey[Boolean]("Skip building styles")
     val stylesDirectory = settingKey[File]("The directory containing source styles")
     val stylesOutputDir = settingKey[File]("The directory to put the final outcome")
     val stylesMode = settingKey[StylesMode]("The compile mode, dev or production")
-    val stylesNpxCommand = settingKey[String]("The npx executable")
+    val stylesTwCommand = settingKey[String]("The tailwind executable")
     val stylesNpmCommand =
       settingKey[String]("The npm executable for installing dependencies")
 
@@ -37,33 +38,44 @@ object StylesPlugin extends AutoPlugin {
 
   def stylesSettings: Seq[Setting[_]] =
     Seq(
+      stylesSkipBuild := false,
       stylesDirectory := (Compile / sourceDirectory).value / "styles",
       stylesOutputDir := (Compile / resourceManaged).value /
         "META-INF" / "resources" / "webjars" / name.value / version.value,
-      stylesNpxCommand := "npx",
+      stylesTwCommand := "tailwindcss",
       stylesNpmCommand := "npm",
       stylesMode := StylesMode.Dev,
       stylesBuild := {
+        val skip = stylesSkipBuild.value
         val logger = streams.value.log
-        val npx = stylesNpxCommand.value
+        val tw = stylesTwCommand.value
         val npm = stylesNpmCommand.value
         val inDir = stylesDirectory.value
         val outDir = stylesOutputDir.value
         val wd = (Compile / baseDirectory).value
         val mode = stylesMode.value
-        npmInstall(npm, wd, logger)
-        val files = postCss(npx, inDir, outDir, wd, mode, logger) ++
-          copyWebfonts(wd, outDir, logger) ++
-          copyFlags(wd, outDir, logger)
-        logger.info("Styles built")
-        files
+        if (skip) {
+          logger.warn("Building styles skipped")
+          Seq.empty
+        } else {
+          npmInstall(npm, wd, logger)
+          val files = runTailwind(tw, inDir, outDir, wd, mode, logger) ++
+            copyWebfonts(wd, outDir, logger) ++
+            copyFlags(wd, outDir, logger)
+          logger.info("Styles built")
+          files
+        }
       },
       stylesInstall := {
+        val skip = stylesSkipBuild.value
         val logger = streams.value.log
         val npm = stylesNpmCommand.value
         val wd = (LocalRootProject / baseDirectory).value
-        npmInstall(npm, wd, logger)
-
+        if (skip) {
+          logger.warn("Building styles skipped")
+        } else {
+          npmInstall(npm, wd, logger)
+        }
       }
     )
 
@@ -78,8 +90,8 @@ object StylesPlugin extends AutoPlugin {
     }
   }
 
-  def postCss(
-      npx: String,
+  def runTailwind(
+      tailwind: String,
       inDir: File,
       outDir: File,
       wd: File,
@@ -87,25 +99,22 @@ object StylesPlugin extends AutoPlugin {
       logger: Logger
   ): Seq[File] = {
     val env = mode match {
-      case StylesMode.Dev  => "development"
-      case StylesMode.Prod => "production"
+      case StylesMode.Dev  => Seq.empty
+      case StylesMode.Prod => Seq("--minify")
     }
     val target = outDir / "css" / "styles.css"
     IO.createDirectory(target.getParentFile)
+    val cmd = Seq(
+      tailwind,
+      "--input",
+      s"$inDir/index.css",
+      "-o",
+      target.absolutePath
+    ) ++ env
+
     logger.info("Compiling css stylesheets…")
-    Cmd.run(
-      Seq(
-        npx,
-        "postcss",
-        s"$inDir/index.css",
-        "-o",
-        target.absolutePath,
-        "--env",
-        env
-      ),
-      wd,
-      logger
-    )
+    logger.info(s"> ${cmd.mkString(" ")}")
+    Cmd.run(cmd, wd, logger)
     val gz = file(target.toString + ".gz")
     IO.gzip(target, gz)
     Seq(target, gz)
@@ -122,7 +131,7 @@ object StylesPlugin extends AutoPlugin {
 
   def copyFlags(baseDir: File, outDir: File, logger: Logger): Seq[File] = {
     val flagDir =
-      baseDir / "node_modules" / "flag-icon-css" / "flags"
+      baseDir / "node_modules" / "flag-icons" / "flags"
     val targetDir = outDir / "flags"
     IO.createDirectory(targetDir)
 

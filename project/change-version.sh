@@ -25,3 +25,4 @@ fi
 
 edit_version "version.sbt" "$curr" "$1"
 edit_version "modules/restapi/src/main/resources/sharry-openapi.yml" "$curr" "$1"
+edit_version "nix/meta.nix" "$curr" "$1"
