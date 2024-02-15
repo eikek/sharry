@@ -59,7 +59,7 @@ sbt.lib.mkSbtDerivation {
     nodejs_18
   ];
 
-  depsSha256 = "sha256-ulLRZjxGIRVyILicndm8ko4AhOZ1Qbn188J3imifwHg";
+  depsSha256 = "sha256-EArZMYHRWJIQARkKYn1j3yCtMNjcv1k8RkQ5bLnVR9U";
 
   buildPhase = ''
     HOME=$(dirname $COURSIER_CACHE)/home
