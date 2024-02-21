@@ -15,7 +15,7 @@ object Dependencies {
   val Http4sVersion = "0.23.25"
   val JQueryVersion = "3.5.1"
   val KindProjectorVersion = "0.10.3"
-  val MariaDbVersion = "3.3.2"
+  val MariaDbVersion = "3.3.3"
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
   val OrganizeImportsVersion = "0.6.0"
