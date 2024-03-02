@@ -67,7 +67,7 @@ object BackendApp {
         cfg.computeChecksum,
         cfg.files.defaultStoreConfig,
         connectEC,
-        true
+        runMigration = true
       )
 
       backend <- create(cfg, store)

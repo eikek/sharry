@@ -22,12 +22,13 @@ class LoginModuleTest extends FunSuite {
   val cfg = AuthConfig(
     ByteVector.fromValidHex("caffee"),
     Duration.hours(1),
-    AuthConfig.Fixed(true, Ident.unsafe("admin"), Password("admin"), 1),
-    AuthConfig.Http(true, LenientUri.unsafe("http://test.com"), "GET", "", "", 2),
-    AuthConfig.HttpBasic(true, LenientUri.unsafe("http://test.com"), "GET", 3),
-    AuthConfig.Command(true, Seq.empty, 0, 4),
-    AuthConfig.Proxy(false, "", None),
-    AuthConfig.Internal(true, 5),
+    AuthConfig.Fixed(enabled = true, Ident.unsafe("admin"), Password("admin"), 1),
+    AuthConfig
+      .Http(enabled = true, LenientUri.unsafe("http://test.com"), "GET", "", "", 2),
+    AuthConfig.HttpBasic(enabled = true, LenientUri.unsafe("http://test.com"), "GET", 3),
+    AuthConfig.Command(enabled = true, Seq.empty, 0, 4),
+    AuthConfig.Proxy(enabled = false, "", None),
+    AuthConfig.Internal(enabled = true, 5),
     Seq.empty
   )
 

@@ -358,7 +358,7 @@ object OShare {
           case AddResult.Success =>
             1.pure[F]
           case AddResult.EntityExists(_) =>
-            store.transact(RPublishShare.update(share, true, reuseId))
+            store.transact(RPublishShare.update(share, enable = true, reuseId = reuseId))
           case AddResult.Failure(ex) =>
             Async[F].raiseError(ex)
         }
@@ -370,7 +370,8 @@ object OShare {
       }
 
       def unpublish(share: Ident, accId: AccountId): OptionT[F, Unit] = {
-        val remove = store.transact(RPublishShare.update(share, false, true))
+        val remove =
+          store.transact(RPublishShare.update(share, enable = false, reuseId = true))
         for {
           _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
           _ <- OptionT.liftF(remove)
@@ -414,7 +415,7 @@ object OShare {
       def deleteShare(accId: AccountId, share: Ident): OptionT[F, Unit] =
         for {
           _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
-          _ <- OptionT.liftF(Queries.deleteShare(share, true)(store))
+          _ <- OptionT.liftF(Queries.deleteShare(share, background = true)(store))
         } yield ()
 
       def setDescription(
@@ -473,7 +474,7 @@ object OShare {
                     s"Cleaning up expired share '${share.name.getOrElse("")}' " +
                       s"owned by '${account.login.value.id}' (${share.id.id})"
                   ) *> Queries
-                  .deleteShare(share.id, false)(
+                  .deleteShare(share.id, background = false)(
                     store
                   )
               }

@@ -82,7 +82,7 @@ object RestServer {
       ).orNotFound
 
       // With Middlewares in place
-      finalHttpApp = Http4sLogger.httpApp(false, false)(httpApp)
+      finalHttpApp = Http4sLogger.httpApp(logHeaders = false, logBody = false)(httpApp)
 
     } yield finalHttpApp
   }

@@ -219,7 +219,7 @@ object LoginRoutes {
               token.account.id,
               token.account.userLogin,
               token.account.admin,
-              true,
+              success = true,
               "Login successful",
               Some(cd.asString),
               cfg.backend.auth.sessionValid.millis
@@ -231,7 +231,15 @@ object LoginRoutes {
           s"Authentication attempt failure for username $accountName from ip ${req.from.map(_.toInetAddress.getHostAddress).getOrElse("Unknown ip")}"
         ) *>
           Ok(
-            AuthResult(Ident.empty, Ident.empty, false, false, "Login failed.", None, 0L)
+            AuthResult(
+              Ident.empty,
+              Ident.empty,
+              admin = false,
+              success = false,
+              "Login failed.",
+              None,
+              0L
+            )
           )
     }
   }

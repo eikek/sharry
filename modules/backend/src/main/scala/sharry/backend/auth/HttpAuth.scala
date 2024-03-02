@@ -25,7 +25,7 @@ final class HttpAuth[F[_]: Async](
         Ident.fromString(up.user) match {
           case Right(login) =>
             def okResult: F[LoginResult] =
-              AddAccount(login, false, ops)
+              AddAccount(login, admin = false, ops)
                 .flatMap(accId =>
                   AuthToken.user(accId, cfg.serverSecret).map(LoginResult.ok)
                 )

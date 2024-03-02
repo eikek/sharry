@@ -45,25 +45,25 @@ object NotifyRoutes {
   private def basicResult(n: List[NotifyResult]): BasicResult =
     n match {
       case Nil =>
-        BasicResult(false, "There is no email to notify")
+        BasicResult(success = false, "There is no email to notify")
 
       case NotifyResult.InvalidAlias :: Nil =>
-        BasicResult(false, "Invalid alias")
+        BasicResult(success = false, "Invalid alias")
 
       case NotifyResult.FeatureDisabled :: Nil =>
-        BasicResult(false, "Mail feature is disabled.")
+        BasicResult(success = false, "Mail feature is disabled.")
 
       case _ =>
         val success = n.filter(_.isSuccess).size
         val fails = n.filter(_.isError).size
         if (fails > 0 && success == 0)
-          BasicResult(false, s"Sending failed to all recipients ($fails)")
+          BasicResult(success = false, s"Sending failed to all recipients ($fails)")
         else if (fails > 0)
           BasicResult(
-            true,
+            success = true,
             s"Sending succeeded for $success, but failed for $fails recipients"
           )
-        else BasicResult(true, "Mail sent")
+        else BasicResult(success = true, "Mail sent")
     }
 
 }

@@ -57,7 +57,7 @@ object StoreFixture {
           tx,
           64 * 1024,
           ComputeChecksumConfig.default,
-          FileStoreConfig.DefaultDatabase(true)
+          FileStoreConfig.DefaultDatabase(enabled = true)
         )
       )
       st = new StoreImpl[F](jdbc, fs, tx)

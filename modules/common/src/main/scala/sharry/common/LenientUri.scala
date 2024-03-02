@@ -72,7 +72,11 @@ case class LenientUri(
       .covary[F]
       .rethrow
       .flatMap(url =>
-        fs2.io.readInputStream(Sync[F].delay(url.openStream()), chunkSize, true)
+        fs2.io.readInputStream(
+          Sync[F].delay(url.openStream()),
+          chunkSize,
+          closeAfterUse = true
+        )
       )
 
   def readText[F[_]: Sync](chunkSize: Int): F[String] =
@@ -115,7 +119,7 @@ object LenientUri {
     val isRoot = true
     val isEmpty = false
     def /(seg: String): Path =
-      NonEmptyPath(NonEmptyList.of(seg), false)
+      NonEmptyPath(NonEmptyList.of(seg), trailingSlash = false)
     def asString = "/"
   }
   case object EmptyPath extends Path {
@@ -123,7 +127,7 @@ object LenientUri {
     val isRoot = false
     val isEmpty = true
     def /(seg: String): Path =
-      NonEmptyPath(NonEmptyList.of(seg), false)
+      NonEmptyPath(NonEmptyList.of(seg), trailingSlash = false)
     def asString = ""
   }
   case class NonEmptyPath(segs: NonEmptyList[String], trailingSlash: Boolean)

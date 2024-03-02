@@ -23,7 +23,7 @@ case class ComputeChecksumConfig(
 object ComputeChecksumConfig {
   val defaultParallel: Int = math.min(8, math.max(parallelMin, parallelMax))
 
-  val default = ComputeChecksumConfig(true, 5000, 0, true)
+  val default = ComputeChecksumConfig(enable = true, 5000, 0, useDefault = true)
 
   private def parallelMin: Int = 1
   private def parallelMax: Int = Runtime.getRuntime.availableProcessors() - 1
