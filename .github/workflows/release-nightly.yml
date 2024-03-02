@@ -23,6 +23,10 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: modules/webapp
+      - uses: cachix/install-nix-action@v25
+      - name: Install tailwindcss cli
+        run: |
+          nix profile install nixpkgs#tailwindcss
       - name: Coursier cache
         uses: coursier/cache-action@v6
       - name: Set current version
