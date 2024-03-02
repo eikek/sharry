@@ -3,13 +3,15 @@ package sharry.backend.config
 import cats.data.{Validated, ValidatedNec}
 import cats.syntax.all._
 
+import sharry.common.ByteSize
 import sharry.common.Ident
 import sharry.store.FileStoreConfig
 
 case class FilesConfig(
     defaultStore: Ident,
     stores: Map[Ident, FileStoreConfig],
-    copyFiles: CopyFilesConfig
+    copyFiles: CopyFilesConfig,
+    downloadChunkSize: ByteSize
 ) {
 
   val enabledStores: Map[Ident, FileStoreConfig] =
