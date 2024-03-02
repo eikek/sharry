@@ -1,8 +1,12 @@
-{ modulesPath, config, pkgs, ... }:
 {
-  imports = [ (modulesPath + "/virtualisation/qemu-vm.nix") ];
+  modulesPath,
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [(modulesPath + "/virtualisation/qemu-vm.nix")];
 
-  i18n = { defaultLocale = "de_DE.UTF-8"; };
+  i18n = {defaultLocale = "de_DE.UTF-8";};
   console.keyMap = "de";
 
   users.users.root = {
@@ -33,7 +37,7 @@
       };
       backend = {
         auth = {
-          oauth = [ ];
+          oauth = [];
         };
         share = {
           database-domain-checks = [
@@ -54,7 +58,7 @@
 
   networking = {
     hostName = "sharry-test";
-    firewall.allowedTCPPorts = [ 9090 ];
+    firewall.allowedTCPPorts = [9090];
   };
 
   system.stateVersion = "23.11";

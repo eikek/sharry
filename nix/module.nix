@@ -1,13 +1,27 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib; let
   cfg = config.services.sharry;
-  user = if cfg.runAs == null then "sharry" else cfg.runAs;
-  str = e: if (builtins.typeOf e) == "bool" then (if e then "true" else "false") else (builtins.toString e);
+  user =
+    if cfg.runAs == null
+    then "sharry"
+    else cfg.runAs;
+  str = e:
+    if (builtins.typeOf e) == "bool"
+    then
+      (
+        if e
+        then "true"
+        else "false"
+      )
+    else (builtins.toString e);
   sharryConf = pkgs.writeText "sharry.conf" (
-    "sharry.restserver = ${builtins.toJSON cfg.config}\n" +
-    (optionalString (cfg.configOverridesFile != null)
+    "sharry.restserver = ${builtins.toJSON cfg.config}\n"
+    + (optionalString (cfg.configOverridesFile != null)
       ''sharry.restserver = { include "${cfg.configOverridesFile}" }''\n'')
   );
 
@@ -31,7 +45,7 @@ let
     webapp = {
       app-name = "Sharry";
       chunk-size = "100M";
-      retry-delays = [ 0 3000 6000 12000 24000 48000 ];
+      retry-delays = [0 3000 6000 12000 24000 48000];
       app-icon = "";
       app-icon-dark = "";
       app-logo = "";
@@ -183,53 +197,51 @@ let
         templates = {
           download = {
             subject = "Download ready.";
-            body = ''Hello,
+            body = ''              Hello,
 
-there are some files for you to download. Visit this link:
+              there are some files for you to download. Visit this link:
 
-{{{url}}}
+              {{{url}}}
 
-{{#password}}
-The required password will be sent by other means.
-{{/password}}
+              {{#password}}
+              The required password will be sent by other means.
+              {{/password}}
 
 
-Greetings,
-{{user}} via Sharry
+              Greetings,
+              {{user}} via Sharry
             '';
           };
           alias = {
             subject = "Link for Upload";
-            body = ''Hello,
+            body = ''              Hello,
 
-please use the following link to sent files to me:
+              please use the following link to sent files to me:
 
-{{{url}}}
+              {{{url}}}
 
-Greetings,
-{{user}} via Sharry
+              Greetings,
+              {{user}} via Sharry
             '';
           };
           upload-notify = {
             subject = "[Sharry] Files arrived";
-            body = ''Hello {{user}},
+            body = ''              Hello {{user}},
 
-there have been files uploaded for you via the alias '{{aliasName}}'.
-View it here:
+              there have been files uploaded for you via the alias '{{aliasName}}'.
+              View it here:
 
-{{{url}}}
+              {{{url}}}
 
-Greetings,
-Sharry
+              Greetings,
+              Sharry
             '';
           };
         };
       };
     };
   };
-in
-{
-
+in {
   ## interface
   options = {
     services.sharry = {
@@ -274,7 +286,7 @@ in
           '';
         };
         bind = mkOption {
-          type = types.submodule ({
+          type = types.submodule {
             options = {
               address = mkOption {
                 type = types.str;
@@ -287,13 +299,13 @@ in
                 description = "The port to bind the REST server";
               };
             };
-          });
+          };
           default = defaults.bind;
           description = "Address and port bind the rest server.";
         };
 
         logging = mkOption {
-          type = types.submodule ({
+          type = types.submodule {
             options = {
               minimum-level = mkOption {
                 type = types.str;
@@ -311,7 +323,7 @@ in
                 description = "Set of logger and their levels";
               };
             };
-          });
+          };
           default = defaults.logging;
           description = "Settings for logging";
         };
@@ -323,7 +335,7 @@ in
         };
 
         webapp = mkOption {
-          type = types.submodule ({
+          type = types.submodule {
             options = {
               app-name = mkOption {
                 type = types.str;
@@ -442,16 +454,16 @@ in
                 description = "Whether to immediately redirect to the single configured oauth provider.";
               };
             };
-          });
+          };
           default = defaults.webapp;
           description = "Settings regarding the web ui.";
         };
 
         backend = mkOption {
-          type = types.submodule ({
+          type = types.submodule {
             options = {
               auth = mkOption {
-                type = types.submodule ({
+                type = types.submodule {
                   options = {
                     server-secret = mkOption {
                       type = types.str;
@@ -471,7 +483,7 @@ in
                       '';
                     };
                     fixed = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -494,7 +506,7 @@ in
                             description = "The order relative to the other login modules.";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.auth.fixed;
                       description = ''
                         A fixed login module simply checks the username and password
@@ -503,7 +515,7 @@ in
                       '';
                     };
                     http = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -536,7 +548,7 @@ in
                             description = "The content type of the request body";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.auth.http;
                       description = ''
                         The http authentication module sends the username and password
@@ -548,7 +560,7 @@ in
                       '';
                     };
                     http-basic = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -571,7 +583,7 @@ in
                             description = "The http method to use";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.auth.http-basic;
                       description = ''
                         Use HTTP Basic authentication. An Authorization header using
@@ -581,7 +593,7 @@ in
                       '';
                     };
                     command = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -604,7 +616,7 @@ in
                             description = "The return code to indicate success";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.auth.command;
                       description = ''
                         The command authentication module runs an external command
@@ -613,7 +625,7 @@ in
                       '';
                     };
                     internal = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -626,14 +638,14 @@ in
                             description = "The order relative to the other login modules.";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.auth.internal;
                       description = ''
                         The authentication module checks against the internal database.
                       '';
                     };
                     proxy = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           enabled = mkOption {
                             type = types.bool;
@@ -651,7 +663,7 @@ in
                             description = "The header name that picks the email";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.auth.proxy;
                       description = ''
                         Authentication via request headers.
@@ -659,87 +671,86 @@ in
                     };
                     oauth = mkOption {
                       type = types.listOf (types.submodule {
-                        options =
-                          let d = builtins.head defaults.backend.auth.oauth;
-                          in
-                          {
-                            enabled = mkOption {
-                              type = types.bool;
-                              default = d.enabled;
-                              description = "Whether to enable this login module";
-                            };
-                            id = mkOption {
-                              type = types.str;
-                              default = d.id;
-                              description = "A unique id that is part of the url";
-                            };
-                            name = mkOption {
-                              type = types.str;
-                              default = d.name;
-                              description = "A name that is displayed inside the button on the login screen";
-                            };
-                            icon = mkOption {
-                              type = types.str;
-                              default = d.icon;
-                              description = "A fontawesome icon name for the button";
-                            };
-                            authorize-url = mkOption {
-                              type = types.str;
-                              default = d.authorize-url;
-                              description = ''
-                                The url of the provider where the user can login and grant the
-                                permission to retrieve the user name.
-                              '';
-                            };
-                            token-url = mkOption {
-                              type = types.str;
-                              default = d.token-url;
-                              description = ''
-                                The url used to obtain a bearer token using the
-                                response from the authentication above. The response from
-                                the provider must be json or url-form-encdode.
-                              '';
-                            };
-                            user-url = mkOption {
-                              type = types.str;
-                              default = d.user-url;
-                              description = ''
-                                The url to finalyy retrieve user information – only JSON responses
-                                are supported.
-                              '';
-                            };
-                            user-id-key = mkOption {
-                              type = types.str;
-                              default = d.user-id-key;
-                              description = ''
-                                The name of the field in the json response denoting the user name.
-                              '';
-                            };
-                            user-email-key = mkOption {
-                              type = types.nullOr types.str;
-                              default = d.user-email-key;
-                              description = ''
-                                The name of the field in the json response denoting the users email."
-                              '';
-                            };
-                            scope = mkOption {
-                              type = types.str;
-                              default = d.scope;
-                              description = ''
-                                A scope definition to use when initiating the authentication flow.
-                              '';
-                            };
-                            client-id = mkOption {
-                              type = types.str;
-                              default = d.client-id;
-                              description = "Your client-id as given by the provider.";
-                            };
-                            client-secret = mkOption {
-                              type = types.str;
-                              default = d.cient-secret;
-                              description = "Your client-secret as given by the provider.";
-                            };
+                        options = let
+                          d = builtins.head defaults.backend.auth.oauth;
+                        in {
+                          enabled = mkOption {
+                            type = types.bool;
+                            default = d.enabled;
+                            description = "Whether to enable this login module";
                           };
+                          id = mkOption {
+                            type = types.str;
+                            default = d.id;
+                            description = "A unique id that is part of the url";
+                          };
+                          name = mkOption {
+                            type = types.str;
+                            default = d.name;
+                            description = "A name that is displayed inside the button on the login screen";
+                          };
+                          icon = mkOption {
+                            type = types.str;
+                            default = d.icon;
+                            description = "A fontawesome icon name for the button";
+                          };
+                          authorize-url = mkOption {
+                            type = types.str;
+                            default = d.authorize-url;
+                            description = ''
+                              The url of the provider where the user can login and grant the
+                              permission to retrieve the user name.
+                            '';
+                          };
+                          token-url = mkOption {
+                            type = types.str;
+                            default = d.token-url;
+                            description = ''
+                              The url used to obtain a bearer token using the
+                              response from the authentication above. The response from
+                              the provider must be json or url-form-encdode.
+                            '';
+                          };
+                          user-url = mkOption {
+                            type = types.str;
+                            default = d.user-url;
+                            description = ''
+                              The url to finalyy retrieve user information – only JSON responses
+                              are supported.
+                            '';
+                          };
+                          user-id-key = mkOption {
+                            type = types.str;
+                            default = d.user-id-key;
+                            description = ''
+                              The name of the field in the json response denoting the user name.
+                            '';
+                          };
+                          user-email-key = mkOption {
+                            type = types.nullOr types.str;
+                            default = d.user-email-key;
+                            description = ''
+                              The name of the field in the json response denoting the users email."
+                            '';
+                          };
+                          scope = mkOption {
+                            type = types.str;
+                            default = d.scope;
+                            description = ''
+                              A scope definition to use when initiating the authentication flow.
+                            '';
+                          };
+                          client-id = mkOption {
+                            type = types.str;
+                            default = d.client-id;
+                            description = "Your client-id as given by the provider.";
+                          };
+                          client-secret = mkOption {
+                            type = types.str;
+                            default = d.cient-secret;
+                            description = "Your client-secret as given by the provider.";
+                          };
+                        };
                       });
                       default = defaults.backend.auth.oauth;
                       description = ''
@@ -755,13 +766,13 @@ in
                       '';
                     };
                   };
-                });
+                };
                 default = defaults.backend.auth;
                 description = "Authentication settings";
               };
 
               share = mkOption {
-                type = types.submodule ({
+                type = types.submodule {
                   options = {
                     chunk-size = mkOption {
                       type = types.str;
@@ -781,27 +792,25 @@ in
 
                     database-domain-checks = mkOption {
                       type = types.listOf (types.submodule {
-                        options =
-                          let
-                            d = builtins.head defaults.backend.share.database-domain-checks;
-                          in
-                          {
-                            enabled = mkOption {
-                              type = types.bool;
-                              default = d.enabled;
-                              description = "Whether to enable this login module";
-                            };
-                            native = mkOption {
-                              type = types.str;
-                              default = d.native;
-                              description = "The native database error message substring.";
-                            };
-                            message = mkOption {
-                              type = types.str;
-                              default = d.message;
-                              description = "The user message to show in this error case.";
-                            };
+                        options = let
+                          d = builtins.head defaults.backend.share.database-domain-checks;
+                        in {
+                          enabled = mkOption {
+                            type = types.bool;
+                            default = d.enabled;
+                            description = "Whether to enable this login module";
                           };
+                          native = mkOption {
+                            type = types.str;
+                            default = d.native;
+                            description = "The native database error message substring.";
+                          };
+                          message = mkOption {
+                            type = types.str;
+                            default = d.message;
+                            description = "The user message to show in this error case.";
+                          };
+                        };
                       });
                       default = defaults.backend.share.database-domain-checks;
                       description = ''
@@ -818,13 +827,13 @@ in
                       '';
                     };
                   };
-                });
+                };
                 default = defaults.backend.share;
                 description = "Settings for shares";
               };
 
               jdbc = mkOption {
-                type = types.submodule ({
+                type = types.submodule {
                   options = {
                     url = mkOption {
                       type = types.str;
@@ -851,7 +860,7 @@ in
                       description = "The password to connect to the database.";
                     };
                   };
-                });
+                };
                 default = defaults.backend.jdbc;
                 description = "Database connection settings";
               };
@@ -964,7 +973,7 @@ in
               };
 
               cleanup = mkOption {
-                type = types.submodule ({
+                type = types.submodule {
                   options = {
                     enabled = mkOption {
                       type = types.bool;
@@ -985,13 +994,13 @@ in
                       description = "Age of invalid uploads to get collected by cleanup job";
                     };
                   };
-                });
+                };
                 default = defaults.backend.cleanup;
                 description = "Settings for the periodic cleanup job.";
               };
 
               signup = mkOption {
-                type = types.submodule ({
+                type = types.submodule {
                   options = {
                     mode = mkOption {
                       type = types.str;
@@ -1026,12 +1035,12 @@ in
                       '';
                     };
                   };
-                });
+                };
                 default = defaults.backend.signup;
                 description = "Registration settings. These accounts are checked by the 'internal' auth module.";
               };
               mail = mkOption {
-                type = types.submodule ({
+                type = types.submodule {
                   options = {
                     enabled = mkOption {
                       type = types.bool;
@@ -1046,7 +1055,7 @@ in
                       '';
                     };
                     smtp = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           host = mkOption {
                             type = types.str;
@@ -1079,8 +1088,8 @@ in
                           check-certificates = mkOption {
                             type = types.bool;
                             default = defaults.backend.mail.smtp.check-certificates;
-                            description = ''In case of self-signed certificates or other problems like
-                              that, checking certificates can be disabled.
+                            description = ''                              In case of self-signed certificates or other problems like
+                                                            that, checking certificates can be disabled.
                             '';
                           };
                           timeout = mkOption {
@@ -1108,15 +1117,15 @@ in
                             '';
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.mail.smtp;
                       description = "SMTP Settings";
                     };
                     templates = mkOption {
-                      type = types.submodule ({
+                      type = types.submodule {
                         options = {
                           download = mkOption {
-                            type = types.submodule ({
+                            type = types.submodule {
                               options = {
                                 subject = mkOption {
                                   type = types.str;
@@ -1129,12 +1138,12 @@ in
                                   description = "The mail body";
                                 };
                               };
-                            });
+                            };
                             default = defaults.backend.mail.templates.download;
                             description = "The template used when sending mails for new shares.";
                           };
                           alias = mkOption {
-                            type = types.submodule ({
+                            type = types.submodule {
                               options = {
                                 subject = mkOption {
                                   type = types.str;
@@ -1147,12 +1156,12 @@ in
                                   description = "The mail body";
                                 };
                               };
-                            });
+                            };
                             default = defaults.backend.mail.templates.alias;
                             description = "The templates used when sending alias links.";
                           };
                           upload-notify = mkOption {
-                            type = types.submodule ({
+                            type = types.submodule {
                               options = {
                                 subject = mkOption {
                                   type = types.str;
@@ -1165,22 +1174,22 @@ in
                                   description = "The mail body";
                                 };
                               };
-                            });
+                            };
                             default = defaults.backend.mail.templates.upload-notify;
                             description = "Template used when sending notifcation mails.";
                           };
                         };
-                      });
+                      };
                       default = defaults.backend.mail.templates;
                       description = "Mail templates";
                     };
                   };
-                });
+                };
                 default = defaults.backend.mail;
                 description = "Mail settings";
               };
             };
-          });
+          };
           default = defaults.backend;
           description = "Settings regarding the server backend";
         };
@@ -1190,7 +1199,6 @@ in
 
   ## implementation
   config = mkIf config.services.sharry.enable {
-
     users.users."${user}" = mkIf (cfg.runAs == null) {
       name = user;
       isSystemUser = true;
@@ -1198,14 +1206,14 @@ in
       group = "sharry";
     };
     users.groups = mkIf (cfg.runAs == null) {
-      sharry = { };
+      sharry = {};
     };
 
     systemd.services.sharry = {
       description = "Sharry Rest Server";
-      after = [ "networking.target" ];
-      wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.gawk ];
+      after = ["networking.target"];
+      wantedBy = ["multi-user.target"];
+      path = [pkgs.gawk];
 
       serviceConfig = {
         User = user;
