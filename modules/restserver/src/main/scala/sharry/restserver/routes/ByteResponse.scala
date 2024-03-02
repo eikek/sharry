@@ -3,6 +3,7 @@ package sharry.restserver.routes
 import cats.data.OptionT
 import cats.effect.Sync
 import cats.implicits._
+import fs2.Stream
 
 import sharry.backend.BackendApp
 import sharry.backend.share._
@@ -23,36 +24,34 @@ object ByteResponse {
       backend: BackendApp[F],
       shareId: ShareId,
       pass: Option[Password],
+      chunkSize: ByteSize,
       fid: Ident
-  ) =
+  ): F[Response[F]] =
     req.headers
       .get[Range]
       .map(_.ranges.head)
-      .map(sr => range(dsl, sr, backend, shareId, pass, fid))
+      .map(sr => range(dsl, req, sr, backend, shareId, pass, chunkSize, fid))
       .getOrElse(all(dsl, req, backend, shareId, pass, fid))
 
   def range[F[_]: Sync](
       dsl: Http4sDsl[F],
+      req: Request[F],
       sr: Range.SubRange,
       backend: BackendApp[F],
       shareId: ShareId,
       pass: Option[Password],
+      chunkSize: ByteSize,
       fid: Ident
   ): F[Response[F]] = {
     import dsl._
 
-    val rangeDef: ByteRange = sr.second
-      .map(until => ByteRange(sr.first, (until - sr.first + 1).toInt))
-      .getOrElse {
-        if (sr.first == 0) ByteRange.All
-        else ByteRange(sr.first, Int.MaxValue)
-      }
-
+    val rangeDef = makeBinnyByteRange(sr, chunkSize)
     (for {
       file <- backend.share.loadFile(shareId, fid, pass, rangeDef)
       resp <- OptionT.liftF {
         if (rangeInvalid(file.fileMeta, sr)) RangeNotSatisfiable()
-        else partialResponse(dsl, file, sr)
+        else if (file.fileMeta.length <= chunkSize) allBytes(dsl, req, file)
+        else partialResponse(dsl, req, file, chunkSize, sr)
       }
     } yield resp).getOrElseF(NotFound())
   }
@@ -69,27 +68,34 @@ object ByteResponse {
 
     (for {
       file <- backend.share.loadFile(shareId, fid, pass, ByteRange.All)
-      resp <- OptionT.liftF(
-        etagResponse(dsl, req, file).getOrElseF(
-          Ok.apply(file.data)
-            .map(setETag(file.fileMeta))
-            .map(
-              _.putHeaders(
-                `Content-Type`(mediaType(file)),
-                `Accept-Ranges`.bytes,
-                `Last-Modified`(timestamp(file)),
-                `Content-Disposition`("inline", fileNameMap(file)),
-                fileSizeHeader(file.fileMeta.length)
-              )
-            )
-        )
-      )
+      resp <- OptionT.liftF(allBytes(dsl, req, file))
     } yield resp).getOrElseF(NotFound())
   }
 
-  private def setETag[F[_]](fm: RFileMeta)(r: Response[F]): Response[F] =
-    if (fm.checksum.isEmpty) r
-    else r.putHeaders(ETag(fm.checksum.toHex))
+  def allBytes[F[_]: Sync](
+      dsl: Http4sDsl[F],
+      req: Request[F],
+      file: FileRange[F]
+  ): F[Response[F]] = {
+    import dsl._
+
+    val isHead = req.method == Method.HEAD
+    val data = if (!isHead) file.data else Stream.empty
+    etagResponse(dsl, req, file).getOrElseF(
+      Ok(data)
+        .map(setETag(file.fileMeta))
+        .map(
+          _.putHeaders(
+            `Content-Type`(mediaType(file)),
+            `Accept-Ranges`.bytes,
+            `Last-Modified`(timestamp(file)),
+            `Content-Disposition`("inline", fileNameMap(file)),
+            `Content-Length`(file.fileMeta.length.bytes),
+            fileSizeHeader(file.fileMeta.length)
+          )
+        )
+    )
+  }
 
   private def etagResponse[F[_]: Sync](
       dsl: Http4sDsl[F],
@@ -106,31 +112,44 @@ object ByteResponse {
 
   private def partialResponse[F[_]: Sync](
       dsl: Http4sDsl[F],
+      req: Request[F],
       file: FileRange[F],
+      chunkSize: ByteSize,
       range: Range.SubRange
   ): F[Response[F]] = {
     import dsl._
-    val len = file.fileMeta.length
-    val respLen = range.second.getOrElse(len.bytes) - range.first + 1
-    PartialContent(file.data.take(respLen)).map(
+
+    val fileLen = file.fileMeta.length
+    val respLen =
+      range.second.map(until => until - range.first + 1).getOrElse(chunkSize.bytes)
+    val respRange =
+      Range.SubRange(range.first, range.second.getOrElse(range.first + chunkSize.bytes))
+
+    val isHead = req.method == Method.HEAD
+    val data = if (isHead) Stream.empty else file.data.take(respLen.toLong)
+    PartialContent(data).map(
       _.withHeaders(
         `Accept-Ranges`.bytes,
         `Content-Type`(mediaType(file)),
         `Last-Modified`(timestamp(file)),
         `Content-Disposition`("inline", fileNameMap(file)),
-        fileSizeHeader(ByteSize(respLen)),
-        `Content-Range`(RangeUnit.Bytes, subRangeResp(range, len.bytes), Some(len.bytes))
+        fileSizeHeader(file.fileMeta.length),
+        `Content-Range`(RangeUnit.Bytes, respRange, Some(fileLen.bytes))
       )
     )
   }
 
-  private def subRangeResp(in: Range.SubRange, length: Long): Range.SubRange =
-    in match {
-      case Range.SubRange(n, None) =>
-        Range.SubRange(n, Some(length))
-      case Range.SubRange(n, Some(t)) =>
-        Range.SubRange(n, Some(t))
-    }
+  private def makeBinnyByteRange(sr: Range.SubRange, chunkSize: ByteSize): ByteRange =
+    sr.second
+      .map(until => ByteRange(sr.first, (until - sr.first + 1).toInt))
+      .getOrElse {
+        if (sr.first == 0) ByteRange(0, chunkSize.bytes.toInt)
+        else ByteRange(sr.first, chunkSize.bytes.toInt)
+      }
+
+  private def setETag[F[_]](fm: RFileMeta)(r: Response[F]): Response[F] =
+    if (fm.checksum.isEmpty) r
+    else r.putHeaders(ETag(fm.checksum.toHex))
 
   private def rangeInvalid(file: RFileMeta, range: Range.SubRange): Boolean =
     range.first < 0 || range.second.exists(t => t < range.first || t > file.length.bytes)

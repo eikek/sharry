@@ -71,7 +71,29 @@ object ShareRoutes {
 
       case req @ GET -> Root / Ident(id) / "file" / Ident(fid) =>
         val pw = SharryPassword(req)
-        ByteResponse(dsl, req, backend, ShareId.secured(id, token.account), pw, fid)
+        val chunkSize = cfg.backend.files.downloadChunkSize
+        ByteResponse(
+          dsl,
+          req,
+          backend,
+          ShareId.secured(id, token.account),
+          pw,
+          chunkSize,
+          fid
+        )
+
+      case req @ HEAD -> Root / Ident(id) / "file" / Ident(fid) =>
+        val pw = SharryPassword(req)
+        val chunkSize = cfg.backend.files.downloadChunkSize
+        ByteResponse(
+          dsl,
+          req,
+          backend,
+          ShareId.secured(id, token.account),
+          pw,
+          chunkSize,
+          fid
+        )
 
       // make it safer by also using the share id
       case DELETE -> Root / Ident(_) / "file" / Ident(fid) =>

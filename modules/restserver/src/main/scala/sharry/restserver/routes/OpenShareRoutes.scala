@@ -24,9 +24,13 @@ object OpenShareRoutes {
 
       case req @ GET -> Root / Ident(id) / "file" / Ident(fid) =>
         val pw = SharryPassword(req)
-        ByteResponse(dsl, req, backend, ShareId.publish(id), pw, fid)
+        val chunkSize = cfg.backend.files.downloadChunkSize
+        ByteResponse(dsl, req, backend, ShareId.publish(id), pw, chunkSize, fid)
 
+      case req @ HEAD -> Root / Ident(id) / "file" / Ident(fid) =>
+        val pw = SharryPassword(req)
+        val chunkSize = cfg.backend.files.downloadChunkSize
+        ByteResponse(dsl, req, backend, ShareId.publish(id), pw, chunkSize, fid)
     }
   }
-
 }

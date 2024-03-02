@@ -1,5 +1,6 @@
 package sharry.restserver
 
+import java.nio.file.Path
 import java.nio.file.{Files, Paths}
 
 import cats.effect._
@@ -14,6 +15,36 @@ object Main extends IOApp {
   val connectEC =
     ThreadFactories.fixed[IO](5, ThreadFactories.ofName("sharry-dbconnect"))
 
+  private def configFromSysProp: Option[Path] =
+    Option(System.getProperty("config.file")).filter(_.nonEmpty).flatMap { f =>
+      val path = Paths.get(f).toAbsolutePath.normalize
+      if (!Files.exists(path)) {
+        logger.asUnsafe.info(
+          s"Not using config file '$f' because it doesn't exist"
+        )
+        System.clearProperty("config.file")
+        None
+      } else {
+        logger.asUnsafe.info(s"Using config file from system properties: $f")
+        Some(path)
+      }
+    }
+  private def configFromEnv: Option[Path] =
+    Option(System.getenv("SHARRY_CONFIG_FILE")).filter(_.nonEmpty).flatMap { f =>
+      val path = Paths.get(f).toAbsolutePath.normalize
+      if (!Files.exists(path)) {
+        logger.asUnsafe.info(
+          s"Not using config file '$f' because it doesn't exist"
+        )
+        System.clearProperty("config.file")
+        None
+      } else {
+        logger.asUnsafe.info(s"Using config file from environment variable: $f")
+        System.setProperty("config.file", path.toString)
+        Some(path)
+      }
+    }
+
   def run(args: List[String]): IO[ExitCode] =
     for {
       _ <- IO {
@@ -23,17 +54,8 @@ object Main extends IOApp {
             logger.asUnsafe.info(s"Using given config file: $path")
             System.setProperty("config.file", file)
           case _ =>
-            Option(System.getProperty("config.file")) match {
-              case Some(f) if f.nonEmpty =>
-                val path = Paths.get(f).toAbsolutePath.normalize
-                if (!Files.exists(path)) {
-                  logger.asUnsafe.info(
-                    s"Not using config file '$f' because it doesn't exist"
-                  )
-                  System.clearProperty("config.file")
-                } else
-                  logger.asUnsafe.info(s"Using config file from system properties: $f")
-              case _ =>
+            configFromSysProp.orElse(configFromEnv).map(_ => ()).getOrElse {
+              logger.asUnsafe.info("No configuration file found!")
             }
         }
       }
