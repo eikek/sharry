@@ -81,7 +81,16 @@ object RPublishShare {
       now <- Timestamp.current[ConnectionIO]
       id <- Ident.randomId[ConnectionIO]
       validity <- RShare.getDuration(share)
-      record = RPublishShare(id, share, true, 0, None, now, now.plus(validity), now)
+      record = RPublishShare(
+        id,
+        share,
+        enabled = true,
+        0,
+        None,
+        now,
+        now.plus(validity),
+        now
+      )
       _ <- insert(record)
     } yield record
 

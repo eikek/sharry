@@ -90,7 +90,7 @@ object TemplateRoutes {
   def loadUrl[F[_]: Sync](url: URL): F[String] =
     Stream
       .bracket(Sync[F].blocking(url.openStream))(in => Sync[F].blocking(in.close))
-      .flatMap(in => io.readInputStream(in.pure[F], 64 * 1024, false))
+      .flatMap(in => io.readInputStream(in.pure[F], 64 * 1024, closeAfterUse = false))
       .through(text.utf8.decode)
       .compile
       .fold("")(_ + _)

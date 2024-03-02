@@ -80,7 +80,9 @@ object OAccount {
           shares <- OptionT.liftF(store.transact(RShare.getAllByAccount(id)))
           _ <- OptionT.liftF(logger.info(s"Delete ${shares.size} shares of account $id"))
           _ <- OptionT.liftF(
-            shares.traverse(shareId => ShareQueries.deleteShare(shareId, false)(store))
+            shares.traverse(shareId =>
+              ShareQueries.deleteShare(shareId, background = false)(store)
+            )
           )
           _ <- OptionT.liftF(store.transact(RAccount.delete(id)))
         } yield acc

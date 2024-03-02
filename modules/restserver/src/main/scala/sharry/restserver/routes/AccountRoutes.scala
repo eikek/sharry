@@ -49,9 +49,9 @@ object AccountRoutes {
           res <- backend.account.delete(id).value
           resp <- res match {
             case Some(_) =>
-              Ok(BasicResult(true, "Account successfully deleted."))
+              Ok(BasicResult(success = true, "Account successfully deleted."))
             case None =>
-              NotFound(BasicResult(false, "Account not found"))
+              NotFound(BasicResult(success = false, "Account not found"))
           }
         } yield resp
 

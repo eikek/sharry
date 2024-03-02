@@ -43,40 +43,41 @@ object Conv {
   def basicResult(ar: AddResult, successMsg: String): BasicResult =
     ar match {
       case AddResult.Success =>
-        BasicResult(true, successMsg)
+        BasicResult(success = true, successMsg)
       case AddResult.EntityExists(msg) =>
-        BasicResult(false, msg)
+        BasicResult(success = false, msg)
       case AddResult.Failure(ex) =>
-        BasicResult(false, ex.getMessage)
+        BasicResult(success = false, ex.getMessage)
     }
 
   def idResult(successMsg: String)(ar: Either[Throwable, Ident]): IdResult =
     ar match {
-      case Right(id) => IdResult(true, successMsg, id)
-      case Left(ex)  => IdResult(false, s"${ex.getClass}: ${ex.getMessage}", Ident.empty)
+      case Right(id) => IdResult(success = true, successMsg, id)
+      case Left(ex) =>
+        IdResult(success = false, s"${ex.getClass}: ${ex.getMessage}", Ident.empty)
     }
 
   def uploadResult(successMsg: String)(ur: UploadResult[Ident]): IdResult =
     ur match {
       case UploadResult.Success(id) =>
-        IdResult(true, successMsg, id)
+        IdResult(success = true, successMsg, id)
       case UploadResult.ValidityExceeded(max) =>
-        IdResult(false, s"Maximum validity ($max) exceeded", Ident.empty)
+        IdResult(success = false, s"Maximum validity ($max) exceeded", Ident.empty)
       case UploadResult.SizeExceeded(max) =>
-        IdResult(false, s"Maximum size ($max) exceeded", Ident.empty)
+        IdResult(success = false, s"Maximum size ($max) exceeded", Ident.empty)
       case UploadResult.PermanentError(msg) =>
-        IdResult(false, msg, Ident.empty)
+        IdResult(success = false, msg, Ident.empty)
     }
 
   def uploadBasicResult[A](successMsg: String)(ur: UploadResult[A]): BasicResult =
     ur match {
       case UploadResult.Success(_) =>
-        BasicResult(true, successMsg)
+        BasicResult(success = true, successMsg)
       case UploadResult.ValidityExceeded(max) =>
-        BasicResult(false, s"Maximum validity ($max) exceeded")
+        BasicResult(success = false, s"Maximum validity ($max) exceeded")
       case UploadResult.SizeExceeded(max) =>
-        BasicResult(false, s"Maximum size ($max) exceeded")
+        BasicResult(success = false, s"Maximum size ($max) exceeded")
       case UploadResult.PermanentError(msg) =>
-        BasicResult(false, msg)
+        BasicResult(success = false, msg)
     }
 }

@@ -95,7 +95,7 @@ object OSignup {
             AccountState.Active,
             data.password,
             None,
-            false
+            admin = false
           )
           res <- OAccount(store).use(_.create(acc))
         } yield res

@@ -66,7 +66,10 @@ object MailRoutes {
         } yield res
 
         res.foldF(
-          err => Ok(BasicResult(false, s"Some recipient addresses are invalid: $err")),
+          err =>
+            Ok(
+              BasicResult(success = false, s"Some recipient addresses are invalid: $err")
+            ),
           r => Ok(mailSendResult(r))
         )
     }
@@ -74,17 +77,19 @@ object MailRoutes {
 
   private def mailSendResult(mr: MailSendResult): BasicResult =
     mr match {
-      case MailSendResult.Success => BasicResult(true, "Mail successfully sent.")
+      case MailSendResult.Success =>
+        BasicResult(success = true, "Mail successfully sent.")
       case MailSendResult.SendFailure(ex) =>
-        BasicResult(false, s"Mail sending failed: ${ex.getMessage}")
-      case MailSendResult.NoRecipients => BasicResult(false, "There are no recipients")
+        BasicResult(success = false, s"Mail sending failed: ${ex.getMessage}")
+      case MailSendResult.NoRecipients =>
+        BasicResult(success = false, "There are no recipients")
       case MailSendResult.NoSender =>
         BasicResult(
-          false,
+          success = false,
           "There are no sender addresses specified. You " +
             "may need to add an e-mail address to your account."
         )
       case MailSendResult.FeatureDisabled =>
-        BasicResult(false, "The mail feature is disabled")
+        BasicResult(success = false, "The mail feature is disabled")
     }
 }

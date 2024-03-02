@@ -17,7 +17,7 @@ case class AccountId(id: Ident, userLogin: Ident, admin: Boolean, alias: Option[
 object AccountId {
 
   val empty: AccountId =
-    AccountId(Ident.empty, Ident.empty, false, None)
+    AccountId(Ident.empty, Ident.empty, admin = false, None)
 
   def parse(str: String): Either[String, AccountId] = {
     val parts = str.split('/').toList.appended("").take(4)

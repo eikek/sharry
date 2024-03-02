@@ -8,7 +8,7 @@ class PermanentErrorTest extends FunSuite {
     """value for domain safe_bytea violates check constraint "safe_bytea_check""""
 
   test("find substring in error message") {
-    val checks = Seq(DomainCheckConfig(true, nativePart, "Oh no, a virus!"))
+    val checks = Seq(DomainCheckConfig(enabled = true, nativePart, "Oh no, a virus!"))
     PermanentError.create(checks).unapply(new Exception(errorMsg)) match {
       case Some(m) => assertEquals(m, checks.head.message)
       case None    => fail("Check was not recognized")
@@ -18,7 +18,7 @@ class PermanentErrorTest extends FunSuite {
   test("don't find when disabled") {
     val errorMsg =
       """value for domain safe_bytea violates check constraint "safe_bytea_check""""
-    val checks = Seq(DomainCheckConfig(false, nativePart, "Oh no, a virus!"))
+    val checks = Seq(DomainCheckConfig(enabled = false, nativePart, "Oh no, a virus!"))
     PermanentError.create(checks).unapply(new Exception(errorMsg)) match {
       case Some(_) => fail("Check was not disabled!")
       case None    => // ok
@@ -27,7 +27,7 @@ class PermanentErrorTest extends FunSuite {
 
   test("don't find when donmain not included in error message") {
     val errorMsg = """value blabla violates unique constraint"""
-    val checks = Seq(DomainCheckConfig(false, nativePart, "Oh no, a virus!"))
+    val checks = Seq(DomainCheckConfig(enabled = false, nativePart, "Oh no, a virus!"))
     PermanentError.create(checks).unapply(new Exception(errorMsg)) match {
       case Some(_) => fail("Unexpected check found!")
       case None    => // ok

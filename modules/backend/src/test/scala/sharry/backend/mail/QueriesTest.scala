@@ -21,7 +21,7 @@ class QueriesTest extends FunSuite with StoreFixture {
         AccountState.Active,
         Password("test"),
         Some("test@test.com"),
-        true,
+        admin = true,
         0,
         None,
         Timestamp.Epoch

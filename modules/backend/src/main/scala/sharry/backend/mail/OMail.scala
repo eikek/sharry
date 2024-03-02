@@ -82,7 +82,12 @@ object OMail {
             templates = receivers.map { case (login, mailAddress) =>
               (
                 mailAddress,
-                TemplateData(login, baseUrl / shareId.id, false, data.aliasName)
+                TemplateData(
+                  login,
+                  baseUrl / shareId.id,
+                  password = false,
+                  data.aliasName
+                )
               )
             }
             res <- OptionT.liftF(templates.traverse((send _).tupled))
@@ -118,7 +123,7 @@ object OMail {
           baseUrl: LenientUri
       ): F[MailData] = {
         val tpl = cfg.templates.alias
-        val td = TemplateData(acc.userLogin, baseUrl / aliasId.id, false, "")
+        val td = TemplateData(acc.userLogin, baseUrl / aliasId.id, password = false, "")
         MailData(td.render(tpl.subject), td.render(tpl.body)).pure[F]
       }
 

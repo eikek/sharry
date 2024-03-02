@@ -93,7 +93,7 @@ object AuthConfig {
     def github(clientId: String, clientSecret: String): OAuth =
       OAuth(
         Ident.unsafe("github"),
-        true,
+        enabled = true,
         "Github",
         LenientUri.unsafe("https://github.com/login/oauth/authorize"),
         LenientUri.unsafe("https://github.com/login/oauth/access_token"),
