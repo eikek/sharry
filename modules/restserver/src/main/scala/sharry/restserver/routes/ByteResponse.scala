@@ -82,7 +82,7 @@ object ByteResponse {
     val isHead = req.method == Method.HEAD
     val data = if (!isHead) file.data else Stream.empty
     etagResponse(dsl, req, file).getOrElseF(
-      Ok(data)
+      Ok.apply(data)
         .map(setETag(file.fileMeta))
         .map(
           _.putHeaders(
@@ -90,7 +90,6 @@ object ByteResponse {
             `Accept-Ranges`.bytes,
             `Last-Modified`(timestamp(file)),
             `Content-Disposition`("inline", fileNameMap(file)),
-            `Content-Length`(file.fileMeta.length.bytes),
             fileSizeHeader(file.fileMeta.length)
           )
         )

@@ -71,7 +71,7 @@ object ShareRoutes {
 
       case req @ GET -> Root / Ident(id) / "file" / Ident(fid) =>
         val pw = SharryPassword(req)
-        val chunkSize = cfg.backend.files.downloadChunkSize
+        val chunkSize = cfg.fileDownload.downloadChunkSize
         ByteResponse(
           dsl,
           req,
@@ -84,7 +84,7 @@ object ShareRoutes {
 
       case req @ HEAD -> Root / Ident(id) / "file" / Ident(fid) =>
         val pw = SharryPassword(req)
-        val chunkSize = cfg.backend.files.downloadChunkSize
+        val chunkSize = cfg.fileDownload.downloadChunkSize
         ByteResponse(
           dsl,
           req,
