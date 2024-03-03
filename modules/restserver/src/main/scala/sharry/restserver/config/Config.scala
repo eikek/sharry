@@ -13,6 +13,7 @@ case class Config(
     baseUrl: LenientUri,
     aliasMemberEnabled: Boolean,
     bind: Config.Bind,
+    fileDownload: Config.FileDownload,
     logging: LogConfig,
     webapp: Config.Webapp,
     backend: BackendConfig
@@ -60,6 +61,10 @@ case class Config(
 object Config {
 
   case class Bind(address: Host, port: Port)
+
+  case class FileDownload(
+      downloadChunkSize: ByteSize
+  )
 
   case class Webapp(
       appName: String,
