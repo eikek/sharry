@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v25
+      - uses: cachix/install-nix-action@v26
       - run: nix build
   ci-matrix:
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: modules/webapp
-      - uses: cachix/install-nix-action@v25
+      - uses: cachix/install-nix-action@v26
       - name: Install tailwindcss cli
         run: |
           nix profile install nixpkgs#tailwindcss

@@ -23,7 +23,7 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: modules/webapp
-      - uses: cachix/install-nix-action@v25
+      - uses: cachix/install-nix-action@v26
       - name: Install tailwindcss cli
         run: |
           nix profile install nixpkgs#tailwindcss
