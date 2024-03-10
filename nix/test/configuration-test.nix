@@ -4,26 +4,33 @@
   pkgs,
   ...
 }: {
-  imports = [(modulesPath + "/virtualisation/qemu-vm.nix")];
+  services.dev-postgres = {
+    enable = true;
+    databases = ["sharry"];
+  };
+  services.dev-email.enable = true;
 
-  i18n = {defaultLocale = "de_DE.UTF-8";};
-  console.keyMap = "de";
+  port-forward.dev-webmail = 8080;
+  port-forward.dev-solr = 8983;
 
-  users.users.root = {
-    password = "root";
+  environment.systemPackages = with pkgs; [
+    jq
+    htop
+    iotop
+    coreutils
+  ];
+
+  networking = {
+    hostName = "sharry-test-vm";
+    firewall.allowedTCPPorts = [9090];
   };
 
   virtualisation.memorySize = 2048;
   virtualisation.forwardPorts = [
     {
       from = "host";
-      host.port = 64022;
-      guest.port = 22;
-    }
-    {
-      from = "host";
-      host.port = 64080;
-      guest.port = 9090;
+      host.port = 9090;
+      guest.port = 9091;
     }
   ];
 
@@ -55,11 +62,4 @@
   services.xserver = {
     enable = false;
   };
-
-  networking = {
-    hostName = "sharry-test";
-    firewall.allowedTCPPorts = [9090];
-  };
-
-  system.stateVersion = "23.11";
 }

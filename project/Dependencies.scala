@@ -18,7 +18,6 @@ object Dependencies {
   val MariaDbVersion = "3.3.3"
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
-  val OrganizeImportsVersion = "0.6.0"
   val PostgresVersion = "42.7.2"
   val PureConfigVersion = "0.17.6"
   val ScribeVersion = "3.13.0"
@@ -137,9 +136,4 @@ object Dependencies {
     "org.webjars.npm" % "tus-js-client" % TusClientVersion,
     "org.webjars" % "clipboard.js" % ClipboardJsVersion
   )
-
-  val organizeImports = Seq(
-    "com.github.liancheng" %% "organize-imports" % OrganizeImportsVersion
-  )
-
 }

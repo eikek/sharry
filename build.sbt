@@ -8,8 +8,7 @@ val webjarSkip = settingKey[Boolean]("Skip copying webjar files")
 
 val scalafixSettings = Seq(
   semanticdbEnabled := true, // enable SemanticDB
-  semanticdbVersion := scalafixSemanticdb.revision, // "4.4.0"
-  ThisBuild / scalafixDependencies ++= Dependencies.organizeImports
+  semanticdbVersion := scalafixSemanticdb.revision
 )
 
 val sharedSettings = Seq(
@@ -192,6 +191,10 @@ val restapi = project
     openapiPackage := Pkg("sharry.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc,
+    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyConfig := Some(
+      (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
+    ),
     openapiScalaConfig := ScalaConfig()
       .withJson(ScalaJson.circeSemiauto)
       .addMapping(CustomMapping.forType { case TypeDef("LocalDateTime", _) =>
