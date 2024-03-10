@@ -5,149 +5,159 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     flake-utils.url = "github:numtide/flake-utils";
     sbt.url = "github:zaninime/sbt-derivation";
+    devshell-tools.url = "github:eikek/devshell-tools";
   };
 
   outputs = inputs @ {
     self,
     nixpkgs,
     flake-utils,
+    devshell-tools,
     sbt,
   }:
-    {
-      overlays.default = final: prev: {
-        sharry = import ./nix/package.nix {
-          inherit (final) pkgs;
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      sbt17 = pkgs.sbt.override {jre = pkgs.jdk17;};
+      ciPkgs = with pkgs; [
+        sbt17
+        jdk17
+        dpkg
+        elmPackages.elm
+        fakeroot
+        nodejs
+        redocly-cli
+        tailwindcss
+        jekyll
+      ];
+      devshellPkgs =
+        ciPkgs
+        ++ (with pkgs; [
+          jq
+          scala-cli
+          netcat
+          wget
+          which
+          postgresql
+          inotifyTools
+        ]);
+      sharryPkgs = {
+        sharry-dev = import ./nix/package-dev.nix {
+          inherit pkgs;
           inherit sbt;
-          lib = final.pkgs.lib;
+          lib = pkgs.lib;
         };
-        sharry-bin = prev.pkgs.callPackage (import ./nix/package-bin.nix) {};
+        sharry = pkgs.callPackage (import ./nix/package-bin.nix) {};
       };
+    in {
+      formatter = pkgs.alejandra;
+
+      packages = {
+        inherit (sharryPkgs) sharry sharry-dev;
+        default = sharryPkgs.sharry;
+      };
+
+      devShells = {
+        dev-cnt = pkgs.mkShellNoCC {
+          buildInputs =
+            (builtins.attrValues devshell-tools.legacyPackages.${system}.cnt-scripts)
+            ++ devshellPkgs;
+
+          DEV_CONTAINER = "sharry-dev";
+          SBT_OPTS = "-Xmx1g";
+          SHARRY_BACKEND_JDBC_URL = "jdbc:postgresql://sharry-dev:5432/sharry";
+          SHARRY_BACKEND_JDBC_USER = "dev";
+          SHARRY_BACKEND_JDBC_PASSWORD = "dev";
+          SHARRY_BIND_ADDRESS = "0.0.0.0";
+          SHARRY_BACKEND_MAIL_SMTP_HOST = "sharry-dev";
+          SHARRY_BACKEND_MAIL_SMTP_PORT = "25";
+          SHARRY_BACKEND_MAIL_SMTP_USER = "admin";
+          SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
+          SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
+        };
+
+        dev-vm = pkgs.mkShellNoCC {
+          buildInputs =
+            (builtins.attrValues devshell-tools.legacyPackages.${system}.vm-scripts)
+            ++ devshellPkgs;
+
+          SBT_OPTS = "-Xmx1g";
+          DEV_VM = "dev-vm";
+          VM_SSH_PORT = "10022";
+          SHARRY_BACKEND_JDBC_URL = "jdbc:postgresql://localhost:6534/sharry";
+          SHARRY_BACKEND_JDBC_USER = "dev";
+          SHARRY_BACKEND_JDBC_PASSWORD = "dev";
+          SHARRY_BIND_ADDRESS = "0.0.0.0";
+          SHARRY_BACKEND_MAIL_SMTP_HOST = "localhost";
+          SHARRY_BACKEND_MAIL_SMTP_PORT = "10025";
+          SHARRY_BACKEND_MAIL_SMTP_USER = "admin";
+          SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
+          SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
+        };
+      };
+    })
+    // {
       nixosModules.default = import ./nix/module.nix;
 
-      nixosConfigurations = let
-        baseModule = {config, ...}: {system.stateVersion = "23.11";};
+      overlays.default = final: prev: let
+        sharryPkgs = {
+          sharry-dev = import ./nix/package-dev.nix {
+            inherit (final) pkgs;
+            inherit sbt;
+            lib = final.pkgs.lib;
+          };
+          sharry = prev.pkgs.callPackage (import ./nix/package-bin.nix) {};
+        };
       in {
-        test-vm = let
-          system = "x86_64-linux";
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [self.overlays.default];
-          };
-        in
-          nixpkgs.lib.nixosSystem {
-            inherit pkgs system;
-            specialArgs = inputs;
-            modules = [
-              baseModule
-              self.nixosModules.default
-              ./nix/test/configuration-test.nix
-            ];
-          };
+        inherit (sharryPkgs) sharry sharry-dev;
+      };
 
-        dev-vm = nixpkgs.lib.nixosSystem {
-          system = flake-utils.lib.system.x86_64-linux;
-          specialArgs = {inherit inputs;};
+      nixosConfigurations = {
+        test-vm = devshell-tools.lib.mkVm {
+          system = "x86_64-linux";
           modules = [
-            baseModule
-            ./nix/devsetup/vm.nix
-            ./nix/devsetup/services.nix
+            self.nixosModules.default
+            {
+              nixpkgs.overlays = [self.overlays.default];
+            }
+            ./nix/test/configuration-test.nix
           ];
         };
-
-        container = nixpkgs.lib.nixosSystem {
-          system = flake-utils.lib.system.x86_64-linux;
+        sharry-dev = devshell-tools.lib.mkContainer {
+          system = "x86_64-linux";
           modules = [
-            baseModule
-            ({pkgs, ...}: {
-              boot.isContainer = true;
-              networking.useDHCP = false;
-            })
-            ./nix/devsetup/services.nix
+            {
+              services.dev-postgres = {
+                enable = true;
+                databases = ["sharry"];
+              };
+              services.dev-email.enable = true;
+              services.dev-minio.enable = true;
+            }
+          ];
+        };
+        dev-vm = devshell-tools.lib.mkVm {
+          system = "x86_64-linux";
+          modules = [
+            {
+              networking.hostName = "sharry-dev-vm";
+              virtualisation.memorySize = 2048;
+
+              services.dev-postgres = {
+                enable = true;
+                databases = ["sharry"];
+              };
+              services.dev-email.enable = true;
+              services.dev-minio.enable = true;
+              port-forward.ssh = 10022;
+              port-forward.dev-postgres = 6534;
+              port-forward.dev-smtp = 10025;
+              port-forward.dev-imap = 10143;
+              port-forward.dev-webmail = 8080;
+              port-forward.dev-minio-api = 9000;
+              port-forward.dev-minio-console = 9001;
+            }
           ];
         };
       };
-    }
-    // flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [self.overlays.default];
-        };
-      in {
-        packages = {
-          inherit (pkgs) sharry sharry-bin;
-          default = self.packages."${system}".sharry;
-        };
-
-        formatter = pkgs.alejandra;
-
-        devShells = let
-          devscripts = (import ./nix/devsetup/dev-scripts.nix) {inherit (pkgs) concatTextFile writeShellScriptBin;};
-          allPkgs = devscripts // pkgs;
-          commonBuildInputs = with allPkgs; [
-            pkgs.sbt
-
-            # frontend
-            tailwindcss
-            elmPackages.elm
-
-            # for debian packages
-            dpkg
-            fakeroot
-
-            # microsite
-            jekyll
-            nodejs_18
-
-            # convenience
-            postgresql
-          ];
-        in {
-          default = pkgs.mkShellNoCC {
-            SHARRY_CONTAINER = "sharry-dev";
-            SHARRY_BACKEND_JDBC_URL = "jdbc:postgresql://sharry-dev:5432/sharry_dev";
-            SHARRY_BACKEND_JDBC_USER = "dev";
-            SHARRY_BACKEND_JDBC_PASSWORD = "dev";
-            SHARRY_BIND_ADDRESS = "0.0.0.0";
-            SHARRY_BACKEND_MAIL_SMTP_HOST = "sharry-dev";
-            SHARRY_BACKEND_MAIL_SMTP_PORT = "25";
-            SHARRY_BACKEND_MAIL_SMTP_USER = "admin";
-            SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
-            SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
-
-            buildInputs =
-              commonBuildInputs
-              ++ (with devscripts; [
-                # scripts
-                devcontainer-recreate
-                devcontainer-start
-                devcontainer-stop
-                devcontainer-login
-              ]);
-          };
-
-          dev-vm = pkgs.mkShellNoCC {
-            SHARRY_BACKEND_JDBC_URL = "jdbc:postgresql://localhost:15432/sharry_dev";
-            SHARRY_BACKEND_JDBC_USER = "dev";
-            SHARRY_BACKEND_JDBC_PASSWORD = "dev";
-            SHARRY_BIND_ADDRESS = "0.0.0.0";
-            SHARRY_BACKEND_MAIL_SMTP_HOST = "localhost";
-            SHARRY_BACKEND_MAIL_SMTP_PORT = "10025";
-            SHARRY_BACKEND_MAIL_SMTP_USER = "admin";
-            SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
-            SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
-            VM_SSH_PORT = "10022";
-
-            buildInputs =
-              commonBuildInputs
-              ++ (with devscripts; [
-                # scripts
-                vm-build
-                vm-run
-                vm-ssh
-              ]);
-          };
-        };
-      }
-    );
+    };
 }
