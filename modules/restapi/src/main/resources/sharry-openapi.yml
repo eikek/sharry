@@ -48,6 +48,7 @@ tags:
 servers:
   - url: /api/v2
     description: Current host
+security: []
 
 paths:
   /open/info/version:

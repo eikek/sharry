@@ -1,0 +1,7 @@
+extends:
+  - recommended
+
+# https://redocly.com/docs/cli/rules/built-in-rules/
+rules:
+  operation-2xx-response:
+    severity: off
