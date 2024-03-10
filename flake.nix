@@ -93,6 +93,10 @@
           SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
           SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
         };
+        ci = pkgs.mkShellNoCC {
+          buildInputs = ciPkgs;
+          SBT_OPTS = "-Xmx2G -Xss4m";
+        };
       };
     })
     // {
