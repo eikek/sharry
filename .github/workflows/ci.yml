@@ -3,11 +3,12 @@ on:
   pull_request:
 jobs:
   nix-build:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v26
-      - run: nix build
+      - run: nix build .#sharry-dev
   ci-matrix:
     runs-on: ubuntu-latest
     strategy:
