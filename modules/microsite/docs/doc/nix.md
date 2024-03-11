@@ -108,7 +108,5 @@ let
   };
   sharry = callPackage (import "${repo}/nix/package-bin.nix") {};
 in
- #
- # use sharryPkgs.sharry-dev or sharryPakgs.sharry
- #
+ …
 ```

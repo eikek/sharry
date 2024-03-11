@@ -12,10 +12,10 @@ jobs:
           fetch-depth: 0
       - name: Set current version
         run:  echo "SHARRY_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
-      - uses: cachix/install-nix-action@26
+      - uses: cachix/install-nix-action@v26
       - name: Build website (${{ env.SHARRY_VERSION }})
         run: nix develop .#ci --command sbt microsite/makeMicrosite
       - name: Publish website (${{ env.SHARRY_VERSION }})
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: nix-shell project/microsite.nix --run "sbt microsite/publishMicrosite"
+        run: nix develop .#ci --command sbt microsite/publishMicrosite
