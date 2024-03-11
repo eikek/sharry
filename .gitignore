@@ -6,3 +6,4 @@ result
 *.qcow2
 node_modules/
 .direnv/
+.envrc
