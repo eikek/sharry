@@ -1,7 +1,7 @@
 lib: rec {
-  version = "1.13.2";
+  version = "1.14.0-SNAPSHOT";
 
-  latest-release = "1.13.2";
+  latest-release = "1.14.0-SNAPSHOT";
 
   license = lib.licenses.gpl3;
   homepage = https://github.com/eikek/sharry;
