@@ -19,7 +19,7 @@
             "elm/url": "1.0.0",
             "elm-explorations/markdown": "1.0.0",
             "pablohirafuji/elm-qrcode": "4.0.1",
-            "ryannhg/date-format": "2.3.0"
+            "ryan-haskell/date-format": "1.0.0"
         },
         "indirect": {
             "avh4/elm-color": "1.0.0",
