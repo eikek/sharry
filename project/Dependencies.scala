@@ -18,7 +18,7 @@ object Dependencies {
   val MariaDbVersion = "3.3.3"
   val MUnitVersion = "0.7.29"
   val MUnitCatsEffectVersion = "1.0.7"
-  val PostgresVersion = "42.7.2"
+  val PostgresVersion = "42.7.3"
   val PureConfigVersion = "0.17.6"
   val ScribeVersion = "3.13.0"
   val SourcecodeVersion = "0.3.1"
