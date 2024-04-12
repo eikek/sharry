@@ -100,7 +100,7 @@ cz =
     , back = "Zpět"
     , delete = "Smazat"
     , email = "E-Mail"
-    , yesNo = Messages.YesNoDimmer.gb
-    , dropdown = Messages.FixedDropdown.gb
+    , yesNo = Messages.YesNoDimmer.cz
+    , dropdown = Messages.FixedDropdown.cz
     }
 
