@@ -4,6 +4,7 @@ module Messages.IntField exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 
@@ -42,4 +43,12 @@ ja =
     { mustBeLower = "最大値 : "
     , mustBeGreater = "最小値 : "
     , notANumber = \str -> "「" ++ str ++ "」は有効な数値ではありません！"
+    }
+
+
+cz : Texts
+cz =
+    { mustBeLower = "Číslo musí být <= "
+    , mustBeGreater = "Číslo musí být >= "
+    , notANumber = \str -> "'" ++ str ++ "' není povolená hodnota!"
     }

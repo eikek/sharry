@@ -4,6 +4,7 @@ module Messages.App exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 
@@ -88,4 +89,20 @@ ja =
     , lightDark = "ライト / ダーク"
     , logoutSharry = "ログアウト"
     , logoutOAuth = "認証プロバイダーからログアウト"
+    }
+
+cz : Texts
+cz =
+    { home = "Domů"
+    , shares = "Sdílené soubory"
+    , aliases = "Prostory pro sdílení"
+    , accounts = "Účty"
+    , settings = "Nastavení"
+    , newInvites = "Pozvánky"
+    , logout = \user -> "Odhlásit (" ++ user ++ ")"
+    , login = "Přihlášení"
+    , register = "Registrace"
+    , lightDark = "Světlý/Tmavý režim"
+    , logoutSharry = "Odhlásit"
+    , logoutOAuth = "Odhlásit u poskytovatele ověření"
     }

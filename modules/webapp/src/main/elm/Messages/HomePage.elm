@@ -4,6 +4,7 @@ module Messages.HomePage exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 
@@ -57,4 +58,14 @@ ja =
     , viewAliases = "受信箱を表示"
     , documentation = "ヘルプ"
     , shareFilesWithOthers = "ファイルの共有 ( 配布 ) と受信"
+    }
+
+cz : Texts
+cz =
+    { createShare = "Sdílet soubor"
+    , viewShares = "Zobrazit soubory"
+    , createAlias = "Vytvořit prostor pro sdílení"
+    , viewAliases = "Zobrazit prostory pro sdílení"
+    , documentation = "Dokumentace"
+    , shareFilesWithOthers = "Sdílení souborů"
     }

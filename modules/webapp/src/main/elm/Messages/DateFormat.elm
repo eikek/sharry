@@ -31,6 +31,9 @@ get lang =
         Japanese ->
             ja
 
+        Czech ->
+            cz
+
 formatDateTime : Language -> Int -> String
 formatDateTime lang millis =
     let
@@ -121,6 +124,27 @@ ja =
         ]
     , lang = japanese
     }
+
+
+cz : DateTimeMsg
+cz =
+    { format =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.dayOfMonthSuffix
+        , DateFormat.text " "
+        , DateFormat.monthNameFull
+        , DateFormat.text ", "
+        , DateFormat.yearNumber
+        , DateFormat.text ", "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = czech
+    }
+
+
 
 --- Languages for the DateFormat module
 -- French
@@ -416,6 +440,91 @@ toJapaneseWeekdayName weekday =
 
         Sun ->
             "(日)"
+
+-- Czech
+
+
+{-| The Czech language!
+-}
+czech : DL.Language
+czech =
+    let
+        withDot str =
+            str ++ "."
+    in
+    DL.Language
+        toCzechMonthName
+        (toCzechMonthName >> String.left 3 >> withDot)
+        toCzechWeekdayName
+        (toCzechWeekdayName >> String.left 2 >> withDot)
+        toEnglishAmPm
+        (\_ -> ".")
+
+
+toCzechMonthName : Month -> String
+toCzechMonthName month =
+    case month of
+        Jan ->
+            "Leden"
+
+        Feb ->
+            "Únor"
+
+        Mar ->
+            "Březen"
+
+        Apr ->
+            "Duben"
+
+        May ->
+            "Květen"
+
+        Jun ->
+            "Červen"
+
+        Jul ->
+            "Červenec"
+
+        Aug ->
+            "Srpen"
+
+        Sep ->
+            "Září"
+
+        Oct ->
+            "Říjen"
+
+        Nov ->
+            "Listopad"
+
+        Dec ->
+            "Prosinec"
+
+
+toCzechWeekdayName : Weekday -> String
+toCzechWeekdayName weekday =
+    case weekday of
+        Mon ->
+            "Pondělí"
+
+        Tue ->
+            "Úterý"
+
+        Wed ->
+            "Středa"
+
+        Thu ->
+            "Čtvrtek"
+
+        Fri ->
+            "Pátek"
+
+        Sat ->
+            "Sobota"
+
+        Sun ->
+            "Neděle"
+
 
 
 --- Copy from DateFormat.Language

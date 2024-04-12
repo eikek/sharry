@@ -4,6 +4,7 @@ module Messages.LoginPage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.FixedDropdown
@@ -83,5 +84,20 @@ ja =
     , signupLink = "ユーザー登録"
     , or = "または"
     , dropdown = Messages.FixedDropdown.ja
+    }
+
+cz : Texts
+cz =
+    { username = "Uživatelské jméno"
+    , password = "Heslo"
+    , loginPlaceholder = "Uživatelské jméno"
+    , passwordPlaceholder = "Heslo"
+    , loginButton = "Přihlásit se"
+    , via = "via"
+    , loginSuccessful = "Přihlášení bylo úspěšné"
+    , noAccount = "Nemáte účet?"
+    , signupLink = "Zaregistrovat se"
+    , or = "Nebo"
+    , dropdown = Messages.FixedDropdown.cz
     }
 

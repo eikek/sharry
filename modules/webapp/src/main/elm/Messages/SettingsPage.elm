@@ -4,6 +4,7 @@ module Messages.SettingsPage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 
@@ -77,4 +78,19 @@ ja =
     , currentPassword = "現在のパスワード"
     , newPassword = "新しいパスワード"
     , newPasswordRepeat = "新しいパスワード ( 確認 )"
+    }
+
+
+cz : Texts
+cz =
+    { settingsTitle = "Nastavení"
+    , changeMailHeader = "Změnit E-Mail"
+    , newEmail = "Nový E-Mail"
+    , newEmailPlaceholder = "E-Mailová adresa"
+    , submitEmptyMailInfo = "Odesláním prázdného formuláře smažete E-Mailovou adresu."
+    , submit = "Odeslat"
+    , changePasswordHeader = "Změnit heslo"
+    , currentPassword = "Stávající heslo"
+    , newPassword = "Nové heslo"
+    , newPasswordRepeat = "Nové heslo (znovu)"
     }

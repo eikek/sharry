@@ -9,7 +9,7 @@ type Language
     | German
     | French
     | Japanese
-
+    | Czech
 
 allLanguages : List Language
 allLanguages =
@@ -17,4 +17,5 @@ allLanguages =
     , German
     , French
     , Japanese
+    , Czech
     ]

@@ -4,6 +4,7 @@ module Messages.MailSend exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.MailForm
@@ -44,4 +45,11 @@ ja =
     { sendingEmail = "メールを送信しています..."
     , loadingTemplate = "テンプレートを読み込んでいます..."
     , mailForm = Messages.MailForm.ja
+    }
+
+cz : Texts
+cz =
+    { sendingEmail = "Odeslat mail ..."
+    , loadingTemplate = "Nahrát šablonu ..."
+    , mailForm = Messages.MailForm.cz
     }

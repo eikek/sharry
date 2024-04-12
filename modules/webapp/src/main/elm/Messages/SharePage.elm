@@ -4,6 +4,7 @@ module Messages.SharePage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.Dropzone2
@@ -172,4 +173,36 @@ ja =
     , uploadsUpTo =
         \size ->
             "アップロードは最大 " ++ size ++ " までです。"
+    }
+
+cz : Texts
+cz =
+    { markdownInput = Messages.MarkdownInput.cz
+    , dropzone = Messages.Dropzone2.cz
+    , validityField = Messages.ValidityField.cz
+    , intField = Messages.IntField.cz
+    , sendFiles = "Odeslat soubory"
+    , description = "Popis"
+    , sendMoreFiles = "Odeslat další soubory"
+    , allFilesUploaded = "Všechny soubory byly úspěšně nahrány"
+    , someFilesFailedHeader = "Nahrání některých souborů se nezdařilo"
+    , someFilesFailedText = "Nahrání některých souborů se nezdařilo…. Nahrajte soubory znovu. "
+    , someFilesFailedTextAddon = "Přejděte do sdílení souborů a akci opakujte."
+    , submit = "Odeslat"
+    , clearFiles = "Smazat formulář"
+    , resume = "Pokračovat"
+    , pause = "Pozastavit"
+    , password = "Heslo"
+    , createShare = "Vytvořit nové sdílení"
+    , details = "Detaily"
+    , name = "Název"
+    , namePlaceholder = "Volitelný název"
+    , validity = "Platnost"
+    , files = "Soubory"
+    , newShare = "Nové sdílení"
+    , gotoShare = "Přejít na právě vytvořené sdílení"
+    , maxPublicViews = "Maximální počet zobrazení"
+    , uploadsUpTo =
+        \size ->
+            "Velikost souborů je maximálně " ++ size ++ "."
     }

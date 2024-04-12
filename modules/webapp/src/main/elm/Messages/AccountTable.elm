@@ -4,6 +4,7 @@ module Messages.AccountTable exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Language
@@ -85,4 +86,18 @@ ja =
     , created = "作成日時"
     , edit = "編集"
     , dateTime = formatDateTime Language.Japanese
+    }
+
+cz : Texts
+cz  =
+    { login = "Uživatelské jméno"
+    , source = "Zdroj"
+    , state = "Stav"
+    , nrShares = "#Sdílení"
+    , admin = "Admin"
+    , nrLogins = "#Přihlášení"
+    , lastLogin = "Poslední přihlášení"
+    , created = "Založeno"
+    , edit = "Editovat"
+    , dateTime = formatDateTime Language.Czech
     }

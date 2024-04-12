@@ -4,6 +4,7 @@ module Messages.MarkdownInput exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 
@@ -48,3 +49,10 @@ ja =
     , supportsMarkdown = "マークダウン サポート"
     }
 
+cz : Texts
+cz =
+    { edit = "Editovat"
+    , preview = "Náhled"
+    , split = "Rozdělit"
+    , supportsMarkdown = "Podporuje Markdown"
+    }

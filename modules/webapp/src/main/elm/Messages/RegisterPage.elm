@@ -4,6 +4,7 @@ module Messages.RegisterPage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.FixedDropdown
@@ -81,4 +82,18 @@ ja =
     , dropdown = Messages.FixedDropdown.ja
     }
 
+
+cz : Texts
+cz =
+    { signup = "Registrace"
+    , userLogin = "Uživatelské jméno"
+    , password = "Heslo"
+    , passwordRepeat = "Heslo (znovu)"
+    , invitationKey = "Klíč z pozvánky"
+    , submitButton = "Odeslat"
+    , alreadySignedUp = "Jste již zaregistrován?"
+    , signin = "Přihlásit se"
+    , registrationSuccessful = "Registrace byla úspěšná."
+    , dropdown = Messages.FixedDropdown.cz
+    }
 
