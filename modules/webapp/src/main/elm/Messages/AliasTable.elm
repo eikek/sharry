@@ -4,6 +4,7 @@ module Messages.AliasTable exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Language
@@ -77,4 +78,17 @@ ja =
     , owner = "所有者"
     , validityField = Messages.ValidityField.ja
     , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    }
+
+cz : Texts
+cz =
+    { name = "Jméno"
+    , enabled = "Povoleno"
+    , validity = "Platnost"
+    , created = "Vytvořen"
+    , edit = "Upravit"
+    , show = "Zobrazit"
+    , owner = "Vlastník"
+    , validityField = Messages.ValidityField.cz
+    , dateTime = Messages.DateFormat.formatDateTime Language.Czech
     }

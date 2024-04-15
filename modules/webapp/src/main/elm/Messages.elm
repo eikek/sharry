@@ -56,6 +56,9 @@ get lang =
         Japanese ->
             ja
 
+        Czech ->
+            cz
+
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -182,4 +185,23 @@ ja =
     , upload = Messages.UploadPage.ja
     , newInvite = Messages.NewInvitePage.ja
     , settings = Messages.SettingsPage.ja
+    }
+
+cz : Messages
+cz =
+    { lang = Czech
+    , iso2 = "cz"
+    , label = "Čeština"
+    , flagIcon = "fi fi-cz"
+    , app = Messages.App.cz
+    , login = Messages.LoginPage.cz
+    , register = Messages.RegisterPage.cz
+    , account = Messages.AccountPage.cz
+    , aliasPage = Messages.AliasPage.cz
+    , detail = Messages.DetailPage.cz
+    , share = Messages.SharePage.cz
+    , home = Messages.HomePage.cz
+    , upload = Messages.UploadPage.cz
+    , newInvite = Messages.NewInvitePage.cz
+    , settings = Messages.SettingsPage.cz
     }

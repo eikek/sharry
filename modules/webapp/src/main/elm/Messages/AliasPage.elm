@@ -4,6 +4,7 @@ module Messages.AliasPage exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Messages.AliasForm
@@ -113,3 +114,24 @@ ja =
     , aliasTable = Messages.AliasTable.ja
     , mailSend = Messages.MailSend.ja
     }
+
+cz : Texts
+cz =
+    { createNew = "Vytvořit prostor pro sdílení"
+    , aliasPage = "Prostor pro sdílení: "
+    , aliasPages = "Prostory pro sdílení"
+    , newAliasPage = "Nový prostor pro sdílení"
+    , searchPlaceholder = "Vyhledat…"
+    , errorQrCode = "Chyba při načítání QR kódu."
+    , shareThisLink = "Sdílet tento odkaz"
+    , aliasPageNowAt = "Tento prostor pro sdílení je nyní dostupný na webové adrese: "
+    , shareThisUrl = "Tuto URL nebo QR kód níže můžete sdílet s ostatními."
+    , sendEmail = "Odeslat E-Mail"
+    , copyLink = " Kopírovat odkaz"
+    , owner = "Vlastník"
+    , notOwnerInfo = "Tento prostor je sdílen jiným uživatelem a sdílený Vámi. Nemůžete měnit jeho vlastnosti."
+    , aliasForm = Messages.AliasForm.cz
+    , aliasTable = Messages.AliasTable.cz
+    , mailSend = Messages.MailSend.cz
+    }
+

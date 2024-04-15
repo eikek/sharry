@@ -4,6 +4,7 @@ module Messages.ValidityField exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.FixedDropdown
@@ -74,4 +75,18 @@ ja =
     , weeks = "週間"
     , month = "カ月間"
     , months = "カ月間"
+    }
+
+
+cz : Texts
+cz =
+    { dropdown = Messages.FixedDropdown.cz
+    , hour = "hodina"
+    , hours = "hodiny"
+    , day = "den"
+    , days = "dní"
+    , week = "týden"
+    , weeks = "týdnů"
+    , month = "měsíc"
+    , months = "měsíců"
     }

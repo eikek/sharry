@@ -4,6 +4,7 @@ module Messages.AccountPage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.AccountForm
@@ -61,3 +62,15 @@ ja =
     , accountForm = Messages.AccountForm.ja
     , accountTable = Messages.AccountTable.ja
     }
+
+cz : Texts
+cz =
+    { createAccountTitle = "Vytvořit interní účet"
+    , accounts = "Účty"
+    , searchPlaceholder = "Hledat…"
+    , newAccount = "Nový účet"
+    , accountForm = Messages.AccountForm.cz
+    , accountTable = Messages.AccountTable.cz
+    }
+
+

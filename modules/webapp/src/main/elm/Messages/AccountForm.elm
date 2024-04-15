@@ -4,6 +4,7 @@ module Messages.AccountForm exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Messages.FixedDropdown
@@ -87,3 +88,19 @@ ja =
     , yesNo = Messages.YesNoDimmer.ja
     , dropdown = Messages.FixedDropdown.ja
     }
+
+cz : Texts
+cz =
+    { id = "Id"
+    , login = "Uživatelské jméno"
+    , state = "Status"
+    , admin = "Admin"
+    , password = "Heslo"
+    , submit = "Odeslat"
+    , back = "Zpět"
+    , delete = "Smazat"
+    , email = "E-Mail"
+    , yesNo = Messages.YesNoDimmer.cz
+    , dropdown = Messages.FixedDropdown.cz
+    }
+

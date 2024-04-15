@@ -4,6 +4,7 @@ module Messages.DetailPage exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Data.InitialView exposing (InitialView)
@@ -389,3 +390,80 @@ ja =
     , initialViewField = "表示の初期状態"
     }
 
+
+cz : Texts
+cz =
+    { mailSend = Messages.MailSend.cz
+    , save = "Uložit"
+    , cancel = "Zrušit"
+    , yourShare = "Sdílené soubory"
+    , markdownInput = Messages.MarkdownInput.cz
+    , shareFileList = Messages.ShareFileList.cz
+    , yesNo = Messages.YesNoDimmer.cz
+    , sharePublished =
+        "Sdílení bylo publikováno, ale bylo dosaženo jejího maximálního počtu zobrazení. Tuto "
+            ++ "vlastnost můžete zvýšit, pokud chcete, aby byla tato položka zveřejněna ještě nějakou dobu.."
+    , shareNotPublished =
+        "Abyste mohli tuto položku sdílet s ostatními, musíte ji zveřejnit. "
+            ++ "Poté budou mít k těmto datům přístup všichni, "
+            ++ "kterým vygenerovaný odkaz pošlete."
+    , shareLinkExpired =
+        "Sdílení bylo publikováno, ale jeho platnost již vypršelo. Musíte jej "
+            ++ "nejprve zrušit a poté znovu publikovat."
+    , errorQrCode = "Chyba při generování QR kódu."
+    , sharePublicAvailableAt = "Soubory jsou dostupné přes QR kód níže, nebo na webové adrese:"
+    , shareAsYouLike = "Tento odkaz můžete sdílet se všemi, kteří mají mít přístup k těmto datům."
+    , sendEmail = "Odeslat E-Mail"
+    , copyLink = "Kopírovat odkaz"
+    , name = "Název"
+    , validity = "Platnost"
+    , maxViews = "Max. počet zobrazení"
+    , password = "Heslo"
+    , passwordProtected = "Chráněno heslem"
+    , passwordNone = "Žádné"
+    , shareSize = "#/Velikost"
+    , created = "Vytvořeno"
+    , aliasLabel = "Prostor"
+    , publishedOn = "Zveřejněno dne"
+    , publishedUntil = "Zveřejněno do"
+    , lastAccess = "Poslední přístup"
+    , views = "Zobrazení"
+    , publishWithNewLink = "Zveřejnit s novým odkazem"
+    , delete = "Smazat"
+    , edit = "Editovat"
+    , detailsMenu = "Detaily"
+    , shareLinkMenu = "Sdílet odkaz"
+    , addFilesLinkMenu = "Přidat soubory"
+    , editDescription = "Upravit popis"
+    , publish = "Publikovat"
+    , unpublish = "Zrušit pubikování"
+    , listView = "Zobrazení seznamu"
+    , cardView = "Zobrazené karet"
+    , submit = "Nahrát"
+    , clear = "Smazat formulář"
+    , resume = "Pokračovat"
+    , pause = "Pozastavit"
+    , uploadsGreaterThan =
+        \size ->
+            "Soubory nesmí být větší než " ++ size ++ "."
+    , waitDeleteShare = "Mazání. Čekejte prosím."
+    , loadingData = "Nahrávám soubory..."
+    , dropzone = Messages.Dropzone2.cz
+    , validityField = Messages.ValidityField.cz
+    , passwordRequired = "Heslo vyžadováno"
+    , passwordInvalid = "Chybějící heslo"
+    , or = "Nebo"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Czech
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "Seznam"
+
+                Data.InitialView.Cards ->
+                    "Karty"
+
+                Data.InitialView.Zoom ->
+                    "Náhled"
+    , initialViewField = "Výchozí zobrazení: "
+    }

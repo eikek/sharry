@@ -4,6 +4,7 @@ module Messages.UploadPage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.ShareTable
@@ -49,4 +50,13 @@ ja =
     , newShare = "共有の新規作成"
     , search = "検索…"
     , shareTable = Messages.ShareTable.ja
+    }
+
+
+cz : Texts
+cz =
+    { yourShares = "Sdílené soubory"
+    , newShare = "Nové sdílení"
+    , search = "Hledat…"
+    , shareTable = Messages.ShareTable.cz
     }

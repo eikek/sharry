@@ -4,6 +4,7 @@ module Messages.NewInvitePage exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Html exposing (Html, p, text)
@@ -133,6 +134,37 @@ ja =
         , p []
             [ text
                 """招待キーの作成には、設定された「招待パスワード」が必要です。"""
+            ]
+        ]
+    }
+
+
+
+cz : Texts
+cz =
+    { createNewTitle = "Vytvořit novou pozvánku"
+    , newInvitePassword = "Heslo k nové pozvánce"
+    , submit = "Odeslat"
+    , reset = "Reset"
+    , error = "Chyba"
+    , success = "Pozvánka úspěšně vygenerována"
+    , invitationKey = "Klíč k pozvánce:"
+    , message =
+        [ p []
+            [ text
+                """Sharry vyžaduje při registraci pozvánku. Tyto 
+             pozvánky můžete vytvářet zde a následně je zaslat uživatelům,
+              aby se mohli zaregistrovat v Sharry."""
+            ]
+        , p []
+            [ text
+                """Každou pozvánku lze použít pouze jednou. Musíte
+             vytvořit jeden klíč pro každou osobu, kterou chcete pozvat."""
+            ]
+        , p []
+            [ text
+                """Vytvoření pozvánky vyžaduje zadání hesla
+             z konfigurace."""
             ]
         ]
     }

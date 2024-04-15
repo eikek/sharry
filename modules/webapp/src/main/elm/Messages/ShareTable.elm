@@ -4,6 +4,7 @@ module Messages.ShareTable exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Language
@@ -76,5 +77,19 @@ ja =
     , created = "作成日時"
     , open = "開く"
     , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    }
+
+
+cz : Texts
+cz =
+    { nameId = "Název/ID"
+    , aliasLabel = "Prostor"
+    , maxViews = "Max počet zobrazení"
+    , published = "Veřejné"
+    , nFiles = "#Souborů"
+    , size = "Velikost"
+    , created = "Vytvořeno"
+    , open = "Otevřít"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Czech
     }
 

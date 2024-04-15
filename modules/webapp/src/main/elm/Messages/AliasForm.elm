@@ -4,6 +4,7 @@ module Messages.AliasForm exposing
     , fr
     , gb
     , ja
+    , cz
     )
 
 import Html exposing (..)
@@ -131,4 +132,29 @@ ja =
     , memberInfo = "この受信箱を共同作業するユーザーです。この受信箱を共有したり、ここにアップロードされたファイルのすべてを見ることができます。"
     , yesNo = Messages.YesNoDimmer.ja
     , validityField = Messages.ValidityField.ja
+    }
+
+cz : Texts
+cz =
+    { id = "ID"
+    , noteToIdsHead = "Poznámka k ID"
+    , noteToIds =
+        p []
+            [ text "Toto ID je součástí URL adresy, na které mohou "
+            , em [] [ text "všichni" ]
+            , text " uživatelé nahrát soubory. Je doporučeno použít"
+            , text " automatiky generované ID. Může být změněno na "
+            , text "jakoukoliv hodnotu, ale nesmí být prázdné. "
+            ]
+    , name = "Název"
+    , validity = "Platnost"
+    , enabled = "Povoleno"
+    , submit = "Odeslat"
+    , back = "Zpět"
+    , delete = "Smazat"
+    , searchPlaceholder = "Hledat…"
+    , members = "Členové"
+    , memberInfo = "Členové tohoto prostoru jej mohou zobrazit a sdílet. Dále uvidí všechny soubory, které byly do tohoto prostoru nahrány."
+    , yesNo = Messages.YesNoDimmer.cz
+    , validityField = Messages.ValidityField.cz
     }

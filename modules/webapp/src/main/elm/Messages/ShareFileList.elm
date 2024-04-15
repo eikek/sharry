@@ -4,6 +4,7 @@ module Messages.ShareFileList exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 import Messages.YesNoDimmer
@@ -64,4 +65,15 @@ ja =
     , fileIsIncomplete = "ファイルが不完全です。 ( "
     , tryUploadAgain = "% )。再度アップロードしてください。"
     , yesNo = Messages.YesNoDimmer.ja
+    }
+
+cz : Texts
+cz =
+    { previewNotSupported = "Náhled není podporován"
+    , downloadToDisk = "Stáhnout na disk"
+    , viewInBrowser = "Zobrazit v prohlížeči"
+    , deleteFile = "Smazat soubor."
+    , fileIsIncomplete = "Soubor nebyl nahrán celý ("
+    , tryUploadAgain = "%). Nahrajte jej prosím znovu."
+    , yesNo = Messages.YesNoDimmer.cz
     }

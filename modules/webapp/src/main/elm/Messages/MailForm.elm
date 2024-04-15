@@ -4,6 +4,7 @@ module Messages.MailForm exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 
@@ -58,3 +59,14 @@ ja =
     , send = "送信"
     , cancel = "キャンセル"
     }
+
+cz : Texts
+cz =
+    { receivers = "Příjemce(i)"
+    , separateRecipientsByComma = "Více příjemců oddělte čárkou"
+    , subject = "Předmět"
+    , body = "Tělo"
+    , send = "Odeslat"
+    , cancel = "Storno"
+    }
+

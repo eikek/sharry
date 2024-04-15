@@ -4,6 +4,7 @@ module Messages.Dropzone2 exposing
     , gb
     , fr
     , ja
+    , cz
     )
 
 
@@ -46,4 +47,12 @@ ja =
     , filesSelected = " 選択ファイル ("
     , or = "または"
     , selectFiles = "ファイルを選択..."
+    }
+
+cz : Texts
+cz =
+    { dropHere = "Sem přetáhněte soubory"
+    , filesSelected = " vybrané soubory ("
+    , or = "nebo"
+    , selectFiles = "vyberte soubory ..."
     }
