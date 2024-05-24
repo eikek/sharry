@@ -17,7 +17,7 @@ object Dependencies {
   val KindProjectorVersion = "0.10.3"
   val MariaDbVersion = "3.3.3"
   val MUnitVersion = "0.7.29"
-  val MUnitCatsEffectVersion = "1.0.7"
+  val MUnitCatsEffectVersion = "2.0.0"
   val PostgresVersion = "42.7.3"
   val PureConfigVersion = "0.17.6"
   val ScribeVersion = "3.13.5"
@@ -125,7 +125,7 @@ object Dependencies {
   val munit = Seq(
     "org.scalameta" %% "munit" % MUnitVersion,
     "org.scalameta" %% "munit-scalacheck" % MUnitVersion,
-    "org.typelevel" %% "munit-cats-effect-3" % MUnitCatsEffectVersion
+    "org.typelevel" %% "munit-cats-effect" % MUnitCatsEffectVersion
   )
 
   val kindProjectorPlugin = "org.typelevel" %% "kind-projector" % KindProjectorVersion
