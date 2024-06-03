@@ -20,7 +20,7 @@ object Dependencies {
   val MUnitCatsEffectVersion = "2.0.0"
   val PostgresVersion = "42.7.3"
   val PureConfigVersion = "0.17.6"
-  val ScribeVersion = "3.13.5"
+  val ScribeVersion = "3.14.0"
   val SourcecodeVersion = "0.4.2"
   val SwaggerVersion = "5.17.14"
   val TikaVersion = "2.9.2"
