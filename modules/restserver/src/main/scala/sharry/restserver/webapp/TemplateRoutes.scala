@@ -36,7 +36,7 @@ object TemplateRoutes {
   }
 
   def apply[F[_]: Async: Files](cfg: Config): InnerRoutes[F] = {
-    implicit val logger = sharry.logging.getLogger[F]
+    implicit val logger: Logger[F] = sharry.logging.getLogger[F]
     val indexTemplate = memo(
       loadResource("/index.html").flatMap(loadTemplate(_))
     )

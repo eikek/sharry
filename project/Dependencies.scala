@@ -6,6 +6,7 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BinnyVersion = "0.11.0"
   val CirceVersion = "0.14.7"
+  val CirisVersion = "3.6.0"
   val ClipboardJsVersion = "2.0.11"
   val DoobieVersion = "1.0.0-RC5"
   val EmilVersion = "0.17.0"
@@ -25,7 +26,15 @@ object Dependencies {
   val SwaggerVersion = "5.17.14"
   val TikaVersion = "2.9.2"
   val TusClientVersion = "1.8.0-1"
+  val TypesafeConfigVersion = "1.4.3"
   val YamuscaVersion = "0.10.0"
+
+  val ciris = Seq(
+    "is.cir" %% "ciris" % CirisVersion
+  )
+  val typesafeConfig = Seq(
+    "com.typesafe" % "config" % TypesafeConfigVersion
+  )
 
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,

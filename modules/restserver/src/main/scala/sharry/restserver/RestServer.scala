@@ -23,13 +23,14 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.headers.{Location, `Content-Length`, `Content-Type`}
 import org.http4s.server.Router
 import org.http4s.server.middleware.{Logger => Http4sLogger}
+import scribe.Scribe
 
 object RestServer {
   def stream[F[_]: Async: Files: Network](
       cfg: Config,
       pools: Pools
   ): Stream[F, Nothing] = {
-    implicit val logger = sharry.logging.getLogger[F]
+    implicit val logger: Logger[F] = sharry.logging.getLogger[F]
 
     val server = httpApp(cfg, pools).flatMap(httpServer(cfg, _))
     Stream

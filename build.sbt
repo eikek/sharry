@@ -136,8 +136,7 @@ val common = project
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.fs2io ++
-        Dependencies.circe ++
-        Dependencies.pureconfig
+        Dependencies.circe
   )
 
 val loggingScribe = project
@@ -279,11 +278,10 @@ val restserver = project
       Dependencies.http4s ++
         Dependencies.http4sclient ++
         Dependencies.circe ++
-        Dependencies.pureconfig ++
+        Dependencies.typesafeConfig ++
+        Dependencies.ciris ++
         Dependencies.yamusca ++
         Dependencies.webjars,
-//    addCompilerPlugin(Dependencies.kindProjectorPlugin),
-//    addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "sharry.restserver",
     reStart / javaOptions ++=
       Seq(
