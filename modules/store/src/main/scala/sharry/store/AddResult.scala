@@ -15,10 +15,10 @@ sealed trait AddResult {
 object AddResult {
 
   def fromUpdateExpectChange(errMsg: String)(e: Either[Throwable, Int]): AddResult =
-    e.fold(Failure, n => if (n > 0) Success else Failure(new Exception(errMsg)))
+    e.fold(Failure.apply, n => if (n > 0) Success else Failure(new Exception(errMsg)))
 
   def fromEither[B](e: Either[Throwable, B]): AddResult =
-    e.fold(Failure, _ => Success)
+    e.fold(Failure.apply, _ => Success)
 
   case object Success extends AddResult {
     def toEither = Right(())

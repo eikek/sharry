@@ -29,7 +29,9 @@ object Dependencies {
 
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,
-    "com.outr" %% "scribe-slf4j2" % ScribeVersion
+    "com.outr" %% "scribe-slf4j2" % ScribeVersion,
+    "com.outr" %% "scribe-cats" % ScribeVersion,
+    "com.outr" %% "scribe-json-circe" % ScribeVersion
   )
 
   val sourcecode = Seq(
@@ -69,7 +71,7 @@ object Dependencies {
   // https://github.com/melrief/pureconfig
   // MPL 2.0
   val pureconfig = Seq(
-    "com.github.pureconfig" %% "pureconfig" % PureConfigVersion
+    "com.github.pureconfig" %% "pureconfig-core" % PureConfigVersion
   )
 
   // https://github.com/h2database/h2database

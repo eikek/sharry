@@ -39,6 +39,7 @@ object ScribeConfigure {
       format: LogConfig.Format,
       level: Level
   ): Unit = {
+    val writer = scribe.json.ScribeCirceJsonSupport.writer(SystemOutWriter)
     val mods: List[scribe.Logger => scribe.Logger] = List(
       _.clearHandlers(),
       _.withMinimumLevel(ScribeWrapper.convertLevel(level)),
@@ -50,9 +51,7 @@ object ScribeConfigure {
             case Format.Plain =>
               l.withHandler(formatter = Formatter.classic, writer = SystemOutWriter)
             case Format.Json =>
-              l.withHandler(writer = JsonWriter(SystemOutWriter))
-            case Format.Logfmt =>
-              l.withHandler(writer = LogfmtWriter(SystemOutWriter))
+              l.withHandler(writer = writer)
           }
         } else l,
       _.replace()

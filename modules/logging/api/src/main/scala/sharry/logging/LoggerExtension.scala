@@ -11,8 +11,8 @@ import fs2.Stream
 
 trait LoggerExtension[F[_]] { self: Logger[F] =>
 
-  def stream: Logger[Stream[F, *]] =
-    new Logger[Stream[F, *]] {
+  def stream: Logger[[X] =>> Stream[F, X]] =
+    new Logger[[X] =>> Stream[F, X]] {
       def log(ev: LogEvent) =
         Stream.eval(self.log(ev))
 

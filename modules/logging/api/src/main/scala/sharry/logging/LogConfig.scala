@@ -37,10 +37,9 @@ object LogConfig {
     case object Plain extends Format
     case object Fancy extends Format
     case object Json extends Format
-    case object Logfmt extends Format
 
     val all: NonEmptyList[Format] =
-      NonEmptyList.of(Plain, Fancy, Json, Logfmt)
+      NonEmptyList.of(Plain, Fancy, Json)
 
     def fromString(str: String): Either[String, Format] =
       all.find(_.name.equalsIgnoreCase(str)).toRight(s"Invalid format name: $str")

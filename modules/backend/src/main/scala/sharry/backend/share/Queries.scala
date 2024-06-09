@@ -2,7 +2,7 @@ package sharry.backend.share
 
 import cats.data.OptionT
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 import fs2.Stream
 
 import sharry.common._
@@ -384,7 +384,7 @@ object Queries {
       fids <- allFileIds
       _ <- store.transact(RShare.delete(share))
       _ <-
-        if (background) Async[F].start(deleteAllFiles(fids))
+        if (background) Async[F].start(deleteAllFiles(fids)).void
         else deleteAllFiles(fids)
     } yield ()
   }

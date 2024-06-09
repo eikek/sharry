@@ -2,7 +2,7 @@ package sharry.logging
 
 import sharry.logging.LazyMap.Val
 
-final class LazyMap[A, B](
+final class LazyMap[A, B] private(
     private val values: Map[A, Val[B]]
 ) {
   lazy val toMap: Map[A, B] = values.view.mapValues(_.value).toMap
