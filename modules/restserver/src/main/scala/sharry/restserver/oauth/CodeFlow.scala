@@ -131,13 +131,13 @@ object CodeFlow {
       logHeaders = true,
       logBody = true,
       logAction = Some((msg: String) => logger.trace(msg))
-    ) _
+    )
 
     val lres = ResponseLogger(
       logHeaders = true,
       logBody = true,
       logAction = Some((msg: String) => logger.trace(msg))
-    ) _
+    )
 
     lreq.andThen(lres)(c)
   }

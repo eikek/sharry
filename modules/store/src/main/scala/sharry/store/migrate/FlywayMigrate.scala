@@ -25,7 +25,7 @@ object FlywayMigrate {
       .configure()
       .cleanDisabled(true)
       .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
-      .locations(locations: _*)
+      .locations(locations*)
       .baselineOnMigrate(true)
       .baselineVersion("0")
       .load()
@@ -37,7 +37,7 @@ object FlywayMigrate {
       .configure()
       .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
       .baselineOnMigrate(true)
-      .locations(locations: _*)
+      .locations(locations*)
       .load()
   }
 

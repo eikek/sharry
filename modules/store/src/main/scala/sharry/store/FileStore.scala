@@ -47,7 +47,7 @@ object FileStore {
       computeChecksumConfig: ComputeChecksumConfig,
       config: FileStoreConfig
   ): F[FileStore[F]] = {
-    val create = FileStoreConfig.createBinaryStore[F](ds, chunkSize) _
+    val create = FileStoreConfig.createBinaryStore[F](ds, chunkSize)
     val as = AttributeStore(xa)
     for {
       bs <- create(config)

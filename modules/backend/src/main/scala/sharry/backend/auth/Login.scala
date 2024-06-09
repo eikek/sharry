@@ -65,7 +65,7 @@ object Login {
       CommandAuth[F](cfg, ops, CommandAuth.RunCommand.systemProcess[F]).withPosition
     ).sortBy(_._1).map(_._2)
 
-    LoginModule.combine[F](modules: _*)
+    LoginModule.combine[F](modules*)
   }
 
 }

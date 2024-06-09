@@ -90,7 +90,7 @@ object OMail {
                 )
               )
             }
-            res <- OptionT.liftF(templates.traverse((send _).tupled))
+            res <- OptionT.liftF(templates.traverse((send).tupled))
             failedReceiver = res
               .filter(_.isError)
               .flatMap(_.receiver)
