@@ -1,13 +1,13 @@
 package sharry.backend.mail
 
-import cats.effect._
+import cats.effect.*
 
-import sharry.common._
-import sharry.store._
+import sharry.common.*
+import sharry.store.*
 import sharry.store.records.RAccount
 
 import emil.MailAddress
-import munit._
+import munit.*
 
 class QueriesTest extends FunSuite with StoreFixture {
 

@@ -1,6 +1,6 @@
 package sharry.common
 
-import io.circe._
+import io.circe.*
 
 sealed trait SignupMode { self: Product =>
   final def name: String =

@@ -10,12 +10,12 @@ import java.io.PrintStream
 import java.time.Instant
 
 import cats.effect.{Ref, Sync}
-import cats.syntax.applicative._
-import cats.syntax.functor._
-import cats.syntax.order._
+import cats.syntax.applicative.*
+import cats.syntax.functor.*
+import cats.syntax.order.*
 import cats.{Applicative, Id}
 
-import sourcecode._
+import sourcecode.*
 
 trait Logger[F[_]] extends LoggerExtension[F] {
 

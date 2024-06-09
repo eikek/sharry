@@ -1,7 +1,7 @@
 package sharry.restserver.routes
 
 import cats.data.NonEmptyList
-import cats.implicits._
+import cats.implicits.*
 import cats.{ApplicativeError, MonadError}
 
 import sharry.backend.share.UploadResult

@@ -1,11 +1,11 @@
 package sharry.backend.mail
 
-import sharry.backend.mustache.YamuscaCommon._
-import sharry.common._
+import sharry.backend.mustache.YamuscaCommon.*
+import sharry.common.*
 
-import yamusca.derive._
-import yamusca.implicits._
-import yamusca.imports._
+import yamusca.derive.*
+import yamusca.implicits.*
+import yamusca.imports.*
 
 case class TemplateData(
     user: Ident,

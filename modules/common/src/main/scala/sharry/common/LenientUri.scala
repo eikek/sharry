@@ -5,9 +5,9 @@ import java.net.URL
 import java.net.URLEncoder
 
 import cats.data.NonEmptyList
+import cats.effect.*
 import cats.effect.Resource
-import cats.effect._
-import cats.implicits._
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.common.LenientUri.Path

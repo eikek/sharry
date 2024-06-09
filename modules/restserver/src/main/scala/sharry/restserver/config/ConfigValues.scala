@@ -1,29 +1,36 @@
 package sharry.restserver.config
 
-import cats.syntax.all._
-import ciris._
-import org.http4s.Uri
-import sharry.restserver.config.Hocon.HoconAt
-import com.comcast.ip4s.{Host, Port}
-import sharry.common._
+import scala.jdk.CollectionConverters.*
+
+import cats.syntax.all.*
+
+import sharry.backend.auth.AuthConfig
+import sharry.common.*
 import sharry.logging.Level
 import sharry.logging.LogConfig
 import sharry.store.JdbcConfig
-import scodec.bits.ByteVector
-import sharry.backend.auth.AuthConfig
-import scala.jdk.CollectionConverters._
-import cats.Applicative
 
+import ciris.*
+import com.comcast.ip4s.{Host, Port}
+import org.http4s.Uri
+import scodec.bits.ByteVector
+
+@annotation.nowarn
 object ConfigValues extends ConfigDecoders:
   private val hocon = Hocon.at("sharry.restserver")
   private def senv(envName: String) = env(s"SHARRY_${envName}")
   private def key(hoconPath: String, envName: String) =
     hocon(hoconPath).as[String].or(senv(envName))
 
-  private def keyMap[A, B](hoconPath: String, envName: String)(using ConfigDecoder[String, A], ConfigDecoder[String, B]) =
+  private def keyMap[A, B](hoconPath: String, envName: String)(using
+      ConfigDecoder[String, A],
+      ConfigDecoder[String, B]
+  ) =
     hocon(hoconPath).as[Map[A, B]]
 
-  private def keyList[A](hoconPath: String, envName: String)(using ConfigDecoder[String, A]) =
+  private def keyList[A](hoconPath: String, envName: String)(using
+      ConfigDecoder[String, A]
+  ) =
     hocon(hoconPath).as[List[A]]
 
   val baseUrl = key("base-url", "BASE_URL").as[Uri]
@@ -35,8 +42,8 @@ object ConfigValues extends ConfigDecoders:
   }
 
   val fileDownload = {
-    val chunkSize = key("file-download.download-chunk-size",
-      "FILE_DOWNLOAD_CHUNK_SIZE").as[ByteSize]
+    val chunkSize =
+      key("file-download.download-chunk-size", "FILE_DOWNLOAD_CHUNK_SIZE").as[ByteSize]
     chunkSize.map(Config.FileDownload.apply)
   }
 
@@ -56,20 +63,40 @@ object ConfigValues extends ConfigDecoders:
     val logo = key("webapp.app-logo", "WEBAPP_LOGO")
     val logoDark = key("webapp.app-logo-dark", "WEBAPP_LOGO_DARK")
     val footer = key("webapp.app-footer", "WEBAPP_FOOTER")
-    val footerVisible = key("webapp.app-footer-visible", "WEBAPP_FOOTER_VISIBLE").as[Boolean]
+    val footerVisible =
+      key("webapp.app-footer-visible", "WEBAPP_FOOTER_VISIBLE").as[Boolean]
     val chunkSize = key("webapp.chunk-size", "WEBAPP_CHUNK_SIZE").as[ByteSize]
-    val retryDelays= keyList[Duration]("webapp.retry-delays", "WEBAPP_RETRY_DELAYS")
+    val retryDelays = keyList[Duration]("webapp.retry-delays", "WEBAPP_RETRY_DELAYS")
     val welcomeMsg = key("webapp.welcome-message", "WEBAPP_WELCOME_MESSAGE")
     val defaultLang = key("webapp.default-language", "WEBAPP_DEFAULT_LANGUAGE")
     val authRenewal = key("webapp.auth-renewal", "WEBAPP_AUTH_RENEWAL").as[Duration]
     val initialPage = key("webapp.initial-page", "WEBAPP_INITIAL_PAGE")
-    val defaultValidity = key("webapp.default-validity", "WEBAPP_DEFAULT_VALIDITY").as[Duration]
+    val defaultValidity =
+      key("webapp.default-validity", "WEBAPP_DEFAULT_VALIDITY").as[Duration]
     val initialTheme = key("webapp.initial-theme", "WEBAPP_INITIAL_THEME")
-    val oauthRedirect = key("webapp.oauth-auto-redirect", "WEBAPP_OAUTH_AUTO_REDIRECT").as[Boolean]
+    val oauthRedirect =
+      key("webapp.oauth-auto-redirect", "WEBAPP_OAUTH_AUTO_REDIRECT").as[Boolean]
     val customHead = key("webapp.custom-head", "WEBAPP_CUSTOM_HEAD")
-    (name, icon, iconDark, logo, logoDark, footer, footerVisible, chunkSize, retryDelays, welcomeMsg, defaultLang, authRenewal, initialPage, defaultValidity, initialTheme, oauthRedirect, customHead).mapN(Config.Webapp.apply)
+    (
+      name,
+      icon,
+      iconDark,
+      logo,
+      logoDark,
+      footer,
+      footerVisible,
+      chunkSize,
+      retryDelays,
+      welcomeMsg,
+      defaultLang,
+      authRenewal,
+      initialPage,
+      defaultValidity,
+      initialTheme,
+      oauthRedirect,
+      customHead
+    ).mapN(Config.Webapp.apply)
   }
-
 
   val authFixed: ConfigValue[Effect, AuthConfig.Fixed] = {
     def k(p: String, e: String) =
@@ -111,7 +138,8 @@ object ConfigValues extends ConfigDecoders:
       key(s"backend.auth.command.$p", s"BACKEND_AUTH_COMMAND_$e")
 
     val enabled = k("enabled", "ENABLED").as[Boolean]
-    val program = keyList[String]("backend.auth.command.program", "BACKEND_AUTH_COMMAND_PROGRAM")
+    val program =
+      keyList[String]("backend.auth.command.program", "BACKEND_AUTH_COMMAND_PROGRAM")
     val success = k("success", "SUCCESS").as[Int]
     val order = k("order", "ORDER").as[Int]
     (enabled, program, success, order).mapN(AuthConfig.Command.apply)
@@ -138,7 +166,10 @@ object ConfigValues extends ConfigDecoders:
 
   def authOAuth(id: Ident) = {
     def k(p: String, e: String) =
-      key(s"backend.auth.oauth.${id.id}.$p", s"BACKEND_AUTH_OAUTH_${id.id.toUpperCase()}_$e")
+      key(
+        s"backend.auth.oauth.${id.id}.$p",
+        s"BACKEND_AUTH_OAUTH_${id.id.toUpperCase()}_$e"
+      )
     val idkey = ConfigKey(s"oauth id key: ${id.id}")
     val enabled = k("enabled", "ENABLED").as[Boolean]
     val name = k("name", "NAME")
@@ -151,14 +182,27 @@ object ConfigValues extends ConfigDecoders:
     val userEmailKey = k("user-email-key", "USER_EMAIL_KEY").option
     val clientId = k("client-id", "CLIENT_ID")
     val clientSecret = k("client-secret", "CLIENT_SECRET")
-    (ConfigValue.loaded(idkey, id), enabled, name, authorizeUrl, tokenUrl, userUrl, userIdkey, userEmailKey, scope, clientId, clientSecret, icon).mapN(AuthConfig.OAuth.apply)
+    (
+      ConfigValue.loaded(idkey, id),
+      enabled,
+      name,
+      authorizeUrl,
+      tokenUrl,
+      userUrl,
+      userIdkey,
+      userEmailKey,
+      scope,
+      clientId,
+      clientSecret,
+      icon
+    ).mapN(AuthConfig.OAuth.apply)
   }
 
   val authOAuthKeys = {
     def stringsToIds(strs: List[String]) =
       strs.traverse(Ident.fromString) match
-          case Right(ids) => ConfigValue.loaded(ConfigKey(""), ids)
-          case Left(err) => ConfigValue.failed(ConfigError(err))
+        case Right(ids) => ConfigValue.loaded(ConfigKey(""), ids)
+        case Left(err)  => ConfigValue.failed(ConfigError(err))
 
     val hoconKeys =
       hocon("backend.auth.oauth")
@@ -166,8 +210,9 @@ object ConfigValues extends ConfigDecoders:
         .flatMap(stringsToIds)
 
     val envKeys =
-      senv("BACKEND_AUTH_OAUTH_IDS").map(s => s.split(',').toList.map(_.trim))
-      .flatMap(stringsToIds)
+      senv("BACKEND_AUTH_OAUTH_IDS")
+        .map(s => s.split(',').toList.map(_.trim))
+        .flatMap(stringsToIds)
 
     hoconKeys.or(envKeys)
   }
@@ -175,15 +220,26 @@ object ConfigValues extends ConfigDecoders:
   val authOAuthSeq =
     authOAuthKeys.flatMap(ids =>
       ids.foldLeft(ConfigValue.loaded(ConfigKey(""), List.empty[AuthConfig.OAuth])) {
-       (cv, id) => cv.flatMap(l => authOAuth(id).map(_ :: l))
-    })
+        (cv, id) => cv.flatMap(l => authOAuth(id).map(_ :: l))
+      }
+    )
 
   val auth = {
     def k(p: String, e: String) =
       key(s"backend.auth.$p", s"BACKEND_AUTH_$e")
     val serverSecret = k("server-secret", "SERVER_SECRET").as[ByteVector]
     val sessionValid = k("session-valid", "SESSION_VALID").as[Duration]
-    (serverSecret, sessionValid, authFixed, authHttp, authHttpBasic, authCommand, authProxy, authInternal, authOAuthSeq).mapN(AuthConfig.apply)
+    (
+      serverSecret,
+      sessionValid,
+      authFixed,
+      authHttp,
+      authHttpBasic,
+      authCommand,
+      authProxy,
+      authInternal,
+      authOAuthSeq
+    ).mapN(AuthConfig.apply)
   }
 
   val jdbc = {
@@ -192,6 +248,5 @@ object ConfigValues extends ConfigDecoders:
     val pass = key("backend.jdbc.password", "BACKEND_JDBC_PASSWORD").redacted
     (url, user, pass).mapN(JdbcConfig.apply)
   }
-
 
 end ConfigValues

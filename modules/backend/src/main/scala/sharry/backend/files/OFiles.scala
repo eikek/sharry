@@ -1,8 +1,8 @@
 package sharry.backend.files
 
 import cats.data.OptionT
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
 
 import sharry.backend.config.FilesConfig
 import sharry.common.Ident

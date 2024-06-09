@@ -3,11 +3,11 @@ package sharry.store.doobie
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDate}
 
-import sharry.common._
-import sharry.common.syntax.all._
+import sharry.common.*
+import sharry.common.syntax.all.*
 
-import doobie._
-import doobie.implicits.legacy.instant._
+import doobie.*
+import doobie.implicits.legacy.instant.*
 import io.circe.{Decoder, Encoder}
 import scodec.bits.ByteVector
 

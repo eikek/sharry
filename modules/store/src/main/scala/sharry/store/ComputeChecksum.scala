@@ -1,14 +1,14 @@
 package sharry.store
 
-import cats.effect._
+import cats.effect.*
 import cats.effect.std.Queue
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.{Pipe, Stream}
 
 import sharry.common.{ByteSize, Ident, Timestamp}
 import sharry.store.records.RFileMeta
 
-import binny._
+import binny.*
 import binny.util.Stopwatch
 
 trait ComputeChecksum[F[_]] {

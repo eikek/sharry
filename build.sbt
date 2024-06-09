@@ -22,6 +22,9 @@ val sharedSettings = Seq(
     "-feature",
     "-Werror", // fail when there are warnings
     "-unchecked",
+    "-Wunused:imports",
+    "-Wunused:locals",
+    "-Wunused:explicits",
     "-Wvalue-discard"
   ),
   Compile / console / scalacOptions := Seq(),

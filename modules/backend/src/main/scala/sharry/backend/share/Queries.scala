@@ -1,18 +1,18 @@
 package sharry.backend.share
 
 import cats.data.OptionT
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
 import fs2.Stream
 
-import sharry.common._
+import sharry.common.*
 import sharry.store.Store
-import sharry.store.doobie.DoobieMeta._
-import sharry.store.doobie._
-import sharry.store.records._
+import sharry.store.doobie.*
+import sharry.store.doobie.DoobieMeta.*
+import sharry.store.records.*
 
-import doobie._
-import doobie.implicits._
+import doobie.*
+import doobie.implicits.*
 
 object Queries {
   val logger = sharry.logging.getLogger[ConnectionIO]

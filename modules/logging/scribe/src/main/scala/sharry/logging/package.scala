@@ -7,7 +7,7 @@
 package sharry
 
 import cats.Id
-import cats.effect._
+import cats.effect.*
 
 import sharry.logging.impl.ScribeWrapper
 

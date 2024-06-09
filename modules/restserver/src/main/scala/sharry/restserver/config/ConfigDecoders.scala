@@ -1,21 +1,26 @@
 package sharry.restserver.config
 
-import cats.syntax.all._
-import com.typesafe.config.{ConfigValue as TCValue}
-import org.http4s.Uri
-import ciris._
-import com.comcast.ip4s.{Host, Port}
-import sharry.common._
+import scala.jdk.CollectionConverters.*
+
 import cats.Show
+import cats.syntax.all.*
+
+import sharry.common.*
 import sharry.logging.Level
 import sharry.logging.LogConfig
-import scala.jdk.CollectionConverters._
+
+import ciris.*
+import com.comcast.ip4s.{Host, Port}
+import com.typesafe.config.ConfigValue as TCValue
+import org.http4s.Uri
 import scodec.bits.ByteVector
 
-private [config] trait ConfigDecoders:
-  extension [A,B](self: ConfigDecoder[A,B])
+private[config] trait ConfigDecoders:
+  extension [A, B](self: ConfigDecoder[A, B])
     def emap[C](typeName: String)(f: B => Either[String, C])(using Show[B]) =
-      self.mapEither((key, b) => f(b).left.map(err => ConfigError.decode(typeName, key, b)))
+      self.mapEither((key, b) =>
+        f(b).left.map(err => ConfigError.decode(typeName, key, b))
+      )
 
   given ConfigDecoder[TCValue, String] =
     ConfigDecoder[TCValue].map(_.atKey("a").getString("a"))
@@ -32,15 +37,22 @@ private [config] trait ConfigDecoders:
       inner.asScala.toList.traverse(e => ConfigDecoder[TCValue, A].decode(cfgKey, e))
     }
 
-  given [K, A](using ConfigDecoder[String, K], ConfigDecoder[TCValue, A]): ConfigDecoder[TCValue, Map[K, A]] =
+  given [K, A](using
+      ConfigDecoder[String, K],
+      ConfigDecoder[TCValue, A]
+  ): ConfigDecoder[TCValue, Map[K, A]] =
     ConfigDecoder[TCValue].mapEither { (cfgKey, cv) =>
       val inner = cv.atKey("a").getConfig("a")
-      inner.root.keySet.asScala.toList.traverse { key =>
-        val value = inner.getObject(key)
-        ConfigDecoder[String, K].decode(cfgKey, key).flatMap( k =>
-          ConfigDecoder[TCValue, A].decode(cfgKey, value).map(v => k -> v)
-        )
-      }.map(_.toMap)
+      inner.root.keySet.asScala.toList
+        .traverse { key =>
+          val value = inner.getObject(key)
+          ConfigDecoder[String, K]
+            .decode(cfgKey, key)
+            .flatMap(k =>
+              ConfigDecoder[TCValue, A].decode(cfgKey, value).map(v => k -> v)
+            )
+        }
+        .map(_.toMap)
     }
 
   given [A](using ConfigDecoder[String, A]): ConfigDecoder[TCValue, A] =

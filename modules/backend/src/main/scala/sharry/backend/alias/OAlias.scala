@@ -1,18 +1,18 @@
 package sharry.backend.alias
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.backend.alias.OAlias.{AliasDetail, AliasInput}
-import sharry.common._
+import sharry.common.*
 import sharry.store.AddResult
 import sharry.store.Store
 import sharry.store.records.RAlias
 import sharry.store.records.RAliasMember
 
-import doobie._
+import doobie.*
 
 trait OAlias[F[_]] {
 

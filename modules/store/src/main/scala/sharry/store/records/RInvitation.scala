@@ -1,14 +1,14 @@
 package sharry.store.records
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 
-import sharry.common._
-import sharry.store.doobie.DoobieMeta._
-import sharry.store.doobie._
+import sharry.common.*
+import sharry.store.doobie.*
+import sharry.store.doobie.DoobieMeta.*
 
-import doobie._
-import doobie.implicits._
+import doobie.*
+import doobie.implicits.*
 
 case class RInvitation(id: Ident, created: Timestamp) {}
 

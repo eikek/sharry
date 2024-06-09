@@ -1,6 +1,6 @@
 package sharry.common
 
-import cats.implicits._
+import cats.implicits.*
 
 sealed trait EnvMode { self: Product =>
 

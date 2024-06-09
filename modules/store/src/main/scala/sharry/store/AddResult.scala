@@ -1,6 +1,6 @@
 package sharry.store
 
-import sharry.store.AddResult._
+import sharry.store.AddResult.*
 
 sealed trait AddResult {
   def toEither: Either[Throwable, Unit]

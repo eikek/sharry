@@ -1,10 +1,10 @@
 package sharry.restserver.config
 
 import cats.data.{Validated, ValidatedNec}
-import cats.syntax.all._
+import cats.syntax.all.*
 
-import sharry.backend.config.{Config => BackendConfig}
-import sharry.common._
+import sharry.backend.config.Config as BackendConfig
+import sharry.common.*
 import sharry.logging.LogConfig
 
 import com.comcast.ip4s.{Host, Port}

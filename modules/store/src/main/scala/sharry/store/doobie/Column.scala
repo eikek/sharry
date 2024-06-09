@@ -2,8 +2,8 @@ package sharry.store.doobie
 
 import sharry.common.CIIdent
 
-import doobie._
-import doobie.implicits._
+import doobie.*
+import doobie.implicits.*
 
 case class Column(name: String, ns: String = "", alias: String = "") {
 

@@ -1,7 +1,7 @@
 package sharry.backend.mail
 
 import sharry.backend.mail.NotifyData.AccountInfo
-import sharry.common._
+import sharry.common.*
 
 final case class NotifyData(
     aliasId: Ident,

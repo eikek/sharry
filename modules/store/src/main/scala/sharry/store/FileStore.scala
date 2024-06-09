@@ -3,17 +3,17 @@ package sharry.store
 import javax.sql.DataSource
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Chunk
 import fs2.io.file.Files
 
-import sharry.common._
+import sharry.common.*
 import sharry.store.doobie.AttributeStore
 import sharry.store.records.RFileMeta
 
-import _root_.doobie._
-import binny._
+import _root_.doobie.*
+import binny.*
 
 trait FileStore[F[_]] {
 

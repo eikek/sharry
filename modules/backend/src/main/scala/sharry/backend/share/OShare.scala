@@ -1,17 +1,17 @@
 package sharry.backend.share
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.backend.PasswordCrypt
-import sharry.common._
+import sharry.common.*
 import sharry.logging.Logger
 import sharry.store.AddResult
 import sharry.store.PermanentError
 import sharry.store.Store
-import sharry.store.records._
+import sharry.store.records.*
 
 import binny.{ByteRange, ChunkDef, Hint}
 import scodec.bits.ByteVector

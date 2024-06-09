@@ -1,16 +1,16 @@
 package sharry.restserver.routes
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.share.{File, ShareData}
-import sharry.common._
-import sharry.common.syntax.all._
-import sharry.restapi.model._
+import sharry.common.*
+import sharry.common.syntax.all.*
+import sharry.restapi.model.*
 import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 import sharry.restserver.routes.tus.TusRoutes
@@ -18,8 +18,8 @@ import sharry.restserver.routes.tus.TusRoutes
 import org.http4s.HttpRoutes
 import org.http4s.Request
 import org.http4s.Uri
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.circe.CirceEntityDecoder.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import org.http4s.multipart.Multipart

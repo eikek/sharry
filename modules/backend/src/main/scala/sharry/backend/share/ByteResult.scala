@@ -1,7 +1,7 @@
 package sharry.backend.share
 
 import cats.data.OptionT
-import cats.effect._
+import cats.effect.*
 
 import sharry.common.Ident
 import sharry.store.Store

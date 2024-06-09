@@ -1,11 +1,11 @@
 package sharry.backend.job
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
-import sharry.backend.share._
-import sharry.backend.signup._
+import sharry.backend.share.*
+import sharry.backend.signup.*
 import sharry.logging.Logger
 
 object PeriodicCleanup {

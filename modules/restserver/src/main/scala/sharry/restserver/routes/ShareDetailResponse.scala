@@ -1,20 +1,20 @@
 package sharry.restserver.routes
 
 import cats.data.OptionT
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
 
 import sharry.backend.BackendApp
-import sharry.backend.share._
-import sharry.common._
-import sharry.restapi.model.{ShareDetail => ShareDetailDto, _}
+import sharry.backend.share.*
+import sharry.common.*
+import sharry.restapi.model.{ShareDetail as ShareDetailDto, *}
 import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 
-import org.http4s._
-import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers._
+import org.http4s.headers.*
 
 object ShareDetailResponse {
 

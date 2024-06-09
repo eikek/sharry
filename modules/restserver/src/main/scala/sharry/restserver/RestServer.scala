@@ -1,8 +1,8 @@
 package sharry.restserver
 
 import cats.data.{Kleisli, OptionT}
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
 import fs2.io.file.Files
 import fs2.io.net.Network
 import fs2.{Pure, Stream}
@@ -12,18 +12,17 @@ import sharry.common.LenientUri
 import sharry.logging.Logger
 import sharry.restserver.config.Config
 import sharry.restserver.http4s.EnvMiddleware
-import sharry.restserver.routes._
-import sharry.restserver.webapp._
+import sharry.restserver.routes.*
+import sharry.restserver.webapp.*
 
-import org.http4s._
+import org.http4s.*
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.headers.{Location, `Content-Length`, `Content-Type`}
 import org.http4s.server.Router
-import org.http4s.server.middleware.{Logger => Http4sLogger}
-import scribe.Scribe
+import org.http4s.server.middleware.Logger as Http4sLogger
 
 object RestServer {
   def stream[F[_]: Async: Files: Network](

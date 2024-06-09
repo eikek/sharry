@@ -1,10 +1,10 @@
 package sharry.backend.signup
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.backend.account._
-import sharry.common._
+import sharry.backend.account.*
+import sharry.common.*
 import sharry.store.records.RInvitation
 import sharry.store.{AddResult, Store}
 

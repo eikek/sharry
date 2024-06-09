@@ -1,8 +1,8 @@
 package sharry.backend.mustache
 
-import sharry.common._
+import sharry.common.*
 
-import yamusca.imports._
+import yamusca.imports.*
 
 trait YamuscaCommon {
 

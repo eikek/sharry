@@ -2,9 +2,9 @@ package sharry.restserver.http4s
 
 import cats.Functor
 
-import sharry.common._
+import sharry.common.*
 
-import org.http4s._
+import org.http4s.*
 
 object EnvMiddleware {
 

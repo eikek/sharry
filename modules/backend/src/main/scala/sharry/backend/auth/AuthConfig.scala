@@ -1,5 +1,5 @@
 package sharry.backend.auth
-import sharry.common._
+import sharry.common.*
 
 import scodec.bits.ByteVector
 

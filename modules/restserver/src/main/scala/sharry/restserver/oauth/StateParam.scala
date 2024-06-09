@@ -1,7 +1,7 @@
 package sharry.restserver.oauth
 
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
 
 import sharry.common.util.{Random, SignUtil}
 

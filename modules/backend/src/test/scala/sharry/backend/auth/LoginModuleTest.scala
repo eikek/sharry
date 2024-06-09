@@ -1,20 +1,20 @@
 package sharry.backend.auth
 
 import cats.data.Kleisli
-import cats.effect._
+import cats.effect.*
 import cats.effect.unsafe.implicits.global
-import cats.implicits._
+import cats.implicits.*
 
 import sharry.backend.account.OAccount
 import sharry.backend.auth.AddAccount.AccountOps
-import sharry.common._
+import sharry.common.*
 import sharry.store.Store
 import sharry.store.StoreFixture
 import sharry.store.doobie.Sql
 import sharry.store.records.RAccount
 
-import _root_.doobie._
-import munit._
+import _root_.doobie.*
+import munit.*
 import scodec.bits.ByteVector
 
 class LoginModuleTest extends FunSuite {

@@ -1,9 +1,9 @@
 package sharry.restserver.webapp
 
-import cats.effect._
+import cats.effect.*
 
 import org.http4s.HttpRoutes
-import org.http4s.server.staticcontent._
+import org.http4s.server.staticcontent.*
 
 object WebjarRoutes {
 

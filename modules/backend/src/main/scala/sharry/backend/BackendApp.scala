@@ -2,10 +2,10 @@ package sharry.backend
 
 import scala.concurrent.ExecutionContext
 
-import cats.effect._
+import cats.effect.*
 import fs2.io.file.Files
 
-import sharry.backend.account._
+import sharry.backend.account.*
 import sharry.backend.alias.OAlias
 import sharry.backend.auth.Login
 import sharry.backend.config.Config

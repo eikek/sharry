@@ -1,9 +1,9 @@
 package sharry.restserver
 
-import sharry.backend.auth._
-import sharry.common._
+import sharry.backend.auth.*
+import sharry.common.*
 
-import org.http4s._
+import org.http4s.*
 import org.typelevel.ci.CIString
 
 case class CookieData(auth: AuthToken) {

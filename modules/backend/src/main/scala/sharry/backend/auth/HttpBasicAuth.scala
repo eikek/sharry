@@ -1,13 +1,13 @@
 package sharry.backend.auth
 
 import java.nio.charset.StandardCharsets
-import java.{util => ju}
+import java.util as ju
 
 import cats.data.Kleisli
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.common._
+import sharry.common.*
 
 final class HttpBasicAuth[F[_]: Async](
     cfg: AuthConfig,

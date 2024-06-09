@@ -3,9 +3,9 @@ package sharry.restserver.webapp
 import java.net.URL
 import java.util.concurrent.atomic.AtomicReference
 
-import cats.effect._
-import cats.implicits._
-import fs2._
+import cats.effect.*
+import cats.implicits.*
+import fs2.*
 import fs2.io.file.{Files, Path}
 
 import sharry.logging.Logger
@@ -13,16 +13,16 @@ import sharry.restapi.model.AppConfig
 import sharry.restserver.BuildInfo
 import sharry.restserver.config.Config
 import sharry.restserver.routes.InfoRoutes
-import sharry.restserver.webapp.YamuscaConverter._
+import sharry.restserver.webapp.YamuscaConverter.*
 
-import _root_.io.circe.syntax._
+import _root_.io.circe.syntax.*
+import org.http4s.*
 import org.http4s.HttpRoutes
-import org.http4s._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers._
-import yamusca.derive._
-import yamusca.implicits._
-import yamusca.imports._
+import org.http4s.headers.*
+import yamusca.derive.*
+import yamusca.implicits.*
+import yamusca.imports.*
 
 object TemplateRoutes {
 

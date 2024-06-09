@@ -1,10 +1,10 @@
 package sharry.backend.auth
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.backend.account._
-import sharry.common._
+import sharry.backend.account.*
+import sharry.common.*
 
 /** Provides authentication from the configuration.
   *

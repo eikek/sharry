@@ -7,7 +7,7 @@
 package sharry.logging
 
 import cats.data.NonEmptyList
-import cats.syntax.all._
+import cats.syntax.all.*
 import cats.{Applicative, Id}
 
 final private[logging] class AndThenLogger[F[_]: Applicative](

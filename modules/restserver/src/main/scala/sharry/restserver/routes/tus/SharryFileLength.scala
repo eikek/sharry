@@ -2,7 +2,7 @@ package sharry.restserver.routes.tus
 
 import sharry.common.ByteSize
 
-import org.http4s._
+import org.http4s.*
 import org.typelevel.ci.CIString
 
 object SharryFileLength {

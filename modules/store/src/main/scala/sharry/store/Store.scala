@@ -2,14 +2,14 @@ package sharry.store
 
 import scala.concurrent.ExecutionContext
 
-import cats.effect._
-import fs2._
+import cats.effect.*
+import fs2.*
 import fs2.io.file.Files
 
 import sharry.common.ByteSize
 import sharry.store.doobie.StoreImpl
 
-import _root_.doobie._
+import _root_.doobie.*
 import _root_.doobie.hikari.HikariTransactor
 import _root_.doobie.util.log.{LogEvent, Success}
 import com.zaxxer.hikari.HikariDataSource

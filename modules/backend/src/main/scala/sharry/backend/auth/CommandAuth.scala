@@ -1,15 +1,15 @@
 package sharry.backend.auth
 
-import scala.sys.process._
+import scala.sys.process.*
 
 import cats.data.Kleisli
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.common._
+import sharry.common.*
 
-import yamusca.implicits._
-import yamusca.imports._
+import yamusca.implicits.*
+import yamusca.imports.*
 
 final class CommandAuth[F[_]: Async](
     cfg: AuthConfig,

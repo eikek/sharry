@@ -5,10 +5,10 @@ import cats.Monad
 import cats.data.Kleisli
 import cats.data.OptionT
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 
 import sharry.backend.account.OAccount
-import sharry.common._
+import sharry.common.*
 
 object LoginModule {
 

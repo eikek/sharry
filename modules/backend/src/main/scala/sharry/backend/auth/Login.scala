@@ -2,8 +2,8 @@ package sharry.backend.auth
 
 import cats.data.Kleisli
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.account.OAccount
 import sharry.common.Ident

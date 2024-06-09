@@ -1,7 +1,7 @@
 package sharry.backend.config
 
 import cats.data.{Validated, ValidatedNec}
-import cats.syntax.all._
+import cats.syntax.all.*
 
 import sharry.common.Ident
 import sharry.store.FileStoreConfig

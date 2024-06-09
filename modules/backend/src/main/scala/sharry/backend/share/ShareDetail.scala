@@ -1,7 +1,7 @@
 package sharry.backend.share
 
 import sharry.common.LenientUri
-import sharry.store.records._
+import sharry.store.records.*
 
 case class ShareDetail(
     share: RShare,

@@ -1,6 +1,6 @@
 package sharry.common.util
 
-import cats.effect._
+import cats.effect.*
 
 import scodec.bits.ByteVector
 

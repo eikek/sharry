@@ -1,18 +1,18 @@
 package sharry.backend.account
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.backend.PasswordCrypt
-import sharry.backend.share.{Queries => ShareQueries}
-import sharry.common._
+import sharry.backend.share.Queries as ShareQueries
+import sharry.common.*
 import sharry.store.AddResult
 import sharry.store.Store
-import sharry.store.records._
+import sharry.store.records.*
 
-import doobie._
+import doobie.*
 
 trait OAccount[F[_]] {
 

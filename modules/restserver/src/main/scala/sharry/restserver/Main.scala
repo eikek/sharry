@@ -3,9 +3,9 @@ package sharry.restserver
 import java.nio.file.Path
 import java.nio.file.{Files, Paths}
 
-import cats.effect._
+import cats.effect.*
 
-import sharry.common._
+import sharry.common.*
 import sharry.logging.impl.ScribeConfigure
 import sharry.restserver.config.ConfigFile
 

@@ -1,18 +1,18 @@
 package sharry.restserver.routes.tus
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.backend.share.{FileInfo, UploadResult}
-import sharry.common._
+import sharry.common.*
 import sharry.restserver.config.Config
 
-import org.http4s._
+import org.http4s.*
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers._
+import org.http4s.headers.*
 import org.typelevel.ci.CIString
 
 object TusRoutes {

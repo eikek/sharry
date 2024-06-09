@@ -1,12 +1,12 @@
 package sharry.common
 
-import java.time.{Duration => JDur}
+import java.time.Duration as JDur
 import java.util.concurrent.TimeUnit
 
-import scala.concurrent.duration.{Duration => SDur, FiniteDuration}
+import scala.concurrent.duration.{Duration as SDur, FiniteDuration}
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 
 import io.circe.Decoder
 import io.circe.Encoder
