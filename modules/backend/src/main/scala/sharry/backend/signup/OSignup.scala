@@ -23,7 +23,7 @@ object OSignup {
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OSignup[F]] =
     Resource.pure[F, OSignup[F]](new OSignup[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def newInvite(cfg: SignupConfig)(password: Password): F[NewInviteResult] =
         if (cfg.mode != SignupMode.Invite)

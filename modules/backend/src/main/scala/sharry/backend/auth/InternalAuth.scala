@@ -11,7 +11,7 @@ import sharry.store.records.RAccount
 
 final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.enabledState(cfg.internal.enabled, op, AccountSource.intern)(

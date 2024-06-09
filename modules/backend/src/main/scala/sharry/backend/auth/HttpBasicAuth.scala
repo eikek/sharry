@@ -15,7 +15,7 @@ final class HttpBasicAuth[F[_]: Async](
     runner: HttpBasicAuth.RunRequest[F]
 ) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.httpBasic.enabled)(

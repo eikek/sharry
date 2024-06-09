@@ -17,7 +17,7 @@ final class HttpAuth[F[_]: Async](
     runner: HttpAuth.RunRequest[F]
 ) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.http.enabled)(

@@ -22,7 +22,7 @@ trait StoreFixture {
 }
 
 object StoreFixture {
-  private[this] val logger = sharry.logging.unsafeLogger("StoreFixture")
+  private val logger = sharry.logging.unsafeLogger("StoreFixture")
 
   def makeStore[F[_]: Async: Files]: Resource[F, Store[F]] = {
     def dataSource(jdbc: JdbcConfig): Resource[F, JdbcConnectionPool] = {

@@ -144,7 +144,7 @@ object OShare {
       cfg: ShareConfig
   ): Resource[F, OShare[F]] =
     Resource.pure[F, OShare[F]](new OShare[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def create(data: ShareData[F], accId: AccountId): F[UploadResult[Ident]] = {
         val createShare = for {

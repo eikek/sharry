@@ -17,7 +17,7 @@ import sharry.common._
   */
 final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule { up =>

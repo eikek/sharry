@@ -232,7 +232,7 @@ object LenientUri {
     }
   }
 
-  private[this] val delims: Set[Char] = ",/?:@&$# %".toSet
+  private val delims: Set[Char] = ",/?:@&$# %".toSet
 
   private def percent(s: String): String =
     "%" + ByteVector.encodeUtf8(s).fold(throw _, identity).toHex

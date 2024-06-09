@@ -16,7 +16,7 @@ final class CommandAuth[F[_]: Async](
     ops: AddAccount.AccountOps[F],
     runner: CommandAuth.RunCommand[F]
 ) {
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.command.enabled)(
@@ -69,7 +69,7 @@ object CommandAuth {
 
     def systemProcess[F[_]: Sync]: RunCommand[F] =
       new RunCommand[F] {
-        private[this] val logger = sharry.logging.getLogger[F]
+        private val logger = sharry.logging.getLogger[F]
 
         def exec(up: UserPassData, cfg: AuthConfig.Command): F[Boolean] =
           Sync[F].delay {

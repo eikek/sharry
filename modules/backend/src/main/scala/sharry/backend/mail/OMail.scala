@@ -44,7 +44,7 @@ object OMail {
       emil: Emil[F]
   ): Resource[F, OMail[F]] =
     Resource.pure[F, OMail[F]](new OMail[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
       def notifyAliasUpload(
           aliasId: Ident,
           shareId: Ident,

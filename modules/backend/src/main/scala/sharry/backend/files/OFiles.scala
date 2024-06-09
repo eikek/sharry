@@ -26,7 +26,7 @@ object OFiles {
       fileConfig: FilesConfig
   ): OFiles[F] =
     new OFiles[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def computeBackgroundChecksum: Resource[F, F[Outcome[F, Throwable, Unit]]] =
         Async[F].background(

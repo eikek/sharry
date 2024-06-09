@@ -21,7 +21,7 @@ object Login {
 
   def apply[F[_]: Async](oacc: OAccount[F]): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def loginSession(config: AuthConfig)(sessionKey: String): F[LoginResult] =
         AuthToken.fromString(sessionKey) match {

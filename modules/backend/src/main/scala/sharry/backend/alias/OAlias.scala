@@ -40,7 +40,7 @@ object OAlias {
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OAlias[F]] =
     Resource.pure[F, OAlias[F]](new OAlias[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def create(detail: AliasInput): F[AddResult] =
         store.add(

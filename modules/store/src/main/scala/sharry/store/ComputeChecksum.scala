@@ -27,7 +27,7 @@ object ComputeChecksum {
     for {
       queue <- Queue.bounded[F, Entry](config.capacity)
     } yield new ComputeChecksum[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def submit(id: BinaryId, hint: Hint): F[Unit] =
         if (config.enable) queue.offer(Entry(id, hint))

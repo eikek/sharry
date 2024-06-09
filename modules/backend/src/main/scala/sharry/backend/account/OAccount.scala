@@ -45,7 +45,7 @@ object OAccount {
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OAccount[F]] =
     Resource.pure[F, OAccount[F]](new OAccount[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def changePassword(id: Ident, oldPw: Password, newPw: Password): F[AddResult] = {
         val update =

@@ -24,7 +24,7 @@ final class LazyMap[A, B] private(
 }
 
 object LazyMap {
-  private[this] val emptyMap = new LazyMap[Any, Any](Map.empty)
+  private val emptyMap = new LazyMap[Any, Any](Map.empty)
 
   def empty[A, B]: LazyMap[A, B] = emptyMap.asInstanceOf[LazyMap[A, B]]
 

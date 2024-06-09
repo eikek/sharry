@@ -10,7 +10,7 @@ import sharry.logging.impl.ScribeConfigure
 import sharry.restserver.config.ConfigFile
 
 object Main extends IOApp {
-  private[this] val logger = sharry.logging.getLogger[IO]
+  private val logger = sharry.logging.getLogger[IO]
 
   val connectEC =
     ThreadFactories.fixed[IO](5, ThreadFactories.ofName("sharry-dbconnect"))
