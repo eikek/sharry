@@ -60,7 +60,7 @@ object Main extends IOApp {
         }
       }
 
-      cfg = ConfigFile.loadConfig
+      cfg <- ConfigFile.loadConfig
 
       _ <- ScribeConfigure.configure[IO](cfg.logging)
 

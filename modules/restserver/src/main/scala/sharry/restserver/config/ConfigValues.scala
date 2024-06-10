@@ -3,37 +3,73 @@ package sharry.restserver.config
 import scala.jdk.CollectionConverters.*
 
 import cats.syntax.all.*
+import fs2.io.file.Path
 
 import sharry.backend.auth.AuthConfig
+import sharry.backend.config.{Config as BackendConfig, CopyFilesConfig, FilesConfig}
+import sharry.backend.job.CleanupConfig
+import sharry.backend.mail.MailConfig
+import sharry.backend.share.ShareConfig
+import sharry.backend.signup.SignupConfig
 import sharry.common.*
 import sharry.logging.Level
 import sharry.logging.LogConfig
+import sharry.store.ComputeChecksumConfig
+import sharry.store.DomainCheckConfig
+import sharry.store.FileStoreConfig
+import sharry.store.FileStoreType
 import sharry.store.JdbcConfig
 
 import ciris.*
 import com.comcast.ip4s.{Host, Port}
-import org.http4s.Uri
+import emil.MailAddress
+import emil.SSLType
 import scodec.bits.ByteVector
+import yamusca.data.Template
 
-@annotation.nowarn
 object ConfigValues extends ConfigDecoders:
   private val hocon = Hocon.at("sharry.restserver")
   private def senv(envName: String) = env(s"SHARRY_${envName}")
   private def key(hoconPath: String, envName: String) =
-    hocon(hoconPath).as[String].or(senv(envName))
+    senv(envName).or(hocon(hoconPath).as[String])
 
   private def keyMap[A, B](hoconPath: String, envName: String)(using
       ConfigDecoder[String, A],
       ConfigDecoder[String, B]
-  ) =
-    hocon(hoconPath).as[Map[A, B]]
+  ) = {
+    val envMap = senv(s"${envName}_NAMES")
+      .as[List[String]]
+      .listflatMap { k =>
+        val value = senv(s"${envName}_$k").as[B]
+        val ckey = ConfigKey(s"${envName} key: $k")
+        val kk = ConfigDecoder[String, A]
+          .decode(Some(ckey), k)
+          .fold(ConfigValue.failed, ConfigValue.loaded(ckey, _))
+
+        value.flatMap(v => kk.map(_ -> v))
+      }
+      .map(_.toMap)
+
+    envMap.or(hocon(hoconPath).as[Map[A, B]])
+  }
 
   private def keyList[A](hoconPath: String, envName: String)(using
       ConfigDecoder[String, A]
   ) =
-    hocon(hoconPath).as[List[A]]
+    senv(envName).as[List[A]].or(hocon(hoconPath).as[List[A]])
 
-  val baseUrl = key("base-url", "BASE_URL").as[Uri]
+  private def mapKeys[A](hoconPath: String, envName: String)(using
+      ConfigDecoder[String, A]
+  ) = {
+    val hoconKeys =
+      hocon(hoconPath)
+        .map(_.atKey("a").getConfig("a").root.keySet.asScala.toList)
+        .as[List[A]]
+    val envKeys = senv(envName).as[List[A]]
+    envKeys.or(hoconKeys)
+  }
+
+  val baseUrl = key("base-url", "BASE_URL").as[LenientUri]
 
   val bind = {
     val address = key("bind.address", "BIND_ADDRESS").as[Host]
@@ -198,31 +234,8 @@ object ConfigValues extends ConfigDecoders:
     ).mapN(AuthConfig.OAuth.apply)
   }
 
-  val authOAuthKeys = {
-    def stringsToIds(strs: List[String]) =
-      strs.traverse(Ident.fromString) match
-        case Right(ids) => ConfigValue.loaded(ConfigKey(""), ids)
-        case Left(err)  => ConfigValue.failed(ConfigError(err))
-
-    val hoconKeys =
-      hocon("backend.auth.oauth")
-        .map(_.atKey("a").getConfig("a").root.keySet.asScala.toList)
-        .flatMap(stringsToIds)
-
-    val envKeys =
-      senv("BACKEND_AUTH_OAUTH_IDS")
-        .map(s => s.split(',').toList.map(_.trim))
-        .flatMap(stringsToIds)
-
-    hoconKeys.or(envKeys)
-  }
-
   val authOAuthSeq =
-    authOAuthKeys.flatMap(ids =>
-      ids.foldLeft(ConfigValue.loaded(ConfigKey(""), List.empty[AuthConfig.OAuth])) {
-        (cv, id) => cv.flatMap(l => authOAuth(id).map(_ :: l))
-      }
-    )
+    mapKeys[Ident]("backend.auth.oauth", "BACKEND_AUTH_OAUTH_IDS").listflatMap(authOAuth)
 
   val auth = {
     def k(p: String, e: String) =
@@ -248,5 +261,161 @@ object ConfigValues extends ConfigDecoders:
     val pass = key("backend.jdbc.password", "BACKEND_JDBC_PASSWORD").redacted
     (url, user, pass).mapN(JdbcConfig.apply)
   }
+
+  def fileStoreConfig(id: String) = {
+    def k(p: String, e: String) =
+      key(s"backend.files.stores.$id.$p", s"BACKEND_FILES_STORES_${id.toUpperCase}_$e")
+
+    val enabled = k("enabled", "ENABLED").as[Boolean]
+    k("type", "TYPE").as[FileStoreType].flatMap {
+      case FileStoreType.DefaultDatabase =>
+        enabled.map(FileStoreConfig.DefaultDatabase.apply)
+
+      case FileStoreType.FileSystem =>
+        val dir = k("directory", "DIRECTORY").as[Path]
+        val cleanDirs = k("clean-empty-dirs", "CLEAN_EMPTY_DIRS").as[Boolean]
+        (enabled, dir, cleanDirs).mapN(FileStoreConfig.FileSystem.apply)
+
+      case FileStoreType.S3 =>
+        val endpoint = k("endpoint", "ENDPOINT")
+        val accessKey = k("access-key", "ACCESS_KEY")
+        val secretKey = k("secret-key", "SECRET_KEY")
+        val bucket = k("bucket", "BUCKET")
+        (enabled, endpoint, accessKey, secretKey, bucket).mapN(FileStoreConfig.S3.apply)
+    }
+  }
+
+  val copyFiles = {
+    def k(p: String, e: String) =
+      key(s"backend.files.copy-files.$p", s"BACKEND_FILES_COPY_FILES_$e")
+
+    val enabled = k("enable", "ENABLE").as[Boolean]
+    val source = k("source", "SOURCE").as[Ident]
+    val target = k("target", "TARGET").as[Ident]
+    val parallel = k("parallel", "PARALLEL").as[Int]
+    (enabled, source, target, parallel).mapN(CopyFilesConfig.apply)
+  }
+
+  val files = {
+    val defaultStore =
+      key("backend.files.default-store", "BACKEND_FILES_DEFAULT_STORE").as[Ident]
+    val stores = mapKeys[Ident]("backend.files.stores", "BACKEND_FILES_STORES_IDS")
+      .listflatMap(id => fileStoreConfig(id.id).map(id -> _))
+      .map(_.toMap)
+    (defaultStore, stores, copyFiles).mapN(FilesConfig.apply)
+  }
+
+  val computeChecksum = {
+    def k(p: String, e: String) =
+      key(s"backend.compute-checksum.$p", s"BACKEND_COMPUTE_CHECKSUM_$e")
+
+    val enable = k("enable", "ENABLE").as[Boolean]
+    val capacity = k("capacity", "CAPACITY").as[Int]
+    val parallel = k("parallel", "PARALLEL").as[Int]
+    val useDefault = k("use-default", "USE_DEFAULT").as[Boolean]
+    (enable, capacity, parallel, useDefault).mapN(ComputeChecksumConfig.apply)
+  }
+
+  val signup = {
+    def k(p: String, e: String) =
+      key(s"backend.signup.$p", s"BACKEND_SIGNUP_$e")
+
+    val mode = k("mode", "MODE").as[SignupMode]
+    val inviteTime = k("invite-time", "INVITE_TIME").as[Duration]
+    val invitePass = k("invite-password", "INVITE_PASSWORD").as[Password]
+    (mode, inviteTime, invitePass).mapN(SignupConfig.apply)
+  }
+
+  def domainCheck(id: String) = {
+    def k(p: String, e: String) =
+      key(
+        s"backend.share.database-domain-checks.$id.$p",
+        s"BACKEND_SHARE_DATABASE_DOMAIN_CHECKS_${id.toUpperCase}.$e"
+      )
+
+    val enabled = k("enabled", "ENABLED").as[Boolean]
+    val nativeM = k("native", "NATIVE")
+    val message = k("message", "MESSAGE")
+    (enabled, nativeM, message).mapN(DomainCheckConfig.apply)
+  }
+
+  val share = {
+    def k(p: String, e: String) =
+      key(s"backend.share.$p", s"BACKEND_SHARE_$e")
+
+    val chunkSize = k("chunk-size", "CHUNK_SIZE").as[ByteSize]
+    val maxSize = k("max-size", "MAX_SIZE").as[ByteSize]
+    val maxValid = k("max-validity", "MAX_VALIDITY").as[Duration]
+    val domainChecks = mapKeys[String](
+      "backend.share.database-domain-checks",
+      "BACKEND_SHARE_DATABASE_DOMAIN_CHECKS_IDS"
+    )
+      .listflatMap(domainCheck)
+    (chunkSize, maxSize, maxValid, domainChecks).mapN(ShareConfig.apply)
+  }
+
+  val cleanup = {
+    def k(p: String, e: String) =
+      key(s"backend.cleanup.$p", s"BACKEND_CLEANUP_$e")
+
+    val enabled = k("enabled", "ENABLED").as[Boolean]
+    val interval = k("interval", "INTERVAL").as[Duration]
+    val invalidAge = k("invalid-age", "INVALID_AGE").as[Duration]
+    (enabled, interval, invalidAge).mapN(CleanupConfig.apply)
+  }
+
+  val mailSmtp = {
+    def k(p: String, e: String) =
+      key(s"backend.mail.smtp.$p", s"BACKEND_MAIL_SMTP_$e")
+
+    val host = k("host", "HOST")
+    val port = k("port", "PORT").as[Int]
+    val user = k("user", "USER")
+    val pass = k("password", "PASSWORD").as[Password].redacted
+    val sslType = k("ssl-type", "SSL_TYPE").as[SSLType]
+    val checkCerts =
+      k("check-certificates", "CHECK_CERTIFICATES").as[Boolean].default(true)
+    val timeout = k("timeout", "TIMEOUT").as[Duration]
+    val defaultFrom = k("default-from", "DEFAULT_FROM").as[Option[MailAddress]]
+    val listId = k("list-id", "LIST_ID")
+    (host, port, user, pass, sslType, checkCerts, timeout, defaultFrom, listId).mapN(
+      MailConfig.Smtp.apply
+    )
+  }
+
+  def mailTemplate(id: String) = {
+    def k(p: String, e: String) =
+      key(
+        s"backend.mail.templates.$id.$p",
+        s"BACKEND_MAIL_TEMPLATES_${id.toUpperCase}_$e"
+      )
+
+    val subject = k("subject", "SUBJECT").as[Template]
+    val body = k("body", "BODY").as[Template]
+    (subject, body).mapN(MailConfig.MailTpl.apply)
+  }
+
+  val mail = {
+    def k(p: String, e: String) =
+      key(s"backend.mail.$p", s"BACKEND_MAIL_$e")
+
+    val enabled = k("enabled", "ENABLED").as[Boolean]
+    val downloadTpl = mailTemplate("download")
+    val aliasTpl = mailTemplate("alias")
+    val uploadTpl = mailTemplate("upload-notify")
+    val templates = (downloadTpl, aliasTpl, uploadTpl).mapN(MailConfig.Templates.apply)
+    (enabled, mailSmtp, templates).mapN(MailConfig.apply)
+  }
+
+  val backendConfig =
+    (jdbc, signup, auth, share, cleanup, mail, files, computeChecksum).mapN(
+      BackendConfig.apply
+    )
+
+  val fullConfig =
+    (baseUrl, aliasMemberEnabled, bind, fileDownload, logConfig, webapp, backendConfig)
+      .mapN(
+        Config.apply
+      )
 
 end ConfigValues

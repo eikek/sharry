@@ -17,8 +17,9 @@ object FileStoreType {
     NonEmptyList.of(DefaultDatabase, S3, FileSystem)
 
   def fromString(str: String): Either[String, FileStoreType] =
+    val sn = str.replaceAll("[-_]", "") // allow kebab- and snake-case
     all
-      .find(_.name.equalsIgnoreCase(str))
+      .find(e => e.name.equalsIgnoreCase(sn) || e.name.equalsIgnoreCase(str))
       .toRight(s"Invalid file store type: $str")
 
   def unsafeFromString(str: String): FileStoreType =
