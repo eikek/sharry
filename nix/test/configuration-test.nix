@@ -44,16 +44,16 @@
       };
       backend = {
         auth = {
-          oauth = [];
+          oauth = {};
         };
         share = {
-          database-domain-checks = [
-            {
+          database-domain-checks = {
+            snakeoil = {
               enabled = true;
               native = "domain safe_bytea violates check constraint";
               message = "The uploaded file contains a virus!";
-            }
-          ];
+            };
+          };
         };
       };
     };

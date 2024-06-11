@@ -62,7 +62,7 @@ in
       nodejs_18
     ];
 
-    depsSha256 = "sha256-EArZMYHRWJIQARkKYn1j3yCtMNjcv1k8RkQ5bLnVR9U";
+    depsSha256 = "sha256-0M+TWziPt+Ggrt9W1yYeryOn92Kzk806zfXwyDcVctY=";
 
     buildPhase = ''
       HOME=$(dirname $COURSIER_CACHE)/home

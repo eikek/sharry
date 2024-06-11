@@ -103,10 +103,9 @@ with lib; let
           user-header = "";
           email-header = null;
         };
-        oauth = [
-          {
+        oauth = {
+          github = {
             enabled = false;
-            id = "github";
             name = "Github";
             icon = "fab fa-github";
             authorize-url = "https://github.com/login/oauth/authorize";
@@ -117,8 +116,8 @@ with lib; let
             scope = "";
             client-id = "<your client id>";
             client-secret = "<your client secret>";
-          }
-        ];
+          };
+        };
       };
       jdbc = {
         url = "jdbc:h2:///tmp/sharry-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
@@ -168,13 +167,13 @@ with lib; let
         chunk-size = "512K";
         max-size = "1.5G";
         max-validity = "365 days";
-        database-domain-checks = [
-          {
+        database-domain-checks = {
+          snakeoil = {
             enabled = false;
             native = "domain safe_bytea violates check constraint";
             message = "The uploaded file contains a virus!";
-          }
-        ];
+          };
+        };
       };
       cleanup = {
         enabled = true;
@@ -670,7 +669,7 @@ in {
                       '';
                     };
                     oauth = mkOption {
-                      type = types.listOf (types.submodule {
+                      type = types.attrsOf (types.submodule {
                         options = let
                           d = builtins.head defaults.backend.auth.oauth;
                         in {
@@ -678,11 +677,6 @@ in {
                             type = types.bool;
                             default = d.enabled;
                             description = "Whether to enable this login module";
-                          };
-                          id = mkOption {
-                            type = types.str;
-                            default = d.id;
-                            description = "A unique id that is part of the url";
                           };
                           name = mkOption {
                             type = types.str;
@@ -791,7 +785,7 @@ in {
                     };
 
                     database-domain-checks = mkOption {
-                      type = types.listOf (types.submodule {
+                      type = types.attrsOf (types.submodule {
                         options = let
                           d = builtins.head defaults.backend.share.database-domain-checks;
                         in {
