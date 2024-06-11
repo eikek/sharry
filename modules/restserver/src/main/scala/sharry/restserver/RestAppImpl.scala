@@ -2,8 +2,8 @@ package sharry.restserver
 
 import scala.concurrent.ExecutionContext
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.io.file.Files
 
 import sharry.backend.BackendApp

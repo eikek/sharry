@@ -1,18 +1,18 @@
 package sharry.backend.account
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.backend.PasswordCrypt
-import sharry.backend.share.{Queries => ShareQueries}
-import sharry.common._
+import sharry.backend.share.Queries as ShareQueries
+import sharry.common.*
 import sharry.store.AddResult
 import sharry.store.Store
-import sharry.store.records._
+import sharry.store.records.*
 
-import doobie._
+import doobie.*
 
 trait OAccount[F[_]] {
 
@@ -45,7 +45,7 @@ object OAccount {
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OAccount[F]] =
     Resource.pure[F, OAccount[F]](new OAccount[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def changePassword(id: Ident, oldPw: Password, newPw: Password): F[AddResult] = {
         val update =

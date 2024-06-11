@@ -1,6 +1,6 @@
 package sharry.store.records
 
-import sharry.common._
+import sharry.common.*
 
 case class ModAccount(
     state: AccountState,

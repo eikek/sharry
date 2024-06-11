@@ -4,9 +4,9 @@ import sharry.backend.mustache.YamuscaCommon
 import sharry.restapi.model.AppConfig
 import sharry.restapi.model.OAuthItem
 
-import yamusca.derive._
-import yamusca.implicits._
-import yamusca.imports._
+import yamusca.derive.*
+import yamusca.implicits.*
+import yamusca.imports.*
 
 object YamuscaConverter extends YamuscaCommon {
 

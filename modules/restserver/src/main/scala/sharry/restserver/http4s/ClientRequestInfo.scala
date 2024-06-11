@@ -1,14 +1,14 @@
 package sharry.restserver.http4s
 
 import cats.data.NonEmptyList
-import cats.implicits._
+import cats.implicits.*
 
-import sharry.common._
+import sharry.common.*
 import sharry.restserver.config.Config
 
 import com.comcast.ip4s.Port
-import org.http4s._
-import org.http4s.headers._
+import org.http4s.*
+import org.http4s.headers.*
 import org.typelevel.ci.CIString
 
 /** Obtain information about the client by inspecting the request. */

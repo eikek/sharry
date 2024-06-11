@@ -3,13 +3,13 @@ package sharry.backend.auth
 import java.nio.charset.StandardCharsets
 
 import cats.data.Kleisli
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.common._
+import sharry.common.*
 
-import yamusca.implicits._
-import yamusca.imports._
+import yamusca.implicits.*
+import yamusca.imports.*
 
 final class HttpAuth[F[_]: Async](
     cfg: AuthConfig,
@@ -17,7 +17,7 @@ final class HttpAuth[F[_]: Async](
     runner: HttpAuth.RunRequest[F]
 ) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.whenEnabled(cfg.http.enabled)(

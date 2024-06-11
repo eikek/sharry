@@ -1,17 +1,17 @@
 package sharry.restserver.oauth
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.auth.AuthConfig
 import sharry.common.Ident
 import sharry.logging.Logger
 
 import io.circe.Json
-import org.http4s.Method._
-import org.http4s._
-import org.http4s.circe.CirceEntityCodec._
+import org.http4s.*
+import org.http4s.Method.*
+import org.http4s.circe.CirceEntityCodec.*
 import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.client.middleware.RequestLogger
@@ -131,13 +131,13 @@ object CodeFlow {
       logHeaders = true,
       logBody = true,
       logAction = Some((msg: String) => logger.trace(msg))
-    ) _
+    )
 
     val lres = ResponseLogger(
       logHeaders = true,
       logBody = true,
       logAction = Some((msg: String) => logger.trace(msg))
-    ) _
+    )
 
     lreq.andThen(lres)(c)
   }

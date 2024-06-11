@@ -2,11 +2,11 @@ package sharry.backend.auth
 
 import java.time.Instant
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.Common
-import sharry.backend.auth.AuthToken._
+import sharry.backend.auth.AuthToken.*
 import sharry.common.util.SignUtil
 import sharry.common.{AccountId, Duration}
 

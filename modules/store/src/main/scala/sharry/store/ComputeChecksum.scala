@@ -1,14 +1,14 @@
 package sharry.store
 
-import cats.effect._
+import cats.effect.*
 import cats.effect.std.Queue
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.{Pipe, Stream}
 
 import sharry.common.{ByteSize, Ident, Timestamp}
 import sharry.store.records.RFileMeta
 
-import binny._
+import binny.*
 import binny.util.Stopwatch
 
 trait ComputeChecksum[F[_]] {
@@ -27,7 +27,7 @@ object ComputeChecksum {
     for {
       queue <- Queue.bounded[F, Entry](config.capacity)
     } yield new ComputeChecksum[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def submit(id: BinaryId, hint: Hint): F[Unit] =
         if (config.enable) queue.offer(Entry(id, hint))

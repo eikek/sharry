@@ -4,10 +4,10 @@ import cats.Functor
 import cats.data.Kleisli
 import cats.data.NonEmptyList
 
-import sharry.common._
+import sharry.common.*
 
-import org.http4s._
-import org.http4s.headers._
+import org.http4s.*
+import org.http4s.headers.*
 
 object NoCacheMiddleware {
   private val noCacheHeader =

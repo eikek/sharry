@@ -1,16 +1,16 @@
 package sharry.restserver.routes
 
-import cats.data._
-import cats.effect._
-import cats.implicits._
+import cats.data.*
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.backend.auth._
-import sharry.restserver._
+import sharry.backend.auth.*
+import sharry.restserver.*
 
-import org.http4s._
-import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
-import org.http4s.server._
+import org.http4s.server.*
 import org.typelevel.ci.CIString
 
 object Authenticate {

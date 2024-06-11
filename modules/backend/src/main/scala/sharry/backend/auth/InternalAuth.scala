@@ -1,17 +1,17 @@
 package sharry.backend.auth
 
 import cats.data.Kleisli
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.PasswordCrypt
 import sharry.backend.account.OAccount
-import sharry.common._
+import sharry.common.*
 import sharry.store.records.RAccount
 
 final class InternalAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule.enabledState(cfg.internal.enabled, op, AccountSource.intern)(

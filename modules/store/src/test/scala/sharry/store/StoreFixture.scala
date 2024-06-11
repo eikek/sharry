@@ -4,14 +4,14 @@ import java.nio.file.Paths
 
 import scala.util.Random
 
-import cats.effect._
+import cats.effect.*
 import cats.effect.unsafe.implicits.global
 import fs2.io.file.Files
 
-import sharry.common._
-import sharry.store.doobie._
+import sharry.common.*
+import sharry.store.doobie.*
 
-import _root_.doobie._
+import _root_.doobie.*
 import org.h2.jdbcx.JdbcConnectionPool
 import scodec.bits.ByteVector
 
@@ -22,7 +22,7 @@ trait StoreFixture {
 }
 
 object StoreFixture {
-  private[this] val logger = sharry.logging.unsafeLogger("StoreFixture")
+  private val logger = sharry.logging.unsafeLogger("StoreFixture")
 
   def makeStore[F[_]: Async: Files]: Resource[F, Store[F]] = {
     def dataSource(jdbc: JdbcConfig): Resource[F, JdbcConnectionPool] = {

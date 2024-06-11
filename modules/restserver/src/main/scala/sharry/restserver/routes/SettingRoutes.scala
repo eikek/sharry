@@ -1,16 +1,16 @@
 package sharry.restserver.routes
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
 import sharry.common.AccountSource
-import sharry.restapi.model._
+import sharry.restapi.model.*
 
 import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.circe.CirceEntityDecoder.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
 
 object SettingRoutes {

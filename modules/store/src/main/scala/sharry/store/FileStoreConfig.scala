@@ -3,7 +3,7 @@ package sharry.store
 import javax.sql.DataSource
 
 import cats.effect.Async
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.io.file.{Files, Path}
 
 import binny.ChunkedBinaryStore

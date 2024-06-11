@@ -1,22 +1,22 @@
 package sharry.restserver.routes
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.BackendApp
 import sharry.backend.account.NewAccount
-import sharry.backend.auth._
-import sharry.common._
-import sharry.restapi.model._
-import sharry.restserver._
+import sharry.backend.auth.*
+import sharry.common.*
+import sharry.restapi.model.*
+import sharry.restserver.*
 import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
 import sharry.restserver.oauth.{CodeFlow, StateParam}
 
-import org.http4s._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.*
+import org.http4s.circe.CirceEntityDecoder.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.client.Client
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location

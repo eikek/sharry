@@ -1,18 +1,18 @@
 package sharry.backend.alias
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.backend.alias.OAlias.{AliasDetail, AliasInput}
-import sharry.common._
+import sharry.common.*
 import sharry.store.AddResult
 import sharry.store.Store
 import sharry.store.records.RAlias
 import sharry.store.records.RAliasMember
 
-import doobie._
+import doobie.*
 
 trait OAlias[F[_]] {
 
@@ -40,7 +40,7 @@ object OAlias {
 
   def apply[F[_]: Async](store: Store[F]): Resource[F, OAlias[F]] =
     Resource.pure[F, OAlias[F]](new OAlias[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def create(detail: AliasInput): F[AddResult] =
         store.add(

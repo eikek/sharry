@@ -1,10 +1,10 @@
 package sharry.backend.auth
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.backend.account._
-import sharry.common._
+import sharry.backend.account.*
+import sharry.common.*
 
 /** Provides authentication from the configuration.
   *
@@ -17,7 +17,7 @@ import sharry.common._
   */
 final class FixedAuth[F[_]: Async](cfg: AuthConfig, op: OAccount[F]) {
 
-  private[this] val logger = sharry.logging.getLogger[F]
+  private val logger = sharry.logging.getLogger[F]
 
   def login: LoginModule[F] =
     LoginModule { up =>

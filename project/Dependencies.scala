@@ -6,6 +6,7 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BinnyVersion = "0.11.0"
   val CirceVersion = "0.14.7"
+  val CirisVersion = "3.6.0"
   val ClipboardJsVersion = "2.0.11"
   val DoobieVersion = "1.0.0-RC5"
   val EmilVersion = "0.17.0"
@@ -19,17 +20,26 @@ object Dependencies {
   val MUnitVersion = "1.0.0"
   val MUnitCatsEffectVersion = "2.0.0"
   val PostgresVersion = "42.7.3"
-  val PureConfigVersion = "0.17.7"
   val ScribeVersion = "3.15.0"
   val SourcecodeVersion = "0.4.2"
   val SwaggerVersion = "5.17.14"
   val TikaVersion = "2.9.2"
   val TusClientVersion = "1.8.0-1"
+  val TypesafeConfigVersion = "1.4.3"
   val YamuscaVersion = "0.10.0"
+
+  val ciris = Seq(
+    "is.cir" %% "ciris" % CirisVersion
+  )
+  val typesafeConfig = Seq(
+    "com.typesafe" % "config" % TypesafeConfigVersion
+  )
 
   val scribe = Seq(
     "com.outr" %% "scribe" % ScribeVersion,
-    "com.outr" %% "scribe-slf4j2" % ScribeVersion
+    "com.outr" %% "scribe-slf4j2" % ScribeVersion,
+    "com.outr" %% "scribe-cats" % ScribeVersion,
+    "com.outr" %% "scribe-json-circe" % ScribeVersion
   )
 
   val sourcecode = Seq(
@@ -64,12 +74,6 @@ object Dependencies {
   val circe = Seq(
     "io.circe" %% "circe-generic" % CirceVersion,
     "io.circe" %% "circe-parser" % CirceVersion
-  )
-
-  // https://github.com/melrief/pureconfig
-  // MPL 2.0
-  val pureconfig = Seq(
-    "com.github.pureconfig" %% "pureconfig" % PureConfigVersion
   )
 
   // https://github.com/h2database/h2database

@@ -1,21 +1,21 @@
 package sharry.restserver.routes
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.BackendApp
 import sharry.backend.auth.AuthToken
-import sharry.backend.share._
-import sharry.common._
-import sharry.restapi.model._
+import sharry.backend.share.*
+import sharry.common.*
+import sharry.restapi.model.*
 import sharry.restserver.config.Config
 import sharry.restserver.routes.headers.SharryPassword
 import sharry.store.AddResult
 
-import org.http4s._
-import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.*
+import org.http4s.circe.CirceEntityDecoder.*
+import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
 
 object ShareRoutes {

@@ -1,6 +1,6 @@
 package sharry.backend.share
 
-import sharry.common._
+import sharry.common.*
 
 sealed trait ShareId {
 

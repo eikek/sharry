@@ -1,12 +1,12 @@
 package sharry.common
 
-import java.time.{Duration => JDur}
+import java.time.Duration as JDur
 import java.util.concurrent.TimeUnit
 
-import scala.concurrent.duration.{Duration => SDur, FiniteDuration}
+import scala.concurrent.duration.{Duration as SDur, FiniteDuration}
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 
 import io.circe.Decoder
 import io.circe.Encoder
@@ -62,6 +62,13 @@ final class Duration(val nanos: Long) extends AnyVal {
 object Duration {
 
   val zero: Duration = new Duration(0L)
+
+  def fromString(s: String): Either[String, Duration] =
+    s.toLongOption match
+      case Some(n) => Right(millis(n))
+      case None =>
+        try Right(apply(scala.concurrent.duration.Duration(s)))
+        catch case ex: Throwable => Left(s"Invalid duration '$s': ${ex.getMessage}")
 
   def apply(d: SDur): Duration =
     new Duration(d.toNanos)

@@ -7,7 +7,7 @@
 package sharry.logging
 
 import io.circe.{Encoder, Json}
-import sourcecode._
+import sourcecode.*
 
 final case class LogEvent(
     level: Level,

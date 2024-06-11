@@ -6,9 +6,9 @@ import java.util.concurrent.ForkJoinWorkerThread
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.{Executors, ThreadFactory}
 
-import scala.concurrent._
+import scala.concurrent.*
 
-import cats.effect._
+import cats.effect.*
 
 object ThreadFactories {
 

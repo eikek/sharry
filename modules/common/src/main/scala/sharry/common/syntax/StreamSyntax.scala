@@ -1,11 +1,11 @@
 package sharry.common.syntax
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 import fs2.Stream
 
-import io.circe._
-import io.circe.parser._
+import io.circe.*
+import io.circe.parser.*
 
 trait StreamSyntax {
 

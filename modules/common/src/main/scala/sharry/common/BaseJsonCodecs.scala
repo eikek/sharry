@@ -2,7 +2,7 @@ package sharry.common
 
 import java.time.Instant
 
-import io.circe._
+import io.circe.*
 
 object BaseJsonCodecs {
 

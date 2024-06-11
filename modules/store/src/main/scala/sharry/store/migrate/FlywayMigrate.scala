@@ -8,7 +8,7 @@ import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 
 object FlywayMigrate {
-  private[this] val logger = sharry.logging.unsafeLogger("FlywayMigrate")
+  private val logger = sharry.logging.unsafeLogger("FlywayMigrate")
 
   def run[F[_]: Sync](jdbc: JdbcConfig): F[MigrateResult] =
     Sync[F].delay {
@@ -25,7 +25,7 @@ object FlywayMigrate {
       .configure()
       .cleanDisabled(true)
       .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
-      .locations(locations: _*)
+      .locations(locations*)
       .baselineOnMigrate(true)
       .baselineVersion("0")
       .load()
@@ -37,7 +37,7 @@ object FlywayMigrate {
       .configure()
       .dataSource(jdbc.url.asString, jdbc.user, jdbc.password)
       .baselineOnMigrate(true)
-      .locations(locations: _*)
+      .locations(locations*)
       .load()
   }
 

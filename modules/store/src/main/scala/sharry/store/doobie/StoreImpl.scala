@@ -1,13 +1,13 @@
 package sharry.store.doobie
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.store._
+import sharry.store.*
 import sharry.store.migrate.FlywayMigrate
 
-import _root_.doobie._
-import _root_.doobie.implicits._
+import _root_.doobie.*
+import _root_.doobie.implicits.*
 
 final class StoreImpl[F[_]: Async](jdbc: JdbcConfig, fs: FileStore[F], xa: Transactor[F])
     extends Store[F] {

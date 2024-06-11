@@ -1,7 +1,7 @@
 package sharry.backend.config
 
 import cats.data.ValidatedNec
-import cats.syntax.all._
+import cats.syntax.all.*
 
 import sharry.backend.auth.AuthConfig
 import sharry.backend.job.CleanupConfig

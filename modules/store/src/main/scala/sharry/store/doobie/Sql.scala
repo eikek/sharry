@@ -2,8 +2,8 @@ package sharry.store.doobie
 
 import sharry.common.Timestamp
 
-import doobie._
-import doobie.implicits._
+import doobie.*
+import doobie.implicits.*
 
 object Sql {
 

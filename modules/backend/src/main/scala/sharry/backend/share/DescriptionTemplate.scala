@@ -1,11 +1,11 @@
 package sharry.backend.share
 
 import sharry.backend.mustache.YamuscaCommon
-import sharry.common._
+import sharry.common.*
 
-import yamusca.derive._
-import yamusca.implicits._
-import yamusca.imports._
+import yamusca.derive.*
+import yamusca.implicits.*
+import yamusca.imports.*
 
 final class DescriptionTemplate(sd: ShareDetail) {
 

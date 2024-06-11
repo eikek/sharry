@@ -6,7 +6,7 @@
 
 package docspell.logging
 
-import sharry.logging._
+import sharry.logging.*
 import sharry.logging.impl.ScribeConfigure
 
 import munit.Suite

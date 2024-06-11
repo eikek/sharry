@@ -5,9 +5,9 @@ import java.net.URL
 import java.net.URLEncoder
 
 import cats.data.NonEmptyList
+import cats.effect.*
 import cats.effect.Resource
-import cats.effect._
-import cats.implicits._
+import cats.implicits.*
 import fs2.Stream
 
 import sharry.common.LenientUri.Path
@@ -232,7 +232,7 @@ object LenientUri {
     }
   }
 
-  private[this] val delims: Set[Char] = ",/?:@&$# %".toSet
+  private val delims: Set[Char] = ",/?:@&$# %".toSet
 
   private def percent(s: String): String =
     "%" + ByteVector.encodeUtf8(s).fold(throw _, identity).toHex

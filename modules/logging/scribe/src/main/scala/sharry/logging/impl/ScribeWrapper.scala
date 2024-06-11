@@ -39,10 +39,10 @@ private[logging] object ScribeWrapper {
       case Level.Trace => scribe.Level.Trace
     }
 
-  private[this] def emptyMDC: MDC =
+  private def emptyMDC: MDC =
     new MDCMap(None)
 
-  private[this] def convert(ev: LogEvent) = {
+  private def convert(ev: LogEvent) = {
     val level = convertLevel(ev.level)
     val additional: List[LoggableMessage] = ev.additional
       .map {

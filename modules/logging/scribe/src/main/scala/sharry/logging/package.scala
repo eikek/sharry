@@ -7,7 +7,7 @@
 package sharry
 
 import cats.Id
-import cats.effect._
+import cats.effect.*
 
 import sharry.logging.impl.ScribeWrapper
 
@@ -27,7 +27,7 @@ package object logging {
   def getLogger[F[_]: Sync](name: String): Logger[F] =
     new ScribeWrapper.Impl[F](scribe.Logger(name))
 
-  def getLogger[F[_]: Sync](clazz: Class[_]): Logger[F] =
+  def getLogger[F[_]: Sync](clazz: Class[?]): Logger[F] =
     new ScribeWrapper.Impl[F](scribe.Logger(clazz.getName))
 
 }

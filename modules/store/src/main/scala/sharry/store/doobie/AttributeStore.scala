@@ -1,15 +1,15 @@
 package sharry.store.doobie
 
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import sharry.common._
+import sharry.common.*
 import sharry.store.records.RFileMeta
 
-import binny._
-import doobie._
-import doobie.implicits._
+import binny.*
+import doobie.*
+import doobie.implicits.*
 import scodec.bits.ByteVector
 
 final private[store] class AttributeStore[F[_]: Sync](xa: Transactor[F]) {

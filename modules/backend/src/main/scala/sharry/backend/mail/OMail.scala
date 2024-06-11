@@ -2,17 +2,17 @@ package sharry.backend.mail
 
 import cats.data.EitherT
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.mail.MailConfig.MailTpl
-import sharry.common._
+import sharry.common.*
 import sharry.store.Store
 
-import emil.builder._
-import emil.javamail.syntax._
-import emil.{MailConfig => _, _}
-import yamusca.implicits._
+import emil.builder.*
+import emil.javamail.syntax.*
+import emil.{MailConfig as _, *}
+import yamusca.implicits.*
 
 trait OMail[F[_]] {
 
@@ -44,7 +44,7 @@ object OMail {
       emil: Emil[F]
   ): Resource[F, OMail[F]] =
     Resource.pure[F, OMail[F]](new OMail[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
       def notifyAliasUpload(
           aliasId: Ident,
           shareId: Ident,
@@ -90,7 +90,7 @@ object OMail {
                 )
               )
             }
-            res <- OptionT.liftF(templates.traverse((send _).tupled))
+            res <- OptionT.liftF(templates.traverse(send.tupled))
             failedReceiver = res
               .filter(_.isError)
               .flatMap(_.receiver)

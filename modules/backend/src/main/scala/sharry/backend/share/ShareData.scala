@@ -2,7 +2,7 @@ package sharry.backend.share
 
 import fs2.Stream
 
-import sharry.common._
+import sharry.common.*
 
 case class ShareData[F[_]](
     validity: Duration,

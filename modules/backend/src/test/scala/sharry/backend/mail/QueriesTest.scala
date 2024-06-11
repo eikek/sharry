@@ -1,13 +1,13 @@
 package sharry.backend.mail
 
-import cats.effect._
+import cats.effect.*
 
-import sharry.common._
-import sharry.store._
+import sharry.common.*
+import sharry.store.*
 import sharry.store.records.RAccount
 
 import emil.MailAddress
-import munit._
+import munit.*
 
 class QueriesTest extends FunSuite with StoreFixture {
 
@@ -30,7 +30,7 @@ class QueriesTest extends FunSuite with StoreFixture {
       for {
         _ <- store.transact(RAccount.insert(account, "warn"))
         e <- store.transact(Queries.getEmail(accountId))
-        _ <- IO(assertEquals(e, Some(MailAddress(Some("jdoe"), "test@test.com"))))
+        _ <- IO(assertEquals(e, Some(MailAddress.unsafe(Some("jdoe"), "test@test.com"))))
       } yield ()
     }
   }

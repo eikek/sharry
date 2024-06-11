@@ -1,8 +1,8 @@
 package sharry.restserver.oauth
 
-import cats.effect._
+import cats.effect.*
 
-import munit._
+import munit.*
 import scodec.bits.ByteVector
 
 class StateParamTest extends CatsEffectSuite {

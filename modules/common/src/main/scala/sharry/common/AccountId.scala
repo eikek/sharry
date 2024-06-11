@@ -1,6 +1,6 @@
 package sharry.common
 
-import cats.implicits._
+import cats.implicits.*
 
 case class AccountId(id: Ident, userLogin: Ident, admin: Boolean, alias: Option[Ident]) {
 

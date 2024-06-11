@@ -3,14 +3,14 @@ package sharry.restserver
 import java.nio.file.Path
 import java.nio.file.{Files, Paths}
 
-import cats.effect._
+import cats.effect.*
 
-import sharry.common._
+import sharry.common.*
 import sharry.logging.impl.ScribeConfigure
 import sharry.restserver.config.ConfigFile
 
 object Main extends IOApp {
-  private[this] val logger = sharry.logging.getLogger[IO]
+  private val logger = sharry.logging.getLogger[IO]
 
   val connectEC =
     ThreadFactories.fixed[IO](5, ThreadFactories.ofName("sharry-dbconnect"))
@@ -60,7 +60,7 @@ object Main extends IOApp {
         }
       }
 
-      cfg = ConfigFile.loadConfig
+      cfg <- ConfigFile.loadConfig
 
       _ <- ScribeConfigure.configure[IO](cfg.logging)
 

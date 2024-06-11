@@ -2,13 +2,13 @@ package sharry.backend.account
 
 import fs2.Stream
 
-import sharry.common._
-import sharry.store.doobie.DoobieMeta._
-import sharry.store.doobie._
-import sharry.store.records._
+import sharry.common.*
+import sharry.store.doobie.*
+import sharry.store.doobie.DoobieMeta.*
+import sharry.store.records.*
 
-import doobie._
-import doobie.implicits._
+import doobie.*
+import doobie.implicits.*
 
 object Queries {
 

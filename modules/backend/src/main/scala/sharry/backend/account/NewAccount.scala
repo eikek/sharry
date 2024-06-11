@@ -1,9 +1,9 @@
 package sharry.backend.account
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 
-import sharry.common._
+import sharry.common.*
 
 case class NewAccount(
     id: Ident,

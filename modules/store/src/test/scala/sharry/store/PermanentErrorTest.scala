@@ -1,6 +1,6 @@
 package sharry.store
 
-import munit._
+import munit.*
 
 class PermanentErrorTest extends FunSuite {
   val nativePart = "value for domain safe_bytea violates check constraint"

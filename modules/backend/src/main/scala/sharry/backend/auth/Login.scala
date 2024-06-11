@@ -2,8 +2,8 @@ package sharry.backend.auth
 
 import cats.data.Kleisli
 import cats.data.OptionT
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
 import sharry.backend.account.OAccount
 import sharry.common.Ident
@@ -21,7 +21,7 @@ object Login {
 
   def apply[F[_]: Async](oacc: OAccount[F]): Resource[F, Login[F]] =
     Resource.pure[F, Login[F]](new Login[F] {
-      private[this] val logger = sharry.logging.getLogger[F]
+      private val logger = sharry.logging.getLogger[F]
 
       def loginSession(config: AuthConfig)(sessionKey: String): F[LoginResult] =
         AuthToken.fromString(sessionKey) match {
@@ -65,7 +65,7 @@ object Login {
       CommandAuth[F](cfg, ops, CommandAuth.RunCommand.systemProcess[F]).withPosition
     ).sortBy(_._1).map(_._2)
 
-    LoginModule.combine[F](modules: _*)
+    LoginModule.combine[F](modules*)
   }
 
 }

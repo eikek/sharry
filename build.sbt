@@ -13,7 +13,7 @@ val scalafixSettings = Seq(
 
 val sharedSettings = Seq(
   organization := "com.github.eikek",
-  scalaVersion := "2.13.14",
+  scalaVersion := "3.4.2",
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -22,12 +22,10 @@ val sharedSettings = Seq(
     "-feature",
     "-Werror", // fail when there are warnings
     "-unchecked",
-    // remove -byname-implicit, once https://github.com/scala/bug/issues/12072 is resolved
-    "-Xlint:-byname-implicit,_",
-    "-Wdead-code",
-    "-Wunused",
-    "-Wvalue-discard",
-    "-Wnumeric-widen"
+    "-Wunused:imports",
+    "-Wunused:locals",
+    "-Wunused:explicits",
+    "-Wvalue-discard"
   ),
   Compile / console / scalacOptions := Seq(),
   Test / console / scalacOptions := Seq()
@@ -124,7 +122,6 @@ val loggingApi = project
   .settings(testSettingsMUnit)
   .settings(
     name := "sharry-logging-api",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.circeCore ++
         Dependencies.fs2 ++
@@ -141,8 +138,7 @@ val common = project
     libraryDependencies ++=
       Dependencies.fs2 ++
         Dependencies.fs2io ++
-        Dependencies.circe ++
-        Dependencies.pureconfig
+        Dependencies.circe
   )
 
 val loggingScribe = project
@@ -152,7 +148,6 @@ val loggingScribe = project
   .settings(testSettingsMUnit)
   .settings(
     name := "sharry-logging-scribe",
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.scribe ++
         Dependencies.circeCore ++
@@ -284,11 +279,10 @@ val restserver = project
       Dependencies.http4s ++
         Dependencies.http4sclient ++
         Dependencies.circe ++
-        Dependencies.pureconfig ++
+        Dependencies.typesafeConfig ++
+        Dependencies.ciris ++
         Dependencies.yamusca ++
         Dependencies.webjars,
-    addCompilerPlugin(Dependencies.kindProjectorPlugin),
-    addCompilerPlugin(Dependencies.betterMonadicFor),
     buildInfoPackage := "sharry.restserver",
     reStart / javaOptions ++=
       Seq(

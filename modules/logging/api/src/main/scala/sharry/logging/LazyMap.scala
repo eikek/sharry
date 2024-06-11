@@ -2,7 +2,7 @@ package sharry.logging
 
 import sharry.logging.LazyMap.Val
 
-final class LazyMap[A, B](
+final class LazyMap[A, B] private (
     private val values: Map[A, Val[B]]
 ) {
   lazy val toMap: Map[A, B] = values.view.mapValues(_.value).toMap
@@ -24,7 +24,7 @@ final class LazyMap[A, B](
 }
 
 object LazyMap {
-  private[this] val emptyMap = new LazyMap[Any, Any](Map.empty)
+  private val emptyMap = new LazyMap[Any, Any](Map.empty)
 
   def empty[A, B]: LazyMap[A, B] = emptyMap.asInstanceOf[LazyMap[A, B]]
 
