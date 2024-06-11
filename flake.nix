@@ -72,7 +72,7 @@
           SHARRY_BACKEND_MAIL_SMTP_PORT = "25";
           SHARRY_BACKEND_MAIL_SMTP_USER = "admin";
           SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
-          SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
+          SHARRY_BACKEND_MAIL_SMTP_SSL_TYPE = "none";
         };
 
         dev-vm = pkgs.mkShellNoCC {
@@ -91,7 +91,7 @@
           SHARRY_BACKEND_MAIL_SMTP_PORT = "10025";
           SHARRY_BACKEND_MAIL_SMTP_USER = "admin";
           SHARRY_BACKEND_MAIL_SMTP_PASSWORD = "admin";
-          SHARRY_BACKEND_MAIL_SMTP_SSL__TYPE = "none";
+          SHARRY_BACKEND_MAIL_SMTP_SSL_TYPE = "none";
         };
         ci = pkgs.mkShellNoCC {
           buildInputs = ciPkgs;

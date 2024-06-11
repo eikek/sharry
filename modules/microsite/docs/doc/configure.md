@@ -11,6 +11,14 @@ that is not given, the defaults are used. The config file overrides
 default values, so only values that differ from the defaults are
 necessary to specify.
 
+Environment variables can be used as well to override values from the
+config file. Variable names always start with `SHARRY_` and the
+remainder can be derived from the corresponding config option by
+replacing period `.` and dash `-` by an underscore `_`, but excluding
+the root namespace `sharry.restserver`. For example, the config option
+`sharry.restserver.bind.address` would be `SHARRY_BIND_ADDRESS` as
+environment variable. A value given as environment variable has
+priority.
 
 ## File Format
 
@@ -23,6 +31,19 @@ allows comments and has some [advanced
 features](https://github.com/lightbend/config/blob/master/README.md#features-of-hocon). Please
 refer to their documentation for more on this.
 
+The hocon format allows to include environment variables, allowing to
+mix and match both variants if desired. For example:
+
+```conf
+…
+  mode = "open"
+  mode = ${?SHARRY_BACKEND_SIGNUP_MODE}
+…
+```
+
+would use the value `"open"` if the environment varible
+`SHARRY_BACKEND_SIGNUP_MODE` is not defined, because it would
+overwrite the previously defined value.
 
 ## Important Config Options
 
@@ -97,7 +118,7 @@ sharry.restserver.backend.share {
   #
   # See issue https://github.com/eikek/sharry/issues/255 – the
   # example is a virus check via a postgresql extension "snakeoil".
-  database-domain-checks = [
+  database-domain-checks = {
     # Example: This message originates from postgres with an
     # enabled snakeoil extension. This extension allows to virus
     # check byte arrays. It must be setup such that the `bytea`
@@ -107,11 +128,12 @@ sharry.restserver.backend.share {
     # CREATE EXTENSION pg_snakeoil;
     # CREATE DOMAIN public.safe_bytea as bytea CHECK (not so_is_infected(value));
     # ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
-    { enabled = false
+    snakeoil = {
+      enabled = false
       native = "domain safe_bytea violates check constraint"
       message = "The uploaded file contains a virus!"
     }
-  ]
+  }
 }
 ```
 
@@ -479,24 +501,25 @@ The `oauth` login module can be configured with multiple such
 providers. Here is an example:
 
 ```
-oauth = [
-    {
-       enabled = false
-       id = "github"
-       name = "Github"
-       icon = "fab fa-github"
-       authorize-url = "https://github.com/login/oauth/authorize"
-       token-url = "https://github.com/login/oauth/access_token"
-       user-url = "https://api.github.com/user"
-       user-id-key = "login"
-       scope = ""
-       client-id = "<your client id>"
-       client-secret = "<your client secret>"
-     }
-]
+oauth = {
+  github = {
+    enabled = false
+    name = "Github"
+    icon = "fab fa-github"
+    authorize-url = "https://github.com/login/oauth/authorize"
+    token-url = "https://github.com/login/oauth/access_token"
+    user-url = "https://api.github.com/user"
+    user-id-key = "login"
+    scope = ""
+    client-id = "<your client id>"
+    client-secret = "<your client secret>"
+  }
+}
 ```
 
-Each such entry in the array results in a button on the login screen.
+Each such entry in the `oauth` object results in a button on the login
+screen. The key (`github` in the above example) is used to refer to
+this provider as its id.
 
 <img src="../screenshots/login.jpg" class="screenshot">
 
