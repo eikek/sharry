@@ -122,7 +122,6 @@ val loggingApi = project
   .settings(testSettingsMUnit)
   .settings(
     name := "sharry-logging-api",
-//    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.circeCore ++
         Dependencies.fs2 ++
@@ -149,7 +148,6 @@ val loggingScribe = project
   .settings(testSettingsMUnit)
   .settings(
     name := "sharry-logging-scribe",
-//    addCompilerPlugin(Dependencies.kindProjectorPlugin),
     libraryDependencies ++=
       Dependencies.scribe ++
         Dependencies.circeCore ++
