@@ -1,0 +1,1159 @@
+<!DOCTYPE html><html><head><title>Sharry: Configuring</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="eikek" /><meta name="description" content="Sharry – Share files conveniently" /><meta name="og:image" content="/sharry/img/poster.png" /><meta name="image" property="og:image" content="/sharry/img/poster.png" /><meta name="og:title" content="Sharry: Configuring" /><meta name="title" property="og:title" content="Sharry: Configuring" /><meta name="og:site_name" content="Sharry" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="Sharry – Share files conveniently" /><link rel="icon" type="image/png" href="/sharry/img/favicon.png" /><meta name="twitter:title" content="Sharry: Configuring" /><meta name="twitter:image" content="/sharry/img/poster.png" /><meta name="twitter:description" content="Sharry – Share files conveniently" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="32x32" href="/sharry/img/favicon-32x32.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/sharry/highlight/styles/vs.css" /><link rel="stylesheet" href="/sharry/css/light-style.css" /><link rel="stylesheet" href="/sharry/css/styles.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/sharry/" class="brand"><div class="brand-wrapper"></div><span>Sharry</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/sharry/doc/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/quickstart" title="Quickstart" class="">Quickstart</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/install" title="Installation" class="drop-nested">Installation</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/migration" title="Migration" class="">Migration</a> <a href="/sharry/doc/reverseproxy" title="Reverse Proxy" class="">Reverse Proxy</a> <a href="/sharry/doc/nix" title="Nix/NixOS" class="">Nix/NixOS</a> <a href="/sharry/doc/fail2ban" title="Fail2ban" class="">Fail2ban</a> <a href="/sharry/doc/sharex" title="ShareX" class="">ShareX</a></div></div> <div class="sidebar-nav-item active "><a href="/sharry/doc/configure" title="Configuring" class="active">Configuring</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/webapp" title="Webapp" class="drop-nested">Webapp</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/sharry/doc/screenshots" title="Screenshots" class="">Screenshots</a></div></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/rest" title="REST Api" class="">REST Api</a></div> <div class="sidebar-nav-item  "><a href="/sharry/doc/dev" title="Development" class="">Development</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="search-nav"><div id="search-dropdown"><label><i class="fa fa-search"></i>Search</label><input id="search-bar" type="text" placeholder="Enter keywords here..." onclick="displayToggleSearch(event)" /><ul id="search-dropdown-content" class="dropdown dropdown-content"></ul></div></li><li id="gh-eyes-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs to-uppercase"><a href="https://github.com/eikek/sharry" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="eikek" data-github-repo="sharry"><div class="content-wrapper"><section><h1 id="configuring">Configuring</h1>
+
+<p>Sharry’s executable can take one argument – a configuration file. If
+that is not given, the defaults are used. The config file overrides
+default values, so only values that differ from the defaults are
+necessary to specify.</p>
+
+<p>Environment variables can be used as well to override values from the
+config file. Variable names always start with <code class="language-plaintext highlighter-rouge">SHARRY_</code> and the
+remainder can be derived from the corresponding config option by
+replacing period <code class="language-plaintext highlighter-rouge">.</code> and dash <code class="language-plaintext highlighter-rouge">-</code> by an underscore <code class="language-plaintext highlighter-rouge">_</code>, but excluding
+the root namespace <code class="language-plaintext highlighter-rouge">sharry.restserver</code>. For example, the config option
+<code class="language-plaintext highlighter-rouge">sharry.restserver.bind.address</code> would be <code class="language-plaintext highlighter-rouge">SHARRY_BIND_ADDRESS</code> as
+environment variable. A value given as environment variable has
+priority.</p>
+
+<h2 id="file-format">File Format</h2>
+
+<p>The format of the configuration files can be
+<a href="https://github.com/lightbend/config/blob/master/HOCON.md#hocon-human-optimized-config-object-notation">HOCON</a>,
+JSON or whatever the used <a href="https://github.com/lightbend/config">config
+library</a> understands. The default
+values below are in HOCON format, which is recommended, since it
+allows comments and has some <a href="https://github.com/lightbend/config/blob/master/README.md#features-of-hocon">advanced
+features</a>. Please
+refer to their documentation for more on this.</p>
+
+<p>The hocon format allows to include environment variables, allowing to
+mix and match both variants if desired. For example:</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code>…
+  <span class="n">mode</span> = <span class="s2">"open"</span>
+  <span class="n">mode</span> = ${?<span class="n">SHARRY_BACKEND_SIGNUP_MODE</span>}
+…
+</code></pre></div></div>
+
+<p>would use the value <code class="language-plaintext highlighter-rouge">"open"</code> if the environment varible
+<code class="language-plaintext highlighter-rouge">SHARRY_BACKEND_SIGNUP_MODE</code> is not defined, because it would
+overwrite the previously defined value.</p>
+
+<h2 id="important-config-options">Important Config Options</h2>
+
+<p>The configuration for the REST server is below <code class="language-plaintext highlighter-rouge">sharry.restserver</code>.</p>
+
+<h3 id="jdbc">JDBC</h3>
+
+<p>This configures the connection to the database. By default, a H2
+database in the current <code class="language-plaintext highlighter-rouge">/tmp</code> directory is configured. This will
+create the database on demand in this directory.</p>
+
+<p>The config looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.jdbc {
+  url = ...
+  user = ...
+  password = ...
+}
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">url</code> is the connection to the database. It must start with
+<code class="language-plaintext highlighter-rouge">jdbc</code>, followed by name of the database. The rest is specific to the
+database used: it is either a path to a file for H2 or a host/database
+url for MariaDB and PostgreSQL.</p>
+
+<p>When using H2, the user is <code class="language-plaintext highlighter-rouge">sa</code>, the password can be empty and the url
+must include these options:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+</code></pre></div></div>
+
+<h4 id="examples">Examples</h4>
+
+<p>PostgreSQL:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:postgresql://localhost:5432/sharrydb"
+</code></pre></div></div>
+
+<p>MariaDB:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:mariadb://localhost:3306/sharrydb"
+</code></pre></div></div>
+
+<p>H2</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>url = "jdbc:h2:///path/to/a/file.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
+</code></pre></div></div>
+
+<h3 id="database-checks">Database Checks</h3>
+
+<p>The setting <code class="language-plaintext highlighter-rouge">database-domain-checks</code> is used when inspecting errors
+that happen when uploading files. It allows to translate database
+error messages into a message that is presented to the end user.</p>
+
+<p>Please see <a href="https://github.com/eikek/sharry/issues/255">this issue</a>
+for more information and motivation.</p>
+
+<p>The example provided is this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.share {
+
+  # Allows additional database checks to be translated into some
+  # meaningful message to the user.
+  #
+  # This config is used when inspecting database error messages.
+  # If the error message from the database contains the defined
+  # `native` part, then the server returns a 422 with the error
+  # messages given here as `message`.
+  #
+  # See issue https://github.com/eikek/sharry/issues/255 – the
+  # example is a virus check via a postgresql extension "snakeoil".
+  database-domain-checks = {
+    # Example: This message originates from postgres with an
+    # enabled snakeoil extension. This extension allows to virus
+    # check byte arrays. It must be setup such that the `bytea`
+    # type of the filechunk table is changed to the type
+    # `safe_bytea`:
+    #
+    # CREATE EXTENSION pg_snakeoil;
+    # CREATE DOMAIN public.safe_bytea as bytea CHECK (not so_is_infected(value));
+    # ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
+    snakeoil = {
+      enabled = false
+      native = "domain safe_bytea violates check constraint"
+      message = "The uploaded file contains a virus!"
+    }
+  }
+}
+</code></pre></div></div>
+
+<h4 id="example-for-snakeoil">Example for Snakeoil</h4>
+
+<p>The extension <a href="https://github.com/credativ/pg_snakeoil">snakeoil</a> for
+<a href="https://www.postgresql.com">PostgreSQL</a> allows to check uploaded
+binary data for viruses.</p>
+
+<p>In order to use this, you need to change the data type for the binary
+files. This <em>must be applied after sharry has started at least once to
+initialize its database</em>!</p>
+
+<p>The following steps must be done manually:</p>
+
+<ul>
+  <li>install pg_snakeoil - e.g. on ubuntu systems package: postgresql-12-snakeoil</li>
+  <li>execute the following sql commands on the sharry postgres database:
+    <div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">pg_snakeoil</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">DOMAIN</span> <span class="k">public</span><span class="p">.</span><span class="n">safe_bytea</span> <span class="k">as</span> <span class="n">bytea</span> <span class="k">check</span> <span class="p">(</span><span class="k">not</span> <span class="n">so_is_infected</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">public</span><span class="p">.</span><span class="n">filechunk</span> <span class="k">ALTER</span> <span class="k">COLUMN</span> <span class="n">chunkdata</span> <span class="k">TYPE</span> <span class="n">safe_bytea</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>Then add the above setting into your config file. Test files can be
+found <a href="https://www.eicar.org/?page_id=3950">here</a>.</p>
+
+<h3 id="files">Files</h3>
+
+<p>By default, the files are also stored in the configured database. This
+works quite well, but you can also choose to store the files somewhere
+else: either in the local filesystem or in an S3 compatible object
+storage.</p>
+
+<p>This is configured in the <code class="language-plaintext highlighter-rouge">files</code> section:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    # How files are stored.
+    files {
+      # The id of an enabled store from the `stores` array that should
+      # be used.
+      default-store = "database"
+
+      # A list of possible file stores. Each entry must have a unique
+      # id. The `type` is one of: default-database, filesystem, s3.
+      #
+      # All stores with enabled=false are
+      # removed from the list. The `default-store` must be enabled.
+      stores = {
+        database =
+          { enabled = true
+            type = "default-database"
+          }
+
+        filesystem =
+          { enabled = false
+            type = "file-system"
+            directory = "/some/directory"
+            # If true, empty directories that can be left behind after deleting 
+            # a file are removed as well.
+            clean-empty-dirs = true
+          }
+
+        minio =
+          { enabled = false
+            type = "s3"
+            endpoint = "http://localhost:9000"
+            access-key = "username"
+            secret-key = "password"
+            bucket = "sharry"
+          }
+      }
+      ...
+    }
+
+</code></pre></div></div>
+
+<p>This config section requires to define a file store in <code class="language-plaintext highlighter-rouge">stores</code> and
+then reference the key in <code class="language-plaintext highlighter-rouge">default-store</code>. Within <code class="language-plaintext highlighter-rouge">stores</code> you can
+define what kind of storage to use via the <code class="language-plaintext highlighter-rouge">type</code> attribute. This can
+be one of: <code class="language-plaintext highlighter-rouge">s3</code>, <code class="language-plaintext highlighter-rouge">file-system</code> or <code class="language-plaintext highlighter-rouge">default-database</code>. Depending on
+<code class="language-plaintext highlighter-rouge">type</code> more information is required. For example, the filesystem needs
+the base directory to use, or the above example for
+<a href="https://min.io">Minio</a> requires credentials and a bucket.</p>
+
+<h4 id="changing-file-stores">Changing file stores</h4>
+
+<p>The last part in the <code class="language-plaintext highlighter-rouge">files</code> section looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # Allows to copy files from one store to the other *before* sharry
+ # will be available. It is recommended to set the `enabled` flag to
+ # false afterwards and restart sharry.
+ #
+ # Files are only copied, they are *not* removed from the source
+ # store.
+ copy-files = {
+   enable = false
+
+   # A key in the `backend.files` config identifying the store to
+   # copy from.
+   source = "database"
+
+   # A key in the `backend.files` config identifying the store to
+   # copy the files to.
+   target = "minio"
+
+   # How many files to copy in parallel.
+   parallel = 2
+ }
+</code></pre></div></div>
+
+<p>This allows you to have Sharry copy all files from one store to the
+other on startup. So to change from <code class="language-plaintext highlighter-rouge">database</code> to <code class="language-plaintext highlighter-rouge">minio</code> as in the
+example, set <code class="language-plaintext highlighter-rouge">enabled</code> to <code class="language-plaintext highlighter-rouge">true</code> and change the <code class="language-plaintext highlighter-rouge">default-store</code> to
+<code class="language-plaintext highlighter-rouge">minio</code> (the target store). When starting up sharry it will first copy
+all files to the <code class="language-plaintext highlighter-rouge">minio</code> store before it is available.</p>
+
+<h3 id="bind">Bind</h3>
+
+<p>The host and port the http server binds to.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.bind {
+  address = localhost
+  port = 9090
+}
+</code></pre></div></div>
+
+<p>By default, it binds to <code class="language-plaintext highlighter-rouge">localhost</code> and some predefined port.</p>
+
+<h3 id="base-url">Base-url</h3>
+
+<p>The base url is an important setting that defines the URL where sharry
+can be reached (the external url). The REST server uses it to create
+absolute urls and to configure the authenication cookie. These URLs
+are sent to the client, so they must resolve back to the sharry
+server. If you see “network error” error messages in the browser, then
+this setting is probably not correct.</p>
+
+<p>By default it is set to <code class="language-plaintext highlighter-rouge">http://localhost:9090</code>. If you leave it at
+<code class="language-plaintext highlighter-rouge">localhost</code>, then sharry uses the request to obtain the real external
+url dynamically by inspecting http headers and finally falling back to
+the <code class="language-plaintext highlighter-rouge">bind.address|port</code>.</p>
+
+<p>However, if you have a single external url, it is recommended to set
+this here.</p>
+
+<h4 id="examples-1">Examples</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.base-url = "https://sharry.example.com"
+</code></pre></div></div>
+
+<h3 id="registration-options">Registration Options</h3>
+
+<p>This defines if and how new users can create accounts. There are 3
+options:</p>
+
+<ul>
+  <li><em>closed</em> no new user can sign up</li>
+  <li><em>open</em> new users can sign up</li>
+  <li><em>invite</em> new users can sign up but require an invitation key</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.signup {
+  mode = "open"
+
+  # If mode == 'invite', a password must be provided to generate
+  # invitation keys. It must not be empty.
+  invite-password = ""
+
+  # If mode == 'invite', this is the period an invitation token is
+  # considered valid.
+  invite-time = "3 days"
+}
+</code></pre></div></div>
+
+<p>The mode <code class="language-plaintext highlighter-rouge">invite</code> is intended to open the application only to some
+users. An admin user can create invitation keys and distribute them to
+the desired people. While the user must be admin, it is also necessary
+to provide the <code class="language-plaintext highlighter-rouge">invite-password</code>. The idea is that only the person who
+installs sharry knows this. If it is not set (must be non-empty), then
+invitation won’t work. New invitation keys can be generated from
+within the web application or via REST calls (using <code class="language-plaintext highlighter-rouge">curl</code>, for
+example).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -X POST -H 'Sharry-Auth: ' -d '{"password":"blabla"}' "http://localhost:7880/api/v1/open/signup/newinvite"
+</code></pre></div></div>
+
+<h2 id="authentication">Authentication</h2>
+
+<p>The initial authentication will generate an authentication token which
+is valid for some time. Subsequent calls to secured routes can use
+this token. The token can be given as a normal http header or via a
+cookie header.</p>
+
+<p>The following options configure this token:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.backend.auth {
+  server-secret = "hex:caffee" # or "b64:Y2FmZmVlCg=="
+  session-valid = "8 minutes"
+}
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">server-secret</code> is used to sign the token. If multiple REST
+servers are deployed, all must share the same server secret. Otherwise
+tokens from one instance are not valid on another instance. The secret
+can be given as Base64 encoded string or in hex form. Use the prefix
+<code class="language-plaintext highlighter-rouge">hex:</code> and <code class="language-plaintext highlighter-rouge">b64:</code>, respectively. If these prefixes are missing, the
+string’s utf8 bytes are used.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">session-valid</code> deterimens how long a token is valid. This can be
+just some minutes, the web application obtains new ones
+periodically. So a rather short time is recommended.</p>
+
+<p>The interval the webapp retrieves a new token can be configured, too.
+It must be at least 30s below the <code class="language-plaintext highlighter-rouge">session-valid</code> time.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sharry.restserver.webapp {
+  auth-renewal = "4 minutes"
+}
+</code></pre></div></div>
+
+<h3 id="login-modules">Login Modules</h3>
+
+<p>Login modules are used to initially authenticate a user given some
+credentials. There are some modules that take a username/password pair
+and hand it to an external service or program for verification. If
+valid, sharry creates an account transparently. Then there is the
+<code class="language-plaintext highlighter-rouge">oauth</code> setting which supports authentication via OAuth using “OAuth
+Code Flow”.</p>
+
+<p>All login modules can be enabled/disabled and have an <code class="language-plaintext highlighter-rouge">order</code> property
+that defines the order the login modules are tried. The modules are
+tried in the specified order until one gives a response.</p>
+
+<h4 id="fixed">Fixed</h4>
+
+<p>This is a simple login module for bootstrapping. It defines an admin
+account using the supplied username and password (plain text) from the
+config file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fixed {
+  enabled = false
+  user = "admin"
+  password = "admin"
+  order = 10
+}
+</code></pre></div></div>
+
+<p>It is disabled by default. If the given username doesn’t match the
+configured username this login module is skipped and the next is
+tried.</p>
+
+<h4 id="http">Http</h4>
+
+<p>The http login module issues a http request with the username/password
+pair as payload. The response status code determines valid
+authentication.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http {
+  enabled = false
+  url = "http://localhost:1234/auth?user={{user}}&amp;password={{pass}}"
+  method = "POST"
+  body = ""
+  content-type = ""
+  order = 20
+}
+</code></pre></div></div>
+
+<p>If the method is <code class="language-plaintext highlighter-rouge">POST</code>, the body is sent as specified using the given
+content type. The body and url are processed before as mustache
+templates, where <code class="language-plaintext highlighter-rouge">{{user}}</code> and <code class="language-plaintext highlighter-rouge">{{pass}}</code> are replaced by their actual values. For other
+requests than <code class="language-plaintext highlighter-rouge">POST</code>, the body is ignored.</p>
+
+<h4 id="http-basic">Http Basic</h4>
+
+<p>The http-basic login module issues a http request with an
+<code class="language-plaintext highlighter-rouge">Authorization</code> header against some configured url. The header uses
+the <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">Basic</a>
+scheme to transport the username/password pair.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http-basic {
+  enabled = false
+  url = "http://somehost:2345/path"
+  method = "GET"
+  order = 30
+}
+</code></pre></div></div>
+
+<p>If the response is successful (in <code class="language-plaintext highlighter-rouge">2xx</code>), the user is authenticated.</p>
+
+<h4 id="command">Command</h4>
+
+<p>Allows to validate a username/password pair using some external system
+command. This is the most flexible approach.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>command {
+  enabled = false
+  program = [
+    "/path/to/someprogram"
+    "{{login}}"
+    "{{pass}}"
+  ]
+  # the return code to consider successful verification
+  success = 0
+  order = 30
+}
+</code></pre></div></div>
+
+<p>The return code of the command is used to determine valid
+authentication. The <code class="language-plaintext highlighter-rouge">program</code> value is an array where the first item
+is the path to the program and subsequent elements define its
+arguments.</p>
+
+<p>All arguments are processed as a mustache template and variables <code class="language-plaintext highlighter-rouge">{{user}}</code> and <code class="language-plaintext highlighter-rouge">{{pass}}</code> are
+replaced by their actual values.</p>
+
+<h4 id="internal">Internal</h4>
+
+<p>The internal login module simply authenticates against the sharry
+database. If it is disabled, you should disable signup, too, because those
+user won’t be authenticated.</p>
+
+<h4 id="proxy">Proxy</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">proxy</code> option allows automatically authenticate users by trusting
+specific request headers. The configured headers of the login request
+to <code class="language-plaintext highlighter-rouge">open/auth/proxy</code> are read and a user account is created if
+missing. Be aware that sharry blindly trusts these headers.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>proxy {
+  enabled = false
+  user-header = "X-Valid-User"
+  email-header = "X-User-Email"
+}
+</code></pre></div></div>
+
+<p>The webapp automatically logs the user in, if the auth configuration
+only consists of proxy auth and nothing else.</p>
+
+<h4 id="oauth">OAuth</h4>
+
+<p>There is now an option to authenticate using a external provider
+supporting the OAuth “code flow”. There are two examples in the config
+file for Github and Google. I tried to generalise it as much as
+possible, but (it seems to me) OAuth is not really a protocol, every
+provider may choose to do it little differently.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">oauth</code> login module can be configured with multiple such
+providers. Here is an example:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>oauth = {
+  github = {
+    enabled = false
+    name = "Github"
+    icon = "fab fa-github"
+    authorize-url = "https://github.com/login/oauth/authorize"
+    token-url = "https://github.com/login/oauth/access_token"
+    user-url = "https://api.github.com/user"
+    user-id-key = "login"
+    scope = ""
+    client-id = "&lt;your client id&gt;"
+    client-secret = "&lt;your client secret&gt;"
+  }
+}
+</code></pre></div></div>
+
+<p>Each such entry in the <code class="language-plaintext highlighter-rouge">oauth</code> object results in a button on the login
+screen. The key (<code class="language-plaintext highlighter-rouge">github</code> in the above example) is used to refer to
+this provider as its id.</p>
+
+<p><img src="../screenshots/login.jpg" class="screenshot" /></p>
+
+<p>Here is how it roughly works: If a user clicks this button, it reaches
+a specific url in sharry. Sharry will read the corresponding config
+entry and redirect to the provider adding all the necessary details.
+The user then authenticates at the provider, which redirects back to
+sharry – so this method only works if sharry is publicly available,
+obviously. Then sharry does one more request to turn the code from the
+redirect into a different code. And then it tries to get the account
+name.</p>
+
+<p>Let’s go through the config values of one entry:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">enabled</code>: allows to disable this entry without removing it from the
+file.</li>
+  <li><code class="language-plaintext highlighter-rouge">id</code>: the id that is used in the url behind the button on the login
+screen. It is also used to amend the account name.</li>
+  <li><code class="language-plaintext highlighter-rouge">name</code>: The name rendered as button text.</li>
+  <li><code class="language-plaintext highlighter-rouge">icon</code>: an icon for the button, included are <code class="language-plaintext highlighter-rouge">fa-github</code>,
+<code class="language-plaintext highlighter-rouge">fa-openid</code>, <code class="language-plaintext highlighter-rouge">fa-google</code>, <code class="language-plaintext highlighter-rouge">fa-user</code>, <code class="language-plaintext highlighter-rouge">fa-right-to-bracket</code></li>
+  <li><code class="language-plaintext highlighter-rouge">authorize-url</code> this is the URL of the provider where sharry
+redirects to at first, attaching <code class="language-plaintext highlighter-rouge">client_id</code> and the redirect uri
+back to sharry.</li>
+  <li><code class="language-plaintext highlighter-rouge">token-url</code>: The url to the provdier where the response from the
+<code class="language-plaintext highlighter-rouge">authorize-url</code> can be turned into a token.</li>
+  <li><code class="language-plaintext highlighter-rouge">user-url</code>: The url to the provider that retrieves the user
+information given a token as obtained from <code class="language-plaintext highlighter-rouge">token-url</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">user-id-key</code>: Now it get’s a bit hairy…. The protocol doesn’t
+define (afaik) a common way how to exchange user data. So google
+does it different from github. Sharry supports JSON responses only
+and uses the value of <code class="language-plaintext highlighter-rouge">user-id-key</code> to lookup a value in that
+response structure. For example, the github response is a simple
+JSON object, where the login name is at field <code class="language-plaintext highlighter-rouge">login</code>. The path must
+evaluate to a string. This value is used for the new account inside
+sharry. Another value that often works is <code class="language-plaintext highlighter-rouge">preferred_username</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">user-email-key</code>: optional, if present is used to populated the
+email field of the newly created account.</li>
+  <li><code class="language-plaintext highlighter-rouge">scope</code>: optional, can be empty. Allows to specify the open id
+scopes to use when initiating the authentication. This can be useful
+to return custom data from the IDP to be used with <code class="language-plaintext highlighter-rouge">user-email-key</code>
+or <code class="language-plaintext highlighter-rouge">user-id-key</code></li>
+  <li><code class="language-plaintext highlighter-rouge">client-id</code> and <code class="language-plaintext highlighter-rouge">client-secret</code> These are provider specific values
+that you need to obtain there. With github, for example, you
+register a new “app” which generates these values.</li>
+</ul>
+
+<p>Once sharry gets the account name, it creates a new account (if it not
+exists already) using the account name from the provider amended with
+<code class="language-plaintext highlighter-rouge">@&lt;id&gt;</code>.</p>
+
+<p>I only tested this with github and google, I would appreciate any
+information on how it works with other providers.</p>
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p><img src="../diagrams/file-deletion-diagram.svg" class="rounded screenshot" /></p>
+
+<p>Sharry has a periodic cleanup job that will delete ‘invalid’
+resources. This cleanup job runs in the backend and is triggered
+by a timer every <code class="language-plaintext highlighter-rouge">interval</code> as defined in the <code class="language-plaintext highlighter-rouge">cleanup</code> block. It
+cleans up the following resources:</p>
+
+<ul>
+  <li>Expired, published shares and their files are removed once the
+expiration datetime is older than <code class="language-plaintext highlighter-rouge">invalid-age</code> defined in the
+<code class="language-plaintext highlighter-rouge">cleanup</code> block.</li>
+  <li>Expired invites are removed based on the <code class="language-plaintext highlighter-rouge">invite-time</code> from the
+<code class="language-plaintext highlighter-rouge">signup</code> block.</li>
+  <li>Orphaned files are removed. However, orphaned files should not
+happen as long as all shares and files are maintained by only
+sharry and not any external modifications.</li>
+</ul>
+
+<h2 id="default-config">Default Config</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+sharry.restserver {
+
+  # This is the base URL this application is deployed to. This is used
+  # to create absolute URLs and to configure the cookie.
+  #
+  # Note: Currently deploying behind a path is not supported. The URL
+  # should not end in a slash.
+  base-url = "http://localhost:9090"
+
+
+  # Where the server binds to.
+  bind {
+    address = "localhost"
+    port = 9090
+  }
+
+  file-download {
+    # For open range requests, use this amount of data when
+    # responding.
+    download-chunk-size = "4M"
+  }
+
+  # Configures logging
+  logging {
+    # The format for the log messages. Can be one of:
+    # Json, Logfmt, Fancy or Plain
+    format = "Fancy"
+
+    # The minimum level to log. From lowest to highest:
+    # Trace, Debug, Info, Warn, Error
+    minimum-level = "Warn"
+
+    # Override the log level of specific loggers
+    levels = {
+      "sharry" = "Info"
+      "org.flywaydb" = "Info"
+      "binny" = "Info"
+      "org.http4s" = "Info"
+    }
+  }
+
+  # The alias-member feature allows to add users to an alias page to
+  # automatically make all shares that were uploaded through the
+  # corresponding alias available to all members. This allows to
+  # search for other users via a http call. If this feature is
+  # disabled, the rest call to search other users is disabled and the
+  # form element is removed from the ui.
+  alias-member-enabled = true
+
+  webapp {
+    # This is shown in the top right corner of the web application
+    app-name = "Sharry"
+
+    # The icon next to the app-name. Needs to be an URL to an image.
+    app-icon = ""
+
+    # The icon next to the app-name when dark mode is enabled.
+    app-icon-dark = ""
+
+    # The login and register pages display a logo image, by default
+    # the Sharry logo. This can be changed here. It needs to be an URL
+    # to an image.
+    app-logo = ""
+
+    # The login and register pages display a logo image. This is the
+    # one used when dark mode is enabled.
+    app-logo-dark = ""
+
+    # This is markdown that is inserted as the footer on each page in
+    # the ui. If left empty, a link to the project is rendered.
+    app-footer = ""
+
+    # Whether to display the footer on each page in the ui. Set it to
+    # false to hide it.
+    app-footer-visible = true
+
+    # Chunk size used for one request. The server will re-chunk the
+    # stream into smaller chunks. But the client can transfer more in
+    # one requests, resulting in faster uploads.
+    #
+    # You might need to adjust this value depending on your setup. A
+    # higher value usually means faster uploads (if the up-link is
+    # good enough). It is set rather low by default, because it is a
+    # safer default.
+    chunk-size = "10M"
+
+    # Number of milliseconds the client should wait before doing a new
+    # upload attempt after something failed. The length of the array
+    # denotes the number of retries.
+    retry-delays = [0, 3000, 6000, 12000, 24000, 48000]
+
+    # The login page can display a welcome message that is readable by
+    # everyone. The text is processed as markdown.
+    welcome-message = ""
+
+    # The ISO-3166-1 code of the default language to use. If a invalid
+    # code is given (or one where no language is available), it falls
+    # back to "gb".
+    default-language = "gb"
+
+    # The interval a new authentication token is retrieved. This must
+    # be at least 30s lower than `backend.auth.session-valid'.
+    auth-renewal = "4 minutes"
+
+    # The initial page to go to after logging in. It can be one of the
+    # following: home, uploads, share
+    initial-page = "home"
+
+    # The value for the validity that is preselected. Only values that
+    # are available in the dropdown are possible to specifiy.
+    default-validity = 7 days
+
+    # The inital ui theme to use. Can be either 'light' or 'dark'.
+    initial-theme = "light"
+
+    # When only OAuth (or only Proxy Auth) is configured and only a
+    # single provider, then the weapp automatically redirects to its
+    # authentication page skipping the sharry login page. This will
+    # also disable the logout button, since sharry is not in charge
+    # anyways.
+    oauth-auto-redirect = true
+
+    # A custom html snippet that is rendered into the html head
+    # section of the main template. If the value is empty, a default
+    # section is used for inserting a favicon configuration.
+    #
+    # The value is first tried to resolve to a file in the local file
+    # system. If that is successful, it its content is being inserted
+    # as utf8 characters. Otherwise the value given here is rendered
+    # as is into the template!
+    custom-head = ""
+  }
+
+  backend {
+
+    # Authentication is flexible to let Sharry be integrated in other
+    # environments.
+    auth {
+
+      # The secret for this server that is used to sign the authenicator
+      # tokens. You can use base64 or hex strings (prefix with b64: and
+      # hex:, respectively)
+      server-secret = "hex:caffee"
+
+      # How long an authentication token is valid. The web application
+      # will get a new one periodically.
+      session-valid = "8 minutes"
+
+      #### Login Modules
+      ##
+      ## The following settings configure how users are authenticated.
+      ## There are several ways possible. The simplest is to
+      ## authenticate agains the internal database. But often there is
+      ## already a user management component and sharry can be
+      ## configured to authenticated against other services.
+
+      # A fixed login module simply checks the username and password
+      # agains the information provided here. This only applies if the
+      # user matches, otherwise the next login module is tried.
+      fixed {
+        enabled = false
+        user = "admin"
+        password = "admin"
+        order = 10
+      }
+
+      # The http authentication module sends the username and password
+      # via a HTTP request and uses the response to indicate success or
+      # failure.
+      #
+      # If the method is POST, the `body' is sent with the request and
+      # the `content-type' is used.
+      http {
+        enabled = false
+        url = "http://localhost:1234/auth?user={{user}}&amp;password={{pass}}"
+        method = "POST"
+        body = ""
+        content-type = ""
+        order = 20
+      }
+
+      # Use HTTP Basic authentication. An Authorization header using
+      # the Basic scheme is created and the request is send to the
+      # given url. The response body will be ignored, only the status
+      # is inspected.
+      http-basic {
+        enabled = false
+        url = "http://somehost:2345/path"
+        method = "GET"
+        order = 30
+      }
+
+      # The command authentication module runs an external command
+      # giving it the username and password. The return code indicates
+      # success or failure.
+      command {
+        enabled = false
+        program = [
+          "/path/to/someprogram"
+          "{{user}}"
+          "{{pass}}"
+        ]
+        # the return code to consider successful verification
+        success = 0
+        order = 40
+      }
+
+      # The internal authentication module checks against the internal
+      # database.
+      internal {
+        enabled = true
+        order = 50
+      }
+
+      # Uses OAuth2 "Code-Flow" for authentication against a
+      # configured provider.
+      #
+      # A provider (like Github, Google, or Microsoft for example) must be
+      # configured correctly for this to work. Each element in the array
+      # results into a button on the login page.
+      #
+      # Examples for Github, Google and Microsoft (Azure AD) are provided
+      # below. You need to setup an “application” to obtain a client_secret
+      # and client_id.
+      #
+      # Details:
+      # - enabled: allows to toggle it on or off
+      # - id: a unique id that is part of the url
+      # - name: a name that is displayed inside the button on the
+      #   login screen
+      # - icon: a fontawesome icon name for the button
+      # - authorize-url: the url of the provider where the user can
+      #   login and grant the permission to retrieve the user name
+      # - token-url: the url used to obtain a bearer token using the
+      #   response from the authentication above. The response from
+      #   the provider must be json or url-form-encdode.
+      # - user-url: the url to finalyy retrieve user information –
+      #   only JSON responses are supported.
+      # - user-id-key: the name of the field in the json response
+      #   denoting the user name
+      # - user-email-key: the name of the field in the json response
+      #   that denotes the users email.
+      oauth = {
+        "github" = {
+          enabled = false
+          name = "Github"
+          icon = "fab fa-github"
+          scope = ""
+          authorize-url = "https://github.com/login/oauth/authorize"
+          token-url = "https://github.com/login/oauth/access_token"
+          user-url = "https://api.github.com/user"
+          user-id-key = "login"
+          client-id = "&lt;your client id&gt;"
+          client-secret = "&lt;your client secret&gt;"
+        },
+        "google" = {
+          enabled = false
+          name = "Google"
+          icon = "fab fa-google"
+          scope = ""
+          authorize-url = "https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.profile"
+          token-url = "https://oauth2.googleapis.com/token"
+          user-url = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json"
+          user-id-key = "name"
+          client-id = "&lt;your client id&gt;"
+          client-secret = "&lt;your client secret&gt;"
+        },
+        "aad" = {
+          enabled = false
+          name = "Azure AD"
+          icon = "fab fa-microsoft"
+          scope = "openid"
+          authorize-url = "https://login.microsoftonline.com/&lt;your tenant ID&gt;/oauth2/v2.0/authorize"
+          token-url = "https://login.microsoftonline.com/&lt;your tenant ID&gt;/oauth2/v2.0/token"
+          user-url = "https://graph.microsoft.com/oidc/userinfo"
+          user-id-key = "email"
+          user-email-key = "email"
+          client-id = "&lt;your client id&gt;"
+          client-secret = "&lt;your client secret&gt;"
+        }
+      }
+
+      # Allows to inspect the request headers for finding already
+      # authorized user name/email. If enabled and during login the
+      # request contains these headers, they will be used to
+      # automatically create accounts.
+      proxy {
+        enabled = false
+        user-header = "X-Valid-User"
+        email-header = "X-User-Email"
+      }
+    }
+
+    # The database connection.
+    #
+    # By default a H2 file-based database is configured. You can
+    # provide a postgresql or mariadb connection here. When using H2
+    # use the PostgreSQL compatibility mode.
+    jdbc {
+      url = "jdbc:h2://"${java.io.tmpdir}"/sharry-demo.db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE"
+      user = "sa"
+      password = ""
+    }
+
+    # How files are stored.
+    files {
+      # The id of an enabled store from the `stores` array that should
+      # be used.
+      default-store = "database"
+
+      # A list of possible file stores. Each entry must have a unique
+      # id. The `type` is one of: default-database, filesystem, s3.
+      #
+      # All stores with enabled=false are
+      # removed from the list. The `default-store` must be enabled.
+      stores = {
+        database =
+          { enabled = true
+            type = "default-database"
+          }
+
+        filesystem =
+          { enabled = false
+            type = "file-system"
+            directory = "/some/directory"
+            clean-empty-dirs = true
+          }
+
+        minio =
+          { enabled = false
+            type = "s3"
+            endpoint = "http://localhost:9000"
+            access-key = "username"
+            secret-key = "password"
+            bucket = "sharry"
+          }
+      }
+
+      # Allows to copy files from one store to the other *before* sharry
+      # will be available. It is recommended to set the `enabled` flag to
+      # false afterwards and restart sharry.
+      #
+      # Files are only copied, they are *not* removed from the source
+      # store.
+      copy-files = {
+        enable = false
+
+        # A key in the `backend.files` config identifying the store to
+        # copy from.
+        source = "database"
+
+        # A key in the `backend.files` config identifying the store to
+        # copy the files to.
+        target = "minio"
+
+        # How many files to copy in parallel.
+        parallel = 2
+      }
+    }
+
+    # Checksums of uploaded files are computed in the background.
+    compute-checksum = {
+      # Setting this to false disables computation of checksums completely.
+      enable = true
+
+      # How many ids to queue at most. If full, uploading blocks until
+      # elemnts are taken off the queue
+      capacity = 5000
+
+      # How many checksums to compute in parallel, must be &gt; 0. If 1,
+      # they are computed sequentially.
+      parallel = 0
+
+      # If true, the `parallel` option above is ignored and it will be
+      # set to the number of available cores - 1 (using 1 for single
+      # core machines).
+      use-default = true
+    }
+
+    # Configuration for registering new users at the local database.
+    # Accounts registered here are checked via the `internal'
+    # authentication plugin as described above.
+    signup {
+
+      # The mode defines if new users can signup or not. It can have
+      # three values:
+      #
+      # - open: every new user can sign up
+      # - invite: new users can sign up only if they provide a correct
+      #   invitation key. Invitation keys can be generated by an admin.
+      # - closed: signing up is disabled.
+      mode = "open"
+
+      # If mode == 'invite', this is the period an invitation token is
+      # considered valid.
+      invite-time = "14 days"
+
+      # A password that is required when generating invitation keys.
+      # This is more to protect against accidentally creating
+      # invitation keys. Generating such keys is only permitted to
+      # admin users.
+      invite-password = "generate-invite"
+    }
+
+
+    share {
+      # When storing binary data use chunks of this size.
+      chunk-size = "512K"
+
+      # Maximum size of a share.
+      max-size = "1.5G"
+
+      # Maximum validity for uploads
+      max-validity = 365 days
+
+      # Allows additional database checks to be translated into some
+      # meaningful message to the user.
+      #
+      # This config is used when inspecting database error messages.
+      # If the error message from the database contains the defined
+      # `native` part, then the server returns a 422 with the error
+      # messages given here as `message`.
+      #
+      # See issue https://github.com/eikek/sharry/issues/255 – the
+      # example is a virus check via a postgresql extension "snakeoil".
+      database-domain-checks = {
+        # Example: This message originates from postgres with an
+        # enabled snakeoil extension. This extension allows to virus
+        # check byte arrays. It must be setup such that the `bytea`
+        # type of the filechunk table is changed to the type
+        # `safe_bytea`:
+        #
+        # CREATE EXTENSION pg_snakeoil;
+        # CREATE DOMAIN public.safe_bytea as bytea CHECK (not so_is_infected(value));
+        # ALTER TABLE public.filechunk ALTER COLUMN chunkdata TYPE safe_bytea;
+        snakeoil = {
+          enabled = false
+          native = "domain safe_bytea violates check constraint"
+          message = "The uploaded file contains a virus!"
+        }
+      }
+    }
+
+    cleanup {
+      # Whether to enable the cleanup job that periodically
+      # cleans up published, expired shares and expired invites
+      enabled = true
+
+      # The interval for the cleanup job
+      interval = 14 days
+
+      # Time of published shares past expiration to get collected by cleanup job
+      invalid-age = 7 days
+    }
+
+    mail {
+
+      # Enable/Disable the mail feature.
+      #
+      # If it is disabled, the server will not send mails, including
+      # notifications.
+      #
+      # If enabled, explicit SMTP settings must be provided.
+      enabled = false
+
+      # The SMTP settings that are used to sent mails with.
+      smtp {
+        # Host and port of the SMTP server
+        host = "localhost"
+        port = 25
+
+        # User credentials to authenticate at the server. If the user
+        # is empty, mails are sent without authentication.
+        user = ""
+        password = ""
+
+        # One of: none, starttls, ssl
+        ssl-type = "starttls"
+
+        # In case of self-signed certificates or other problems like
+        # that, checking certificates can be disabled.
+        check-certificates = true
+
+        # Timeout for mail commands.
+        timeout = "10 seconds"
+
+        # The default mail address used for the `From' field.
+        #
+        # If left empty, the e-mail address of the current user is used.
+        default-from = ""
+
+        # When creating mails, the List-Id header is set to this value.
+        #
+        # This helps identifying these mails in muas. If it is empty,
+        # the header is not set.
+        list-id = "Sharry"
+      }
+
+      templates = {
+        download = {
+          subject = "Download ready."
+          body = """Hello,
+
+there are some files for you to download. Visit this link:
+
+{{{url}}}
+
+{{#password}}
+The required password will be sent by other means.
+{{/password}}
+
+
+Greetings,
+{{user}} via Sharry
+"""
+        }
+
+        alias = {
+          subject = "Link for Upload"
+          body = """Hello,
+
+please use the following link to sent files to me:
+
+{{{url}}}
+
+Greetings,
+{{user}} via Sharry
+"""
+        }
+
+        upload-notify = {
+          subject = "[Sharry] Files arrived"
+          body = """Hello {{user}},
+
+there have been files uploaded for you via the alias '{{aliasName}}'.
+View it here:
+
+{{{url}}}
+
+Greetings,
+Sharry
+"""
+        }
+      }
+    }
+  }
+}
+
+
+</code></pre></div></div>
+
+<h2 id="logging">Logging</h2>
+
+<p>Sharry logs to stdout. This works well, when managed by systemd or
+similar tools. Logging can be configured with these settings in the
+config file:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">logging.minimum-level</code> specifies the log level to control the
+verbosity. Levels are ordered from: <em>Trace</em>, <em>Debug</em>, <em>Info</em>, <em>Warn</em>
+and <em>Error</em></li>
+  <li><code class="language-plaintext highlighter-rouge">logging.format</code> this defines how the logs are formatted. There are
+two formats for humans: <em>Plain</em> and <em>Fancy</em>. And two more suited for
+machine consumption: <em>Json</em> and <em>Logfmt</em>. The <em>Json</em> format contains
+all details, while the others may omit some for readability</li>
+  <li><code class="language-plaintext highlighter-rouge">levels</code> optional <em>logger name</em> to <em>level</em> mappings to override the
+log level for specific loggers. If not mentioned here, everything is
+logged with <code class="language-plaintext highlighter-rouge">minimum-level</code>.</li>
+</ul>
+
+<p>The default sets some selected loggers to info and the others to warn.</p>
+</section></div></div></div></div><script src="/sharry/highlight/highlight.pack.js"></script><script src="/sharry/lunr/lunr.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash']});
+hljs.initHighlightingOnLoad();
+      </script><script src="/sharry/js/fathom.js"></script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/sharry/js/search.js"></script><script src="/sharry/js/docs.js"></script></body></html>
