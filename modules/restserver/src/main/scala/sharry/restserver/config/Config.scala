@@ -12,6 +12,7 @@ import com.comcast.ip4s.{Host, Port}
 case class Config(
     baseUrl: LenientUri,
     aliasMemberEnabled: Boolean,
+    maxPageSize: Int,
     bind: Config.Bind,
     fileDownload: Config.FileDownload,
     logging: LogConfig,
@@ -84,6 +85,10 @@ object Config {
       initialTheme: String,
       oauthAutoRedirect: Boolean,
       customHead: String
+  )
+
+  final case class Api(
+      maxPageSize: Int
   )
 
   private def validateTheme(str: String): String =

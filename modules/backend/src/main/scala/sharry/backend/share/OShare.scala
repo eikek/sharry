@@ -84,7 +84,7 @@ trait OShare[F[_]] {
     *
     * The query is applied to the name, id and alias name.
     */
-  def findShares(q: String, accId: AccountId): Stream[F, ShareItem]
+  def findShares(q: String, accId: AccountId, page: Page): Stream[F, ShareItem]
 
   /** Get all details about a share. */
   def shareDetails(
@@ -336,8 +336,8 @@ object OShare {
       def getFileData(fileId: Ident, accId: AccountId): OptionT[F, FileData] =
         OptionT(store.transact(Queries.fileData(fileId)))
 
-      def findShares(q: String, accId: AccountId): Stream[F, ShareItem] =
-        store.transact(Queries.findShares(q, accId))
+      def findShares(q: String, accId: AccountId, page: Page): Stream[F, ShareItem] =
+        store.transact(Queries.findShares(q, accId, page))
 
       def shareDetails(
           shareId: ShareId,

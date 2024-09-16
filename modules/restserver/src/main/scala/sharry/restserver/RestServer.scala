@@ -111,9 +111,9 @@ object RestServer {
       "auth" -> LoginRoutes.session(restApp.backend.login, cfg),
       "settings" -> SettingRoutes(restApp.backend, token),
       "alias-member" ->
-        (if (cfg.aliasMemberEnabled) AliasMemberRoutes(restApp.backend, token)
+        (if (cfg.aliasMemberEnabled) AliasMemberRoutes(restApp.backend, token, cfg)
          else notFound[F](token)),
-      "alias" -> AliasRoutes(restApp.backend, token),
+      "alias" -> AliasRoutes(restApp.backend, token, cfg),
       "share" -> ShareRoutes(restApp.backend, token, cfg),
       "upload" -> ShareUploadRoutes(
         restApp.backend,
@@ -130,7 +130,7 @@ object RestServer {
   ): HttpRoutes[F] =
     Router(
       "signup" -> RegisterRoutes(restApp.backend, cfg).genInvite,
-      "account" -> AccountRoutes(restApp.backend)
+      "account" -> AccountRoutes(restApp.backend, cfg)
     )
 
   def openRoutes[F[_]: Async](

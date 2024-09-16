@@ -190,7 +190,11 @@ object Queries {
   private def aliasMemberOf(accId: Ident) =
     RAliasMember.aliasMemberOf(accId)
 
-  def findShares(q: String, accId: AccountId): Stream[ConnectionIO, ShareItem] = {
+  def findShares(
+      q: String,
+      accId: AccountId,
+      page: Page
+  ): Stream[ConnectionIO, ShareItem] = {
     val nfiles = Column("files")
     val nsize = Column("size")
     val shareId = "s" :: RShare.Columns.id
@@ -225,8 +229,10 @@ object Queries {
         Sql.or(account.is(accId.id), shareAlias.in(aliasMemberOf(accId.id))),
         Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs), description.like(qs))
       )
-    ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC"
-    logger.stream.trace(s"$frag").drain ++
+    ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC" ++ fr"OFFSET ${page.offset} LIMIT ${page.limit}"
+    logger.stream
+      .trace(s"$frag (page.limit=${page.limit}  page.offset=${page.offset})")
+      .drain ++
       frag.query[ShareItem].stream
   }
 

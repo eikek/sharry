@@ -30,12 +30,15 @@ object ShareRoutes {
     import dsl._
 
     HttpRoutes.of[F] {
-      case req @ GET -> Root / "search" =>
-        val q = req.params.getOrElse("q", "")
+      case req @ GET -> Root / "search" :? Params.Query(optQ) +& Params.Page(p) =>
+        val q = optQ.getOrElse("")
         for {
-          _ <- logger.trace(s"Listing shares: $q")
+          _ <- logger.trace(s"Listing shares: $q $p")
           now <- Timestamp.current[F]
-          all <- backend.share.findShares(q, token.account).take(100).compile.toVector
+          all <- backend.share
+            .findShares(q, token.account, p.capped(cfg.maxPageSize))
+            .compile
+            .toVector
           list = ShareList(all.map(shareListItem(now)).toList)
           resp <- Ok(list)
         } yield resp

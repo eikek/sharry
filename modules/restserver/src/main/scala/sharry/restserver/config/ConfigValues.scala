@@ -71,6 +71,12 @@ object ConfigValues extends ConfigDecoders:
 
   val baseUrl = key("base-url", "BASE_URL").as[LenientUri]
 
+  val maxPageSize = key("max-page-size", "MAX_PAGE_SIZE").as[Int].flatMap { n =>
+    if (n <= 0)
+      ConfigValue.failed(ConfigError(s"max-page-size must be greater than 0, got $n"))
+    else ConfigValue.loaded(ConfigKey("max-page-size"), n)
+  }
+
   val bind = {
     val address = key("bind.address", "BIND_ADDRESS").as[Host]
     val port = key("bind.port", "BIND_PORT").as[Port]
@@ -413,7 +419,16 @@ object ConfigValues extends ConfigDecoders:
     )
 
   val fullConfig =
-    (baseUrl, aliasMemberEnabled, bind, fileDownload, logConfig, webapp, backendConfig)
+    (
+      baseUrl,
+      aliasMemberEnabled,
+      maxPageSize,
+      bind,
+      fileDownload,
+      logConfig,
+      webapp,
+      backendConfig
+    )
       .mapN(
         Config.apply
       )

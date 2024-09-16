@@ -662,6 +662,8 @@ paths:
         Returns a list of all shares of the current user.
       parameters:
         - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
       responses:
         422:
           description: BadRequest
@@ -2195,6 +2197,22 @@ components:
       required: false
       schema:
         type: string
+    page:
+      name: page
+      in: query
+      description: The page number
+      required: false
+      schema:
+        type: integer
+        format: int32
+    pageSize:
+      name: pageSize
+      in: query
+      description: The page size
+      required: false
+      schema:
+        type: integer
+        format: int32
     SharryFileName:
       name: Sharry-File-Name
       in: header
