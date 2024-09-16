@@ -7,6 +7,7 @@ import sharry.backend.BackendApp
 import sharry.backend.account.AccountItem
 import sharry.backend.auth.AuthToken
 import sharry.restapi.model.*
+import sharry.restserver.config.Config
 
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityEncoder.*
@@ -15,7 +16,8 @@ import org.http4s.dsl.Http4sDsl
 object AliasMemberRoutes {
   def apply[F[_]: Async](
       backend: BackendApp[F],
-      token: AuthToken
+      token: AuthToken,
+      cfg: Config
   ): HttpRoutes[F] = {
     val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
@@ -28,7 +30,7 @@ object AliasMemberRoutes {
         list <- backend.account
           .findAccounts(q)
           .filter(a => a.acc.id != token.account.id)
-          .take(100)
+          .take(cfg.maxPageSize)
           .compile
           .toVector
         resp <- Ok(AccountLightList(list.map(convert).toList))

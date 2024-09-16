@@ -9,6 +9,7 @@ import sharry.backend.alias.OAlias
 import sharry.backend.auth.AuthToken
 import sharry.common.*
 import sharry.restapi.model.*
+import sharry.restserver.config.Config
 import sharry.store.records.RAlias
 
 import org.http4s.HttpRoutes
@@ -19,7 +20,8 @@ import org.http4s.dsl.Http4sDsl
 object AliasRoutes {
   def apply[F[_]: Async](
       backend: BackendApp[F],
-      token: AuthToken
+      token: AuthToken,
+      cfg: Config
   ): HttpRoutes[F] = {
     val logger = sharry.logging.getLogger[F]
     val dsl = new Http4sDsl[F] {}
@@ -40,7 +42,11 @@ object AliasRoutes {
         val q = req.params.getOrElse("q", "")
         for {
           _ <- logger.trace(s"Listing aliases for ${token.account}")
-          list <- backend.alias.findAll(token.account.id, q).take(100).compile.toVector
+          list <- backend.alias
+            .findAll(token.account.id, q)
+            .take(cfg.maxPageSize)
+            .compile
+            .toVector
           resp <- Ok(AliasList(list.map(convert).toList))
         } yield resp
 

@@ -8,6 +8,7 @@ import sharry.backend.BackendApp
 import sharry.backend.account.{AccountItem, NewAccount}
 import sharry.common.*
 import sharry.restapi.model.*
+import sharry.restserver.config.Config
 import sharry.store.records.ModAccount
 
 import org.http4s.HttpRoutes
@@ -16,7 +17,7 @@ import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
 
 object AccountRoutes {
-  def apply[F[_]: Async](backend: BackendApp[F]): HttpRoutes[F] = {
+  def apply[F[_]: Async](backend: BackendApp[F], cfg: Config): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
@@ -59,7 +60,7 @@ object AccountRoutes {
         val q = req.params.getOrElse("q", "")
         for {
           _ <- logger.trace(s"Listing accounts: $q")
-          all <- backend.account.findAccounts(q).take(100).compile.toVector
+          all <- backend.account.findAccounts(q).take(cfg.maxPageSize).compile.toVector
           list = AccountList(all.map(accountDetail).toList)
           resp <- Ok(list)
         } yield resp
