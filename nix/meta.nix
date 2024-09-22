@@ -5,6 +5,7 @@ lib: rec {
 
   license = lib.licenses.gpl3;
   homepage = https://github.com/eikek/sharry;
+  mainProgram = "sharry";
 
   meta-bin = {
     description = ''
@@ -12,7 +13,7 @@ lib: rec {
       build is done from published zip files.
     '';
 
-    inherit license homepage;
+    inherit license homepage mainProgram;
   };
 
   meta-src = {
@@ -21,6 +22,6 @@ lib: rec {
       build is done from sources.
     '';
 
-    inherit license homepage;
+    inherit license homepage mainProgram;
   };
 }
