@@ -15,6 +15,10 @@ RUN curl -L -o sharry.zip ${sharry_url:-https://github.com/eikek/sharry/releases
   && rm sharry.zip \
   && ln -snf sharry-restserver-* sharry
 
+RUN addgroup -S user -g 10001 && \
+    adduser -SDH user -u 10001 -G user
+USER 10001
+
 EXPOSE 9090
 ENTRYPOINT ["/opt/sharry/bin/sharry-restserver"]
 
