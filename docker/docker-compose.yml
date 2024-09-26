@@ -9,7 +9,8 @@ services:
     volumes:
       - ${PWD}/sharry.conf:/opt/sharry.conf
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: postgres:16.4
     container_name: postgres_db
@@ -19,5 +20,12 @@ services:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=dbpass
       - POSTGRES_DB=dbname
+      - PGUSER=dbuser
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "dbname"]
+      interval: 15s
+      timeout: 60s
+      retries: 5
+      start_period: 15s
 volumes:
   postgres_data:
