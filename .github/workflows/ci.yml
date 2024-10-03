@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v29
+      - uses: cachix/install-nix-action@v30
       - run: nix build .#sharry-dev
   ci-matrix:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 100
-      - uses: cachix/install-nix-action@v29
+      - uses: cachix/install-nix-action@v30
       - name: Fetch tags
         run: git fetch --depth=100 origin +refs/tags/*:refs/tags/*
       - name: Coursier cache
