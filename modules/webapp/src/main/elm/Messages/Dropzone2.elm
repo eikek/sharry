@@ -5,6 +5,7 @@ module Messages.Dropzone2 exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 
@@ -13,6 +14,15 @@ type alias Texts =
     , filesSelected : String
     , or : String
     , selectFiles : String
+    }
+
+
+es : Texts
+es =
+    { dropHere = "Suelta los archivos aquí"
+    , filesSelected = " archivos seleccionados ("
+    , or = "O"
+    , selectFiles = "Seleccionar Archivos ..."
     }
 
 

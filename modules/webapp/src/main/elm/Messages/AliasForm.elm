@@ -5,6 +5,7 @@ module Messages.AliasForm exposing
     , gb
     , ja
     , cz
+    , es
     )
 
 import Html exposing (..)
@@ -27,6 +28,33 @@ type alias Texts =
     , memberInfo : String
     , yesNo : Messages.YesNoDimmer.Texts
     , validityField : Messages.ValidityField.Texts
+    }
+
+
+es : Texts
+es =
+    { id = "Id"
+    , noteToIdsHead = "Nota sobre los Ids"
+    , noteToIds =
+        p []
+            [ text "Este ID es parte de la URL donde "
+            , em [] [ text "todos" ]
+            , text " pueden subir archivos. Se recomienda usar"
+            , text " algo aleatorio. El id puede cambiarse a "
+            , text "cualquier valor, pero si se deja vacío, se generará"
+            , text " uno aleatorio."
+            ]
+    , name = "Nombre"
+    , validity = "Validez"
+    , enabled = "Habilitado"
+    , submit = "Enviar"
+    , back = "Atrás"
+    , delete = "Eliminar"
+    , searchPlaceholder = "Buscar…"
+    , members = "Miembros"
+    , memberInfo = "Los miembros de tu alias pueden ver y compartir este alias y ver todas las subidas recibidas a través de este alias."
+    , yesNo = Messages.YesNoDimmer.es
+    , validityField = Messages.ValidityField.es
     }
 
 

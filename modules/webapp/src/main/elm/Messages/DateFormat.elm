@@ -34,6 +34,9 @@ get lang =
         Czech ->
             cz
 
+        Spanish ->
+            es            
+
 formatDateTime : Language -> Int -> String
 formatDateTime lang millis =
     let
@@ -48,6 +51,25 @@ formatDateTime lang millis =
 
 
 --- Language Definitions
+
+
+es : DateTimeMsg
+es =
+    { format =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.monthNameFull
+        , DateFormat.text " "
+        , DateFormat.dayOfMonthSuffix
+        , DateFormat.text ", "
+        , DateFormat.yearNumber
+        , DateFormat.text ", "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = DL.spanish
+    }
 
 
 gb : DateTimeMsg

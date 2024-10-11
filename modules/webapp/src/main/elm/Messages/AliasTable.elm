@@ -5,6 +5,7 @@ module Messages.AliasTable exposing
     , gb
     , ja
     , cz
+    , es
     )
 
 import Language
@@ -22,6 +23,20 @@ type alias Texts =
     , owner : String
     , validityField : Messages.ValidityField.Texts
     , dateTime : Int -> String
+    }
+
+
+es : Texts
+es =
+    { name = "Nombre"
+    , enabled = "Habilitado"
+    , validity = "Validez"
+    , created = "Creado"
+    , edit = "Editar"
+    , show = "Mostrar"
+    , owner = "Propietario"
+    , validityField = Messages.ValidityField.es
+    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish
     }
 
 

@@ -5,6 +5,7 @@ module Messages.HomePage exposing
     , gb
     , ja
     , cz
+    , es
     )
 
 
@@ -15,6 +16,17 @@ type alias Texts =
     , viewAliases : String
     , documentation : String
     , shareFilesWithOthers : String
+    }
+
+
+es : Texts
+es =
+    { createShare = "Crear Compartido"
+    , viewShares = "Ver Compartidos"
+    , createAlias = "Crear Alias"
+    , viewAliases = "Ver Aliases"
+    , documentation = "Documentación"
+    , shareFilesWithOthers = "Compartir archivos con otros"
     }
 
 

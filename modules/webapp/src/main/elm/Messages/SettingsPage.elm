@@ -5,6 +5,7 @@ module Messages.SettingsPage exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 
@@ -19,6 +20,21 @@ type alias Texts =
     , currentPassword : String
     , newPassword : String
     , newPasswordRepeat : String
+    }
+
+
+es : Texts
+es =
+    { settingsTitle = "Configuración"
+    , changeMailHeader = "Cambia tu Correo Electrónico"
+    , newEmail = "Nuevo Correo Electrónico"
+    , newEmailPlaceholder = "Dirección de Correo Electrónico"
+    , submitEmptyMailInfo = "Enviar un formulario vacío elimina la dirección de correo electrónico."
+    , submit = "Enviar"
+    , changePasswordHeader = "Cambiar Contraseña"
+    , currentPassword = "Contraseña Actual"
+    , newPassword = "Nueva Contraseña"
+    , newPasswordRepeat = "Nueva Contraseña (Repetir)" }
     }
 
 

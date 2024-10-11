@@ -5,6 +5,7 @@ module Messages.LoginPage exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 import Messages.FixedDropdown
@@ -22,6 +23,22 @@ type alias Texts =
     , signupLink : String
     , or : String
     , dropdown : Messages.FixedDropdown.Texts
+    }
+
+
+es : Texts
+es =
+    { username = "Nombre de usuario"
+    , password = "Contraseña"
+    , loginPlaceholder = "Usuario"
+    , passwordPlaceholder = "Contraseña"
+    , loginButton = "Iniciar sesión"
+    , via = "vía"
+    , loginSuccessful = "Inicio de sesión exitoso"
+    , noAccount = "¿No tienes una cuenta?"
+    , signupLink = "¡Regístrate!"
+    , or = "O"
+    , dropdown = Messages.FixedDropdown.es
     }
 
 
