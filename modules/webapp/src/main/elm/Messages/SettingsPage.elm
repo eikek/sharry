@@ -34,7 +34,7 @@ es =
     , changePasswordHeader = "Cambiar Contraseña"
     , currentPassword = "Contraseña Actual"
     , newPassword = "Nueva Contraseña"
-    , newPasswordRepeat = "Nueva Contraseña (Repetir)" }
+    , newPasswordRepeat = "Nueva Contraseña (Repetir)"
     }
 
 
