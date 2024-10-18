@@ -5,6 +5,7 @@ module Messages.NewInvitePage exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 import Html exposing (Html, p, text)
@@ -19,6 +20,36 @@ type alias Texts =
     , success : String
     , invitationKey : String
     , message : List (Html Never)
+    }
+
+
+es : Texts
+es =
+    { createNewTitle = "Crear nuevas invitaciones"
+    , newInvitePassword = "Nueva Contraseña de Invitación"
+    , submit = "Enviar"
+    , reset = "Restablecer"
+    , error = "Error"
+    , success = "Éxito"
+    , invitationKey = "Clave de Invitación:"
+    , message =
+        [ p []
+            [ text
+                """Sharry requiere una invitación para registrarse. 
+                Puedes crear estas invitaciones aquí y enviarlas a tus amigos 
+                para que puedan registrarse en Sharry."""
+            ]
+        , p []
+            [ text
+                """Cada invitación solo puede ser usada una vez. 
+                Necesitarás crear una clave para cada persona que quieras invitar."""
+            ]
+        , p []
+            [ text
+                """Crear una invitación requiere proporcionar la contraseña 
+                desde la configuración."""
+            ]
+        ]
     }
 
 

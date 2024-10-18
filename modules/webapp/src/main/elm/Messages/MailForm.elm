@@ -5,6 +5,7 @@ module Messages.MailForm exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 
@@ -15,6 +16,17 @@ type alias Texts =
     , body : String
     , send : String
     , cancel : String
+    }
+
+
+es : Texts
+es =
+    { receivers = "Destinatario(s)"
+    , separateRecipientsByComma = "Separa múltiples destinatarios con una coma"
+    , subject = "Asunto"
+    , body = "Cuerpo"
+    , send = "Enviar"
+    , cancel = "Cancelar"
     }
 
 

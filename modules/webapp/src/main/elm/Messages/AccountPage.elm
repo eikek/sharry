@@ -5,6 +5,7 @@ module Messages.AccountPage exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 import Messages.AccountForm
@@ -18,6 +19,17 @@ type alias Texts =
     , newAccount : String
     , accountForm : Messages.AccountForm.Texts
     , accountTable : Messages.AccountTable.Texts
+    }
+
+
+es : Texts
+es =
+    { createAccountTitle = "Crear una nueva cuenta interna"
+    , accounts = "Cuentas"
+    , searchPlaceholder = "Buscar…"
+    , newAccount = "Nueva Cuenta"
+    , accountForm = Messages.AccountForm.es
+    , accountTable = Messages.AccountTable.es
     }
 
 

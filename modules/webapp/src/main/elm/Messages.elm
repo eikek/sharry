@@ -59,6 +59,8 @@ get lang =
         Czech ->
             cz
 
+        Spanish ->
+            es
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
@@ -106,6 +108,26 @@ fromFlags flags =
 
 
 --- Messages Definitions
+
+
+es : Messages
+es =
+    { lang = Spanish
+    , iso2 = "es"
+    , label = "Español"
+    , flagIcon = "fi fi-es"
+    , app = Messages.App.es
+    , login = Messages.LoginPage.es
+    , register = Messages.RegisterPage.es
+    , account = Messages.AccountPage.es
+    , aliasPage = Messages.AliasPage.es
+    , detail = Messages.DetailPage.es
+    , share = Messages.SharePage.es
+    , home = Messages.HomePage.es
+    , upload = Messages.UploadPage.es
+    , newInvite = Messages.NewInvitePage.es
+    , settings = Messages.SettingsPage.es
+    }
 
 
 gb : Messages

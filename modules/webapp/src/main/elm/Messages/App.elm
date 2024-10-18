@@ -5,6 +5,7 @@ module Messages.App exposing
     , gb
     , ja
     , cz
+    , es
     )
 
 
@@ -21,6 +22,23 @@ type alias Texts =
     , lightDark : String
     , logoutSharry : String
     , logoutOAuth : String
+    }
+
+
+es : Texts
+es =
+    { home = "Inicio"
+    , shares = "Compartidos"
+    , aliases = "Aliases"
+    , accounts = "Cuentas"
+    , settings = "Configuración"
+    , newInvites = "Nuevas Invitaciones"
+    , logout = \user -> "Cerrar sesión (" ++ user ++ ")"
+    , login = "Iniciar sesión"
+    , register = "Registrarse"
+    , lightDark = "Claro/Oscuro"
+    , logoutSharry = "Cerrar sesión en Sharry"
+    , logoutOAuth = "Cerrar sesión en tu proveedor de autenticación"
     }
 
 

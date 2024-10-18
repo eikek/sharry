@@ -5,6 +5,7 @@ module Messages.ShareFileList exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 import Messages.YesNoDimmer
@@ -18,6 +19,18 @@ type alias Texts =
     , fileIsIncomplete : String
     , tryUploadAgain : String
     , yesNo : Messages.YesNoDimmer.Texts
+    }
+
+
+es : Texts
+es =
+    { previewNotSupported = "Vista previa no soportada"
+    , downloadToDisk = "Descargar al disco"
+    , viewInBrowser = "Ver en el navegador"
+    , deleteFile = "Eliminar el archivo."
+    , fileIsIncomplete = "El archivo está incompleto ("
+    , tryUploadAgain = "%). Intenta subirlo de nuevo."
+    , yesNo = Messages.YesNoDimmer.es
     }
 
 

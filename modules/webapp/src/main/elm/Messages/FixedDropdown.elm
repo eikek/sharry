@@ -5,11 +5,18 @@ module Messages.FixedDropdown exposing
     , fr
     , ja
     , cz
+    , es
     )
 
 
 type alias Texts =
     { select : String
+    }
+
+
+es : Texts
+es =
+    { select = "Seleccionar…"
     }
 
 

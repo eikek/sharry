@@ -5,6 +5,7 @@ module Messages.ShareTable exposing
     , gb
     , ja
     , cz
+    , es
     )
 
 import Language
@@ -21,6 +22,20 @@ type alias Texts =
     , created : String
     , dateTime : Int -> String
     , open : String
+    }
+
+
+es : Texts
+es =
+    { nameId = "Nombre/Id"
+    , aliasLabel = "Alias"
+    , maxViews = "Vistas Máximas"
+    , published = "Publicado"
+    , nFiles = "#Archivos"
+    , size = "Tamaño"
+    , created = "Creado"
+    , open = "Abrir"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish
     }
 
 

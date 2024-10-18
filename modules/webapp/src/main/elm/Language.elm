@@ -10,6 +10,7 @@ type Language
     | French
     | Japanese
     | Czech
+    | Spanish
 
 allLanguages : List Language
 allLanguages =
@@ -18,4 +19,5 @@ allLanguages =
     , French
     , Japanese
     , Czech
+    , Spanish
     ]
