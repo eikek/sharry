@@ -6,6 +6,7 @@ module Messages.SettingsPage exposing
     , ja
     , cz
     , es
+	, it
     )
 
 
@@ -22,6 +23,19 @@ type alias Texts =
     , newPasswordRepeat : String
     }
 
+it : Texts
+it =
+    { settingsTitle = "Impostazioni"
+    , changeMailHeader = "Cambia Indirizzo E-Mail"
+    , newEmail = "Nuova E-Mail"
+    , newEmailPlaceholder = "Indirizzo E-Mail"
+    , submitEmptyMailInfo = "L'invio di un modulo vuoto elimina l'indirizzo e-mail."
+    , submit = "Invia"
+    , changePasswordHeader = "Cambia Password"
+    , currentPassword = "Password Attuale"
+    , newPassword = "Nuova Password"
+    , newPasswordRepeat = "Nuova Password (Ripeti)"
+    }
 
 es : Texts
 es =

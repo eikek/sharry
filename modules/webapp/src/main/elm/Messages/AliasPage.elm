@@ -6,6 +6,7 @@ module Messages.AliasPage exposing
     , ja
     , cz
     , es
+	, it
     )
 
 import Messages.AliasForm
@@ -32,6 +33,25 @@ type alias Texts =
     , mailSend : Messages.MailSend.Texts
     }
 
+it : Texts
+it =
+    { createNew = "Crea Nuova Pagina Alias"
+    , aliasPage = "Pagina Alias: "
+    , aliasPages = "Pagine Alias"
+    , newAliasPage = "Nuova Pagina Alias"
+    , searchPlaceholder = "Cerca…"
+    , errorQrCode = "Errore durante la generazione del QRCode."
+    , shareThisLink = "Condividi questo link"
+    , aliasPageNowAt = "La pagina alias è: "
+    , shareThisUrl = "Puoi condividere questo URL per ricevere files dagli altri."
+    , sendEmail = "Invia E-Mail"
+    , copyLink = "Copia Link"
+    , owner = "Proprietario"
+    , notOwnerInfo = "Il proprietario di questo alias è un altro utente e lo ha condiviso con te. Non puoi modificare le proprietà."
+    , aliasForm = Messages.AliasForm.it
+    , aliasTable = Messages.AliasTable.it
+    , mailSend = Messages.MailSend.it
+    }
 
 es : Texts
 es =

@@ -6,6 +6,7 @@ module Messages.MailForm exposing
     , ja
     , cz
     , es
+	, it
     )
 
 
@@ -18,6 +19,15 @@ type alias Texts =
     , cancel : String
     }
 
+it : Texts
+it =
+    { receivers = "Destinatario"
+    , separateRecipientsByComma = "Separa destinatari multipli con una virgola"
+    , subject = "Oggetto"
+    , body = "Corpo"
+    , send = "Invia"
+    , cancel = "Annulla"
+    }
 
 es : Texts
 es =

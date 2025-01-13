@@ -35,7 +35,10 @@ get lang =
             cz
 
         Spanish ->
-            es            
+            es
+		
+		Italian ->
+		    it
 
 formatDateTime : Language -> Int -> String
 formatDateTime lang millis =
@@ -52,6 +55,23 @@ formatDateTime lang millis =
 
 --- Language Definitions
 
+it : DateTimeMsg
+it =
+    { format =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.monthNameFull
+        , DateFormat.text " "
+        , DateFormat.dayOfMonthSuffix
+        , DateFormat.text ", "
+        , DateFormat.yearNumber
+        , DateFormat.text ", "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = DL.italian
+    }
 
 es : DateTimeMsg
 es =

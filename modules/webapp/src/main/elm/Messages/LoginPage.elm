@@ -6,6 +6,7 @@ module Messages.LoginPage exposing
     , ja
     , cz
     , es
+	, it
     )
 
 import Messages.FixedDropdown
@@ -25,6 +26,20 @@ type alias Texts =
     , dropdown : Messages.FixedDropdown.Texts
     }
 
+it : Texts
+it =
+    { username = "Nome utente"
+    , password = "Password"
+    , loginPlaceholder = "Utente"
+    , passwordPlaceholder = "Password"
+    , loginButton = "Accedi"
+    , via = "via"
+    , loginSuccessful = "Login effettuato"
+    , noAccount = "Non hai un account?"
+    , signupLink = "Registati!"
+    , or = "Oppure"
+    , dropdown = Messages.FixedDropdown.it
+    }
 
 es : Texts
 es =

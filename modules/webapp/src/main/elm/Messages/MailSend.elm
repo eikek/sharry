@@ -6,6 +6,7 @@ module Messages.MailSend exposing
     , ja
     , cz
     , es
+	, it
     )
 
 import Messages.MailForm
@@ -17,6 +18,12 @@ type alias Texts =
     , mailForm : Messages.MailForm.Texts
     }
 
+it : Texts
+it =
+    { sendingEmail = "Invio email ..."
+    , loadingTemplate = "Caricamento template ..."
+    , mailForm = Messages.MailForm.it
+    }
 
 es : Texts
 es =

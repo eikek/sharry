@@ -6,6 +6,7 @@ module Messages.RegisterPage exposing
     , ja
     , cz
     , es
+	, it
     )
 
 import Messages.FixedDropdown
@@ -24,6 +25,19 @@ type alias Texts =
     , dropdown : Messages.FixedDropdown.Texts
     }
 
+it : Texts
+it =
+    { signup = "Registrazione"
+    , userLogin = "Accesso Utente"
+    , password = "Password"
+    , passwordRepeat = "Password (ripeti)"
+    , invitationKey = "Chiave invito"
+    , submitButton = "Invia"
+    , alreadySignedUp = "Sei già registrato?"
+    , signin = "Accedi"
+    , registrationSuccessful = "Registrato correttamente."
+    , dropdown = Messages.FixedDropdown.it
+    }
 
 es : Texts
 es =

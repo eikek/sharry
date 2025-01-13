@@ -6,6 +6,7 @@ module Messages.MarkdownInput exposing
     , ja
     , cz
     , es
+	, it
     )
 
 
@@ -16,6 +17,13 @@ type alias Texts =
     , supportsMarkdown : String
     }
 
+it : Texts
+it =
+    { edit = "Modifica"
+    , preview = "Anteprima"
+    , split = "Dividi"
+    , supportsMarkdown = "Supporta Markdown"
+    }
 
 es : Texts
 es =

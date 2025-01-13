@@ -6,6 +6,7 @@ module Messages.UploadPage exposing
     , ja
     , cz
     , es
+	, it
     )
 
 import Messages.ShareTable
@@ -18,6 +19,13 @@ type alias Texts =
     , shareTable : Messages.ShareTable.Texts
     }
 
+it : Texts
+it =
+    { yourShares = "Le mie Condivisioni"
+    , newShare = "Nuova Condivisione"
+    , search = "Cerca…"
+    , shareTable = Messages.ShareTable.it
+    }
 
 es : Texts
 es =

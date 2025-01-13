@@ -6,6 +6,7 @@ module Messages.AccountTable exposing
     , ja
     , cz
     , es
+	, it
     )
 
 import Language
@@ -29,6 +30,19 @@ type alias Texts =
     , dateTime : Int -> String
     }
 
+it : Texts
+it =
+    { login = "Accedi"
+    , source = "Sorgente"
+    , state = "Stato"
+    , nrShares = "#Condivisioni"
+    , admin = "Amministratore"
+    , nrLogins = "#Accessi"
+    , lastLogin = "Ultimo Accesso"
+    , created = "Creazione"
+    , edit = "Modifica"
+    , dateTime = formatDateTime Language.Italian
+    }
 
 es : Texts
 es =
