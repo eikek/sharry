@@ -6,7 +6,7 @@ module Messages.MailSend exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.MailForm

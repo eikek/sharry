@@ -6,7 +6,7 @@ module Messages.DetailPage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Data.InitialView exposing (InitialView)

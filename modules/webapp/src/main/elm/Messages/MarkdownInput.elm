@@ -6,7 +6,7 @@ module Messages.MarkdownInput exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

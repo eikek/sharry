@@ -6,7 +6,7 @@ module Messages.FixedDropdown exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

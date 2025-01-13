@@ -6,7 +6,7 @@ module Messages.App exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

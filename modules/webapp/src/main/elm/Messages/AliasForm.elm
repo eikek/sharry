@@ -6,7 +6,7 @@ module Messages.AliasForm exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Html exposing (..)

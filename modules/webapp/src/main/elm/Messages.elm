@@ -63,7 +63,7 @@ get lang =
             es
 			
         Italian ->
-		    it
+            it
 
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}

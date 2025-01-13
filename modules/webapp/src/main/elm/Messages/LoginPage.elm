@@ -6,7 +6,7 @@ module Messages.LoginPage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.FixedDropdown

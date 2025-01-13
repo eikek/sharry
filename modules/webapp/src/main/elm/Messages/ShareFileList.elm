@@ -6,7 +6,7 @@ module Messages.ShareFileList exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.YesNoDimmer

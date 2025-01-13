@@ -6,7 +6,7 @@ module Messages.YesNoDimmer exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

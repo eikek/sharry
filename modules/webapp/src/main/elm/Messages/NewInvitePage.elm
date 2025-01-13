@@ -6,7 +6,7 @@ module Messages.NewInvitePage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Html exposing (Html, p, text)

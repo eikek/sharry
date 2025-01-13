@@ -6,7 +6,7 @@ module Messages.Dropzone2 exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

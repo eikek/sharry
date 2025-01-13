@@ -6,7 +6,7 @@ module Messages.RegisterPage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.FixedDropdown

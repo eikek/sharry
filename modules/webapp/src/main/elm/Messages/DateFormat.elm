@@ -36,9 +36,9 @@ get lang =
 
         Spanish ->
             es
-		
-		Italian ->
-		    it
+        
+        Italian ->
+            it
 
 formatDateTime : Language -> Int -> String
 formatDateTime lang millis =

@@ -6,7 +6,7 @@ module Messages.AliasPage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.AliasForm

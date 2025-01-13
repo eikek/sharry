@@ -6,7 +6,7 @@ module Messages.SharePage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.Dropzone2

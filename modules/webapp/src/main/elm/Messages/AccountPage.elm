@@ -6,7 +6,7 @@ module Messages.AccountPage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.AccountForm

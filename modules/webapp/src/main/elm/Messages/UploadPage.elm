@@ -6,7 +6,7 @@ module Messages.UploadPage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.ShareTable

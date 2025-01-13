@@ -6,7 +6,7 @@ module Messages.AccountTable exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Language

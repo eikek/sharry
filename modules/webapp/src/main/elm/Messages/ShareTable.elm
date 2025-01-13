@@ -6,7 +6,7 @@ module Messages.ShareTable exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Language

@@ -6,7 +6,7 @@ module Messages.ValidityField exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Messages.FixedDropdown

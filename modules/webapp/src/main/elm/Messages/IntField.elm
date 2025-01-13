@@ -6,7 +6,7 @@ module Messages.IntField exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

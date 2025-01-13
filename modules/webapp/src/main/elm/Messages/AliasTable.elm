@@ -6,7 +6,7 @@ module Messages.AliasTable exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 import Language

@@ -6,7 +6,7 @@ module Messages.HomePage exposing
     , ja
     , cz
     , es
-	, it
+    , it
     )
 
 

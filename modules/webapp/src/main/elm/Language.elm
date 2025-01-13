@@ -11,7 +11,7 @@ type Language
     | Japanese
     | Czech
     | Spanish
-	| Italian
+    | Italian
 
 allLanguages : List Language
 allLanguages =
@@ -21,5 +21,5 @@ allLanguages =
     , Japanese
     , Czech
     , Spanish
-	, Italian
+    , Italian
     ]
