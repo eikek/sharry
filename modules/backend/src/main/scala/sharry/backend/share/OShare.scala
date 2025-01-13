@@ -128,8 +128,7 @@ trait OShare[F[_]] {
       value: Option[Password]
   ): OptionT[F, Unit]
 
-  /** Deletes all shares (with all its data) that have been published but are expired now.
-    */
+  /** Deletes all shares (with all its data) that have been published but are expired now. */
   def cleanupExpired(invalidAge: Duration): F[Int]
 
   /** Deletes files that have no reference to a share. This should actually never happen,
