@@ -6,6 +6,7 @@ module Messages.IntField exposing
     , ja
     , cz
     , es
+    , it
     )
 
 
@@ -15,6 +16,12 @@ type alias Texts =
     , notANumber : String -> String
     }
 
+it : Texts
+it =
+    { mustBeLower = "Il numero deve essere <= "
+    , mustBeGreater = "Il numero deve essere >= "
+    , notANumber = \str -> "'" ++ str ++ "' non è un numero valido!"
+    }
 
 es : Texts
 es =

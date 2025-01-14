@@ -6,6 +6,7 @@ module Messages.ShareFileList exposing
     , ja
     , cz
     , es
+    , it
     )
 
 import Messages.YesNoDimmer
@@ -21,6 +22,16 @@ type alias Texts =
     , yesNo : Messages.YesNoDimmer.Texts
     }
 
+it : Texts
+it =
+    { previewNotSupported = "Anteprima non supportata"
+    , downloadToDisk = "Scarica su disco"
+    , viewInBrowser = "Visualizza nel browser"
+    , deleteFile = "Elimina file."
+    , fileIsIncomplete = "Il file è incompleto ("
+    , tryUploadAgain = "%). Prova a caricare di nuovo."
+    , yesNo = Messages.YesNoDimmer.it
+    }
 
 es : Texts
 es =

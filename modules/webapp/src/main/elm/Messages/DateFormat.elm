@@ -35,7 +35,10 @@ get lang =
             cz
 
         Spanish ->
-            es            
+            es
+        
+        Italian ->
+            it
 
 formatDateTime : Language -> Int -> String
 formatDateTime lang millis =
@@ -52,6 +55,23 @@ formatDateTime lang millis =
 
 --- Language Definitions
 
+it : DateTimeMsg
+it =
+    { format =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.monthNameFull
+        , DateFormat.text " "
+        , DateFormat.dayOfMonthSuffix
+        , DateFormat.text ", "
+        , DateFormat.yearNumber
+        , DateFormat.text ", "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = italian
+    }
 
 es : DateTimeMsg
 es =
@@ -169,6 +189,68 @@ cz =
 
 
 --- Languages for the DateFormat module
+-- Italian
+
+
+{-| The Italian language!
+-}
+italian : DL.Language
+italian =
+    let
+        withDot str =
+            str ++ "."
+    in
+    DL.Language
+        toItalianMonthName
+        toItalianMonthAbbreviation
+        toItalianWeekdayName
+        (toItalianWeekdayName >> String.left 3 >> withDot)
+        toEnglishAmPm
+        (\_ -> ".")
+
+toItalianMonthName : Month -> String
+toItalianMonthName month =
+    case month of
+        Jan -> "Gennaio"
+        Feb -> "Febbraio"
+        Mar -> "Marzo"
+        Apr -> "Aprile"
+        May -> "Maggio"
+        Jun -> "Giugno"
+        Jul -> "Luglio"
+        Aug -> "Agosto"
+        Sep -> "Settembre"
+        Oct -> "Ottobre"
+        Nov -> "Novembre"
+        Dec -> "Dicembre"
+
+toItalianMonthAbbreviation : Month -> String
+toItalianMonthAbbreviation month =
+    case month of
+        Jan -> "Gen"
+        Feb -> "Feb"
+        Mar -> "Mar"
+        Apr -> "Apr"
+        May -> "Mag"
+        Jun -> "Giu"
+        Jul -> "Lug"
+        Aug -> "Ago"
+        Sep -> "Set"
+        Oct -> "Ott"
+        Nov -> "Nov"
+        Dec -> "Dic"
+
+toItalianWeekdayName : Weekday -> String
+toItalianWeekdayName weekday =
+    case weekday of
+        Mon -> "Lunedì"
+        Tue -> "Martedì"
+        Wed -> "Mercoledì"
+        Thu -> "Giovedì"
+        Fri -> "Venerdì"
+        Sat -> "Sabato"
+        Sun -> "Domenica"
+
 -- French
 
 

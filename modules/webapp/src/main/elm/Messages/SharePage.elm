@@ -6,6 +6,7 @@ module Messages.SharePage exposing
     , ja
     , cz
     , es
+    , it
     )
 
 import Messages.Dropzone2
@@ -41,6 +42,38 @@ type alias Texts =
     , gotoShare : String
     , maxPublicViews : String
     , uploadsUpTo : String -> String
+    }
+
+it : Texts
+it =
+    { markdownInput = Messages.MarkdownInput.it
+    , dropzone = Messages.Dropzone2.it
+    , validityField = Messages.ValidityField.it
+    , intField = Messages.IntField.it
+    , sendFiles = "Invia files"
+    , description = "Descrizione"
+    , sendMoreFiles = "Invia altri files"
+    , allFilesUploaded = "Tutti i files caricati"
+    , someFilesFailedHeader = "Alcuni files hanno fallito"
+    , someFilesFailedText = "Alcuni files hanno fallito durante il caricamento…. Puoi riprovare l'invio. "
+    , someFilesFailedTextAddon = "Vai alla condivisione ed invia gli stessi files di nuovo."
+    , submit = "Invia"
+    , clearFiles = "Pulisci Files"
+    , resume = "Riprendi"
+    , pause = "Pausa"
+    , password = "Password"
+    , createShare = "Crea Condivisione"
+    , details = "Dettagli"
+    , name = "Nome"
+    , namePlaceholder = "Nome Opzionale"
+    , validity = "Validità"
+    , files = "Files"
+    , newShare = "Nuova Condivisione"
+    , gotoShare = "Vai alla Condivisione"
+    , maxPublicViews = "Limite Visualizzazioni Pubbliche"
+    , uploadsUpTo =
+        \size ->
+            "Si possono caricare files fino a " ++ size ++ "."
     }
 
 

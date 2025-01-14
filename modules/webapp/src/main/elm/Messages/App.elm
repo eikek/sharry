@@ -6,6 +6,7 @@ module Messages.App exposing
     , ja
     , cz
     , es
+    , it
     )
 
 
@@ -24,6 +25,21 @@ type alias Texts =
     , logoutOAuth : String
     }
 
+it : Texts
+it =
+    { home = "Home"
+    , shares = "Condivisione"
+    , aliases = "Aliases"
+    , accounts = "Accounts"
+    , settings = "Impostazioni"
+    , newInvites = "Nuovi inviti"
+    , logout = \user -> "Esci (" ++ user ++ ")"
+    , login = "Accedi"
+    , register = "Registrazione"
+    , lightDark = "Chiaro/Scuro"
+    , logoutSharry = "Esci da Sharry"
+    , logoutOAuth = "Esci dal fornitore di autenticazione"
+    }
 
 es : Texts
 es =

@@ -6,6 +6,7 @@ module Messages.YesNoDimmer exposing
     , ja
     , cz
     , es
+    , it
     )
 
 
@@ -15,6 +16,12 @@ type alias Texts =
     , cancelButton : String
     }
 
+it : Texts
+it =
+    { message = "Eliminare questo elemento permanentemente?"
+    , confirmButton = "Si, fallo!"
+    , cancelButton = "No"
+    }
 
 es : Texts
 es =

@@ -6,6 +6,7 @@ module Messages.HomePage exposing
     , ja
     , cz
     , es
+    , it
     )
 
 
@@ -18,6 +19,15 @@ type alias Texts =
     , shareFilesWithOthers : String
     }
 
+it : Texts
+it =
+    { createShare = "Crea Condivisione"
+    , viewShares = "Vedi Condivisioni"
+    , createAlias = "Crea Alias"
+    , viewAliases = "Vedi Aliases"
+    , documentation = "Documentazione"
+    , shareFilesWithOthers = "Condividi files con gli altri"
+    }
 
 es : Texts
 es =

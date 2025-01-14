@@ -6,6 +6,7 @@ module Messages.DetailPage exposing
     , ja
     , cz
     , es
+    , it
     )
 
 import Data.InitialView exposing (InitialView)
@@ -76,6 +77,82 @@ type alias Texts =
     , initialViewField : String
     }
 
+it : Texts
+it =
+    { mailSend = Messages.MailSend.it
+    , save = "Salva"
+    , cancel = "Annulla"
+    , yourShare = "Le mie condivisioni"
+    , markdownInput = Messages.MarkdownInput.it
+    , shareFileList = Messages.ShareFileList.it
+    , yesNo = Messages.YesNoDimmer.it
+    , sharePublished =
+        "La condivisione è stata pubblicata, ma il numero massimo di visualizzazione è stato raggiunto. Puoi "
+            ++ "incrementare questa proprietà se vuoi continuare la pubblicazione."
+    , shareNotPublished =
+        "Per condividere con gli altri, devi pubblicare "
+            ++ "questa condivisione. In questo modo tutti quelli a cui invierai il link generato "
+            ++ "potranno accedere a questi dati."
+    , shareLinkExpired =
+        "La condivisione è stata pubblicata, risulta scaduta. Puoi "
+            ++ "ripubblicare la condivisione."
+    , errorQrCode = "Errore durante la codifica del QRCode."
+    , sharePublicAvailableAt = "La condivisione è accessibile pubblicamente a"
+    , shareAsYouLike = "Puoi condividere questo link con chi vuoi per farli accedere ai dati."
+    , sendEmail = "Invia E-Mail"
+    , copyLink = "Copia Link"
+    , name = "Nome"
+    , validity = "Tempo Validità"
+    , maxViews = "Max. Visualizzazioni"
+    , password = "Password"
+    , passwordProtected = "Protetto da Password"
+    , passwordNone = "Nessuna"
+    , shareSize = "#/Dimensione"
+    , created = "Creazione"
+    , aliasLabel = "Alias"
+    , publishedOn = "Pubblicato su"
+    , publishedUntil = "Pubblicato fino a"
+    , lastAccess = "Ultimo Accesso"
+    , views = "Visualizzazioni"
+    , publishWithNewLink = "Pubblica con nuovo Link"
+    , delete = "Elimina"
+    , edit = "Modifica"
+    , detailsMenu = "Dettagli"
+    , shareLinkMenu = "Condividi Link"
+    , addFilesLinkMenu = "Aggiungi files"
+    , editDescription = "Modifica descrizione"
+    , publish = "Pubblica"
+    , unpublish = "Annulla Pubblicazione"
+    , listView = "Vista a Lista"
+    , cardView = "Vista a Carte"
+    , submit = "Invia"
+    , clear = "Pulisci"
+    , resume = "Riprendi"
+    , pause = "Pausa"
+    , uploadsGreaterThan =
+        \size ->
+            "Tutti i caricamenti non devono superare i " ++ size ++ "."
+    , waitDeleteShare = "Eliminazione condivisione. Attendi."
+    , loadingData = "Caricamento dati..."
+    , dropzone = Messages.Dropzone2.it
+    , validityField = Messages.ValidityField.it
+    , passwordRequired = "Password necessaria"
+    , passwordInvalid = "Password non valida"
+    , or = "Oppure"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Italian
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "Lista"
+
+                Data.InitialView.Cards ->
+                    "Carte"
+
+                Data.InitialView.Zoom ->
+                    "Anteprima"
+    , initialViewField = "Vista iniziale"
+    }
 
 es : Texts
 es =

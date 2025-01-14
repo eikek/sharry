@@ -6,6 +6,7 @@ module Messages.AccountForm exposing
     , ja
     , cz
     , es
+    , it
     )
 
 import Messages.FixedDropdown
@@ -26,6 +27,20 @@ type alias Texts =
     , dropdown : Messages.FixedDropdown.Texts
     }
 
+it : Texts
+it =
+    { id = "Id"
+    , login = "Accedi"
+    , state = "Stato"
+    , admin = "Amministratore"
+    , password = "Password"
+    , submit = "Invia"
+    , back = "Indietro"
+    , delete = "Elimina"
+    , email = "E-Mail"
+    , yesNo = Messages.YesNoDimmer.it
+    , dropdown = Messages.FixedDropdown.it
+    }
 
 es : Texts
 es =

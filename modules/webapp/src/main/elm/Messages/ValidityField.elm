@@ -6,6 +6,7 @@ module Messages.ValidityField exposing
     , ja
     , cz
     , es
+    , it
     )
 
 import Messages.FixedDropdown
@@ -23,6 +24,18 @@ type alias Texts =
     , months : String
     }
 
+it : Texts
+it =
+    { dropdown = Messages.FixedDropdown.it
+    , hour = "ora"
+    , hours = "ore"
+    , day = "giorno"
+    , days = "giorni"
+    , week = "settimana"
+    , weeks = "settimane"
+    , month = "mese"
+    , months = "mesi"
+    }
 
 es : Texts
 es =
