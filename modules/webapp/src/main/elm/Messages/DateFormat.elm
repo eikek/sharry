@@ -196,13 +196,17 @@ cz =
 -}
 italian : DL.Language
 italian =
+    let
+        withDot str =
+            str ++ "."
+    in
     DL.Language
         toItalianMonthName
         toItalianMonthAbbreviation
         toItalianWeekdayName
-        (toItalianWeekdayName >> String.left 3)
+        (toItalianWeekdayName >> String.left 3 >> withDot)
         toEnglishAmPm
-        toItalianOrdinalSuffix
+        (\_ -> ".")
 
 toItalianMonthName : Month -> String
 toItalianMonthName month =
