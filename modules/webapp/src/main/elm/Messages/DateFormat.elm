@@ -70,7 +70,7 @@ it =
         , DateFormat.text ":"
         , DateFormat.minuteFixed
         ]
-    , lang = DL.italian
+    , lang = italian
     }
 
 es : DateTimeMsg
@@ -189,6 +189,64 @@ cz =
 
 
 --- Languages for the DateFormat module
+-- Italian
+
+
+{-| The Italian language!
+-}
+italian : DL.Language
+italian =
+    DL.Language
+        toItalianMonthName
+        toItalianMonthAbbreviation
+        toItalianWeekdayName
+        (toItalianWeekdayName >> String.left 3)
+        toEnglishAmPm
+        toItalianOrdinalSuffix
+
+toItalianMonthName : Month -> String
+toItalianMonthName month =
+    case month of
+        Jan -> "Gennaio"
+        Feb -> "Febbraio"
+        Mar -> "Marzo"
+        Apr -> "Aprile"
+        May -> "Maggio"
+        Jun -> "Giugno"
+        Jul -> "Luglio"
+        Aug -> "Agosto"
+        Sep -> "Settembre"
+        Oct -> "Ottobre"
+        Nov -> "Novembre"
+        Dec -> "Dicembre"
+
+toItalianMonthAbbreviation : Month -> String
+toItalianMonthAbbreviation month =
+    case month of
+        Jan -> "Gen"
+        Feb -> "Feb"
+        Mar -> "Mar"
+        Apr -> "Apr"
+        May -> "Mag"
+        Jun -> "Giu"
+        Jul -> "Lug"
+        Aug -> "Ago"
+        Sep -> "Set"
+        Oct -> "Ott"
+        Nov -> "Nov"
+        Dec -> "Dic"
+
+toItalianWeekdayName : Weekday -> String
+toItalianWeekdayName weekday =
+    case weekday of
+        Mon -> "Lunedì"
+        Tue -> "Martedì"
+        Wed -> "Mercoledì"
+        Thu -> "Giovedì"
+        Fri -> "Venerdì"
+        Sat -> "Sabato"
+        Sun -> "Domenica"
+
 -- French
 
 
