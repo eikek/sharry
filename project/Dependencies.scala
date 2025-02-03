@@ -24,7 +24,7 @@ object Dependencies {
   val SourcecodeVersion = "0.4.2"
   val SwaggerVersion = "5.18.3"
   val TikaVersion = "3.1.0"
-  val TusClientVersion = "1.8.0-1"
+  val TusClientVersion = "1.8.0-2"
   val TypesafeConfigVersion = "1.4.3"
   val YamuscaVersion = "0.10.0"
 
