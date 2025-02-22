@@ -29,6 +29,10 @@ allValidityOptions texts =
     , ( "4 " ++ texts.months, Days <| 4 * 30 )
     , ( "8 " ++ texts.months, Days <| 8 * 30 )
     , ( "12 " ++ texts.months, Days 365 )
+    , ( "24 " ++ texts.months, Days 730 )
+    , ( "36 " ++ texts.months, Days 1095 )
+    , ( "100 " ++ texts.months, Days 3650 )
+    , ( "1000 " ++ texts.months, Days 36500 )
     ]
 
 
