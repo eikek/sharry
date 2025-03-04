@@ -31,8 +31,8 @@ allValidityOptions texts =
     , ( "12 " ++ texts.months, Days 365 )
     , ( "24 " ++ texts.months, Days 730 )
     , ( "36 " ++ texts.months, Days 1095 )
-    , ( "100 " ++ texts.months, Days 3650 )
-    , ( "1000 " ++ texts.months, Days 36500 )
+    , ( "120 " ++ texts.months, Days 3652 )
+    , ( "1200 " ++ texts.months, Days 36525 )
     ]
 
 
