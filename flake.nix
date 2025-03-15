@@ -2,7 +2,7 @@
   description = "Sharry allows to share files with others in a simple way";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
     sbt.url = "github:zaninime/sbt-derivation";
     devshell-tools.url = "github:eikek/devshell-tools";
