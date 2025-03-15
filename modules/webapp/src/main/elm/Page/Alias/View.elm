@@ -209,7 +209,7 @@ shareInfo texts flags model url =
                     }
                 ]
             ]
-        , div [ class "md:w-1/3 " ]
+        , div [ class "md:w-1/3 w-full " ]
             [ div
                 [ class S.border
                 , class S.styleQr

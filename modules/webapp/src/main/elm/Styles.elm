@@ -3,7 +3,7 @@ module Styles exposing (..)
 
 styleQr : String
 styleQr =
-    "dark:bg-stone-400 bg-gray-50 mx-auto md:mx-0"
+    "dark:bg-stone-400 bg-gray-50 "
 
 
 content : String

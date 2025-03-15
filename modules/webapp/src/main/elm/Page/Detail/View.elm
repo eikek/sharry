@@ -236,7 +236,7 @@ shareLinkPublished texts flags model =
                         ]
                     ]
                 , div
-                    [ class "md:w-1/3"
+                    [ class "md:w-1/3 w-full"
                     ]
                     [ div [ class S.styleQr ]
                         [ qrCodeView url
