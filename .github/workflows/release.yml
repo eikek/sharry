@@ -19,14 +19,11 @@ jobs:
         run:  echo "SHARRY_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt make-pkg (${{ env.SHARRY_VERSION }})
         run: nix develop .#ci --command sbt make-pkg
-      - uses: meeDamian/github-release@2.0
+      - name: Upload artifacts
+        uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Sharry ${{ env.SHARRY_VERSION }}
-          gzip: false
-          draft: true
-          prerelease: false
-          allow_override: false
-          files: >
+          files: |
             modules/restserver/target/sharry-restserver_${{ env.SHARRY_VERSION }}_all.deb
             modules/restserver/target/universal/sharry-restserver-${{ env.SHARRY_VERSION }}.zip
