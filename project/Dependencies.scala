@@ -6,7 +6,7 @@ object Dependencies {
   val BetterMonadicForVersion = "0.3.1"
   val BinnyVersion = "0.11.0"
   val CirceVersion = "0.14.10"
-  val CirisVersion = "3.7.0"
+  val CirisVersion = "3.8.0"
   val ClipboardJsVersion = "2.0.11"
   val DoobieVersion = "1.0.0-RC8"
   val EmilVersion = "0.19.0"
