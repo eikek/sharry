@@ -22,10 +22,10 @@ services:
       - POSTGRES_DB=dbname
       - PGUSER=dbuser
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "dbname"]
+      test: pg_isready -q -d dbname
       interval: 15s
-      timeout: 60s
-      retries: 5
+      timeout: 5s # pg_isready has a 3 second timeout by default so actually this doesn't matter very much
+      retries: 3
       start_period: 15s
 volumes:
   postgres_data:
