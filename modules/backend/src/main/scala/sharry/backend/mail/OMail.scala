@@ -139,7 +139,7 @@ object OMail {
         def sender: EitherT[F, MailSendResult, MailAddress] =
           cfg.smtp.defaultFrom match {
             case Some(from) => EitherT.rightT(from)
-            case None =>
+            case None       =>
               EitherT(store.transact(Queries.getEmail(acc.id)).map {
                 case Some(f) => Right(f)
                 case None    => Left(MailSendResult.NoSender)

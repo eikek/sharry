@@ -29,7 +29,7 @@ object Conv {
   ): F[NonEmptyList[Ident]] =
     ids.traverse(readId[F]).map(NonEmptyList.fromList).flatMap {
       case Some(nel) => nel.pure[F]
-      case None =>
+      case None      =>
         F.raiseError(
           DecodingFailure("Empty list found, at least one element required", Nil)
         )
@@ -53,7 +53,7 @@ object Conv {
   def idResult(successMsg: String)(ar: Either[Throwable, Ident]): IdResult =
     ar match {
       case Right(id) => IdResult(success = true, successMsg, id)
-      case Left(ex) =>
+      case Left(ex)  =>
         IdResult(success = false, s"${ex.getClass}: ${ex.getMessage}", Ident.empty)
     }
 

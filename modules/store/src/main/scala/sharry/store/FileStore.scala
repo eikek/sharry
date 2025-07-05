@@ -103,7 +103,7 @@ object FileStore {
             computeAttributes
               .computeSync(BinaryId(id.id), hint, AttributeName.excludeSha256)
               .flatMap(insertMeta)
-        case InsertChunkResult.Incomplete => ().pure[F]
+        case InsertChunkResult.Incomplete    => ().pure[F]
         case fail: InsertChunkResult.Failure =>
           Sync[F].raiseError(new Exception(s"Inserting chunk failed: $fail"))
       }

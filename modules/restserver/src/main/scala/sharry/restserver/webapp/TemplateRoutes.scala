@@ -196,7 +196,7 @@ object TemplateRoutes {
     Sync[F].defer {
       Option(ref.get) match {
         case Some(a) => a.pure[F]
-        case None =>
+        case None    =>
           fa.map { a =>
             ref.set(a)
             a

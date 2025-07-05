@@ -292,7 +292,7 @@ object OShare {
               }
               .attempt
               .flatMap {
-                case Right(res) => res.pure[F]
+                case Right(res)                => res.pure[F]
                 case Left(permanentError(msg)) =>
                   UploadResult.permanentError[ByteSize](msg).pure[F]
                 case Left(ex) => Sync[F].raiseError(ex)

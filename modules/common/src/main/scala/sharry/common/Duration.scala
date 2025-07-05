@@ -66,7 +66,7 @@ object Duration {
   def fromString(s: String): Either[String, Duration] =
     s.toLongOption match
       case Some(n) => Right(millis(n))
-      case None =>
+      case None    =>
         try Right(apply(scala.concurrent.duration.Duration(s)))
         catch case ex: Throwable => Left(s"Invalid duration '$s': ${ex.getMessage}")
 

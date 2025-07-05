@@ -51,7 +51,7 @@ case class Config(
 
   def validOrThrow: Config =
     validate match {
-      case Validated.Valid(cfg) => cfg
+      case Validated.Valid(cfg)    => cfg
       case Validated.Invalid(errs) =>
         sys.error(
           s"Configuration is not valid: ${errs.toNonEmptyList.toList.mkString(", ")}"

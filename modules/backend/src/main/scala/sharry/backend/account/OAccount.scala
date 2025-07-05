@@ -156,7 +156,7 @@ object OAccount {
               .transact(RAccount.findByLogin(acc.login))
               .flatMap {
                 case Some(a) => a.pure[F]
-                case None =>
+                case None    =>
                   Async[F]
                     .raiseError(new Exception("Currently saved account not found!"))
               }
@@ -166,7 +166,7 @@ object OAccount {
                 .transact(RAccount.findByLogin(acc.login))
                 .flatMap {
                   case Some(a) => a.pure[F]
-                  case None =>
+                  case None    =>
                     Async[F]
                       .raiseError(new Exception("Currently saved account not found!"))
                 }
