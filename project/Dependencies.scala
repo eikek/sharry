@@ -25,7 +25,7 @@ object Dependencies {
   val SwaggerVersion = "5.20.0"
   val TikaVersion = "3.1.0"
   val TusClientVersion = "1.8.0-1"
-  val TypesafeConfigVersion = "1.4.3"
+  val TypesafeConfigVersion = "1.4.4"
   val YamuscaVersion = "0.10.0"
 
   val ciris = Seq(
