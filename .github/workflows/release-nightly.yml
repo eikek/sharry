@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0
       - uses: cachix/install-nix-action@v31
       - name: Coursier cache
-        uses: coursier/cache-action@v6
+        uses: coursier/cache-action@v7
       - name: Set current version
         run:  echo "SHARRY_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt ci ${{ github.ref }}
