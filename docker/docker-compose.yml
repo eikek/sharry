@@ -4,10 +4,18 @@ services:
     image: eikek0/sharry:latest
     container_name: sharry
     command: /opt/sharry.conf
+    expose:
+      - 9090 # informational only
     ports:
       - "9090:9090"
     volumes:
       - ${PWD}/sharry.conf:/opt/sharry.conf
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider http://localhost:9090/api/v2/open/info/version"]
+      interval: 1m
+      timeout: 10m
+      retries: 2
+      start_period: 30s
     depends_on:
       db:
         condition: service_healthy
