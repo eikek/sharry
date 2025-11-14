@@ -20,7 +20,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres:18.0
+    image: postgres:18.1
     container_name: postgres_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
