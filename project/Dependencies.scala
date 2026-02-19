@@ -26,7 +26,7 @@ object Dependencies {
   val TikaVersion = "3.1.0"
   val TusClientVersion = "1.8.0-1"
   val TypesafeConfigVersion = "1.4.3"
-  val YamuscaVersion = "0.10.0"
+  val YamuscaVersion = "0.11.0"
 
   val ciris = Seq(
     "is.cir" %% "ciris" % CirisVersion
