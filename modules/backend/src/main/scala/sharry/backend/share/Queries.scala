@@ -229,7 +229,7 @@ object Queries {
         Sql.or(account.is(accId.id), shareAlias.in(aliasMemberOf(accId.id))),
         Sql.or(name.like(qs), sid.like(qs), aliasName.like(qs), description.like(qs))
       )
-    ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC" ++ fr"OFFSET ${page.offset} LIMIT ${page.limit}"
+    ) ++ fr"ORDER BY" ++ created.f ++ fr"DESC" ++ fr"LIMIT ${page.limit} OFFSET ${page.offset}"
     logger.stream
       .trace(s"$frag (page.limit=${page.limit}  page.offset=${page.offset})")
       .drain ++
