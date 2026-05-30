@@ -421,7 +421,8 @@ object OShare {
                     .findBinary(file.metaId, binny.ByteRange.All)
                     .semiflatMap(
                       _.through(
-                        fsio.writeOutputStream[F](Async[F].pure(zos), closeAfterUse = false)
+                        fsio
+                          .writeOutputStream[F](Async[F].pure(zos), closeAfterUse = false)
                       ).compile.drain
                     )
                     .getOrElse(()) *>
