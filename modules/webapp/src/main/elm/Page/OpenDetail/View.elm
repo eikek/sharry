@@ -137,6 +137,7 @@ fileList texts flags model =
                 (Api.fileOpenUrl flags (shareId model) "")
                 model.fileView
                 False
+                (Just (Api.zipOpenUrl flags (shareId model)))
 
         sorted =
             List.sortBy .filename model.share.files

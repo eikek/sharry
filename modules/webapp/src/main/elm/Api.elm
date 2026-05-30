@@ -11,6 +11,8 @@ module Api exposing
     , deleteShare
     , fileOpenUrl
     , fileSecUrl
+    , zipOpenUrl
+    , zipSecUrl
     , findShares
     , getAlias
     , getAliasTemplate
@@ -143,6 +145,16 @@ fileSecUrl flags share fid =
 fileOpenUrl : Flags -> String -> String -> String
 fileOpenUrl flags share fid =
     flags.config.baseUrl ++ "/api/v2/open/share/" ++ share ++ "/file/" ++ fid
+
+
+zipSecUrl : Flags -> String -> String
+zipSecUrl flags share =
+    flags.config.baseUrl ++ "/api/v2/sec/share/" ++ share ++ "/zip"
+
+
+zipOpenUrl : Flags -> String -> String
+zipOpenUrl flags share =
+    flags.config.baseUrl ++ "/api/v2/open/share/" ++ share ++ "/zip"
 
 
 setPassword :
