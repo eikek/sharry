@@ -4,6 +4,7 @@ import cats.data.OptionT
 import cats.effect.*
 import cats.implicits.*
 import fs2.Stream
+import fs2.io as fsio
 
 import sharry.backend.PasswordCrypt
 import sharry.common.*
@@ -109,6 +110,11 @@ trait OShare[F[_]] {
       pass: Option[Password],
       range: ByteRange
   ): OptionT[F, FileRange[F]]
+
+  def loadZip(
+      id: ShareId,
+      pass: Option[Password]
+  ): OptionT[F, ShareResult[Stream[F, Byte]]]
 
   def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit]
 
@@ -396,6 +402,34 @@ object OShare {
           file <- ByteResult.load(store)(file, range)
         } yield file
       }
+
+      def loadZip(
+          id: ShareId,
+          pass: Option[Password]
+      ): OptionT[F, ShareResult[Stream[F, Byte]]] =
+        for {
+          result <- shareDetails(id, pass)
+        } yield result.map { sd =>
+          val chunkSize = cfg.chunkSize.bytes.toInt
+          fsio.readOutputStream[F](chunkSize) { os =>
+            val zos = new java.util.zip.ZipOutputStream(os)
+            sd.files.toList
+              .traverse_ { file =>
+                val entryName = file.name.getOrElse(file.id.id)
+                Async[F].delay(zos.putNextEntry(new java.util.zip.ZipEntry(entryName))) *>
+                  store.fileStore
+                    .findBinary(file.metaId, binny.ByteRange.All)
+                    .semiflatMap(
+                      _.through(
+                        fsio.writeOutputStream[F](Async[F].pure(zos), closeAfterUse = false)
+                      ).compile.drain
+                    )
+                    .getOrElse(()) *>
+                  Async[F].delay(zos.closeEntry())
+              } *>
+              Async[F].delay(zos.close())
+          }
+        }
 
       def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit] =
         for {
