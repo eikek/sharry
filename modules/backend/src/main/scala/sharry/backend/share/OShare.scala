@@ -112,9 +112,8 @@ trait OShare[F[_]] {
   ): OptionT[F, FileRange[F]]
 
   def loadZip(
-      id: ShareId,
-      pass: Option[Password]
-  ): OptionT[F, ShareResult[Stream[F, Byte]]]
+      id: ShareId
+  ): OptionT[F, Stream[F, Byte]]
 
   def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit]
 
@@ -404,12 +403,11 @@ object OShare {
       }
 
       def loadZip(
-          id: ShareId,
-          pass: Option[Password]
-      ): OptionT[F, ShareResult[Stream[F, Byte]]] =
+          id: ShareId
+      ): OptionT[F, Stream[F, Byte]] =
         for {
-          result <- shareDetails(id, pass)
-        } yield result.map { sd =>
+          sd <- OptionT(store.transact(Queries.shareDetail(id).value))
+        } yield {
           val chunkSize = cfg.chunkSize.bytes.toInt
           fsio.readOutputStream[F](chunkSize) { os =>
             val zos = new java.util.zip.ZipOutputStream(os)

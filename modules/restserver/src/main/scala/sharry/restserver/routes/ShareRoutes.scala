@@ -18,7 +18,6 @@ import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.*
-import org.http4s.headers.`WWW-Authenticate`
 import org.typelevel.ci.CIString
 
 object ShareRoutes {
@@ -102,25 +101,17 @@ object ShareRoutes {
         )
 
       case req @ GET -> Root / Ident(id) / "zip" =>
-        val pw = SharryPassword(req)
-        val shareId = ShareId.secured(id, token.account)
-        val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))
         (for {
-          result <- backend.share.loadZip(shareId, pw)
+          stream <- backend.share.loadZip(ShareId.secured(id, token.account))
           resp <- OptionT.liftF(
-            result.fold(
-              stream =>
-                Ok(stream).map(
-                  _.withHeaders(
-                    `Content-Type`(MediaType.application.zip),
-                    `Content-Disposition`(
-                      "attachment",
-                      Map(CIString("filename") -> s"$id.zip")
-                    )
-                  )
-                ),
-              _ => Forbidden(),
-              _ => Unauthorized(authChallenge)
+            Ok(stream).map(
+              _.withHeaders(
+                `Content-Type`(MediaType.application.zip),
+                `Content-Disposition`(
+                  "attachment",
+                  Map(CIString("filename") -> s"$id.zip")
+                )
+              )
             )
           )
         } yield resp).getOrElseF(NotFound())
