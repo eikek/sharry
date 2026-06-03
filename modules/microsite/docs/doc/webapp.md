@@ -120,6 +120,16 @@ the download page is accessed more than this number, it will not work
 anymore.
 
 
+### Download All as ZIP
+
+When a share is published, the download page shows a *Download All*
+button that lets visitors download all files in the share as a single
+ZIP archive. The button is only shown when the total size of the share
+is within the limit configured by `zip-max-size` (see
+[configuration](configure#zip-download)). If the administrator has set
+`zip-max-size = "0"`, the button is hidden entirely.
+
+
 ## Publish / Unpublish / Republish
 
 A share that has not been published can only be accessed by its owner.
