@@ -277,7 +277,7 @@ inputLeftIconOnly =
 
 checkboxInput : String
 checkboxInput =
-    " checkbox w-5 h-5 md:w-4 md:h-4 text-black  dark:text-stone-600 dark:bg-stone-600 dark:border-stone-700" ++ formFocusRing
+    " checkbox w-5 h-5 md:w-4 md:h-4 text-black dark:text-sky-500 dark:bg-stone-600 dark:border-stone-700" ++ formFocusRing
 
 
 formFocusRing : String
