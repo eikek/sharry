@@ -404,9 +404,13 @@ object OShare {
 
       def loadZip(
           id: ShareId
-      ): OptionT[F, Stream[F, Byte]] =
+      ): OptionT[F, Stream[F, Byte]] = {
+        val limit = cfg.zipMaxSize.bytes
         for {
+          _ <- OptionT.fromOption[F](Option.when(limit > 0)(()))
           sd <- OptionT(store.transact(Queries.shareDetail(id).value))
+          totalSize = sd.files.map(_.length.bytes).sum
+          _ <- OptionT.fromOption[F](Option.when(totalSize <= limit)(()))
         } yield {
           val chunkSize = cfg.chunkSize.bytes.toInt
           fsio.readOutputStream[F](chunkSize) { os =>
@@ -429,6 +433,7 @@ object OShare {
               Async[F].delay(zos.close())
           }
         }
+      }
 
       def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit] =
         for {

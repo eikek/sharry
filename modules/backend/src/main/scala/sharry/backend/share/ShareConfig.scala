@@ -7,5 +7,6 @@ case class ShareConfig(
     chunkSize: ByteSize,
     maxSize: ByteSize,
     maxValidity: Duration,
-    databaseDomainChecks: Seq[DomainCheckConfig]
+    databaseDomainChecks: Seq[DomainCheckConfig],
+    zipMaxSize: ByteSize
 )

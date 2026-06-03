@@ -1133,14 +1133,16 @@ paths:
       description: |
         Streams all files of a share as a single ZIP archive.
 
-        The response is a ZIP file containing all files of the share.
+        Returns 404 if the share is not found, if the ZIP download feature is
+        disabled (zip-max-size = 0), or if the share's total size exceeds the
+        configured zip-max-size limit.
       parameters:
         - $ref: "#/components/parameters/pid"
       responses:
         422:
           description: BadRequest
         404:
-          description: NotFound
+          description: NotFound (also returned when ZIP download is disabled or share exceeds zip-max-size)
         200:
           description: Ok
           content:
@@ -1158,7 +1160,9 @@ paths:
       description: |
         Streams all files of a share as a single ZIP archive.
 
-        The response is a ZIP file containing all files of the share.
+        Returns 404 if the share is not found, if the ZIP download feature is
+        disabled (zip-max-size = 0), or if the share's total size exceeds the
+        configured zip-max-size limit.
       parameters:
         - $ref: "#/components/parameters/id"
       security:
@@ -1167,7 +1171,7 @@ paths:
         422:
           description: BadRequest
         404:
-          description: NotFound
+          description: NotFound (also returned when ZIP download is disabled or share exceeds zip-max-size)
         200:
           description: Ok
           content:
@@ -1995,6 +1999,7 @@ components:
         - proxyAuthEnabled
         - proxyOnly
         - hideLoginForm
+        - zipMaxSize
       properties:
         appName:
           type: string
@@ -2068,6 +2073,9 @@ components:
           type: boolean
         hideLoginForm:
           type: boolean
+        zipMaxSize:
+          type: integer
+          format: size
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

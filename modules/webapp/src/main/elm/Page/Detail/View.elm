@@ -110,12 +110,19 @@ descriptionView texts model desc =
 fileList : Texts -> Flags -> Model -> Html Msg
 fileList texts flags model =
     let
+        zipUrl =
+            if flags.config.zipMaxSize > 0 then
+                Just (Api.zipSecUrl flags model.share.id)
+
+            else
+                Nothing
+
         sett =
             Comp.ShareFileList.Settings
                 (Api.fileSecUrl flags model.share.id "")
                 model.fileView
                 True
-                (Just (Api.zipSecUrl flags model.share.id))
+                zipUrl
 
         sorted =
             List.sortBy .filename model.share.files
