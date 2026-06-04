@@ -180,6 +180,7 @@ val restapi = project
   .settings(testSettingsMUnit)
   .settings(
     name := "sharry-restapi",
+    scalacOptions += "-Xmax-inlines:64",
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,

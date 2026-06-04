@@ -49,6 +49,18 @@ case class Config(
       .mapN((_, _, _, c) => c)
   }
 
+  def normalizeZipMaxSize: (Config, Option[String]) = {
+    val zipMax = backend.share.zipMaxSize
+    val max = backend.share.maxSize
+    if (zipMax.bytes > 0 && zipMax > max) {
+      val normalized =
+        copy(backend = backend.copy(share = backend.share.copy(zipMaxSize = max)))
+      val msg =
+        s"zip-max-size (${zipMax.toHuman}) exceeds max-size (${max.toHuman}); capping to ${max.toHuman}"
+      (normalized, Some(msg))
+    } else (this, None)
+  }
+
   def validOrThrow: Config =
     validate match {
       case Validated.Valid(cfg)    => cfg

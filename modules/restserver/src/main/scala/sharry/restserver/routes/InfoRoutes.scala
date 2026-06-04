@@ -79,7 +79,8 @@ object InfoRoutes {
       cfg.webapp.oauthAutoRedirect,
       cfg.backend.auth.proxy.enabled,
       cfg.backend.auth.isProxyAuthOnly,
-      cfg.backend.auth.isAutoLogin
+      cfg.backend.auth.isAutoLogin,
+      cfg.backend.share.zipMaxSize
     )
   }
 

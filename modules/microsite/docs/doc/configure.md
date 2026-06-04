@@ -160,6 +160,26 @@ The following steps must be done manually:
 Then add the above setting into your config file. Test files can be
 found [here](https://www.eicar.org/?page_id=3950).
 
+### ZIP Download
+
+The `zip-max-size` setting controls whether users can download all
+files of a share as a single ZIP archive.
+
+```
+sharry.restserver.backend.share {
+  # Maximum total size of a share allowed for ZIP download.
+  # Set to "0" to disable the ZIP download feature entirely.
+  # If this value exceeds max-size, it is automatically capped to
+  # max-size at startup (a warning is logged in that case).
+  zip-max-size = "1.5G"
+}
+```
+
+Set `zip-max-size = "0"` to disable the ZIP download button entirely.
+If a share's total size exceeds this value, the download-as-ZIP option
+is hidden. The value cannot exceed `max-size`; if it does, it is
+silently capped at startup.
+
 ### Files
 
 By default, the files are also stored in the configured database. This
