@@ -1,5 +1,5 @@
 lib: rec {
-  version = "1.16.0-SNAPSHOT";
+  version = "1.16.0";
 
   latest-release = "1.15.0";
 
