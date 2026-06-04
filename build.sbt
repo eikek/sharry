@@ -186,7 +186,7 @@ val restapi = project
     openapiPackage := Pkg("sharry.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc,
-    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyCmd := Seq("redocly"),
     openapiRedoclyConfig := Some(
       (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
     ),
