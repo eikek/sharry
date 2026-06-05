@@ -1129,20 +1129,37 @@ paths:
       operationId: "open-share-pid-zip-get"
       tags:
         - Shares (Public)
-      summary: Download all files of a share as a ZIP archive.
+      summary: Download files of a share as a ZIP archive.
       description: |
-        Streams all files of a share as a single ZIP archive.
+        Streams files of a share as a single ZIP archive.
+
+        When one or more `file` query parameters are provided, only those files
+        are included in the archive and the size check is performed against the
+        selected subset. When no `file` parameter is given, all files in the
+        share are included.
 
         Returns 404 if the share is not found, if the ZIP download feature is
-        disabled (zip-max-size = 0), or if the share's total size exceeds the
-        configured zip-max-size limit.
+        disabled (zip-max-size = 0), or if the total size of the selected files
+        exceeds the configured zip-max-size limit.
       parameters:
         - $ref: "#/components/parameters/pid"
+        - name: file
+          in: query
+          description: |
+            ID of a file to include in the ZIP archive. Repeat this parameter
+            to select multiple files. When omitted, all files are included.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
       responses:
         422:
           description: BadRequest
         404:
-          description: NotFound (also returned when ZIP download is disabled or share exceeds zip-max-size)
+          description: NotFound (also returned when ZIP download is disabled or selected files exceed zip-max-size)
         200:
           description: Ok
           content:
@@ -1156,22 +1173,39 @@ paths:
       operationId: "sec-share-id-zip-get"
       tags:
         - Shares
-      summary: Download all files of a share as a ZIP archive.
+      summary: Download files of a share as a ZIP archive.
       description: |
-        Streams all files of a share as a single ZIP archive.
+        Streams files of a share as a single ZIP archive.
+
+        When one or more `file` query parameters are provided, only those files
+        are included in the archive and the size check is performed against the
+        selected subset. When no `file` parameter is given, all files in the
+        share are included.
 
         Returns 404 if the share is not found, if the ZIP download feature is
-        disabled (zip-max-size = 0), or if the share's total size exceeds the
-        configured zip-max-size limit.
+        disabled (zip-max-size = 0), or if the total size of the selected files
+        exceeds the configured zip-max-size limit.
       parameters:
         - $ref: "#/components/parameters/id"
+        - name: file
+          in: query
+          description: |
+            ID of a file to include in the ZIP archive. Repeat this parameter
+            to select multiple files. When omitted, all files are included.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
       security:
         - authTokenHeader: []
       responses:
         422:
           description: BadRequest
         404:
-          description: NotFound (also returned when ZIP download is disabled or share exceeds zip-max-size)
+          description: NotFound (also returned when ZIP download is disabled or selected files exceed zip-max-size)
         200:
           description: Ok
           content:
