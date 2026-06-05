@@ -110,7 +110,7 @@ descriptionView texts model desc =
 fileList : Texts -> Flags -> Model -> Html Msg
 fileList texts flags model =
     let
-        zipUrl =
+        zipBaseUrl =
             if flags.config.zipMaxSize > 0 then
                 Just (Api.zipSecUrl flags model.share.id)
 
@@ -122,7 +122,8 @@ fileList texts flags model =
                 (Api.fileSecUrl flags model.share.id "")
                 model.fileView
                 True
-                zipUrl
+                zipBaseUrl
+                flags.config.zipMaxSize
 
         sorted =
             List.sortBy .filename model.share.files

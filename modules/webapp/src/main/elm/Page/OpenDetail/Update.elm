@@ -48,7 +48,7 @@ update flags initialView msg model =
                     | share = details
                     , message = Nothing
                     , password = emptyPassModel
-                    , fileListModel = Comp.ShareFileList.reset model.fileListModel
+                    , fileListModel = Comp.ShareFileList.initWithFiles details.files model.fileListModel
                 }
             , Cmd.none
             )

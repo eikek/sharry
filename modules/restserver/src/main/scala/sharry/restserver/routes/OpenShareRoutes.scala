@@ -37,8 +37,12 @@ object OpenShareRoutes {
         ByteResponse(dsl, req, backend, ShareId.publish(id), pw, chunkSize, fid)
 
       case req @ GET -> Root / Ident(id) / "zip" =>
+        val fileIds = req.uri.query.multiParams
+          .getOrElse("file", Nil)
+          .flatMap(s => Ident.fromString(s).toOption)
+        val fileFilter = Option.when(fileIds.nonEmpty)(fileIds)
         (for {
-          stream <- backend.share.loadZip(ShareId.publish(id))
+          stream <- backend.share.loadZip(ShareId.publish(id), fileFilter)
           resp <- OptionT.liftF(
             Ok(stream).map(
               _.withHeaders(

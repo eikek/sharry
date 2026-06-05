@@ -112,7 +112,8 @@ trait OShare[F[_]] {
   ): OptionT[F, FileRange[F]]
 
   def loadZip(
-      id: ShareId
+      id: ShareId,
+      fileIds: Option[Seq[Ident]] = None
   ): OptionT[F, Stream[F, Byte]]
 
   def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit]
@@ -403,19 +404,23 @@ object OShare {
       }
 
       def loadZip(
-          id: ShareId
+          id: ShareId,
+          fileIds: Option[Seq[Ident]] = None
       ): OptionT[F, Stream[F, Byte]] = {
         val limit = cfg.zipMaxSize.bytes
         for {
           _ <- OptionT.fromOption[F](Option.when(limit > 0)(()))
           sd <- OptionT(store.transact(Queries.shareDetail(id).value))
-          totalSize = sd.files.map(_.length.bytes).sum
+          selectedFiles = fileIds
+            .map(ids => sd.files.filter(f => ids.contains(f.id)))
+            .getOrElse(sd.files)
+          totalSize = selectedFiles.map(_.length.bytes).sum
           _ <- OptionT.fromOption[F](Option.when(totalSize <= limit)(()))
         } yield {
           val chunkSize = cfg.chunkSize.bytes.toInt
           fsio.readOutputStream[F](chunkSize) { os =>
             val zos = new java.util.zip.ZipOutputStream(os)
-            sd.files.toList
+            selectedFiles.toList
               .traverse_ { file =>
                 val entryName = file.name.getOrElse(file.id.id)
                 Async[F].delay(zos.putNextEntry(new java.util.zip.ZipEntry(entryName))) *>

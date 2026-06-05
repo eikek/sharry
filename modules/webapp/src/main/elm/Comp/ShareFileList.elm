@@ -5,6 +5,7 @@ module Comp.ShareFileList exposing
     , Settings
     , ViewMode(..)
     , init
+    , initWithFiles
     , previewPossible
     , reset
     , update
@@ -15,7 +16,8 @@ import Api.Model.ShareFile exposing (ShareFile)
 import Comp.ConfirmModal
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onCheck)
+import Html.Keyed
 import Messages.ShareFileList exposing (Texts)
 import Set exposing (Set)
 import Styles as S
@@ -25,6 +27,7 @@ import Util.Size
 type alias Model =
     { embedOn : Set String
     , requestDelete : Maybe ShareFile
+    , selectedFiles : Set String
     }
 
 
@@ -34,6 +37,9 @@ type Msg
     | ReqDelete ShareFile
     | DeleteConfirm
     | DeleteCancel
+    | ToggleZipFile String
+    | SelectAllZip (List String)
+    | DeselectAllZip
 
 
 type FileAction
@@ -51,7 +57,13 @@ init : Model
 init =
     { embedOn = Set.empty
     , requestDelete = Nothing
+    , selectedFiles = Set.empty
     }
+
+
+initWithFiles : List ShareFile -> Model -> Model
+initWithFiles files model =
+    { model | selectedFiles = Set.fromList (List.map .id files) }
 
 
 reset : Model -> Model
@@ -63,7 +75,8 @@ type alias Settings =
     { baseUrl : String
     , viewMode : ViewMode
     , delete : Bool
-    , zipUrl : Maybe String
+    , zipBaseUrl : Maybe String
+    , zipMaxSize : Int
     }
 
 
@@ -104,6 +117,23 @@ update msg model =
                 Nothing ->
                     ( model, FileNone )
 
+        ToggleZipFile id ->
+            let
+                newSelected =
+                    if Set.member id model.selectedFiles then
+                        Set.remove id model.selectedFiles
+
+                    else
+                        Set.insert id model.selectedFiles
+            in
+            ( { model | selectedFiles = newSelected }, FileNone )
+
+        SelectAllZip ids ->
+            ( { model | selectedFiles = Set.fromList ids }, FileNone )
+
+        DeselectAllZip ->
+            ( { model | selectedFiles = Set.empty }, FileNone )
+
 
 
 --- View
@@ -112,7 +142,7 @@ update msg model =
 view : Texts -> Settings -> List ShareFile -> Model -> Html Msg
 view texts settings files model =
     div []
-        [ zipButton texts settings files
+        [ zipButton texts settings files model
         , case settings.viewMode of
             ViewList ->
                 fileTable texts settings model files
@@ -122,29 +152,153 @@ view texts settings files model =
         ]
 
 
-zipButton : Texts -> Settings -> List ShareFile -> Html Msg
-zipButton texts settings files =
-    case ( settings.zipUrl, List.length files > 1 ) of
-        ( Just url, True ) ->
-            div [ class "flex flex-row justify-end mb-2" ]
-                [ a
-                    [ class S.secondaryButton
-                    , href url
-                    , title texts.downloadAllZip
+buildZipUrl : String -> Set String -> String
+buildZipUrl baseUrl selected =
+    if Set.isEmpty selected then
+        baseUrl
+
+    else
+        let
+            params =
+                Set.toList selected
+                    |> List.map (\id -> "file=" ++ id)
+                    |> String.join "&"
+        in
+        baseUrl ++ "?" ++ params
+
+
+selectedSize : List ShareFile -> Set String -> Int
+selectedSize files selected =
+    files
+        |> List.filter (\f -> Set.member f.id selected)
+        |> List.foldl (\f acc -> acc + f.size) 0
+
+
+isFileChecked : Set String -> String -> Bool
+isFileChecked selected id =
+    Set.member id selected
+
+
+zipButton : Texts -> Settings -> List ShareFile -> Model -> Html Msg
+zipButton texts settings files model =
+    case settings.zipBaseUrl of
+        Nothing ->
+            text ""
+
+        Just baseUrl ->
+            let
+                showZip =
+                    List.length files > 1
+
+                noneSelected =
+                    Set.isEmpty model.selectedFiles
+
+                selSize =
+                    selectedSize files model.selectedFiles
+
+                overLimit =
+                    settings.zipMaxSize > 0 && selSize > settings.zipMaxSize
+
+                url =
+                    buildZipUrl baseUrl model.selectedFiles
+
+                allSelected =
+                    Set.size model.selectedFiles == List.length files
+
+                buttonLabel =
+                    if allSelected then
+                        texts.downloadAllZip
+
+                    else
+                        texts.downloadSelectedZip
+
+                sizeLabel =
+                    toFloat selSize
+                        |> Util.Size.bytesReadable Util.Size.B
+
+                limitLabel =
+                    toFloat settings.zipMaxSize
+                        |> Util.Size.bytesReadable Util.Size.B
+            in
+            div
+                [ class
+                    ("flex flex-col mb-2"
+                        ++ (if showZip then "" else " hidden")
+                    )
+                ]
+                [ div [ class "flex flex-row items-center justify-end space-x-2 mb-1" ]
+                    [ span
+                        [ class
+                            ("text-sm text-gray-500 dark:text-stone-400"
+                                ++ (if settings.zipMaxSize > 0 && not noneSelected then "" else " hidden")
+                            )
+                        ]
+                        [ text (sizeLabel ++ texts.selectedSizeOf ++ limitLabel) ]
+                    , button
+                        [ class (S.secondaryBasicButton ++ " text-xs")
+                        , onClick (SelectAllZip (List.map .id files))
+                        ]
+                        [ text texts.selectAll ]
+                    , button
+                        [ class (S.secondaryBasicButton ++ " text-xs")
+                        , onClick DeselectAllZip
+                        ]
+                        [ text texts.deselectAll ]
                     ]
-                    [ i [ class "fa fa-file-archive mr-2" ] []
-                    , text texts.downloadAllZip
+                , div [ class "flex flex-row justify-end" ]
+                    [ span
+                        [ class
+                            ("text-sm text-yellow-600 dark:text-yellow-400 py-1"
+                                ++ (if noneSelected then "" else " hidden")
+                            )
+                        ]
+                        [ i [ class "fa fa-info-circle mr-1" ] []
+                        , text texts.noFilesSelected
+                        ]
+                    , span
+                        [ class
+                            ("text-sm text-red-600 dark:text-red-400 py-1"
+                                ++ (if overLimit then "" else " hidden")
+                            )
+                        ]
+                        [ i [ class "fa fa-exclamation-triangle mr-1" ] []
+                        , text texts.selectionTooLarge
+                        ]
+                    , a
+                        [ class
+                            (S.secondaryButton
+                                ++ (if noneSelected || overLimit then " hidden" else "")
+                            )
+                        , href url
+                        , title buttonLabel
+                        ]
+                        [ i [ class "fa fa-file-archive mr-2" ] []
+                        , text buttonLabel
+                        ]
                     ]
                 ]
-
-        _ ->
-            text ""
 
 
 fileCards : Texts -> Settings -> Model -> List ShareFile -> Html Msg
 fileCards texts settings model files =
-    div [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2" ] <|
-        List.map (fileCard texts settings model) files
+    Html.Keyed.node "div"
+        [ class "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2" ]
+        (List.map
+            (\file ->
+                let
+                    key =
+                        file.id
+                            ++ (if Set.member file.id model.selectedFiles then
+                                    ":1"
+
+                                else
+                                    ":0"
+                               )
+                in
+                ( key, fileCard texts settings model file )
+            )
+            files
+        )
 
 
 fileCard : Texts -> Settings -> Model -> ShareFile -> Html Msg
@@ -158,6 +312,9 @@ fileCard texts settings model file =
                 | enabled = model.requestDelete == Just file
                 , extraClass = "rounded"
             }
+
+        checked =
+            isFileChecked model.selectedFiles file.id
     in
     div
         [ class "relative hover:shadow-lg rounded flex flex-col break-words border border-gray-400 dark:border-stone-600 dark:hover:border-stone-500"
@@ -169,7 +326,20 @@ fileCard texts settings model file =
             ]
         , div [ class "flex flex-col flex-grow px-2 my-2" ]
             [ div [ class "inline" ]
-                [ a
+                [ case settings.zipBaseUrl of
+                    Just _ ->
+                        input
+                            [ type_ "checkbox"
+                            , Html.Attributes.checked checked
+                            , onCheck (\_ -> ToggleZipFile file.id)
+                            , class S.checkboxInput
+                            , class "mr-2"
+                            ]
+                            []
+
+                    Nothing ->
+                        text ""
+                , a
                     [ title texts.downloadToDisk
                     , download file.filename
                     , href (settings.baseUrl ++ file.id)
@@ -347,14 +517,32 @@ fileTable texts settings model files =
     div [ class "md:relative" ]
         [ yesNo
         , table [ class S.tableMain ]
-            [ tbody [] <|
-                List.map (fileRow texts settings model) files
+            [ Html.Keyed.node "tbody" [] <|
+                List.map
+                    (\file ->
+                        let
+                            key =
+                                file.id
+                                    ++ (if Set.member file.id model.selectedFiles then
+                                            ":1"
+
+                                        else
+                                            ":0"
+                                       )
+                        in
+                        ( key, fileRow texts settings model file )
+                    )
+                    files
             ]
         ]
 
 
 fileRow : Texts -> Settings -> Model -> ShareFile -> Html Msg
-fileRow texts { baseUrl, delete } _ file =
+fileRow texts { baseUrl, delete, zipBaseUrl } model file =
+    let
+        checked =
+            isFileChecked model.selectedFiles file.id
+    in
     tr
         [ id file.id
         , class S.tableRow
@@ -363,7 +551,20 @@ fileRow texts { baseUrl, delete } _ file =
             [ i [ class ("text-2xl " ++ fileIcon file) ] []
             ]
         , td [ class "text-left w-full px-3 break-all sm:break-words" ]
-            [ a
+            [ case zipBaseUrl of
+                Just _ ->
+                    input
+                        [ type_ "checkbox"
+                        , Html.Attributes.checked checked
+                        , onCheck (\_ -> ToggleZipFile file.id)
+                        , class S.checkboxInput
+                        , class "mr-2"
+                        ]
+                        []
+
+                Nothing ->
+                    text ""
+            , a
                 [ title texts.downloadToDisk
                 , download file.filename
                 , href (baseUrl ++ file.id)
