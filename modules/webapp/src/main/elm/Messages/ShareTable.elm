@@ -1,5 +1,6 @@
 module Messages.ShareTable exposing
     ( Texts
+    , applyZone
     , de
     , fr
     , gb
@@ -9,8 +10,9 @@ module Messages.ShareTable exposing
     , it
     )
 
-import Language
+import Language exposing (Language)
 import Messages.DateFormat
+import Time
 
 
 type alias Texts =
@@ -35,7 +37,7 @@ it =
     , size = "Dimensione"
     , created = "Creazione"
     , open = "Apri"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Italian
+    , dateTime = Messages.DateFormat.formatDateTime Language.Italian Time.utc
     }
 
 es : Texts
@@ -48,7 +50,7 @@ es =
     , size = "Tamaño"
     , created = "Creado"
     , open = "Abrir"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish
+    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish Time.utc
     }
 
 
@@ -62,7 +64,7 @@ gb =
     , size = "Size"
     , created = "Created"
     , open = "Open"
-    , dateTime = Messages.DateFormat.formatDateTime Language.English
+    , dateTime = Messages.DateFormat.formatDateTime Language.English Time.utc
     }
 
 
@@ -76,7 +78,7 @@ de =
     , size = "Größe"
     , created = "Erstellt"
     , open = "Öffnen"
-    , dateTime = Messages.DateFormat.formatDateTime Language.German
+    , dateTime = Messages.DateFormat.formatDateTime Language.German Time.utc
     }
 
 
@@ -90,7 +92,7 @@ fr =
     , size = "Taille"
     , created = "Créé"
     , open = "Ouvrir"
-    , dateTime = Messages.DateFormat.formatDateTime Language.French
+    , dateTime = Messages.DateFormat.formatDateTime Language.French Time.utc
     }
 
 
@@ -104,7 +106,7 @@ ja =
     , size = "サイズ"
     , created = "作成日時"
     , open = "開く"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese Time.utc
     }
 
 
@@ -118,6 +120,11 @@ cz =
     , size = "Velikost"
     , created = "Vytvořeno"
     , open = "Otevřít"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Czech
+    , dateTime = Messages.DateFormat.formatDateTime Language.Czech Time.utc
     }
+
+
+applyZone : Time.Zone -> Language -> Texts -> Texts
+applyZone zone lang texts =
+    { texts | dateTime = Messages.DateFormat.formatDateTime lang zone }
 

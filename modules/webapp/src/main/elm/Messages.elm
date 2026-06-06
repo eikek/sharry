@@ -3,12 +3,15 @@ module Messages exposing
     , fromFlags
     , get
     , toIso2
+    , withZone
     )
 
 import Data.Flags exposing (Flags)
 import Language exposing (Language(..), allLanguages)
 import Messages.AccountPage
+import Messages.AccountTable
 import Messages.AliasPage
+import Messages.AliasTable
 import Messages.App
 import Messages.DetailPage
 import Messages.HomePage
@@ -17,7 +20,9 @@ import Messages.NewInvitePage
 import Messages.RegisterPage
 import Messages.SettingsPage
 import Messages.SharePage
+import Messages.ShareTable
 import Messages.UploadPage
+import Time
 
 
 {-| The messages record contains all strings used in the application.
@@ -108,6 +113,32 @@ fromFlags flags =
     fromIso2 iso
         |> get
 
+
+
+{-| Apply a time zone to all date/time display functions in the messages.
+Called in App.View after building messages from flags.
+-}
+withZone : Time.Zone -> Messages -> Messages
+withZone zone msgs =
+    let
+        lang =
+            msgs.lang
+
+        account =
+            msgs.account
+
+        aliasPage =
+            msgs.aliasPage
+
+        upload =
+            msgs.upload
+    in
+    { msgs
+        | account = { account | accountTable = Messages.AccountTable.applyZone zone lang account.accountTable }
+        , aliasPage = { aliasPage | aliasTable = Messages.AliasTable.applyZone zone lang aliasPage.aliasTable }
+        , upload = { upload | shareTable = Messages.ShareTable.applyZone zone lang upload.shareTable }
+        , detail = Messages.DetailPage.applyZone zone lang msgs.detail
+    }
 
 
 --- Messages Definitions

@@ -29,11 +29,13 @@
                  var storageTheme = localStorage.getItem('uiTheme');
                  return storageTheme ? storageTheme : initialTheme;
              })();
+         var storedTimezone = localStorage.getItem('timezone');
          var account = storedAccount ? JSON.parse(storedAccount) : null;
          var elmFlags = {
              "account": account,
              "language": lang,
              "uiTheme": theme,
+             "timezone": storedTimezone,
              "config": sharryFlags
          };
         </script>

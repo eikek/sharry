@@ -13,6 +13,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Page exposing (Page(..))
 import Ports
+import Task
+import Time
 import Url exposing (Url)
 
 
@@ -65,6 +67,12 @@ init flags url key =
         [ cmd
         , Api.versionInfo flags VersionResp
         , sessionCheck
+        , case flags.timezone of
+            Nothing ->
+                Task.perform GotTimeZone Time.here
+
+            Just _ ->
+                Cmd.none
         ]
     )
 

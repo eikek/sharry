@@ -1,5 +1,6 @@
 module Messages.AccountTable exposing
     ( Texts
+    , applyZone
     , de
     , fr
     , gb
@@ -9,8 +10,9 @@ module Messages.AccountTable exposing
     , it
     )
 
-import Language
+import Language exposing (Language)
 import Messages.DateFormat exposing (formatDateTime)
+import Time
 
 
 
@@ -41,7 +43,7 @@ it =
     , lastLogin = "Ultimo Accesso"
     , created = "Creazione"
     , edit = "Modifica"
-    , dateTime = formatDateTime Language.Italian
+    , dateTime = formatDateTime Language.Italian Time.utc
     }
 
 es : Texts
@@ -55,7 +57,7 @@ es =
     , lastLogin = "Último inicio de sesión"
     , created = "Creado"
     , edit = "Editar"
-    , dateTime = formatDateTime Language.Spanish
+    , dateTime = formatDateTime Language.Spanish Time.utc
     }
 
 
@@ -70,7 +72,7 @@ gb =
     , lastLogin = "Last Login"
     , created = "Created"
     , edit = "Edit"
-    , dateTime = formatDateTime Language.English
+    , dateTime = formatDateTime Language.English Time.utc
     }
 
 
@@ -85,7 +87,7 @@ de =
     , lastLogin = "Letzte Anmeldung"
     , created = "Erstellt"
     , edit = "Editieren"
-    , dateTime = formatDateTime Language.German
+    , dateTime = formatDateTime Language.German Time.utc
     }
 
 
@@ -100,7 +102,7 @@ fr =
     , lastLogin = "Dernière connexion"
     , created = "Créé"
     , edit = "Éditer"
-    , dateTime = formatDateTime Language.French
+    , dateTime = formatDateTime Language.French Time.utc
     }
 
 
@@ -115,7 +117,7 @@ ja =
     , lastLogin = "最終ログイン"
     , created = "作成日時"
     , edit = "編集"
-    , dateTime = formatDateTime Language.Japanese
+    , dateTime = formatDateTime Language.Japanese Time.utc
     }
 
 cz : Texts
@@ -129,5 +131,10 @@ cz  =
     , lastLogin = "Poslední přihlášení"
     , created = "Založeno"
     , edit = "Editovat"
-    , dateTime = formatDateTime Language.Czech
+    , dateTime = formatDateTime Language.Czech Time.utc
     }
+
+
+applyZone : Time.Zone -> Language -> Texts -> Texts
+applyZone zone lang texts =
+    { texts | dateTime = formatDateTime lang zone }

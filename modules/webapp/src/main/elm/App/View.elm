@@ -32,7 +32,7 @@ view : Model -> Html Msg
 view model =
     let
         texts =
-            Messages.fromFlags model.flags
+            Messages.fromFlags model.flags |> Messages.withZone model.zone
     in
     div
         [ id "main"
@@ -346,7 +346,7 @@ viewDetail _ texts model =
 
 viewSettings : Messages -> Model -> Html Msg
 viewSettings texts model =
-    Html.map SettingsMsg (Page.Settings.View.view texts.settings model.settingsModel)
+    Html.map SettingsMsg (Page.Settings.View.view texts.settings model.flags.timezone model.settingsModel)
 
 
 viewAlias : Maybe String -> Messages -> Model -> Html Msg

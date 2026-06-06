@@ -21,6 +21,12 @@ type alias Texts =
     , currentPassword : String
     , newPassword : String
     , newPasswordRepeat : String
+    , timezoneHeader : String
+    , timezoneAutoLabel : String
+    , timezoneAutoHint : String
+    , timezoneManualLabel : String
+    , timezoneResetButton : String
+    , timezoneInputPlaceholder : String
     }
 
 it : Texts
@@ -35,6 +41,12 @@ it =
     , currentPassword = "Password Attuale"
     , newPassword = "Nuova Password"
     , newPasswordRepeat = "Nuova Password (Ripeti)"
+    , timezoneHeader = "Fuso Orario"
+    , timezoneAutoLabel = "Automatico (dal browser)"
+    , timezoneAutoHint = "Il fuso orario viene rilevato automaticamente dal browser."
+    , timezoneManualLabel = "Fuso orario attuale:"
+    , timezoneResetButton = "Ripristina automatico"
+    , timezoneInputPlaceholder = "Es. Europe/Rome"
     }
 
 es : Texts
@@ -49,6 +61,12 @@ es =
     , currentPassword = "Contraseña Actual"
     , newPassword = "Nueva Contraseña"
     , newPasswordRepeat = "Nueva Contraseña (Repetir)"
+    , timezoneHeader = "Zona Horaria"
+    , timezoneAutoLabel = "Automático (desde el navegador)"
+    , timezoneAutoHint = "La zona horaria se detecta automáticamente desde el navegador."
+    , timezoneManualLabel = "Zona horaria actual:"
+    , timezoneResetButton = "Restablecer automático"
+    , timezoneInputPlaceholder = "Ej. Europe/Madrid"
     }
 
 
@@ -64,6 +82,12 @@ gb =
     , currentPassword = "Current Password"
     , newPassword = "New Password"
     , newPasswordRepeat = "New Password (Repeat)"
+    , timezoneHeader = "Timezone"
+    , timezoneAutoLabel = "Automatic (from browser)"
+    , timezoneAutoHint = "The timezone is automatically detected from your browser."
+    , timezoneManualLabel = "Current timezone:"
+    , timezoneResetButton = "Reset to automatic"
+    , timezoneInputPlaceholder = "E.g. Europe/London"
     }
 
 
@@ -79,6 +103,12 @@ de =
     , currentPassword = "Aktuelles Passwort"
     , newPassword = "Neues Passwort"
     , newPasswordRepeat = "Neues Passwort (Wiederholung)"
+    , timezoneHeader = "Zeitzone"
+    , timezoneAutoLabel = "Automatisch (vom Browser)"
+    , timezoneAutoHint = "Die Zeitzone wird automatisch vom Browser erkannt."
+    , timezoneManualLabel = "Aktuelle Zeitzone:"
+    , timezoneResetButton = "Auf automatisch zurücksetzen"
+    , timezoneInputPlaceholder = "Z.B. Europe/Berlin"
     }
 
 fr : Texts
@@ -93,6 +123,12 @@ fr =
     , currentPassword = "Mot de passe actuel"
     , newPassword = "Nouveau mot de passe"
     , newPasswordRepeat = "Nouveau mot de passe (bis)"
+    , timezoneHeader = "Fuseau horaire"
+    , timezoneAutoLabel = "Automatique (depuis le navigateur)"
+    , timezoneAutoHint = "Le fuseau horaire est automatiquement détecté depuis votre navigateur."
+    , timezoneManualLabel = "Fuseau horaire actuel :"
+    , timezoneResetButton = "Revenir à l'automatique"
+    , timezoneInputPlaceholder = "Ex. Europe/Paris"
     }
 
 
@@ -108,6 +144,12 @@ ja =
     , currentPassword = "現在のパスワード"
     , newPassword = "新しいパスワード"
     , newPasswordRepeat = "新しいパスワード ( 確認 )"
+    , timezoneHeader = "タイムゾーン"
+    , timezoneAutoLabel = "自動（ブラウザから）"
+    , timezoneAutoHint = "タイムゾーンはブラウザから自動的に検出されます。"
+    , timezoneManualLabel = "現在のタイムゾーン："
+    , timezoneResetButton = "自動に戻す"
+    , timezoneInputPlaceholder = "例: Asia/Tokyo"
     }
 
 
@@ -123,4 +165,10 @@ cz =
     , currentPassword = "Stávající heslo"
     , newPassword = "Nové heslo"
     , newPasswordRepeat = "Nové heslo (znovu)"
+    , timezoneHeader = "Časové pásmo"
+    , timezoneAutoLabel = "Automaticky (z prohlížeče)"
+    , timezoneAutoHint = "Časové pásmo je automaticky detekováno z prohlížeče."
+    , timezoneManualLabel = "Aktuální časové pásmo:"
+    , timezoneResetButton = "Obnovit automatické"
+    , timezoneInputPlaceholder = "Např. Europe/Prague"
     }

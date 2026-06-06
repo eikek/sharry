@@ -276,6 +276,7 @@ val restserver = project
   .settings(buildInfoSettings)
   .settings(
     name := "sharry-restserver",
+    scalacOptions += "-Xmax-inlines:64",
     libraryDependencies ++=
       Dependencies.http4s ++
         Dependencies.http4sclient ++

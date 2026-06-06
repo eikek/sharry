@@ -7,9 +7,12 @@ import Browser.Navigation exposing (Key)
 import Data.Flags exposing (Flags)
 import Data.UiTheme exposing (UiTheme)
 import Data.UploadState exposing (UploadState)
+import Dict
 import Http
 import Language exposing (Language)
 import Page exposing (Page(..))
+import Time
+import TimeZone
 import Page.Account.Data
 import Page.Alias.Data
 import Page.Detail.Data
@@ -31,6 +34,7 @@ type alias Model =
     { flags : Flags
     , key : Key
     , page : Page
+    , zone : Time.Zone
     , navMenuOpen : Bool
     , langMenuOpen : Bool
     , version : VersionInfo
@@ -63,6 +67,7 @@ init key url flags_ =
     { flags = flags
     , key = key
     , page = page
+    , zone = resolveInitialZone flags
     , navMenuOpen = False
     , langMenuOpen = False
     , version = Api.Model.VersionInfo.empty
@@ -86,9 +91,28 @@ init key url flags_ =
     }
 
 
+resolveInitialZone : Flags -> Time.Zone
+resolveInitialZone flags =
+    let
+        fromId id =
+            Dict.get id TimeZone.zones
+                |> Maybe.map (\f -> f ())
+    in
+    case flags.timezone of
+        Just id ->
+            fromId id |> Maybe.withDefault Time.utc
+
+        Nothing ->
+            flags.config.defaultTimezone
+                |> Maybe.andThen fromId
+                |> Maybe.withDefault Time.utc
+
+
 type Msg
     = NavRequest UrlRequest
     | NavChange Url
+    | GotTimeZone Time.Zone
+    | SetTimezone (Maybe String)
     | VersionResp (Result Http.Error VersionInfo)
     | HomeMsg Page.Home.Data.Msg
     | LoginMsg Page.Login.Data.Msg

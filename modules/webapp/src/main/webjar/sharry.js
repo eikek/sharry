@@ -190,5 +190,13 @@ elmApp.ports.internalSetUiTheme.subscribe(function(themeName) {
     }
 });
 
+elmApp.ports.setTimezone.subscribe(function(id) {
+    if (id === null || id === undefined) {
+        localStorage.removeItem("timezone");
+    } else {
+        localStorage.setItem("timezone", id);
+    }
+});
+
 
 applyUiTheme(theme);

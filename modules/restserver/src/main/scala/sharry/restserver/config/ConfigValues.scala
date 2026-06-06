@@ -119,6 +119,7 @@ object ConfigValues extends ConfigDecoders:
     val oauthRedirect =
       key("webapp.oauth-auto-redirect", "WEBAPP_OAUTH_AUTO_REDIRECT").as[Boolean]
     val customHead = key("webapp.custom-head", "WEBAPP_CUSTOM_HEAD")
+    val defaultTimezone = key("webapp.default-timezone", "WEBAPP_DEFAULT_TIMEZONE").option
     (
       name,
       icon,
@@ -136,7 +137,8 @@ object ConfigValues extends ConfigDecoders:
       defaultValidity,
       initialTheme,
       oauthRedirect,
-      customHead
+      customHead,
+      defaultTimezone
     ).mapN(Config.Webapp.apply)
   }
 

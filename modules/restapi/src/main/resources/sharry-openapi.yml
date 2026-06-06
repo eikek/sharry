@@ -2076,6 +2076,11 @@ components:
         zipMaxSize:
           type: integer
           format: size
+        defaultTimezone:
+          type: string
+          description: |
+            IANA timezone ID (e.g. "Europe/Paris") used as the initial timezone
+            hint. Overridden by browser auto-detect and user preference.
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

@@ -1,8 +1,10 @@
 module Page.Settings.View exposing (view)
 
 import Comp.Basic as B
+import Comp.Dropdown
 import Comp.MenuBar as MB
 import Comp.PasswordInput
+import Data.DropdownStyle as DS
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
@@ -11,8 +13,8 @@ import Page.Settings.Data exposing (Model, Msg(..))
 import Styles as S
 
 
-view : Texts -> Model -> Html Msg
-view texts model =
+view : Texts -> Maybe String -> Model -> Html Msg
+view texts currentTimezone model =
     div
         [ class S.content
         , class "flex flex-col"
@@ -22,8 +24,33 @@ view texts model =
             , text texts.settingsTitle
             ]
         , banner model
+        , timezoneForm texts currentTimezone model
         , emailForm texts model
         , changePasswordForm texts model
+        ]
+
+
+timezoneForm : Texts -> Maybe String -> Model -> Html Msg
+timezoneForm texts currentTimezone model =
+    div [ class "flex flex-col mb-4" ]
+        [ h2 [ class S.header2 ]
+            [ text texts.timezoneHeader ]
+        , Html.map TimezoneDropdownMsg
+            (Comp.Dropdown.viewSingle2
+                { makeOption = \s -> { text = s, additional = "" }
+                , placeholder = texts.timezoneInputPlaceholder
+                , labelColor = \_ -> ""
+                , style = DS.mainStyle
+                }
+                model.timezoneDropdown
+            )
+        , case currentTimezone of
+            Nothing ->
+                p [ class "text-sm opacity-70 mt-1" ]
+                    [ text texts.timezoneAutoHint ]
+
+            Just _ ->
+                text ""
         ]
 
 

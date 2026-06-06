@@ -40,8 +40,8 @@ get lang =
         Italian ->
             it
 
-formatDateTime : Language -> Int -> String
-formatDateTime lang millis =
+formatDateTime : Language -> Time.Zone -> Int -> String
+formatDateTime lang zone millis =
     let
         msg =
             get lang
@@ -49,7 +49,7 @@ formatDateTime lang millis =
         fmt =
             DateFormat.formatWithLanguage msg.lang msg.format
     in
-    fmt Time.utc (Time.millisToPosix millis)
+    fmt zone (Time.millisToPosix millis)
 
 
 
