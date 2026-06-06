@@ -357,7 +357,8 @@ object ConfigValues extends ConfigDecoders:
       "BACKEND_SHARE_DATABASE_DOMAIN_CHECKS_IDS"
     )
       .listflatMap(domainCheck)
-    (chunkSize, maxSize, maxValid, domainChecks).mapN(ShareConfig.apply)
+    val zipMaxSize = k("zip-max-size", "ZIP_MAX_SIZE").as[ByteSize]
+    (chunkSize, maxSize, maxValid, domainChecks, zipMaxSize).mapN(ShareConfig.apply)
   }
 
   val cleanup = {

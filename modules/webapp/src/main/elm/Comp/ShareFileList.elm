@@ -63,6 +63,7 @@ type alias Settings =
     { baseUrl : String
     , viewMode : ViewMode
     , delete : Bool
+    , zipUrl : Maybe String
     }
 
 
@@ -110,12 +111,34 @@ update msg model =
 
 view : Texts -> Settings -> List ShareFile -> Model -> Html Msg
 view texts settings files model =
-    case settings.viewMode of
-        ViewList ->
-            fileTable texts settings model files
+    div []
+        [ zipButton texts settings files
+        , case settings.viewMode of
+            ViewList ->
+                fileTable texts settings model files
 
-        ViewCard ->
-            fileCards texts settings model files
+            ViewCard ->
+                fileCards texts settings model files
+        ]
+
+
+zipButton : Texts -> Settings -> List ShareFile -> Html Msg
+zipButton texts settings files =
+    case ( settings.zipUrl, List.length files > 1 ) of
+        ( Just url, True ) ->
+            div [ class "flex flex-row justify-end mb-2" ]
+                [ a
+                    [ class S.secondaryButton
+                    , href url
+                    , title texts.downloadAllZip
+                    ]
+                    [ i [ class "fa fa-file-archive mr-2" ] []
+                    , text texts.downloadAllZip
+                    ]
+                ]
+
+        _ ->
+            text ""
 
 
 fileCards : Texts -> Settings -> Model -> List ShareFile -> Html Msg

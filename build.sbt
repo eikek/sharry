@@ -180,13 +180,14 @@ val restapi = project
   .settings(testSettingsMUnit)
   .settings(
     name := "sharry-restapi",
+    scalacOptions += "-Xmax-inlines:64",
     libraryDependencies ++=
       Dependencies.circe,
     openapiTargetLanguage := Language.Scala,
     openapiPackage := Pkg("sharry.restapi.model"),
     openapiSpec := (Compile / resourceDirectory).value / "sharry-openapi.yml",
     openapiStaticGen := OpenApiDocGenerator.Redoc,
-    openapiRedoclyCmd := Seq("redocly-cli"),
+    openapiRedoclyCmd := Seq("redocly"),
     openapiRedoclyConfig := Some(
       (LocalRootProject / baseDirectory).value / "project" / "redocly.yml"
     ),

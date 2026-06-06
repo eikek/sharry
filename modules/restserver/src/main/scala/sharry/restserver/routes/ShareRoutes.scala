@@ -17,6 +17,8 @@ import org.http4s.*
 import org.http4s.circe.CirceEntityDecoder.*
 import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
+import org.http4s.headers.*
+import org.typelevel.ci.CIString
 
 object ShareRoutes {
 
@@ -97,6 +99,22 @@ object ShareRoutes {
           chunkSize,
           fid
         )
+
+      case req @ GET -> Root / Ident(id) / "zip" =>
+        (for {
+          stream <- backend.share.loadZip(ShareId.secured(id, token.account))
+          resp <- OptionT.liftF(
+            Ok(stream).map(
+              _.withHeaders(
+                `Content-Type`(MediaType.application.zip),
+                `Content-Disposition`(
+                  "attachment",
+                  Map(CIString("filename") -> s"$id.zip")
+                )
+              )
+            )
+          )
+        } yield resp).getOrElseF(NotFound())
 
       // make it safer by also using the share id
       case DELETE -> Root / Ident(_) / "file" / Ident(fid) =>

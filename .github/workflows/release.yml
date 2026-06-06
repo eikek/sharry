@@ -9,18 +9,18 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
       - uses: cachix/install-nix-action@v31
       - name: Coursier cache
-        uses: coursier/cache-action@v7
+        uses: coursier/cache-action@v8
       - name: Set current version
         run:  echo "SHARRY_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: sbt make-pkg (${{ env.SHARRY_VERSION }})
         run: nix develop .#ci --command sbt make-pkg
       - name: Upload artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Sharry ${{ env.SHARRY_VERSION }}

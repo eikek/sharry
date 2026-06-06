@@ -60,7 +60,8 @@ object Main extends IOApp {
         }
       }
 
-      cfg <- ConfigFile.loadConfig
+      rawCfg <- ConfigFile.loadConfig
+      (cfg, zipWarn) = rawCfg.normalizeZipMaxSize
 
       _ <- ScribeConfigure.configure[IO](cfg.logging)
 
@@ -75,6 +76,7 @@ object Main extends IOApp {
 
       _ <- logger.info(s"\n${banner.render("***>")}")
       _ <- logger.info(s"\n${cfg.backend.files.stores}\n")
+      _ <- zipWarn.fold(IO.unit)(msg => logger.warn(s"Configuration warning: $msg"))
 
       pools = connectEC.map(Pools.apply)
       _ <-

@@ -86,7 +86,12 @@ object StylesPlugin extends AutoPlugin {
     val modulesDir = wd / "node_modules"
     if (!modulesDir.exists) {
       logger.info("Running npm install …")
-      Cmd.run(Seq(npm, "install"), wd, logger)
+      val npmCmd =
+        if (sys.props.getOrElse("os.name", "").toLowerCase.contains("windows"))
+          Seq("cmd", "/c", npm)
+        else
+          Seq(npm)
+      Cmd.run(npmCmd ++ Seq("install"), wd, logger)
     }
   }
 
@@ -104,8 +109,12 @@ object StylesPlugin extends AutoPlugin {
     }
     val target = outDir / "css" / "styles.css"
     IO.createDirectory(target.getParentFile)
-    val cmd = Seq(
-      tailwind,
+    val twCmd =
+      if (sys.props.getOrElse("os.name", "").toLowerCase.contains("windows"))
+        Seq("cmd", "/c", tailwind)
+      else
+        Seq(tailwind)
+    val cmd = twCmd ++ Seq(
       "--input",
       s"$inDir/index.css",
       "-o",

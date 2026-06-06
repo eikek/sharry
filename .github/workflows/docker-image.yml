@@ -6,18 +6,18 @@ jobs:
   docker-images:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
       - name: Set current version
         run:  echo "SHARRY_VERSION=$(cat version.sbt | grep version | cut -d= -f2 | xargs)" >> $GITHUB_ENV
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}

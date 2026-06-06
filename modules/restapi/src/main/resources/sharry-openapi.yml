@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Sharry
-  version: 1.16.0-SNAPSHOT
+  version: 1.17.0-SNAPSHOT
   license:
     name: GPLv3
     url: https://spdx.org/licenses/GPL-3.0-or-later.html
@@ -1124,6 +1124,62 @@ paths:
               schema:
                 $ref: "#/components/schemas/BasicResult"
 
+  /open/share/{pid}/zip:
+    get:
+      operationId: "open-share-pid-zip-get"
+      tags:
+        - Shares (Public)
+      summary: Download all files of a share as a ZIP archive.
+      description: |
+        Streams all files of a share as a single ZIP archive.
+
+        Returns 404 if the share is not found, if the ZIP download feature is
+        disabled (zip-max-size = 0), or if the share's total size exceeds the
+        configured zip-max-size limit.
+      parameters:
+        - $ref: "#/components/parameters/pid"
+      responses:
+        422:
+          description: BadRequest
+        404:
+          description: NotFound (also returned when ZIP download is disabled or share exceeds zip-max-size)
+        200:
+          description: Ok
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+
+  /sec/share/{id}/zip:
+    get:
+      operationId: "sec-share-id-zip-get"
+      tags:
+        - Shares
+      summary: Download all files of a share as a ZIP archive.
+      description: |
+        Streams all files of a share as a single ZIP archive.
+
+        Returns 404 if the share is not found, if the ZIP download feature is
+        disabled (zip-max-size = 0), or if the share's total size exceeds the
+        configured zip-max-size limit.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      security:
+        - authTokenHeader: []
+      responses:
+        422:
+          description: BadRequest
+        404:
+          description: NotFound (also returned when ZIP download is disabled or share exceeds zip-max-size)
+        200:
+          description: Ok
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+
   /alias/upload/{id}/files/tus:
     $ref: "#/paths/~1sec~1upload~1%7Bid%7D~1files~1tus"
 
@@ -1943,6 +1999,7 @@ components:
         - proxyAuthEnabled
         - proxyOnly
         - hideLoginForm
+        - zipMaxSize
       properties:
         appName:
           type: string
@@ -2016,6 +2073,9 @@ components:
           type: boolean
         hideLoginForm:
           type: boolean
+        zipMaxSize:
+          type: integer
+          format: size
     OAuthItem:
       description: |
         Information about a configured OAuth provider.
