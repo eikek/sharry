@@ -381,6 +381,39 @@ sharry.restserver.webapp {
 }
 ```
 
+### Timezone
+
+By default, timestamps in the web application are displayed in UTC.
+Sharry can show timestamps in the user's local timezone using the
+following priority order:
+
+1. **User preference** — the user selects a timezone in *Settings*;
+   stored in `localStorage` and used on every subsequent visit.
+2. **Browser auto-detect** — when no user preference is saved, the
+   browser's own timezone is detected automatically (full DST support).
+3. **Server default** — an optional IANA timezone ID set by the
+   administrator. Used as the initial timezone before browser
+   auto-detection resolves.
+4. **UTC** — fallback if nothing is configured (current behavior).
+
+To set a server-side timezone default, add this to your config file:
+
+```
+sharry.restserver.webapp {
+  # IANA timezone ID used as the initial timezone for all users before
+  # browser auto-detect resolves. Overridden by browser auto-detect and
+  # by the user's own preference saved in Settings.
+  # If not set, UTC is used (preserving current behavior).
+  # default-timezone = "Europe/Paris"
+}
+```
+
+Any valid [IANA timezone ID](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+is accepted (e.g. `"Europe/Rome"`, `"America/New_York"`, `"Asia/Tokyo"`).
+This setting is also exposed via the REST API (`GET /api/v2/open/info`)
+as the `defaultTimezone` field of `AppConfig`, which the webapp reads on
+startup.
+
 ### Login Modules
 
 Login modules are used to initially authenticate a user given some

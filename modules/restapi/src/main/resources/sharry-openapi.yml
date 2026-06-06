@@ -2079,8 +2079,12 @@ components:
         defaultTimezone:
           type: string
           description: |
-            IANA timezone ID (e.g. "Europe/Paris") used as the initial timezone
-            hint. Overridden by browser auto-detect and user preference.
+            Optional IANA timezone ID (e.g. "Europe/Paris", "America/New_York")
+            set by the server administrator as a fallback default. Used as the
+            initial timezone for all users before browser auto-detection resolves.
+            Priority order: user preference (stored in browser) > browser
+            auto-detect > this server default > UTC.
+            If absent or empty, UTC is used (preserving previous behavior).
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

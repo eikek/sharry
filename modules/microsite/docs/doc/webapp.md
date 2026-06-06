@@ -221,3 +221,30 @@ editing its properties is only possible by its creator.
 
 This may be useful to give a group of people access to the same files
 and to make it simpler to share files among registered users.
+
+
+## Settings
+
+Logged-in users can adjust personal preferences from the *Settings*
+page, accessible via the top-right menu.
+
+### Timezone
+
+All timestamps in Sharry (share creation time, expiry dates, etc.) are
+displayed in the user's local timezone. The active timezone is
+determined in the following priority order:
+
+1. **User preference** — set explicitly in *Settings → Timezone*;
+   persisted in `localStorage` and restored on every visit.
+2. **Browser auto-detect** — used automatically when no preference is
+   saved. The browser's own timezone (including DST rules) is used.
+3. **Server default** — an optional IANA timezone ID that an
+   administrator can set in `sharry.restserver.webapp.default-timezone`
+   (see [configuration](configure#timezone)).
+4. **UTC** — fallback if nothing is configured.
+
+To override the timezone, open *Settings* and choose a timezone from
+the searchable dropdown. Selecting the full IANA identifier
+(e.g. `Europe/Rome`, `America/New_York`) ensures correct
+daylight-saving-time handling throughout the year. To revert to
+browser auto-detect, clear the selection in the dropdown.
