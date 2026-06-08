@@ -201,14 +201,17 @@ object ShareRoutes {
         } yield resp).getOrElseF(NotFound())
 
       case DELETE -> Root / Ident(id) / "password" =>
-        (for {
-          res <-
-            backend.share
-              .setPassword(token.account, id, None)
-              .attempt
-              .map(AddResult.fromEither)
-          resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password deleted.")))
-        } yield resp).getOrElseF(NotFound())
+        if (cfg.backend.share.requireSharePassword)
+          Ok(BasicResult(false, "Password cannot be removed when password protection is required."))
+        else
+          (for {
+            res <-
+              backend.share
+                .setPassword(token.account, id, None)
+                .attempt
+                .map(AddResult.fromEither)
+            resp <- OptionT.liftF(Ok(Conv.basicResult(res, "Password deleted.")))
+          } yield resp).getOrElseF(NotFound())
     }
   }
 

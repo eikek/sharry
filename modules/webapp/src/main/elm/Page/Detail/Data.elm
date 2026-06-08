@@ -51,6 +51,7 @@ type alias Model =
     , uploadFormState : BasicResult
     , mailForm : Maybe Comp.MailSend.Model
     , shareUrlMode : InitialView
+    , passwordValidationError : Bool
     }
 
 
@@ -112,6 +113,7 @@ emptyModel =
     , uploadFormState = BasicResult True ""
     , mailForm = Nothing
     , shareUrlMode = Data.InitialView.default
+    , passwordValidationError = False
     }
 
 

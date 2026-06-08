@@ -81,7 +81,8 @@ object InfoRoutes {
       cfg.backend.auth.isProxyAuthOnly,
       cfg.backend.auth.isAutoLogin,
       cfg.backend.share.zipMaxSize,
-      cfg.webapp.defaultTimezone.filter(_.nonEmpty)
+      cfg.webapp.defaultTimezone.filter(_.nonEmpty),
+      cfg.backend.share.requireSharePassword
     )
   }
 
