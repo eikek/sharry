@@ -202,7 +202,12 @@ object ShareRoutes {
 
       case DELETE -> Root / Ident(id) / "password" =>
         if (cfg.backend.share.requireSharePassword)
-          Ok(BasicResult(false, "Password cannot be removed when password protection is required."))
+          Ok(
+            BasicResult(
+              false,
+              "Password cannot be removed when password protection is required."
+            )
+          )
         else
           (for {
             res <-
