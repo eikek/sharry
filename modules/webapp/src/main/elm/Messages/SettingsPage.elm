@@ -27,6 +27,9 @@ type alias Texts =
     , timezoneManualLabel : String
     , timezoneResetButton : String
     , timezoneInputPlaceholder : String
+    , autoPublishHeader : String
+    , autoPublishLabel : String
+    , autoPublishInfo : String
     }
 
 it : Texts
@@ -47,6 +50,9 @@ it =
     , timezoneManualLabel = "Fuso orario attuale:"
     , timezoneResetButton = "Ripristina automatico"
     , timezoneInputPlaceholder = "Es. Europe/Rome"
+    , autoPublishHeader = "Pubblicazione Automatica"
+    , autoPublishLabel = "Pubblica automaticamente dopo il caricamento"
+    , autoPublishInfo = "Se attivo, le condivisioni vengono pubblicate automaticamente al termine del caricamento dei file."
     }
 
 es : Texts
@@ -67,6 +73,9 @@ es =
     , timezoneManualLabel = "Zona horaria actual:"
     , timezoneResetButton = "Restablecer automático"
     , timezoneInputPlaceholder = "Ej. Europe/Madrid"
+    , autoPublishHeader = "Publicación Automática"
+    , autoPublishLabel = "Publicar automáticamente tras la subida"
+    , autoPublishInfo = "Si está activo, los archivos compartidos se publican automáticamente cuando termina la subida."
     }
 
 
@@ -88,6 +97,9 @@ gb =
     , timezoneManualLabel = "Current timezone:"
     , timezoneResetButton = "Reset to automatic"
     , timezoneInputPlaceholder = "E.g. Europe/London"
+    , autoPublishHeader = "Auto-Publish"
+    , autoPublishLabel = "Automatically publish after upload"
+    , autoPublishInfo = "When enabled, shares are automatically published once all files have been uploaded."
     }
 
 
@@ -109,6 +121,9 @@ de =
     , timezoneManualLabel = "Aktuelle Zeitzone:"
     , timezoneResetButton = "Auf automatisch zurücksetzen"
     , timezoneInputPlaceholder = "Z.B. Europe/Berlin"
+    , autoPublishHeader = "Automatisch Veröffentlichen"
+    , autoPublishLabel = "Nach dem Hochladen automatisch veröffentlichen"
+    , autoPublishInfo = "Wenn aktiviert, werden Shares nach dem Hochladen aller Dateien automatisch veröffentlicht."
     }
 
 fr : Texts
@@ -129,6 +144,9 @@ fr =
     , timezoneManualLabel = "Fuseau horaire actuel :"
     , timezoneResetButton = "Revenir à l'automatique"
     , timezoneInputPlaceholder = "Ex. Europe/Paris"
+    , autoPublishHeader = "Publication Automatique"
+    , autoPublishLabel = "Publier automatiquement après l'envoi"
+    , autoPublishInfo = "Si activé, les partages sont publiés automatiquement une fois tous les fichiers envoyés."
     }
 
 
@@ -150,6 +168,9 @@ ja =
     , timezoneManualLabel = "現在のタイムゾーン："
     , timezoneResetButton = "自動に戻す"
     , timezoneInputPlaceholder = "例: Asia/Tokyo"
+    , autoPublishHeader = "自動公開"
+    , autoPublishLabel = "アップロード後に自動的に公開する"
+    , autoPublishInfo = "有効にすると、すべてのファイルがアップロードされた後、共有が自動的に公開されます。"
     }
 
 
@@ -171,4 +192,7 @@ cz =
     , timezoneManualLabel = "Aktuální časové pásmo:"
     , timezoneResetButton = "Obnovit automatické"
     , timezoneInputPlaceholder = "Např. Europe/Prague"
+    , autoPublishHeader = "Automatické Zveřejnění"
+    , autoPublishLabel = "Automaticky zveřejnit po nahrání"
+    , autoPublishInfo = "Pokud je aktivní, sdílení jsou automaticky zveřejněna po nahrání všech souborů."
     }

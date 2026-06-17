@@ -175,6 +175,22 @@ If you rather like to publish it to a new URL, click the black publish
 button at the bottom of the *Detail* pane (see the screenshot below).
 
 
+## Auto-Publish
+
+If the administrator has enabled auto-publish
+(`webapp.auto-publish-enabled = true` in the server configuration),
+shares are automatically published as soon as all files have finished
+uploading — without requiring a manual *Publish* click.
+
+Users can change this preference in their *Settings* page. The toggle
+is only visible when the feature is enabled by the administrator. The
+preference is stored in the browser's local storage, so it persists
+across sessions on the same device but is independent for each browser.
+
+When auto-publish is active, the share's expiry time starts counting
+from the moment the upload completes (same as manual publish).
+
+
 ## Edit Details
 
 The share properties can be changed in the detail view of a share. The

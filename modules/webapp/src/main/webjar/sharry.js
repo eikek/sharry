@@ -198,5 +198,9 @@ elmApp.ports.setTimezone.subscribe(function(id) {
     }
 });
 
+elmApp.ports.setAutoPublish.subscribe(function(value) {
+    localStorage.setItem("sharry-auto-publish", value ? "true" : "false");
+});
+
 
 applyUiTheme(theme);

@@ -30,6 +30,8 @@ type alias Model =
     , banner : Maybe Banner
     , passwordAvailable : Maybe Bool
     , timezoneDropdown : Comp.Dropdown.Model String
+    , autoPublish : Bool
+    , autoPublishEnabled : Bool
     }
 
 
@@ -46,6 +48,8 @@ emptyModel =
     , banner = Nothing
     , passwordAvailable = Nothing
     , timezoneDropdown = Comp.Dropdown.makeSingle
+    , autoPublish = False
+    , autoPublishEnabled = False
     }
 
 
@@ -61,3 +65,4 @@ type Msg
     | SaveResp (Result Http.Error BasicResult)
     | CheckPassResp (Result Http.Error BasicResult)
     | TimezoneDropdownMsg (Comp.Dropdown.Msg String)
+    | ToggleAutoPublish
