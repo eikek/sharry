@@ -132,7 +132,7 @@ middleMenu texts model =
 fileList : Texts -> Flags -> Model -> Html Msg
 fileList texts flags model =
     let
-        zipUrl =
+        zipBaseUrl =
             if flags.config.zipMaxSize > 0 then
                 Just (Api.zipOpenUrl flags (shareId model))
 
@@ -144,7 +144,8 @@ fileList texts flags model =
                 (Api.fileOpenUrl flags (shareId model) "")
                 model.fileView
                 False
-                zipUrl
+                zipBaseUrl
+                flags.config.zipMaxSize
 
         sorted =
             List.sortBy .filename model.share.files

@@ -53,6 +53,7 @@ update flags msg model =
                 , message = Nothing
                 , descEdit = Nothing
                 , deleteState = DeleteNone
+                , fileListModel = Comp.ShareFileList.initWithFiles details.files model.fileListModel
               }
             , Cmd.none
             )

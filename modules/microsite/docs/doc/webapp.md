@@ -120,14 +120,24 @@ the download page is accessed more than this number, it will not work
 anymore.
 
 
-### Download All as ZIP
+### Download as ZIP
 
 When a share is published, the download page shows a *Download All*
-button that lets visitors download all files in the share as a single
-ZIP archive. The button is only shown when the total size of the share
-is within the limit configured by `zip-max-size` (see
-[configuration](configure#zip-download)). If the administrator has set
-`zip-max-size = "0"`, the button is hidden entirely.
+button that lets visitors download files in the share as a single ZIP
+archive.
+
+Each file in the list has a checkbox. When no checkboxes are selected,
+clicking *Download All* includes all files. When one or more checkboxes
+are selected, only those files are included in the archive. A size
+indicator shows the total size of the current selection against the
+configured limit.
+
+The button is only shown when the total size of the share is within the
+limit configured by `zip-max-size` (see
+[configuration](configure#zip-download)). When files are individually
+selected, the size check applies to the selected subset — allowing
+partial downloads even when the full share exceeds the limit. If the
+administrator has set `zip-max-size = "0"`, the button is hidden entirely.
 
 
 ## Publish / Unpublish / Republish

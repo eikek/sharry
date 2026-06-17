@@ -1,0 +1,30 @@
+# Normalize line endings to LF for all text files
+* text=auto eol=lf
+
+# Scala and sbt sources
+*.scala text eol=lf
+*.sbt   text eol=lf
+*.sc    text eol=lf
+
+# Elm sources
+*.elm   text eol=lf
+
+# Config and markup
+*.conf  text eol=lf
+*.hocon text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.xml   text eol=lf
+*.html  text eol=lf
+*.css   text eol=lf
+*.js    text eol=lf
+
+# Binaries — no conversion
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.svg   binary
+*.jar   binary
+*.zip   binary

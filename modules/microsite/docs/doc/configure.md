@@ -162,8 +162,8 @@ found [here](https://www.eicar.org/?page_id=3950).
 
 ### ZIP Download
 
-The `zip-max-size` setting controls whether users can download all
-files of a share as a single ZIP archive.
+The `zip-max-size` setting controls whether users can download files
+of a share as a single ZIP archive.
 
 ```
 sharry.restserver.backend.share {
@@ -177,8 +177,12 @@ sharry.restserver.backend.share {
 
 Set `zip-max-size = "0"` to disable the ZIP download button entirely.
 If a share's total size exceeds this value, the download-as-ZIP option
-is hidden. The value cannot exceed `max-size`; if it does, it is
-silently capped at startup.
+is hidden. However, visitors can still select a subset of files using
+the per-file checkboxes on the download page; the size check is then
+applied to the selected subset, so a partial download may still succeed
+even when the full share exceeds the limit.
+The value cannot exceed `max-size`; if it does, it is silently capped
+at startup.
 
 ### Files
 
