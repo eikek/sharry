@@ -1,5 +1,6 @@
 module Messages.DetailPage exposing
     ( Texts
+    , applyZone
     , de
     , fr
     , gb
@@ -10,8 +11,9 @@ module Messages.DetailPage exposing
     )
 
 import Data.InitialView exposing (InitialView)
-import Language
+import Language exposing (Language)
 import Messages.DateFormat
+import Time
 import Messages.Dropzone2
 import Messages.MailSend
 import Messages.MarkdownInput
@@ -139,7 +141,7 @@ it =
     , passwordRequired = "Password necessaria"
     , passwordInvalid = "Password non valida"
     , or = "Oppure"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Italian
+    , dateTime = Messages.DateFormat.formatDateTime Language.Italian Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -216,7 +218,7 @@ es =
     , passwordRequired = "Contraseña requerida"
     , passwordInvalid = "Contraseña inválida"
     , or = "O"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish
+    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -294,7 +296,7 @@ gb =
     , passwordRequired = "Password required"
     , passwordInvalid = "Password invalid"
     , or = "Or"
-    , dateTime = Messages.DateFormat.formatDateTime Language.English
+    , dateTime = Messages.DateFormat.formatDateTime Language.English Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -373,7 +375,7 @@ de =
     , passwordRequired = "Passwort erforderlich"
     , passwordInvalid = "Passwort ungültig"
     , or = "Oder"
-    , dateTime = Messages.DateFormat.formatDateTime Language.German
+    , dateTime = Messages.DateFormat.formatDateTime Language.German Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -455,7 +457,7 @@ fr =
     , passwordRequired = "Mot de passe requis"
     , passwordInvalid = "Mot de passe invalide"
     , or = "Ou"
-    , dateTime = Messages.DateFormat.formatDateTime Language.French
+    , dateTime = Messages.DateFormat.formatDateTime Language.French Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -531,7 +533,7 @@ ja =
     , passwordRequired = "要パスワード"
     , passwordInvalid = "パスワードが無効"
     , or = "または"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -609,7 +611,7 @@ cz =
     , passwordRequired = "Heslo vyžadováno"
     , passwordInvalid = "Chybějící heslo"
     , or = "Nebo"
-    , dateTime = Messages.DateFormat.formatDateTime Language.Czech
+    , dateTime = Messages.DateFormat.formatDateTime Language.Czech Time.utc
     , initialViewLabel =
         \iv ->
             case iv of
@@ -623,3 +625,8 @@ cz =
                     "Náhled"
     , initialViewField = "Výchozí zobrazení: "
     }
+
+
+applyZone : Time.Zone -> Language -> Texts -> Texts
+applyZone zone lang texts =
+    { texts | dateTime = Messages.DateFormat.formatDateTime lang zone }

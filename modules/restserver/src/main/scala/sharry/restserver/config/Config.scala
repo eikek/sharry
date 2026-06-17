@@ -96,7 +96,8 @@ object Config {
       defaultValidity: Duration,
       initialTheme: String,
       oauthAutoRedirect: Boolean,
-      customHead: String
+      customHead: String,
+      defaultTimezone: Option[String]
   )
 
   final case class Api(

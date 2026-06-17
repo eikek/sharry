@@ -13,6 +13,7 @@ type alias Flags =
     { account : Maybe AuthResult
     , language : Maybe String
     , uiTheme : Maybe String
+    , timezone : Maybe String
     , config : AppConfig
     }
 

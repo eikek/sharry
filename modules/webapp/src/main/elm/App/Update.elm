@@ -7,7 +7,12 @@ import Browser.Navigation as Nav
 import Data.Flags
 import Data.InitialView exposing (InitialView)
 import Data.UiTheme
+import Comp.Dropdown
+import Dict
 import Page exposing (Page(..))
+import Task
+import Time
+import TimeZone
 import Page.Account.Data
 import Page.Account.Update
 import Page.Alias.Data
@@ -83,6 +88,48 @@ update msg model =
 
         OpenShareMsg lm ->
             updateOpenShare lm model
+
+        SettingsMsg (Page.Settings.Data.TimezoneDropdownMsg lm) ->
+            let
+                ( newModel, settingsCmd ) =
+                    updateSettings (Page.Settings.Data.TimezoneDropdownMsg lm) model
+            in
+            if Comp.Dropdown.isDropdownChangeMsg lm then
+                let
+                    selectedTz =
+                        Comp.Dropdown.getSelected newModel.settingsModel.timezoneDropdown
+                            |> List.head
+
+                    flags =
+                        newModel.flags
+
+                    newFlags =
+                        { flags | timezone = selectedTz }
+
+                    newZone =
+                        case selectedTz of
+                            Just id ->
+                                Dict.get id TimeZone.zones
+                                    |> Maybe.map (\f -> f ())
+                                    |> Maybe.withDefault newModel.zone
+
+                            Nothing ->
+                                newModel.zone
+
+                    detectCmd =
+                        case selectedTz of
+                            Nothing ->
+                                Task.perform GotTimeZone Time.here
+
+                            Just _ ->
+                                Cmd.none
+                in
+                ( { newModel | zone = newZone, flags = newFlags }
+                , Cmd.batch [ settingsCmd, Ports.setTimezone selectedTz, detectCmd ]
+                )
+
+            else
+                ( newModel, settingsCmd )
 
         SettingsMsg lm ->
             updateSettings lm model
@@ -253,6 +300,39 @@ update msg model =
         SetLanguage lang ->
             ( { model | langMenuOpen = False }
             , Ports.setLang lang
+            )
+
+        GotTimeZone zone ->
+            ( { model | zone = zone }, Cmd.none )
+
+        SetTimezone maybeId ->
+            let
+                newZone =
+                    case maybeId of
+                        Just id ->
+                            Dict.get id TimeZone.zones
+                                |> Maybe.map (\f -> f ())
+                                |> Maybe.withDefault model.zone
+
+                        Nothing ->
+                            model.zone
+
+                detectCmd =
+                    case maybeId of
+                        Nothing ->
+                            Task.perform GotTimeZone Time.here
+
+                        Just _ ->
+                            Cmd.none
+
+                flags =
+                    model.flags
+
+                newFlags =
+                    { flags | timezone = maybeId }
+            in
+            ( { model | zone = newZone, flags = newFlags }
+            , Cmd.batch [ Ports.setTimezone maybeId, detectCmd ]
             )
 
 

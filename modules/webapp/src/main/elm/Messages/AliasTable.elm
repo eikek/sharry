@@ -1,5 +1,6 @@
 module Messages.AliasTable exposing
     ( Texts
+    , applyZone
     , de
     , fr
     , gb
@@ -9,9 +10,10 @@ module Messages.AliasTable exposing
     , it
     )
 
-import Language
+import Language exposing (Language)
 import Messages.DateFormat
 import Messages.ValidityField
+import Time
 
 
 type alias Texts =
@@ -36,7 +38,7 @@ it =
     , show = "Visualizza"
     , owner = "Proprietario"
     , validityField = Messages.ValidityField.it
-    , dateTime = Messages.DateFormat.formatDateTime Language.Italian
+    , dateTime = Messages.DateFormat.formatDateTime Language.Italian Time.utc
     }
 
 es : Texts
@@ -49,7 +51,7 @@ es =
     , show = "Mostrar"
     , owner = "Propietario"
     , validityField = Messages.ValidityField.es
-    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish
+    , dateTime = Messages.DateFormat.formatDateTime Language.Spanish Time.utc
     }
 
 
@@ -63,7 +65,7 @@ gb =
     , show = "Show"
     , owner = "Owner"
     , validityField = Messages.ValidityField.gb
-    , dateTime = Messages.DateFormat.formatDateTime Language.English
+    , dateTime = Messages.DateFormat.formatDateTime Language.English Time.utc
     }
 
 
@@ -77,7 +79,7 @@ de =
     , show = "Anzeigen"
     , owner = "Eigentümer"
     , validityField = Messages.ValidityField.de
-    , dateTime = Messages.DateFormat.formatDateTime Language.German
+    , dateTime = Messages.DateFormat.formatDateTime Language.German Time.utc
     }
 
 
@@ -91,7 +93,7 @@ fr =
     , show = "Show"
     , owner = "Owner"
     , validityField = Messages.ValidityField.fr
-    , dateTime = Messages.DateFormat.formatDateTime Language.French
+    , dateTime = Messages.DateFormat.formatDateTime Language.French Time.utc
     }
 
 
@@ -105,7 +107,7 @@ ja =
     , show = "表示"
     , owner = "所有者"
     , validityField = Messages.ValidityField.ja
-    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese
+    , dateTime = Messages.DateFormat.formatDateTime Language.Japanese Time.utc
     }
 
 cz : Texts
@@ -118,5 +120,10 @@ cz =
     , show = "Zobrazit"
     , owner = "Vlastník"
     , validityField = Messages.ValidityField.cz
-    , dateTime = Messages.DateFormat.formatDateTime Language.Czech
+    , dateTime = Messages.DateFormat.formatDateTime Language.Czech Time.utc
     }
+
+
+applyZone : Time.Zone -> Language -> Texts -> Texts
+applyZone zone lang texts =
+    { texts | dateTime = Messages.DateFormat.formatDateTime lang zone }

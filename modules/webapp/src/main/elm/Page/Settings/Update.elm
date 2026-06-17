@@ -2,9 +2,12 @@ module Page.Settings.Update exposing (update)
 
 import Api
 import Api.Model.PasswordChange exposing (PasswordChange)
+import Comp.Dropdown
 import Comp.PasswordInput
 import Data.Flags exposing (Flags)
+import Dict
 import Page.Settings.Data exposing (Banner, Model, Msg(..))
+import TimeZone
 import Util.Http
 import Util.Maybe
 
@@ -13,7 +16,17 @@ update : Flags -> Msg -> Model -> ( Model, Cmd Msg )
 update flags msg model =
     case msg of
         Init ->
-            ( { model | banner = Nothing }
+            let
+                allZones =
+                    Dict.keys TimeZone.zones |> List.sort
+
+                dropdownModel =
+                    Comp.Dropdown.makeSingleList
+                        { options = allZones
+                        , selected = flags.timezone
+                        }
+            in
+            ( { model | banner = Nothing, timezoneDropdown = dropdownModel }
             , Cmd.batch
                 [ Api.getEmail flags GetEmailResp
                 , Api.checkPassword flags CheckPassResp
@@ -147,3 +160,10 @@ update flags msg model =
                 ( { model | banner = Just <| Banner False "Passwords don't match." }
                 , Cmd.none
                 )
+
+        TimezoneDropdownMsg lm ->
+            let
+                ( dm, _ ) =
+                    Comp.Dropdown.update lm model.timezoneDropdown
+            in
+            ( { model | timezoneDropdown = dm }, Cmd.none )

@@ -18,6 +18,7 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm-explorations/markdown": "1.0.0",
+            "justinmimbs/timezone-data": "11.1.0",
             "pablohirafuji/elm-qrcode": "4.0.1",
             "ryan-haskell/date-format": "1.0.0"
         },

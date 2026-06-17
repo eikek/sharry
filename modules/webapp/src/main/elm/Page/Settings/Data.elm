@@ -7,6 +7,7 @@ module Page.Settings.Data exposing
 
 import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.EmailInfo exposing (EmailInfo)
+import Comp.Dropdown
 import Comp.PasswordInput
 import Http
 
@@ -28,6 +29,7 @@ type alias Model =
     , currentEmail : Maybe String
     , banner : Maybe Banner
     , passwordAvailable : Maybe Bool
+    , timezoneDropdown : Comp.Dropdown.Model String
     }
 
 
@@ -43,6 +45,7 @@ emptyModel =
     , currentEmail = Nothing
     , banner = Nothing
     , passwordAvailable = Nothing
+    , timezoneDropdown = Comp.Dropdown.makeSingle
     }
 
 
@@ -57,3 +60,4 @@ type Msg
     | GetEmailResp (Result Http.Error EmailInfo)
     | SaveResp (Result Http.Error BasicResult)
     | CheckPassResp (Result Http.Error BasicResult)
+    | TimezoneDropdownMsg (Comp.Dropdown.Msg String)

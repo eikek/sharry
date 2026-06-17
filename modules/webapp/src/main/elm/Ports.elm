@@ -68,3 +68,9 @@ port internalSetUiTheme : String -> Cmd msg
 setUiTheme : UiTheme -> Cmd msg
 setUiTheme theme =
     internalSetUiTheme (Data.UiTheme.toString theme)
+
+
+port setTimezone : Maybe String -> Cmd msg
+
+
+port receiveTimezone : (Maybe String -> msg) -> Sub msg
