@@ -7,6 +7,7 @@ module Messages.AliasForm exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Html exposing (..)
@@ -211,4 +212,30 @@ cz =
     , memberInfo = "Členové tohoto prostoru jej mohou zobrazit a sdílet. Dále uvidí všechny soubory, které byly do tohoto prostoru nahrány."
     , yesNo = Messages.YesNoDimmer.cz
     , validityField = Messages.ValidityField.cz
+    }
+
+br : Texts
+br =
+    { id = "Id"
+    , noteToIdsHead = "Nota sobre Ids"
+    , noteToIds =
+        p []
+            [ text "Este ID faz parte da URL onde "
+            , em [] [ text "qualquer pessoa" ]
+            , text " pode enviar arquivos. Recomenda-se usar"
+            , text " algo aleatório. O id pode ser alterado para "
+            , text "qualquer valor, mas se deixado vazio, será gerado"
+            , text " um valor aleatório."
+            ]
+    , name = "Nome"
+    , validity = "Validade"
+    , enabled = "Habilitado"
+    , submit = "Enviar"
+    , back = "Voltar"
+    , delete = "Excluir"
+    , searchPlaceholder = "Buscar…"
+    , members = "Membros"
+    , memberInfo = "Os membros do seu alias podem ver e compartilhar este alias e podem ver todos os envios recebidos por este alias."
+    , yesNo = Messages.YesNoDimmer.br
+    , validityField = Messages.ValidityField.br
     }

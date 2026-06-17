@@ -7,6 +7,7 @@ module Messages.UploadPage exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Messages.ShareTable
@@ -77,4 +78,12 @@ cz =
     , newShare = "Nové sdílení"
     , search = "Hledat…"
     , shareTable = Messages.ShareTable.cz
+    }
+
+br : Texts
+br =
+    { yourShares = "Seus Compartilhamentos"
+    , newShare = "Novo Compartilhamento"
+    , search = "Buscar…"
+    , shareTable = Messages.ShareTable.br
     }

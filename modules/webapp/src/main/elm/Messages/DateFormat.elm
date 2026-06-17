@@ -40,6 +40,9 @@ get lang =
         Italian ->
             it
 
+        Portuguese ->
+            br
+
 formatDateTime : Language -> Time.Zone -> Int -> String
 formatDateTime lang zone millis =
     let
@@ -184,6 +187,25 @@ cz =
         , DateFormat.minuteFixed
         ]
     , lang = czech
+    }
+
+
+br : DateTimeMsg
+br =
+    { format =
+        [ DateFormat.dayOfWeekNameAbbreviated
+        , DateFormat.text ", "
+        , DateFormat.dayOfMonthSuffix
+        , DateFormat.text " de "
+        , DateFormat.monthNameFull
+        , DateFormat.text " de "
+        , DateFormat.yearNumber
+        , DateFormat.text ", "
+        , DateFormat.hourMilitaryNumber
+        , DateFormat.text ":"
+        , DateFormat.minuteFixed
+        ]
+    , lang = portuguese
     }
 
 
@@ -628,6 +650,130 @@ toCzechWeekdayName weekday =
 
         Sun ->
             "Neděle"
+
+-- Portuguese (Brazil)
+
+
+{-| Brazilian Portuguese language!
+-}
+portuguese : DL.Language
+portuguese =
+    let
+        withDot str =
+            str ++ "."
+    in
+    DL.Language
+        toPortugueseMonthName
+        toPortugueseMonthAbbreviation
+        toPortugueseWeekdayName
+        (toPortugueseWeekdayName >> String.left 3 >> withDot)
+        toEnglishAmPm
+        (\_ -> "")
+
+
+toPortugueseMonthName : Month -> String
+toPortugueseMonthName month =
+    case month of
+        Jan ->
+            "janeiro"
+
+        Feb ->
+            "fevereiro"
+
+        Mar ->
+            "março"
+
+        Apr ->
+            "abril"
+
+        May ->
+            "maio"
+
+        Jun ->
+            "junho"
+
+        Jul ->
+            "julho"
+
+        Aug ->
+            "agosto"
+
+        Sep ->
+            "setembro"
+
+        Oct ->
+            "outubro"
+
+        Nov ->
+            "novembro"
+
+        Dec ->
+            "dezembro"
+
+
+toPortugueseMonthAbbreviation : Month -> String
+toPortugueseMonthAbbreviation month =
+    case month of
+        Jan ->
+            "jan"
+
+        Feb ->
+            "fev"
+
+        Mar ->
+            "mar"
+
+        Apr ->
+            "abr"
+
+        May ->
+            "mai"
+
+        Jun ->
+            "jun"
+
+        Jul ->
+            "jul"
+
+        Aug ->
+            "ago"
+
+        Sep ->
+            "set"
+
+        Oct ->
+            "out"
+
+        Nov ->
+            "nov"
+
+        Dec ->
+            "dez"
+
+
+toPortugueseWeekdayName : Weekday -> String
+toPortugueseWeekdayName weekday =
+    case weekday of
+        Mon ->
+            "segunda-feira"
+
+        Tue ->
+            "terça-feira"
+
+        Wed ->
+            "quarta-feira"
+
+        Thu ->
+            "quinta-feira"
+
+        Fri ->
+            "sexta-feira"
+
+        Sat ->
+            "sábado"
+
+        Sun ->
+            "domingo"
 
 
 

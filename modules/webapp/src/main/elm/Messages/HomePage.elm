@@ -7,6 +7,7 @@ module Messages.HomePage exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -90,4 +91,14 @@ cz =
     , viewAliases = "Zobrazit prostory pro sdílení"
     , documentation = "Dokumentace"
     , shareFilesWithOthers = "Sdílení souborů"
+    }
+
+br : Texts
+br =
+    { createShare = "Criar Compartilhamento"
+    , viewShares = "Ver Compartilhamentos"
+    , createAlias = "Criar Alias"
+    , viewAliases = "Ver Aliases"
+    , documentation = "Documentação"
+    , shareFilesWithOthers = "Compartilhar arquivos com outros"
     }

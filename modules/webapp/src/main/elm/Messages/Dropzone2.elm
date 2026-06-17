@@ -7,6 +7,7 @@ module Messages.Dropzone2 exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -73,4 +74,12 @@ cz =
     , filesSelected = " vybrané soubory ("
     , or = "nebo"
     , selectFiles = "vyberte soubory ..."
+    }
+
+br : Texts
+br =
+    { dropHere = "Solte os arquivos aqui"
+    , filesSelected = " arquivos selecionados ("
+    , or = "Ou"
+    , selectFiles = "Selecionar Arquivos ..."
     }

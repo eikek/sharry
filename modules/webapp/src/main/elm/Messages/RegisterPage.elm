@@ -7,6 +7,7 @@ module Messages.RegisterPage exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Messages.FixedDropdown
@@ -125,5 +126,19 @@ cz =
     , signin = "Přihlásit se"
     , registrationSuccessful = "Registrace byla úspěšná."
     , dropdown = Messages.FixedDropdown.cz
+    }
+
+br : Texts
+br =
+    { signup = "Cadastro"
+    , userLogin = "Nome de usuário"
+    , password = "Senha"
+    , passwordRepeat = "Senha (repetir)"
+    , invitationKey = "Chave de Convite"
+    , submitButton = "Enviar"
+    , alreadySignedUp = "Já está cadastrado?"
+    , signin = "Entrar"
+    , registrationSuccessful = "Cadastro realizado com sucesso."
+    , dropdown = Messages.FixedDropdown.br
     }
 
