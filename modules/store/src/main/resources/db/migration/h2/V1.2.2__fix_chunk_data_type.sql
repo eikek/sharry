@@ -1,10 +1,9 @@
--- Fix: change chunk_data from BLOB/MEDIUMBLOB back to VARBINARY.
--- H2's LENGTH() on BLOB columns (introduced by V1.0.1) returns UTF-8 character
--- count instead of byte count, causing filemeta.length to be underreported.
--- NOTE: Even with VARBINARY, LENGTH() still returns char count in H2 PostgreSQL
--- mode; the Scala-level updateLength() in OShare.scala bypasses this for new uploads.
-ALTER TABLE "filechunk" ALTER COLUMN "chunk_data" VARBINARY(1000000000) NOT NULL;
-
+-- Fix filemeta.length for existing files.
+-- H2 in PostgreSQL mode: LENGTH() on both MEDIUMBLOB and VARBINARY returns UTF-8
+-- character count, not byte count. OCTET_LENGTH() is reliable on MEDIUMBLOB, so
+-- no column type change is needed. New uploads are fixed in OShare.scala via
+-- Scala-computed updateLength() which never calls LENGTH() on chunk_data.
+--
 -- Recompute filemeta.length for existing files using correct byte count.
 -- Only updates rows that have chunks (files uploaded before this migration).
 UPDATE "filemeta"
