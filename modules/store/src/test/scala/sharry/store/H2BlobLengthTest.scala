@@ -6,12 +6,12 @@ import munit.FunSuite
 
 /** Regression test for issues #1327 / #899.
   *
-  * Verifies that the V1.2.2 migration UPDATE correctly recomputes
-  * filemeta.length using OCTET_LENGTH on MEDIUMBLOB chunk_data in H2
-  * PostgreSQL mode (where LENGTH() returns UTF-8 char count, not bytes).
+  * Verifies that the V1.2.2 migration UPDATE correctly recomputes filemeta.length using
+  * OCTET_LENGTH on MEDIUMBLOB chunk_data in H2 PostgreSQL mode (where LENGTH() returns
+  * UTF-8 char count, not bytes).
   *
-  * Also confirms that OCTET_LENGTH on MEDIUMBLOB returns byte count,
-  * which is the precondition for removing the ALTER TABLE from V1.2.2.
+  * Also confirms that OCTET_LENGTH on MEDIUMBLOB returns byte count, which is the
+  * precondition for removing the ALTER TABLE from V1.2.2.
   */
 class H2BlobLengthTest extends FunSuite {
 
