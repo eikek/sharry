@@ -293,7 +293,10 @@ object OShare {
               .flatMap { bytesSaved =>
                 val len = offset + ByteSize(bytesSaved)
                 store
-                  .transact(RShareFile.setRealSize(fileId, len))
+                  .transact(
+                    RShareFile.setRealSize(fileId, len) >>
+                      RFileMeta.updateLength(fileMetaId, len)
+                  )
                   .map(_ => UploadResult.success(len))
               }
               .attempt

@@ -73,6 +73,9 @@ object RFileMeta {
   def updateChecksum(id: Ident, checksum: ByteVector): ConnectionIO[Int] =
     Sql.updateRow(table, Columns.id.is(id), Columns.checksum.setTo(checksum)).update.run
 
+  def updateLength(id: Ident, length: ByteSize): ConnectionIO[Int] =
+    Sql.updateRow(table, Columns.id.is(id), Columns.length.setTo(length)).update.run
+
   def delete(id: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, Columns.id.is(id)).update.run
 }
