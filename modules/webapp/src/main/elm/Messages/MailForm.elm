@@ -7,6 +7,7 @@ module Messages.MailForm exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -90,5 +91,15 @@ cz =
     , body = "Tělo"
     , send = "Odeslat"
     , cancel = "Storno"
+    }
+
+br : Texts
+br =
+    { receivers = "Destinatário(s)"
+    , separateRecipientsByComma = "Separe múltiplos destinatários com vírgula"
+    , subject = "Assunto"
+    , body = "Corpo"
+    , send = "Enviar"
+    , cancel = "Cancelar"
     }
 

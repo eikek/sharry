@@ -8,6 +8,7 @@ module Messages.AccountTable exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Language exposing (Language)
@@ -132,6 +133,20 @@ cz  =
     , created = "Založeno"
     , edit = "Editovat"
     , dateTime = formatDateTime Language.Czech Time.utc
+    }
+
+br : Texts
+br =
+    { login = "Login"
+    , source = "Origem"
+    , state = "Estado"
+    , nrShares = "#Compartilhamentos"
+    , admin = "Administrador"
+    , nrLogins = "#Logins"
+    , lastLogin = "Último Login"
+    , created = "Criado"
+    , edit = "Editar"
+    , dateTime = formatDateTime Language.Portuguese Time.utc
     }
 
 

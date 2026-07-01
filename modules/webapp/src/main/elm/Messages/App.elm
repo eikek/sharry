@@ -7,6 +7,7 @@ module Messages.App exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -139,4 +140,20 @@ cz =
     , lightDark = "Světlý/Tmavý režim"
     , logoutSharry = "Odhlásit"
     , logoutOAuth = "Odhlásit u poskytovatele ověření"
+    }
+
+br : Texts
+br =
+    { home = "Início"
+    , shares = "Compartilhamentos"
+    , aliases = "Aliases"
+    , accounts = "Contas"
+    , settings = "Configurações"
+    , newInvites = "Novos Convites"
+    , logout = \user -> "Sair (" ++ user ++ ")"
+    , login = "Entrar"
+    , register = "Registrar"
+    , lightDark = "Claro/Escuro"
+    , logoutSharry = "Sair do Sharry"
+    , logoutOAuth = "Sair do provedor de autenticação"
     }

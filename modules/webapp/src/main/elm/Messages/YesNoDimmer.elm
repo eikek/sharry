@@ -7,6 +7,7 @@ module Messages.YesNoDimmer exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -65,4 +66,11 @@ cz =
     { message = "Smazat trvale tuto položku?"
     , confirmButton = "Ano, prosím!"
     , cancelButton = "Ne"
+    }
+
+br : Texts
+br =
+    { message = "Excluir este item permanentemente?"
+    , confirmButton = "Sim, excluir!"
+    , cancelButton = "Não"
     }

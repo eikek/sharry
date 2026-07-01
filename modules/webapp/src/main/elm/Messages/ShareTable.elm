@@ -8,6 +8,7 @@ module Messages.ShareTable exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Language exposing (Language)
@@ -121,6 +122,19 @@ cz =
     , created = "Vytvořeno"
     , open = "Otevřít"
     , dateTime = Messages.DateFormat.formatDateTime Language.Czech Time.utc
+    }
+
+br : Texts
+br =
+    { nameId = "Nome/Id"
+    , aliasLabel = "Alias"
+    , maxViews = "Máx. Visualizações"
+    , published = "Publicado"
+    , nFiles = "#Arquivos"
+    , size = "Tamanho"
+    , created = "Criado"
+    , open = "Abrir"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Portuguese Time.utc
     }
 
 

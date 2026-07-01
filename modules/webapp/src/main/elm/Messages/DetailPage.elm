@@ -8,6 +8,7 @@ module Messages.DetailPage exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Data.InitialView exposing (InitialView)
@@ -632,6 +633,84 @@ cz =
                 Data.InitialView.Zoom ->
                     "Náhled"
     , initialViewField = "Výchozí zobrazení: "
+    }
+
+
+br : Texts
+br =
+    { mailSend = Messages.MailSend.br
+    , save = "Salvar"
+    , cancel = "Cancelar"
+    , yourShare = "Seu Compartilhamento"
+    , markdownInput = Messages.MarkdownInput.br
+    , shareFileList = Messages.ShareFileList.br
+    , yesNo = Messages.YesNoDimmer.br
+    , sharePublished =
+        "O compartilhamento foi publicado, mas o limite de visualizações foi atingido. Você pode "
+            ++ "aumentar esta propriedade se desejar mantê-lo publicado por mais tempo."
+    , shareNotPublished =
+        "Para compartilhar isso com outros, você precisa publicar "
+            ++ "este compartilhamento. Então todos a quem você enviar o link gerado "
+            ++ "poderão acessar estes dados."
+    , shareLinkExpired =
+        "O compartilhamento foi publicado, mas agora está expirado. Você pode "
+            ++ "despublicar e depois publicá-lo novamente."
+    , errorQrCode = "Erro ao gerar o QR Code."
+    , sharePublicAvailableAt = "O compartilhamento está disponível publicamente em"
+    , shareAsYouLike = "Você pode compartilhar este link com todos que desejar que acessem estes dados."
+    , sendEmail = "Enviar E-Mail"
+    , copyLink = "Copiar Link"
+    , name = "Nome"
+    , validity = "Tempo de Validade"
+    , maxViews = "Máx. Visualizações"
+    , password = "Senha"
+    , passwordProtected = "Protegido por Senha"
+    , passwordNone = "Nenhuma"
+    , shareSize = "#/Tamanho"
+    , created = "Criado"
+    , aliasLabel = "Alias"
+    , publishedOn = "Publicado em"
+    , publishedUntil = "Publicado até"
+    , lastAccess = "Último Acesso"
+    , views = "Visualizações"
+    , publishWithNewLink = "Publicar com novo Link"
+    , delete = "Excluir"
+    , edit = "Editar"
+    , detailsMenu = "Detalhes"
+    , shareLinkMenu = "Link Compartilhado"
+    , addFilesLinkMenu = "Adicionar arquivos"
+    , editDescription = "Editar descrição"
+    , publish = "Publicar"
+    , unpublish = "Despublicar"
+    , listView = "Visualização em Lista"
+    , cardView = "Visualização em Cartões"
+    , submit = "Enviar"
+    , clear = "Limpar"
+    , resume = "Retomar"
+    , pause = "Pausar"
+    , uploadsGreaterThan =
+        \size ->
+            "Todos os envios não devem ser maiores que " ++ size ++ "."
+    , waitDeleteShare = "Excluindo compartilhamento. Aguarde."
+    , loadingData = "Carregando dados..."
+    , dropzone = Messages.Dropzone2.br
+    , validityField = Messages.ValidityField.br
+    , passwordRequired = "Senha obrigatória"
+    , passwordInvalid = "Senha inválida"
+    , or = "Ou"
+    , dateTime = Messages.DateFormat.formatDateTime Language.Portuguese Time.utc
+    , initialViewLabel =
+        \iv ->
+            case iv of
+                Data.InitialView.Listing ->
+                    "Lista"
+
+                Data.InitialView.Cards ->
+                    "Cartões"
+
+                Data.InitialView.Zoom ->
+                    "Visualização"
+    , initialViewField = "Visualização inicial"
     }
 
 
