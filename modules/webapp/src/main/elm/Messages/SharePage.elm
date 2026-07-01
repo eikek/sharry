@@ -7,6 +7,7 @@ module Messages.SharePage exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Messages.Dropzone2
@@ -272,4 +273,36 @@ cz =
     , uploadsUpTo =
         \size ->
             "Velikost souborů je maximálně " ++ size ++ "."
+    }
+
+br : Texts
+br =
+    { markdownInput = Messages.MarkdownInput.br
+    , dropzone = Messages.Dropzone2.br
+    , validityField = Messages.ValidityField.br
+    , intField = Messages.IntField.br
+    , sendFiles = "Enviar arquivos"
+    , description = "Descrição"
+    , sendMoreFiles = "Enviar mais arquivos"
+    , allFilesUploaded = "Todos os arquivos enviados"
+    , someFilesFailedHeader = "Alguns arquivos falharam"
+    , someFilesFailedText = "Alguns arquivos falharam no envio…. Você pode tentar enviá-los novamente. "
+    , someFilesFailedTextAddon = "Vá ao compartilhamento e envie o mesmo arquivo novamente."
+    , submit = "Enviar"
+    , clearFiles = "Limpar Arquivos"
+    , resume = "Retomar"
+    , pause = "Pausar"
+    , password = "Senha"
+    , createShare = "Criar um Compartilhamento"
+    , details = "Detalhes"
+    , name = "Nome"
+    , namePlaceholder = "Nome Opcional"
+    , validity = "Validade"
+    , files = "Arquivos"
+    , newShare = "Novo Compartilhamento"
+    , gotoShare = "Ir ao Compartilhamento"
+    , maxPublicViews = "Máximo de Visualizações Públicas"
+    , uploadsUpTo =
+        \size ->
+            "Os envios são possíveis até " ++ size ++ "."
     }

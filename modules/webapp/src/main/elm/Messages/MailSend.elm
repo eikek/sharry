@@ -7,6 +7,7 @@ module Messages.MailSend exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Messages.MailForm
@@ -68,4 +69,11 @@ cz =
     { sendingEmail = "Odeslat mail ..."
     , loadingTemplate = "Nahrát šablonu ..."
     , mailForm = Messages.MailForm.cz
+    }
+
+br : Texts
+br =
+    { sendingEmail = "Enviando e-mail ..."
+    , loadingTemplate = "Carregando modelo ..."
+    , mailForm = Messages.MailForm.br
     }

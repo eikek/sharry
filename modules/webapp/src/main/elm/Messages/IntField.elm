@@ -7,6 +7,7 @@ module Messages.IntField exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -67,4 +68,11 @@ cz =
     { mustBeLower = "Číslo musí být <= "
     , mustBeGreater = "Číslo musí být >= "
     , notANumber = \str -> "'" ++ str ++ "' není povolená hodnota!"
+    }
+
+br : Texts
+br =
+    { mustBeLower = "O número deve ser <= "
+    , mustBeGreater = "O número deve ser >= "
+    , notANumber = \str -> "'" ++ str ++ "' não é um número válido!"
     }

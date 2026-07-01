@@ -7,6 +7,7 @@ module Messages.ShareFileList exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Messages.YesNoDimmer
@@ -156,4 +157,22 @@ cz =
     , fileIsIncomplete = "Soubor nebyl nahrán celý ("
     , tryUploadAgain = "%). Nahrajte jej prosím znovu."
     , yesNo = Messages.YesNoDimmer.cz
+    }
+
+br : Texts
+br =
+    { previewNotSupported = "Visualização não suportada"
+    , downloadToDisk = "Baixar para o disco"
+    , downloadAllZip = "Baixar tudo como ZIP"
+    , downloadSelectedZip = "Baixar selecionados como ZIP"
+    , selectAll = "Selecionar tudo"
+    , deselectAll = "Desmarcar tudo"
+    , noFilesSelected = "Nenhum arquivo selecionado"
+    , selectionTooLarge = "Seleção muito grande para download ZIP"
+    , selectedSizeOf = " de "
+    , viewInBrowser = "Ver no navegador"
+    , deleteFile = "Excluir o arquivo."
+    , fileIsIncomplete = "O arquivo está incompleto ("
+    , tryUploadAgain = "%). Tente enviar novamente."
+    , yesNo = Messages.YesNoDimmer.br
     }

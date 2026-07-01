@@ -8,6 +8,7 @@ module Messages.AliasTable exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Language exposing (Language)
@@ -121,6 +122,19 @@ cz =
     , owner = "Vlastník"
     , validityField = Messages.ValidityField.cz
     , dateTime = Messages.DateFormat.formatDateTime Language.Czech Time.utc
+    }
+
+br : Texts
+br =
+    { name = "Nome"
+    , enabled = "Habilitado"
+    , validity = "Validade"
+    , created = "Criado"
+    , edit = "Editar"
+    , show = "Mostrar"
+    , owner = "Proprietário"
+    , validityField = Messages.ValidityField.br
+    , dateTime = Messages.DateFormat.formatDateTime Language.Portuguese Time.utc
     }
 
 
