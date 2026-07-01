@@ -70,6 +70,9 @@ get lang =
         Italian ->
             it
 
+        Portuguese ->
+            br
+
 {-| Get a ISO-3166-1 code of the given lanugage.
 -}
 toIso2 : Language -> String
@@ -279,4 +282,24 @@ cz =
     , upload = Messages.UploadPage.cz
     , newInvite = Messages.NewInvitePage.cz
     , settings = Messages.SettingsPage.cz
+    }
+
+
+br : Messages
+br =
+    { lang = Portuguese
+    , iso2 = "br"
+    , label = "Português (Brasil)"
+    , flagIcon = "fi fi-br"
+    , app = Messages.App.br
+    , login = Messages.LoginPage.br
+    , register = Messages.RegisterPage.br
+    , account = Messages.AccountPage.br
+    , aliasPage = Messages.AliasPage.br
+    , detail = Messages.DetailPage.br
+    , share = Messages.SharePage.br
+    , home = Messages.HomePage.br
+    , upload = Messages.UploadPage.br
+    , newInvite = Messages.NewInvitePage.br
+    , settings = Messages.SettingsPage.br
     }

@@ -7,6 +7,7 @@ module Messages.FixedDropdown exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -49,5 +50,10 @@ ja =
 cz : Texts
 cz =
     { select = "Vybrat…"
+    }
+
+br : Texts
+br =
+    { select = "Selecionar…"
     }
 

@@ -7,6 +7,7 @@ module Messages.MarkdownInput exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -73,4 +74,12 @@ cz =
     , preview = "Náhled"
     , split = "Rozdělit"
     , supportsMarkdown = "Podporuje Markdown"
+    }
+
+br : Texts
+br =
+    { edit = "Editar"
+    , preview = "Visualizar"
+    , split = "Dividir"
+    , supportsMarkdown = "Suporta Markdown"
     }

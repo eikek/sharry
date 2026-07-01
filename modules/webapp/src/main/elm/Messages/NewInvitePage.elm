@@ -7,6 +7,7 @@ module Messages.NewInvitePage exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Html exposing (Html, p, text)
@@ -225,6 +226,35 @@ cz =
             [ text
                 """Vytvoření pozvánky vyžaduje zadání hesla
              z konfigurace."""
+            ]
+        ]
+    }
+
+br : Texts
+br =
+    { createNewTitle = "Criar novos convites"
+    , newInvitePassword = "Senha do Convite"
+    , submit = "Enviar"
+    , reset = "Redefinir"
+    , error = "Erro"
+    , success = "Sucesso"
+    , invitationKey = "Chave de Convite:"
+    , message =
+        [ p []
+            [ text
+                """O Sharry exige um convite para se cadastrar.
+                Você pode criar esses convites aqui e enviá-los para quem desejar
+                para que possam se cadastrar no Sharry."""
+            ]
+        , p []
+            [ text
+                """Cada convite só pode ser usado uma vez.
+                Você precisará criar uma chave para cada pessoa que deseja convidar."""
+            ]
+        , p []
+            [ text
+                """Criar um convite exige informar a senha
+                definida na configuração."""
             ]
         ]
     }

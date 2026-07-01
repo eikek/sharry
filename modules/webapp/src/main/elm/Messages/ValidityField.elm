@@ -7,6 +7,7 @@ module Messages.ValidityField exposing
     , cz
     , es
     , it
+    , br
     )
 
 import Messages.FixedDropdown
@@ -117,4 +118,17 @@ cz =
     , weeks = "týdnů"
     , month = "měsíc"
     , months = "měsíců"
+    }
+
+br : Texts
+br =
+    { dropdown = Messages.FixedDropdown.br
+    , hour = "hora"
+    , hours = "horas"
+    , day = "dia"
+    , days = "dias"
+    , week = "semana"
+    , weeks = "semanas"
+    , month = "mês"
+    , months = "meses"
     }

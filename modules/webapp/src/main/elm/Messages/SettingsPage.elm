@@ -7,6 +7,7 @@ module Messages.SettingsPage exposing
     , cz
     , es
     , it
+    , br
     )
 
 
@@ -195,4 +196,24 @@ cz =
     , autoPublishHeader = "Automatické Zveřejnění"
     , autoPublishLabel = "Automaticky zveřejnit po nahrání"
     , autoPublishInfo = "Pokud je aktivní, sdílení jsou automaticky zveřejněna po nahrání všech souborů."
+    }
+
+br : Texts
+br =
+    { settingsTitle = "Configurações"
+    , changeMailHeader = "Alterar seu E-Mail"
+    , newEmail = "Novo E-Mail"
+    , newEmailPlaceholder = "Endereço de E-Mail"
+    , submitEmptyMailInfo = "Enviar um formulário vazio exclui o endereço de e-mail."
+    , submit = "Enviar"
+    , changePasswordHeader = "Alterar Senha"
+    , currentPassword = "Senha Atual"
+    , newPassword = "Nova Senha"
+    , newPasswordRepeat = "Nova Senha (Repetir)"
+    , timezoneHeader = "Fuso Horário"
+    , timezoneAutoLabel = "Automático (do navegador)"
+    , timezoneAutoHint = "O fuso horário é detectado automaticamente pelo navegador."
+    , timezoneManualLabel = "Fuso horário atual:"
+    , timezoneResetButton = "Restaurar automático"
+    , timezoneInputPlaceholder = "Ex. America/Sao_Paulo"
     }
