@@ -697,6 +697,7 @@ br =
     , validityField = Messages.ValidityField.br
     , passwordRequired = "Senha obrigatória"
     , passwordInvalid = "Senha inválida"
+    , passwordCannotBeRemoved = "A senha não pode ser removida quando a proteção por senha é obrigatória."
     , or = "Ou"
     , dateTime = Messages.DateFormat.formatDateTime Language.Portuguese Time.utc
     , initialViewLabel =

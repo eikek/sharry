@@ -313,4 +313,5 @@ br =
     , uploadsUpTo =
         \size ->
             "Os envios são possíveis até " ++ size ++ "."
+    , passwordRequiredToCreate = "É necessária uma senha para este compartilhamento."
     }
