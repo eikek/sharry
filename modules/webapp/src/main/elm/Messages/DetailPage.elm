@@ -708,4 +708,7 @@ br =
 
 applyZone : Time.Zone -> Language -> Texts -> Texts
 applyZone zone lang texts =
-    { texts | dateTime = Messages.DateFormat.formatDateTime lang zone }
+    { texts
+        | dateTime = Messages.DateFormat.formatDateTime lang zone
+        , shareFileList = Messages.ShareFileList.applyZone zone lang texts.shareFileList
+    }

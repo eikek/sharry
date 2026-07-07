@@ -24,7 +24,10 @@ update flags initialView msg model =
                     { share | id = id }
             in
             ( { model | share = withId }
-            , Api.getOpenShare flags id model.password.field DetailResp
+            , Cmd.batch
+                [ Api.getOpenShare flags id model.password.field DetailResp
+                , Ports.initClipboard ( "OpenDetailFileChecksum", ".file-checksum-copy" )
+                ]
             )
 
         DetailResp (Ok details) ->

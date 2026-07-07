@@ -1,4 +1,4 @@
-module Messages.DateFormat exposing (formatDateTime)
+module Messages.DateFormat exposing (formatDateTime, formatDateTimeShort)
 
 import DateFormat exposing (Token)
 import DateFormat.Language as DL
@@ -51,6 +51,47 @@ formatDateTime lang zone millis =
 
         fmt =
             DateFormat.formatWithLanguage msg.lang msg.format
+    in
+    fmt zone (Time.millisToPosix millis)
+
+
+{-| A compact, numeric date/time format (e.g. "07/07/2026, 09:19"), used where
+full weekday/month names take up too much space (e.g. inline file badges).
+-}
+formatDateTimeShort : Language -> Time.Zone -> Int -> String
+formatDateTimeShort lang zone millis =
+    let
+        msg =
+            get lang
+
+        format =
+            case lang of
+                Japanese ->
+                    [ DateFormat.yearNumber
+                    , DateFormat.text "/"
+                    , DateFormat.monthFixed
+                    , DateFormat.text "/"
+                    , DateFormat.dayOfMonthFixed
+                    , DateFormat.text " "
+                    , DateFormat.hourMilitaryFixed
+                    , DateFormat.text ":"
+                    , DateFormat.minuteFixed
+                    ]
+
+                _ ->
+                    [ DateFormat.dayOfMonthFixed
+                    , DateFormat.text "/"
+                    , DateFormat.monthFixed
+                    , DateFormat.text "/"
+                    , DateFormat.yearNumber
+                    , DateFormat.text ", "
+                    , DateFormat.hourMilitaryFixed
+                    , DateFormat.text ":"
+                    , DateFormat.minuteFixed
+                    ]
+
+        fmt =
+            DateFormat.formatWithLanguage msg.lang format
     in
     fmt zone (Time.millisToPosix millis)
 

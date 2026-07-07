@@ -1,5 +1,6 @@
 module Messages.ShareFileList exposing
     ( Texts
+    , applyZone
     , de
     , gb
     , fr
@@ -10,7 +11,10 @@ module Messages.ShareFileList exposing
     , br
     )
 
+import Language exposing (Language)
+import Messages.DateFormat
 import Messages.YesNoDimmer
+import Time
 
 
 type alias Texts =
@@ -28,6 +32,12 @@ type alias Texts =
     , fileIsIncomplete : String
     , tryUploadAgain : String
     , yesNo : Messages.YesNoDimmer.Texts
+    , dateTime : Int -> String
+    , exactSize : String
+    , checksumLabel : String
+    , checksumNotAvailable : String
+    , copyChecksum : String
+    , toggleDetails : String
     }
 
 it : Texts
@@ -46,6 +56,12 @@ it =
     , fileIsIncomplete = "Il file è incompleto ("
     , tryUploadAgain = "%). Prova a caricare di nuovo."
     , yesNo = Messages.YesNoDimmer.it
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.Italian Time.utc
+    , exactSize = "Dimensione esatta"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Non ancora calcolato"
+    , copyChecksum = "Copia"
+    , toggleDetails = "Dettagli file"
     }
 
 es : Texts
@@ -64,6 +80,12 @@ es =
     , fileIsIncomplete = "El archivo está incompleto ("
     , tryUploadAgain = "%). Intenta subirlo de nuevo."
     , yesNo = Messages.YesNoDimmer.es
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.Spanish Time.utc
+    , exactSize = "Tamaño exacto"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Aún no calculado"
+    , copyChecksum = "Copiar"
+    , toggleDetails = "Detalles del archivo"
     }
 
 
@@ -83,6 +105,12 @@ gb =
     , fileIsIncomplete = "The file is incomplete ("
     , tryUploadAgain = "%). Try uploading again."
     , yesNo = Messages.YesNoDimmer.gb
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.English Time.utc
+    , exactSize = "Exact size"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Not yet computed"
+    , copyChecksum = "Copy"
+    , toggleDetails = "File details"
     }
 
 
@@ -102,6 +130,12 @@ de =
     , fileIsIncomplete = "Die Datei ist unvollständig ("
     , tryUploadAgain = "%). Versuchen Sie erneut hochzuladen."
     , yesNo = Messages.YesNoDimmer.de
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.German Time.utc
+    , exactSize = "Genaue Größe"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Noch nicht berechnet"
+    , copyChecksum = "Kopieren"
+    , toggleDetails = "Dateidetails"
     }
 
 fr : Texts
@@ -120,6 +154,12 @@ fr =
     , fileIsIncomplete = "Le fichier est incomplet ("
     , tryUploadAgain = "%). Essayer à nouveau."
     , yesNo = Messages.YesNoDimmer.fr
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.French Time.utc
+    , exactSize = "Taille exacte"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Pas encore calculé"
+    , copyChecksum = "Copier"
+    , toggleDetails = "Détails du fichier"
     }
 
 
@@ -139,6 +179,12 @@ ja =
     , fileIsIncomplete = "ファイルが不完全です。 ( "
     , tryUploadAgain = "% )。再度アップロードしてください。"
     , yesNo = Messages.YesNoDimmer.ja
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.Japanese Time.utc
+    , exactSize = "正確なサイズ"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "まだ計算されていません"
+    , copyChecksum = "コピー"
+    , toggleDetails = "ファイルの詳細"
     }
 
 cz : Texts
@@ -157,6 +203,12 @@ cz =
     , fileIsIncomplete = "Soubor nebyl nahrán celý ("
     , tryUploadAgain = "%). Nahrajte jej prosím znovu."
     , yesNo = Messages.YesNoDimmer.cz
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.Czech Time.utc
+    , exactSize = "Přesná velikost"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Zatím nevypočítáno"
+    , copyChecksum = "Kopírovat"
+    , toggleDetails = "Podrobnosti souboru"
     }
 
 br : Texts
@@ -175,4 +227,15 @@ br =
     , fileIsIncomplete = "O arquivo está incompleto ("
     , tryUploadAgain = "%). Tente enviar novamente."
     , yesNo = Messages.YesNoDimmer.br
+    , dateTime = Messages.DateFormat.formatDateTimeShort Language.Portuguese Time.utc
+    , exactSize = "Tamanho exato"
+    , checksumLabel = "SHA-256"
+    , checksumNotAvailable = "Ainda não calculado"
+    , copyChecksum = "Copiar"
+    , toggleDetails = "Detalhes do arquivo"
     }
+
+
+applyZone : Time.Zone -> Language -> Texts -> Texts
+applyZone zone lang texts =
+    { texts | dateTime = Messages.DateFormat.formatDateTimeShort lang zone }

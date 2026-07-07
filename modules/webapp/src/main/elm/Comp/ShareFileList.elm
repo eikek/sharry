@@ -28,6 +28,7 @@ type alias Model =
     { embedOn : Set String
     , requestDelete : Maybe ShareFile
     , selectedFiles : Set String
+    , detailsOpen : Set String
     }
 
 
@@ -40,6 +41,7 @@ type Msg
     | ToggleZipFile String
     | SelectAllZip (List String)
     | DeselectAllZip
+    | ToggleDetails ShareFile
 
 
 type FileAction
@@ -58,6 +60,7 @@ init =
     { embedOn = Set.empty
     , requestDelete = Nothing
     , selectedFiles = Set.empty
+    , detailsOpen = Set.empty
     }
 
 
@@ -133,6 +136,17 @@ update msg model =
 
         DeselectAllZip ->
             ( { model | selectedFiles = Set.empty }, FileNone )
+
+        ToggleDetails sf ->
+            let
+                newOpen =
+                    if Set.member sf.id model.detailsOpen then
+                        Set.remove sf.id model.detailsOpen
+
+                    else
+                        Set.insert sf.id model.detailsOpen
+            in
+            ( { model | detailsOpen = newOpen }, FileNone )
 
 
 
@@ -350,6 +364,8 @@ fileCard texts settings model file =
                 , span [ class "ml-2" ]
                     [ text "("
                     , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
+                    , text " · "
+                    , text (texts.dateTime file.created)
                     , text ")"
                     ]
                 ]
@@ -378,6 +394,7 @@ fileCard texts settings model file =
                     ]
                     [ i [ class "fa fa-eye" ] []
                     ]
+                , detailsToggleButton texts model file
                 , div [ class "flex-grow flex flex-row justify-end" ]
                     [ a
                         [ classList
@@ -394,6 +411,11 @@ fileCard texts settings model file =
                     ]
                 ]
             ]
+        , if Set.member file.id model.detailsOpen then
+            div [ class "px-2 pb-2" ] [ fileDetails texts file ]
+
+          else
+            text ""
         ]
 
 
@@ -419,6 +441,65 @@ incompleteLabel texts file =
                 ++ String.fromInt perc
                 ++ texts.tryUploadAgain
             )
+        ]
+
+
+detailsToggleButton : Texts -> Model -> ShareFile -> Html Msg
+detailsToggleButton texts model file =
+    let
+        isOpen =
+            Set.member file.id model.detailsOpen
+    in
+    a
+        [ class S.secondaryBasicButton
+        , class "text-xs"
+        , title texts.toggleDetails
+        , href "#"
+        , onClick (ToggleDetails file)
+        ]
+        [ i
+            [ class
+                ("fa "
+                    ++ (if isOpen then
+                            "fa-chevron-up"
+
+                        else
+                            "fa-chevron-down"
+                       )
+                )
+            ]
+            []
+        ]
+
+
+fileDetails : Texts -> ShareFile -> Html Msg
+fileDetails texts file =
+    div
+        [ class "flex flex-col text-sm space-y-1 px-3 py-2 rounded"
+        , class "bg-gray-50 dark:bg-stone-700 dark:bg-opacity-40"
+        ]
+        [ div []
+            [ span [ class "font-medium mr-2" ] [ text (texts.exactSize ++ ":") ]
+            , text (Util.Size.exactBytes file.size)
+            ]
+        , div [ class "flex flex-row items-center flex-wrap" ]
+            [ span [ class "font-medium mr-2" ] [ text (texts.checksumLabel ++ ":") ]
+            , if file.checksum == "" then
+                span [] [ text texts.checksumNotAvailable ]
+
+              else
+                span [ class "flex flex-row items-center space-x-2" ]
+                    [ code [ class "break-all font-mono text-xs" ] [ text file.checksum ]
+                    , button
+                        [ class S.secondaryBasicButton
+                        , class "file-checksum-copy text-xs"
+                        , attribute "data-clipboard-text" file.checksum
+                        , title texts.copyChecksum
+                        , type_ "button"
+                        ]
+                        [ i [ class "fa fa-copy" ] [] ]
+                    ]
+            ]
         ]
 
 
@@ -518,7 +599,7 @@ fileTable texts settings model files =
         [ yesNo
         , table [ class S.tableMain ]
             [ Html.Keyed.node "tbody" [] <|
-                List.map
+                List.concatMap
                     (\file ->
                         let
                             key =
@@ -529,12 +610,25 @@ fileTable texts settings model files =
                                         else
                                             ":0"
                                        )
+
+                            mainRow =
+                                ( key, fileRow texts settings model file )
                         in
-                        ( key, fileRow texts settings model file )
+                        if Set.member file.id model.detailsOpen then
+                            [ mainRow, ( file.id ++ ":details", fileDetailsRow texts file ) ]
+
+                        else
+                            [ mainRow ]
                     )
                     files
             ]
         ]
+
+
+fileDetailsRow : Texts -> ShareFile -> Html Msg
+fileDetailsRow texts file =
+    tr [ class S.tableRow ]
+        [ td [ colspan 3, class "px-3 pb-2" ] [ fileDetails texts file ] ]
 
 
 fileRow : Texts -> Settings -> Model -> ShareFile -> Html Msg
@@ -575,13 +669,16 @@ fileRow texts { baseUrl, delete, zipBaseUrl } model file =
             , span [ class "text-sm font-mono" ]
                 [ text " ("
                 , toFloat file.size |> Util.Size.bytesReadable Util.Size.B |> text
+                , text " · "
+                , text (texts.dateTime file.created)
                 , text ") "
                 ]
             , incompleteLabel texts file
             ]
         , td [ class "" ]
             [ div [ class "text-right flex flex-row justify-end space-x-1 items-center" ]
-                [ a
+                [ detailsToggleButton texts model file
+                , a
                     [ classList
                         [ ( "hidden", not <| previewPossible file.mimetype )
                         ]
