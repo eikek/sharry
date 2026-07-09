@@ -216,4 +216,7 @@ br =
     , timezoneManualLabel = "Fuso horário atual:"
     , timezoneResetButton = "Restaurar automático"
     , timezoneInputPlaceholder = "Ex. America/Sao_Paulo"
+    , autoPublishHeader = "Publicação Automática"
+    , autoPublishLabel = "Publicar automaticamente após o envio"
+    , autoPublishInfo = "Se ativado, os compartilhamentos são publicados automaticamente após o envio de todos os arquivos."
     }
