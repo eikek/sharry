@@ -44,6 +44,7 @@ update flags msg model =
             , Cmd.batch
                 [ Api.getShare flags id DetailResp
                 , Ports.initClipboard clipboardData
+                , Ports.initClipboard ( "DetailFileChecksum", ".file-checksum-copy" )
                 ]
             )
 
