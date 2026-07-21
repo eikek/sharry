@@ -7,6 +7,7 @@ import Comp.PasswordInput
 import Data.Flags exposing (Flags)
 import Dict
 import Page.Settings.Data exposing (Banner, Model, Msg(..))
+import Ports
 import TimeZone
 import Util.Http
 import Util.Maybe
@@ -25,8 +26,16 @@ update flags msg model =
                         { options = allZones
                         , selected = flags.timezone
                         }
+
+                resolvedAutoPublish =
+                    Maybe.withDefault flags.config.autoPublishEnabled flags.autoPublish
             in
-            ( { model | banner = Nothing, timezoneDropdown = dropdownModel }
+            ( { model
+                | banner = Nothing
+                , timezoneDropdown = dropdownModel
+                , autoPublish = resolvedAutoPublish
+                , autoPublishEnabled = flags.config.autoPublishEnabled
+              }
             , Cmd.batch
                 [ Api.getEmail flags GetEmailResp
                 , Api.checkPassword flags CheckPassResp
@@ -167,3 +176,10 @@ update flags msg model =
                     Comp.Dropdown.update lm model.timezoneDropdown
             in
             ( { model | timezoneDropdown = dm }, Cmd.none )
+
+        ToggleAutoPublish ->
+            let
+                newVal =
+                    not model.autoPublish
+            in
+            ( { model | autoPublish = newVal }, Ports.setAutoPublish newVal )
