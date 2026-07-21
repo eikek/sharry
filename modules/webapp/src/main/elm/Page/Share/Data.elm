@@ -32,6 +32,7 @@ type alias Model =
     , uploading : Bool
     , shareId : Maybe String
     , uploadPaused : Bool
+    , passwordValidationError : Bool
     }
 
 
@@ -52,6 +53,7 @@ emptyModel flags =
     , uploading = False
     , shareId = Nothing
     , uploadPaused = False
+    , passwordValidationError = False
     }
 
 

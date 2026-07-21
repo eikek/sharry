@@ -184,6 +184,35 @@ even when the full share exceeds the limit.
 The value cannot exceed `max-size`; if it does, it is silently capped
 at startup.
 
+### Require Share Password
+
+The `require-share-password` flag forces authenticated users to set a
+password whenever they create a share.
+
+```
+sharry.restserver.backend.share {
+  # When true, authenticated users must provide a password when
+  # creating a share. The server enforces this on every upload path;
+  # removing the password from an existing share is also blocked.
+  # Defaults to false.
+  require-share-password = false
+}
+```
+
+When enabled:
+
+- The password field is marked as required in the share creation form.
+- Submitting the form without a password shows a localised error
+  message and the share is not created.
+- `DELETE /api/v2/sec/share/{id}/password` returns an error instead of
+  removing the password.
+- The restriction is enforced server-side on both upload endpoints
+  (`POST /api/v2/sec/upload` and `POST /api/v2/sec/upload/new`), so it
+  cannot be bypassed by calling the API directly.
+
+This setting does not affect alias uploads, which use a separate
+authentication flow.
+
 ### Files
 
 By default, the files are also stored in the configured database. This

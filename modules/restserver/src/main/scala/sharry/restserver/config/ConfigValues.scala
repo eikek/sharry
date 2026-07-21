@@ -360,7 +360,10 @@ object ConfigValues extends ConfigDecoders:
     )
       .listflatMap(domainCheck)
     val zipMaxSize = k("zip-max-size", "ZIP_MAX_SIZE").as[ByteSize]
-    (chunkSize, maxSize, maxValid, domainChecks, zipMaxSize).mapN(ShareConfig.apply)
+    val requireSharePassword =
+      k("require-share-password", "REQUIRE_SHARE_PASSWORD").as[Boolean]
+    (chunkSize, maxSize, maxValid, domainChecks, zipMaxSize, requireSharePassword)
+      .mapN(ShareConfig.apply)
   }
 
   val cleanup = {

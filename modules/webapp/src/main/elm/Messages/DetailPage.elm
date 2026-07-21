@@ -74,6 +74,7 @@ type alias Texts =
     , validityField : Messages.ValidityField.Texts
     , passwordRequired : String
     , passwordInvalid : String
+    , passwordCannotBeRemoved : String
     , or : String
     , dateTime : Int -> String
     , initialViewLabel : InitialView -> String
@@ -141,6 +142,7 @@ it =
     , validityField = Messages.ValidityField.it
     , passwordRequired = "Password necessaria"
     , passwordInvalid = "Password non valida"
+    , passwordCannotBeRemoved = "La password non può essere rimossa quando la protezione è obbligatoria."
     , or = "Oppure"
     , dateTime = Messages.DateFormat.formatDateTime Language.Italian Time.utc
     , initialViewLabel =
@@ -218,6 +220,7 @@ es =
     , validityField = Messages.ValidityField.es
     , passwordRequired = "Contraseña requerida"
     , passwordInvalid = "Contraseña inválida"
+    , passwordCannotBeRemoved = "No se puede eliminar la contraseña cuando la protección es obligatoria."
     , or = "O"
     , dateTime = Messages.DateFormat.formatDateTime Language.Spanish Time.utc
     , initialViewLabel =
@@ -296,6 +299,7 @@ gb =
     , validityField = Messages.ValidityField.gb
     , passwordRequired = "Password required"
     , passwordInvalid = "Password invalid"
+    , passwordCannotBeRemoved = "Password cannot be removed when password protection is required."
     , or = "Or"
     , dateTime = Messages.DateFormat.formatDateTime Language.English Time.utc
     , initialViewLabel =
@@ -375,6 +379,7 @@ de =
     , validityField = Messages.ValidityField.de
     , passwordRequired = "Passwort erforderlich"
     , passwordInvalid = "Passwort ungültig"
+    , passwordCannotBeRemoved = "Das Passwort kann nicht entfernt werden, wenn Passwortschutz erforderlich ist."
     , or = "Oder"
     , dateTime = Messages.DateFormat.formatDateTime Language.German Time.utc
     , initialViewLabel =
@@ -457,6 +462,7 @@ fr =
     , validityField = Messages.ValidityField.fr
     , passwordRequired = "Mot de passe requis"
     , passwordInvalid = "Mot de passe invalide"
+    , passwordCannotBeRemoved = "Le mot de passe ne peut pas être supprimé lorsque la protection est obligatoire."
     , or = "Ou"
     , dateTime = Messages.DateFormat.formatDateTime Language.French Time.utc
     , initialViewLabel =
@@ -533,6 +539,7 @@ ja =
     , validityField = Messages.ValidityField.ja
     , passwordRequired = "要パスワード"
     , passwordInvalid = "パスワードが無効"
+    , passwordCannotBeRemoved = "パスワード保護が必須の場合、パスワードを削除できません。"
     , or = "または"
     , dateTime = Messages.DateFormat.formatDateTime Language.Japanese Time.utc
     , initialViewLabel =
@@ -611,6 +618,7 @@ cz =
     , validityField = Messages.ValidityField.cz
     , passwordRequired = "Heslo vyžadováno"
     , passwordInvalid = "Chybějící heslo"
+    , passwordCannotBeRemoved = "Heslo nelze odebrat, pokud je vyžadována ochrana heslem."
     , or = "Nebo"
     , dateTime = Messages.DateFormat.formatDateTime Language.Czech Time.utc
     , initialViewLabel =
@@ -689,6 +697,7 @@ br =
     , validityField = Messages.ValidityField.br
     , passwordRequired = "Senha obrigatória"
     , passwordInvalid = "Senha inválida"
+    , passwordCannotBeRemoved = "A senha não pode ser removida quando a proteção por senha é obrigatória."
     , or = "Ou"
     , dateTime = Messages.DateFormat.formatDateTime Language.Portuguese Time.utc
     , initialViewLabel =

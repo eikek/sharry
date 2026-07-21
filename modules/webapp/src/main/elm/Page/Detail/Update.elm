@@ -284,7 +284,7 @@ update flags msg model =
                         ( nm, nv ) =
                             Comp.PasswordInput.update lmsg m
                     in
-                    ( { model | editField = Just ( p, EditPassword ( nm, nv ) ) }
+                    ( { model | editField = Just ( p, EditPassword ( nm, nv ) ), passwordValidationError = False }
                     , Cmd.none
                     )
 
@@ -292,7 +292,7 @@ update flags msg model =
                     ( model, Cmd.none )
 
         CancelEdit ->
-            ( { model | editField = Nothing }, Cmd.none )
+            ( { model | editField = Nothing, passwordValidationError = False }, Cmd.none )
 
         EditKey code ->
             case code of
@@ -326,7 +326,13 @@ update flags msg model =
                     )
 
                 Just ( _, EditPassword ( _, pw ) ) ->
-                    ( nm, Api.setPassword flags model.share.id pw BasicResp )
+                    if flags.config.sharePasswordRequired && pw == Nothing then
+                        ( { model | passwordValidationError = True }
+                        , Cmd.none
+                        )
+
+                    else
+                        ( { nm | passwordValidationError = False }, Api.setPassword flags model.share.id pw BasicResp )
 
                 Nothing ->
                     ( nm, Cmd.none )

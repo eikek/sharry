@@ -2034,6 +2034,7 @@ components:
         - proxyOnly
         - hideLoginForm
         - zipMaxSize
+        - sharePasswordRequired
       properties:
         appName:
           type: string
@@ -2119,6 +2120,13 @@ components:
             Priority order: user preference (stored in browser) > browser
             auto-detect > this server default > UTC.
             If absent or empty, UTC is used (preserving previous behavior).
+        sharePasswordRequired:
+          description: |
+            When true, authenticated users must set a password when
+            creating a share. The server enforces this on every upload
+            path; the UI shows the password field as required and blocks
+            submission without one.
+          type: boolean
     OAuthItem:
       description: |
         Information about a configured OAuth provider.

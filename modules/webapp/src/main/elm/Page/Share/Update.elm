@@ -51,7 +51,7 @@ update flags msg model =
                 ( m, pw ) =
                     Comp.PasswordInput.update lmsg model.passwordModel
             in
-            ( { model | passwordModel = m, passwordField = pw }
+            ( { model | passwordModel = m, passwordField = pw, passwordValidationError = False }
             , Cmd.none
             )
 
@@ -90,16 +90,28 @@ update flags msg model =
 
         Submit ->
             let
+                passwordOk =
+                    not flags.config.sharePasswordRequired || model.passwordField /= Nothing
+
                 valid =
-                    Util.Share.validate flags Nothing model
+                    if not passwordOk then
+                        BasicResult False ""
+
+                    else
+                        Util.Share.validate flags Nothing model
             in
-            if valid.success then
-                ( { model | uploading = True }
+            if passwordOk && valid.success then
+                ( { model | uploading = True, passwordValidationError = False }
                 , Api.createEmptyShare flags (makeProps model) CreateShareResp
                 )
 
+            else if not passwordOk then
+                ( { model | passwordValidationError = True }
+                , Cmd.none
+                )
+
             else
-                ( { model | formState = valid }
+                ( { model | formState = valid, passwordValidationError = False }
                 , Cmd.none
                 )
 

@@ -159,7 +159,9 @@ object OShare {
             accId.alias,
             data.copy(password = data.password.map(PasswordCrypt.crypt))
           )
-          valid = UploadResult(share).checkValidity(cfg.maxValidity)(_.validity)
+          valid = UploadResult(share)
+            .checkValidity(cfg.maxValidity)(_.validity)
+            .checkPasswordRequired(cfg.requireSharePassword)(_.password)
           _ <- valid.mapF(r => store.transact(RShare.insert(r)))
           _ <- logger.debug(s"Result creating share for '${accId.id.id}': $valid")
         } yield valid.map(_.id)

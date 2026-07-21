@@ -51,10 +51,14 @@ view texts flags model =
         , div
             [ class S.errorMessage
             , classList
-                [ ( "hidden", model.formState.success && Tuple.second counts <= 0 )
+                [ ( "hidden", model.formState.success && Tuple.second counts <= 0 && not model.passwordValidationError )
                 ]
             ]
-            [ text model.formState.message
+            [ if model.passwordValidationError then
+                text texts.passwordRequiredToCreate
+
+              else
+                text model.formState.message
             ]
         , div [ class "flex flex-col" ]
             [ div [ class "mb-4" ]
@@ -112,6 +116,11 @@ view texts flags model =
             , div [ class "mb-4" ]
                 [ label [ class S.inputLabel ]
                     [ text texts.password
+                    , if flags.config.sharePasswordRequired then
+                        B.inputRequired
+
+                      else
+                        text ""
                     ]
                 , Html.map PasswordMsg
                     (Comp.PasswordInput.view
