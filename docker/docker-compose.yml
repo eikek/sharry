@@ -23,7 +23,7 @@ services:
     image: postgres:18.4
     container_name: postgres_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=dbpass
