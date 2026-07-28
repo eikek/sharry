@@ -31,11 +31,18 @@
              })();
          var storedTimezone = localStorage.getItem('timezone');
          var account = storedAccount ? JSON.parse(storedAccount) : null;
+         var autoPublish = (function() {
+             var stored = localStorage.getItem('sharry-auto-publish');
+             if (stored === 'true') return true;
+             if (stored === 'false') return false;
+             return null;
+         })();
          var elmFlags = {
              "account": account,
              "language": lang,
              "uiTheme": theme,
              "timezone": storedTimezone,
+             "autoPublish": autoPublish,
              "config": sharryFlags
          };
         </script>

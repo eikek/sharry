@@ -2,6 +2,7 @@ module Page.Share.Update exposing (update)
 
 import Api
 import Api.Model.BasicResult exposing (BasicResult)
+import Api.Model.PublishData exposing (PublishData)
 import Comp.Dropzone2
 import Comp.IntField
 import Comp.MarkdownInput
@@ -113,7 +114,11 @@ update flags msg model =
 
                 submit =
                     if native == [] then
-                        Cmd.none
+                        if model.autoPublish then
+                            Api.publishShare flags idres.id (PublishData False) AutoPublishResp
+
+                        else
+                            Cmd.none
 
                     else
                         UploadData uploadUrl idres.id native Nothing
@@ -138,7 +143,7 @@ update flags msg model =
 
         Uploading state ->
             if Just state.id == model.shareId then
-                trackUpload model state
+                trackUpload flags model state
 
             else
                 ( model, Cmd.none )
@@ -177,9 +182,12 @@ update flags msg model =
         ResetForm ->
             ( Page.Share.Data.emptyModel flags, Cmd.none )
 
+        AutoPublishResp _ ->
+            ( model, Cmd.none )
 
-trackUpload : Model -> UploadState -> ( Model, Cmd Msg )
-trackUpload model state =
+
+trackUpload : Flags -> Model -> UploadState -> ( Model, Cmd Msg )
+trackUpload flags model state =
     let
         next =
             Data.UploadDict.trackUpload model.uploads state
@@ -191,11 +199,30 @@ trackUpload model state =
 
                 _ ->
                     model.formState
+
+        updatedModel =
+            { model
+                | uploads = next
+                , uploadPaused = False
+                , formState = infoMsg
+            }
+
+        ( succ, err ) =
+            Data.UploadDict.countDone next
+
+        allUploadsDone =
+            succ + err == List.length next.selectedFiles
+
+        publishCmd =
+            if allUploadsDone && err == 0 && model.autoPublish then
+                case model.shareId of
+                    Just id ->
+                        Api.publishShare flags id (PublishData False) AutoPublishResp
+
+                    Nothing ->
+                        Cmd.none
+
+            else
+                Cmd.none
     in
-    ( { model
-        | uploads = next
-        , uploadPaused = False
-        , formState = infoMsg
-      }
-    , Cmd.none
-    )
+    ( updatedModel, publishCmd )
