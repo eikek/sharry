@@ -14,6 +14,7 @@ type alias Flags =
     , language : Maybe String
     , uiTheme : Maybe String
     , timezone : Maybe String
+    , autoPublish : Maybe Bool
     , config : AppConfig
     }
 

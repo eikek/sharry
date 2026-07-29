@@ -160,6 +160,27 @@ The following steps must be done manually:
 Then add the above setting into your config file. Test files can be
 found [here](https://www.eicar.org/?page_id=3950).
 
+### Auto-Publish
+
+The `auto-publish-enabled` webapp setting controls whether users can
+opt-in to having their shares automatically published after all files
+are uploaded.
+
+```
+sharry.restserver.webapp {
+  # When enabled, shares are automatically published after all files
+  # are uploaded. Users can toggle this preference in their Settings
+  # page. If disabled, the feature is hidden entirely.
+  auto-publish-enabled = false
+}
+```
+
+When set to `true`, newly created accounts default to auto-publish
+enabled. Users can disable it per-browser in their *Settings* page.
+The preference is stored in `localStorage` under the key
+`sharry-auto-publish`.
+
+
 ### ZIP Download
 
 The `zip-max-size` setting controls whether users can download files

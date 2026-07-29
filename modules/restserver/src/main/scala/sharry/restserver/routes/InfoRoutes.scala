@@ -82,7 +82,8 @@ object InfoRoutes {
       cfg.backend.auth.isAutoLogin,
       cfg.backend.share.zipMaxSize,
       cfg.webapp.defaultTimezone.filter(_.nonEmpty),
-      cfg.backend.share.requireSharePassword
+      cfg.backend.share.requireSharePassword,
+      cfg.webapp.autoPublishEnabled
     )
   }
 

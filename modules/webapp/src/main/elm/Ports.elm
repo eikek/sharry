@@ -74,3 +74,6 @@ port setTimezone : Maybe String -> Cmd msg
 
 
 port receiveTimezone : (Maybe String -> msg) -> Sub msg
+
+
+port setAutoPublish : Bool -> Cmd msg

@@ -97,7 +97,8 @@ object Config {
       initialTheme: String,
       oauthAutoRedirect: Boolean,
       customHead: String,
-      defaultTimezone: Option[String]
+      defaultTimezone: Option[String],
+      autoPublishEnabled: Boolean
   )
 
   final case class Api(

@@ -2035,6 +2035,7 @@ components:
         - hideLoginForm
         - zipMaxSize
         - sharePasswordRequired
+        - autoPublishEnabled
       properties:
         appName:
           type: string
@@ -2126,6 +2127,8 @@ components:
             creating a share. The server enforces this on every upload
             path; the UI shows the password field as required and blocks
             submission without one.
+          type: boolean
+        autoPublishEnabled:
           type: boolean
     OAuthItem:
       description: |

@@ -33,6 +33,7 @@ type alias Model =
     , shareId : Maybe String
     , uploadPaused : Bool
     , passwordValidationError : Bool
+    , autoPublish : Bool
     }
 
 
@@ -54,6 +55,9 @@ emptyModel flags =
     , shareId = Nothing
     , uploadPaused = False
     , passwordValidationError = False
+    , autoPublish =
+        flags.config.autoPublishEnabled
+            && Maybe.withDefault True flags.autoPublish
     }
 
 
@@ -71,6 +75,7 @@ type Msg
     | StartStopUpload
     | UploadStopped (Maybe String)
     | ResetForm
+    | AutoPublishResp (Result Http.Error BasicResult)
 
 
 makeProps : Model -> ShareProperties
