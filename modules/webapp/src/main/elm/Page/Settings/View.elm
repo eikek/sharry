@@ -27,6 +27,7 @@ view texts currentTimezone model =
         , timezoneForm texts currentTimezone model
         , emailForm texts model
         , changePasswordForm texts model
+        , autoPublishForm texts model
         ]
 
 
@@ -171,4 +172,28 @@ banner model =
         [ Maybe.map .text model.banner
             |> Maybe.withDefault ""
             |> text
+        ]
+
+
+autoPublishForm : Texts -> Model -> Html Msg
+autoPublishForm texts model =
+    div
+        [ classList [ ( "hidden", not model.autoPublishEnabled ) ]
+        , class "flex flex-col mt-4"
+        ]
+        [ h2 [ class S.header2 ]
+            [ text texts.autoPublishHeader
+            ]
+        , div [ class "mb-2" ]
+            [ MB.viewItem <|
+                MB.Checkbox
+                    { id = "auto-publish"
+                    , value = model.autoPublish
+                    , tagger = \_ -> ToggleAutoPublish
+                    , label = texts.autoPublishLabel
+                    }
+            , span [ class "text-sm opacity-70 ml-1" ]
+                [ text texts.autoPublishInfo
+                ]
+            ]
         ]

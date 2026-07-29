@@ -2040,6 +2040,7 @@ components:
         - proxyOnly
         - hideLoginForm
         - zipMaxSize
+        - autoPublishEnabled
       properties:
         appName:
           type: string
@@ -2125,6 +2126,8 @@ components:
             Priority order: user preference (stored in browser) > browser
             auto-detect > this server default > UTC.
             If absent or empty, UTC is used (preserving previous behavior).
+        autoPublishEnabled:
+          type: boolean
     OAuthItem:
       description: |
         Information about a configured OAuth provider.
