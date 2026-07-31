@@ -153,7 +153,8 @@ Output:
       "size": 2829079,
       "mimetype": "image/jpeg",
       "checksum": "8ffe8da9d49b7e6590b78362ed0acd4156f4bccaa724c710560a57bd3c54d74d",
-      "storedSize": 2829079
+      "storedSize": 2829079,
+      "created": 1577132473544
     },
     {
       "id": "Eur8FJj4uxL-q9NYVBqYi1L-jnsEFKPwCYQ-6Z81iazysjD",
@@ -161,7 +162,8 @@ Output:
       "size": 3692609,
       "mimetype": "image/jpeg",
       "checksum": "424bcfa141f61a73269466102ee1a826f1fae31a847a5861500fc4cbdfb1732f",
-      "storedSize": 3692609
+      "storedSize": 3692609,
+      "created": 1577132481902
     }
   ]
 }
@@ -171,4 +173,5 @@ The output contains the two files that have been uploaded. Also
 interesting is the `storedSize` property. This indicates how many
 bytes really reached the server. The `size` property uses the value as
 advertised by the uploader. If `storedSize` does not equal `size` then
-the file is not fully uploaded.
+the file is not fully uploaded. The `created` property of a file is
+the timestamp (epoch milliseconds) when it was uploaded.

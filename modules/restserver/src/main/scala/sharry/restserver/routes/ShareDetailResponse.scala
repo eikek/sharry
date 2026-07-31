@@ -73,7 +73,8 @@ object ShareDetailResponse {
         f.length,
         f.mimetype,
         f.checksum,
-        f.saved
+        f.saved,
+        f.created
       )
     )
 

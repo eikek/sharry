@@ -1694,6 +1694,7 @@ components:
         - mimetype
         - checksum
         - storedSize
+        - created
       properties:
         id:
           type: string
@@ -1726,6 +1727,11 @@ components:
             This indicates the size of bytes that have really been
             written to the store. If this differs to the `size`
             property, then the file is only partially uploaded.
+        created:
+          type: integer
+          format: date-time
+          description: |
+            When this file has been added to the share.
     ShareList:
       description: |
         A list of shares
