@@ -43,6 +43,7 @@ type alias Texts =
     , gotoShare : String
     , maxPublicViews : String
     , uploadsUpTo : String -> String
+    , passwordRequiredToCreate : String
     }
 
 it : Texts
@@ -75,6 +76,7 @@ it =
     , uploadsUpTo =
         \size ->
             "Si possono caricare files fino a " ++ size ++ "."
+    , passwordRequiredToCreate = "È necessaria una password per questa condivisione."
     }
 
 
@@ -108,6 +110,7 @@ es =
     , uploadsUpTo =
         \size ->
             "Las subidas son posibles hasta " ++ size ++ "."
+    , passwordRequiredToCreate = "Se requiere una contraseña para este compartido."
     }
 
 
@@ -141,6 +144,7 @@ gb =
     , uploadsUpTo =
         \size ->
             "Uploads are possible up to " ++ size ++ "."
+    , passwordRequiredToCreate = "A password is required for this share."
     }
 
 
@@ -176,6 +180,7 @@ de =
     , uploadsUpTo =
         \size ->
             "Es kann bis zu " ++ size ++ " hochgeladen werden."
+    , passwordRequiredToCreate = "Für diese Datei-Freigabe ist ein Passwort erforderlich."
     }
 
 fr : Texts
@@ -208,6 +213,7 @@ fr =
     , uploadsUpTo =
         \size ->
             "Téléversements possibles jusqu'à " ++ size ++ "."
+    , passwordRequiredToCreate = "Un mot de passe est requis pour ce partage."
     }
 
 
@@ -241,6 +247,7 @@ ja =
     , uploadsUpTo =
         \size ->
             "アップロードは最大 " ++ size ++ " までです。"
+    , passwordRequiredToCreate = "この共有にはパスワードが必要です。"
     }
 
 cz : Texts
@@ -273,6 +280,7 @@ cz =
     , uploadsUpTo =
         \size ->
             "Velikost souborů je maximálně " ++ size ++ "."
+    , passwordRequiredToCreate = "Pro toto sdílení je vyžadováno heslo."
     }
 
 br : Texts
@@ -305,4 +313,5 @@ br =
     , uploadsUpTo =
         \size ->
             "Os envios são possíveis até " ++ size ++ "."
+    , passwordRequiredToCreate = "É necessária uma senha para este compartilhamento."
     }

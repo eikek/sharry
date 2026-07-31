@@ -32,6 +32,10 @@ sealed trait UploadResult[+A] {
   def checkValidity(max: Duration)(f: A => Duration): UploadResult[A] =
     if (toOption.forall(e => f(e) <= max)) this
     else UploadResult.validityExceeded(max)
+
+  def checkPasswordRequired(required: Boolean)(f: A => Option[?]): UploadResult[A] =
+    if (!required || toOption.forall(e => f(e).isDefined)) this
+    else UploadResult.PermanentError("A password is required for this share.")
 }
 
 object UploadResult {

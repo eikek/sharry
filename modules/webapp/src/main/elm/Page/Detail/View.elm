@@ -1,6 +1,7 @@
 module Page.Detail.View exposing (view)
 
 import Api
+import Api.Model.BasicResult exposing (BasicResult)
 import Api.Model.ShareDetail exposing (ShareDetail)
 import Comp.Basic as B
 import Comp.ConfirmModal
@@ -60,7 +61,7 @@ view texts flags model =
             ++ shareProps texts flags model
             ++ shareLink texts flags model
             ++ [ dropzone texts flags model
-               , messageDiv model
+               , messageDiv texts model
                , descriptionView texts model desc
                , middleMenu texts model
                , fileList texts flags model
@@ -276,9 +277,13 @@ showUrlSwitch texts model =
         }
 
 
-messageDiv : Model -> Html Msg
-messageDiv model =
-    Util.Html.resultMsgMaybe model.message
+messageDiv : Texts -> Model -> Html Msg
+messageDiv texts model =
+    if model.passwordValidationError then
+        Util.Html.resultMsgMaybe (Just (BasicResult False texts.passwordCannotBeRemoved))
+
+    else
+        Util.Html.resultMsgMaybe model.message
 
 
 shareProps : Texts -> Flags -> Model -> List (Html Msg)

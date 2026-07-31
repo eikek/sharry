@@ -112,6 +112,12 @@ You can share the URL using one channel (maybe e-mail) and the
 password using another channel. A person must have both things in
 order to see the files.
 
+If the administrator has enabled `require-share-password` in the
+server configuration, setting a password is mandatory. The password
+field is marked as required and the share cannot be created without
+one. An existing password cannot be removed while this setting is
+active. See [configure](configure.md) for details.
+
 
 ### Maximum Views
 

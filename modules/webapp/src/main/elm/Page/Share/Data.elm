@@ -32,6 +32,7 @@ type alias Model =
     , uploading : Bool
     , shareId : Maybe String
     , uploadPaused : Bool
+    , passwordValidationError : Bool
     , autoPublish : Bool
     }
 
@@ -53,6 +54,7 @@ emptyModel flags =
     , uploading = False
     , shareId = Nothing
     , uploadPaused = False
+    , passwordValidationError = False
     , autoPublish =
         flags.config.autoPublishEnabled
             && Maybe.withDefault True flags.autoPublish

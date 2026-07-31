@@ -8,5 +8,6 @@ case class ShareConfig(
     maxSize: ByteSize,
     maxValidity: Duration,
     databaseDomainChecks: Seq[DomainCheckConfig],
-    zipMaxSize: ByteSize
+    zipMaxSize: ByteSize,
+    requireSharePassword: Boolean
 )
