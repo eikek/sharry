@@ -10,9 +10,9 @@ import sharry.store.records.{RAccount, RShare}
 import binny.ByteRange
 import munit.FunSuite
 
-/** Regression test for a bug where uploading a file in more than one TUS chunk
-  * corrupted `filemeta.length`, causing the next chunk to fail with
-  * `InvalidChunkIndex` and leaving the file truncated at the first chunk's size.
+/** Regression test for a bug where uploading a file in more than one TUS chunk corrupted
+  * `filemeta.length`, causing the next chunk to fail with `InvalidChunkIndex` and leaving
+  * the file truncated at the first chunk's size.
   */
 class OShareChunkedUploadTest extends FunSuite with StoreFixture {
 
@@ -57,7 +57,17 @@ class OShareChunkedUploadTest extends FunSuite with StoreFixture {
           accId = account.accountId(None)
 
           shareId <- Ident.randomId[IO]
-          share = RShare(shareId, accountId, None, None, Duration.days(1), 0, None, None, now)
+          share = RShare(
+            shareId,
+            accountId,
+            None,
+            None,
+            Duration.days(1),
+            0,
+            None,
+            None,
+            now
+          )
           _ <- store.transact(RShare.insert(share))
 
           createRes <- oshare
@@ -69,7 +79,7 @@ class OShareChunkedUploadTest extends FunSuite with StoreFixture {
             .value
           fileId = createRes match {
             case Some(UploadResult.Success(id)) => id
-            case other                          => fail(s"Could not create empty file: $other")
+            case other => fail(s"Could not create empty file: $other")
           }
 
           firstRes <- oshare
@@ -83,7 +93,10 @@ class OShareChunkedUploadTest extends FunSuite with StoreFixture {
             )
             .value
           _ <- IO(
-            assertEquals(firstRes, Some(UploadResult.success(ByteSize(chunk1Size.toLong))))
+            assertEquals(
+              firstRes,
+              Some(UploadResult.success(ByteSize(chunk1Size.toLong)))
+            )
           )
 
           secondRes <- oshare
@@ -108,7 +121,9 @@ class OShareChunkedUploadTest extends FunSuite with StoreFixture {
           binary = binaryOpt.getOrElse(fail("binary not found"))
           content <- binary.compile.toVector
 
-          expected = Vector.fill(chunk1Size)(1.toByte) ++ Vector.fill(chunk2Size)(2.toByte)
+          expected = Vector.fill(chunk1Size)(1.toByte) ++ Vector.fill(chunk2Size)(
+            2.toByte
+          )
           _ <- IO(assertEquals(content, expected))
         } yield ()
       }

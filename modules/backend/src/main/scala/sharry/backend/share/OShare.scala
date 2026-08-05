@@ -298,7 +298,8 @@ object OShare {
                 // Writing it after every intermediate chunk would clobber the
                 // declared total length that later PATCH requests rely on to
                 // compute valid chunk indices.
-                val fixLength = RFileMeta.updateLength(fileMetaId, len).whenA(len >= length)
+                val fixLength =
+                  RFileMeta.updateLength(fileMetaId, len).whenA(len >= length)
                 store
                   .transact(RShareFile.setRealSize(fileId, len) >> fixLength)
                   .map(_ => UploadResult.success(len))
