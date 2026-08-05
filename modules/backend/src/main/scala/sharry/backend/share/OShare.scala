@@ -294,11 +294,13 @@ object OShare {
               .map(_.getOrElse(0L))
               .flatMap { bytesSaved =>
                 val len = offset + ByteSize(bytesSaved)
+                // Only fix up filemeta.length once the file is fully received.
+                // Writing it after every intermediate chunk would clobber the
+                // declared total length that later PATCH requests rely on to
+                // compute valid chunk indices.
+                val fixLength = RFileMeta.updateLength(fileMetaId, len).whenA(len >= length)
                 store
-                  .transact(
-                    RShareFile.setRealSize(fileId, len) >>
-                      RFileMeta.updateLength(fileMetaId, len)
-                  )
+                  .transact(RShareFile.setRealSize(fileId, len) >> fixLength)
                   .map(_ => UploadResult.success(len))
               }
               .attempt
