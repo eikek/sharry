@@ -46,12 +46,18 @@ object ByteResponse {
     import dsl._
 
     val rangeDef = makeBinnyByteRange(sr, chunkSize)
+    val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))
     (for {
-      file <- backend.share.loadFile(shareId, fid, pass, rangeDef)
+      result <- backend.share.loadFile(shareId, fid, pass, rangeDef)
       resp <- OptionT.liftF {
-        if (rangeInvalid(file.fileMeta, sr)) RangeNotSatisfiable()
-        else if (file.fileMeta.length <= chunkSize) allBytes(dsl, req, file)
-        else partialResponse(dsl, req, file, chunkSize, sr)
+        result.fold(
+          file =>
+            if (rangeInvalid(file.fileMeta, sr)) RangeNotSatisfiable()
+            else if (file.fileMeta.length <= chunkSize) allBytes(dsl, req, file)
+            else partialResponse(dsl, req, file, chunkSize, sr),
+          _ => Forbidden(),
+          _ => Unauthorized(authChallenge)
+        )
       }
     } yield resp).getOrElseF(NotFound())
   }
@@ -66,9 +72,16 @@ object ByteResponse {
   ): F[Response[F]] = {
     import dsl._
 
+    val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))
     (for {
-      file <- backend.share.loadFile(shareId, fid, pass, ByteRange.All)
-      resp <- OptionT.liftF(allBytes(dsl, req, file))
+      result <- backend.share.loadFile(shareId, fid, pass, ByteRange.All)
+      resp <- OptionT.liftF(
+        result.fold(
+          file => allBytes(dsl, req, file),
+          _ => Forbidden(),
+          _ => Unauthorized(authChallenge)
+        )
+      )
     } yield resp).getOrElseF(NotFound())
   }
 

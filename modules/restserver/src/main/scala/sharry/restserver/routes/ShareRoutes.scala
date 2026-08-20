@@ -106,16 +106,22 @@ object ShareRoutes {
           .flatMap(s => Ident.fromString(s).toOption)
         val fileFilter = Option.when(fileIds.nonEmpty)(fileIds)
         (for {
-          stream <- backend.share.loadZip(ShareId.secured(id, token.account), fileFilter)
+          result <- backend.share
+            .loadZip(ShareId.secured(id, token.account), None, fileFilter)
           resp <- OptionT.liftF(
-            Ok(stream).map(
-              _.withHeaders(
-                `Content-Type`(MediaType.application.zip),
-                `Content-Disposition`(
-                  "attachment",
-                  Map(CIString("filename") -> s"$id.zip")
-                )
-              )
+            result.fold(
+              stream =>
+                Ok(stream).map(
+                  _.withHeaders(
+                    `Content-Type`(MediaType.application.zip),
+                    `Content-Disposition`(
+                      "attachment",
+                      Map(CIString("filename") -> s"$id.zip")
+                    )
+                  )
+                ),
+              _ => Forbidden(),
+              _ => Unauthorized(`WWW-Authenticate`(Challenge("sharry", "sharry")))
             )
           )
         } yield resp).getOrElseF(NotFound())

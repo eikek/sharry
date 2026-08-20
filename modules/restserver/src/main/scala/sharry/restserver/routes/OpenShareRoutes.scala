@@ -37,21 +37,28 @@ object OpenShareRoutes {
         ByteResponse(dsl, req, backend, ShareId.publish(id), pw, chunkSize, fid)
 
       case req @ GET -> Root / Ident(id) / "zip" =>
+        val pw = SharryPassword(req)
         val fileIds = req.uri.query.multiParams
           .getOrElse("file", Nil)
           .flatMap(s => Ident.fromString(s).toOption)
         val fileFilter = Option.when(fileIds.nonEmpty)(fileIds)
+        val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))
         (for {
-          stream <- backend.share.loadZip(ShareId.publish(id), fileFilter)
+          result <- backend.share.loadZip(ShareId.publish(id), pw, fileFilter)
           resp <- OptionT.liftF(
-            Ok(stream).map(
-              _.withHeaders(
-                `Content-Type`(MediaType.application.zip),
-                `Content-Disposition`(
-                  "attachment",
-                  Map(CIString("filename") -> s"$id.zip")
-                )
-              )
+            result.fold(
+              stream =>
+                Ok(stream).map(
+                  _.withHeaders(
+                    `Content-Type`(MediaType.application.zip),
+                    `Content-Disposition`(
+                      "attachment",
+                      Map(CIString("filename") -> s"$id.zip")
+                    )
+                  )
+                ),
+              _ => Forbidden(),
+              _ => Unauthorized(authChallenge)
             )
           )
         } yield resp).getOrElseF(dsl.NotFound())
