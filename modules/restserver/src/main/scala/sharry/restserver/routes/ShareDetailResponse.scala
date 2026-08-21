@@ -10,6 +10,7 @@ import sharry.common.*
 import sharry.restapi.model.{ShareDetail as ShareDetailDto, *}
 import sharry.restserver.config.Config
 import sharry.restserver.http4s.ClientRequestInfo
+import sharry.restserver.routes.headers.SharryPassword
 
 import org.http4s.*
 import org.http4s.circe.CirceEntityEncoder.*
@@ -39,12 +40,33 @@ object ShareDetailResponse {
 
     val authChallenge = `WWW-Authenticate`(Challenge("sharry", "sharry"))
 
+    // Store the verified password in a cookie scoped to this share, so the
+    // download links (which can't set the header) still pass the check.
+    def withPasswordCookie(resp: Response[F]): Response[F] =
+      (shareId, pass) match {
+        case (ShareId.PublicId(pid), Some(pw)) =>
+          val baseUrl = getBaseUrl(cfg, req)
+          val path = baseUrl.path / "api" / "v2" / "open" / "share" / pid.id
+          resp.addCookie(
+            ResponseCookie(
+              SharryPassword.name,
+              SharryPassword.encodeCookieValue(pw.pass),
+              domain = None,
+              path = Some(path.asString),
+              httpOnly = true,
+              secure = baseUrl.scheme.exists(_.endsWith("s")),
+              sameSite = Some(SameSite.Strict)
+            )
+          )
+        case _ => resp
+      }
+
     (for {
       now <- OptionT.liftF(Timestamp.current[F])
       detail <- backend.share.shareDetails(shareId, pass)
       resp <- OptionT.liftF(
         detail.fold(
-          d => Ok(shareDetail(now, baseUri)(d)),
+          d => Ok(shareDetail(now, baseUri)(d)).map(withPasswordCookie),
           _ =>
             logger
               .info(

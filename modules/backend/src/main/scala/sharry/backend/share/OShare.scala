@@ -109,12 +109,13 @@ trait OShare[F[_]] {
       file: Ident,
       pass: Option[Password],
       range: ByteRange
-  ): OptionT[F, FileRange[F]]
+  ): OptionT[F, ShareResult[FileRange[F]]]
 
   def loadZip(
       id: ShareId,
+      pass: Option[Password],
       fileIds: Option[Seq[Ident]] = None
-  ): OptionT[F, Stream[F, Byte]]
+  ): OptionT[F, ShareResult[Stream[F, Byte]]]
 
   def deleteFile(accId: AccountId, file: Ident): OptionT[F, Unit]
 
@@ -393,7 +394,8 @@ object OShare {
           file: Ident,
           pass: Option[Password],
           range: ByteRange
-      ): OptionT[F, FileRange[F]] = {
+      ): OptionT[F, ShareResult[FileRange[F]]] = {
+        // outer Option: row exists; inner: the share password (None if private)
         val checkQuery = shareId.fold(
           pub => Queries.checkFilePublish(pub.id, file),
           priv =>
@@ -403,25 +405,36 @@ object OShare {
         )
 
         for {
-          _ <- OptionT(store.transact(checkQuery))
-          file <- ByteResult.load(store)(file, range)
-        } yield file
+          sharePw <- OptionT(store.transact(checkQuery))
+          result <- checkPassword(shareId, pass, sharePw) match {
+            case ShareResult.Success(_) =>
+              ByteResult
+                .load(store)(file, range)
+                .map(fr => ShareResult.Success(fr): ShareResult[FileRange[F]])
+            case ShareResult.PasswordMismatch =>
+              OptionT.pure[F](ShareResult.PasswordMismatch: ShareResult[FileRange[F]])
+            case ShareResult.PasswordMissing =>
+              OptionT.pure[F](ShareResult.PasswordMissing: ShareResult[FileRange[F]])
+          }
+        } yield result
       }
 
       def loadZip(
           id: ShareId,
+          pass: Option[Password],
           fileIds: Option[Seq[Ident]] = None
-      ): OptionT[F, Stream[F, Byte]] = {
+      ): OptionT[F, ShareResult[Stream[F, Byte]]] = {
         val limit = cfg.zipMaxSize.bytes
         for {
           _ <- OptionT.fromOption[F](Option.when(limit > 0)(()))
           sd <- OptionT(store.transact(Queries.shareDetail(id).value))
+          pwResult = checkPassword(id, pass, sd.share.password)
           selectedFiles = fileIds
             .map(ids => sd.files.filter(f => ids.contains(f.id)))
             .getOrElse(sd.files)
           totalSize = selectedFiles.map(_.length.bytes).sum
           _ <- OptionT.fromOption[F](Option.when(totalSize <= limit)(()))
-        } yield {
+        } yield pwResult.map { _ =>
           val chunkSize = cfg.chunkSize.bytes.toInt
           fsio.readOutputStream[F](chunkSize) { os =>
             val zos = new java.util.zip.ZipOutputStream(os)
