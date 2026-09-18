@@ -5,7 +5,7 @@ on:
       - "current-docs"
 jobs:
   publish-website:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
         with:
