@@ -10,7 +10,7 @@ import Comp.MenuBar as MB
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Markdown
+import Util.SafeMarkdown as SafeMarkdown
 import Messages.MarkdownInput exposing (Texts)
 import Styles as S
 
@@ -115,7 +115,7 @@ editDisplay txt =
 
 previewDisplay : String -> Html Msg
 previewDisplay txt =
-    Markdown.toHtml [ class "markdown-preview max-h-96 overflow-y-auto" ] txt
+    SafeMarkdown.toHtml [ class "markdown-preview max-h-96 overflow-y-auto" ] txt
 
 
 splitDisplay : String -> Html Msg
