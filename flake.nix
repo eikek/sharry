@@ -2,7 +2,7 @@
   description = "Sharry allows to share files with others in a simple way";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     sbt.url = "github:zaninime/sbt-derivation";
     devshell-tools.url = "github:eikek/devshell-tools";
@@ -25,7 +25,7 @@
         elmPackages.elm
         fakeroot
         nodejs
-        redocly-cli
+        redocly
         tailwindcss
         jekyll
       ];
@@ -38,7 +38,7 @@
           wget
           which
           postgresql
-          inotifyTools
+          inotify-tools
         ]);
       sharryPkgs = {
         sharry-dev = import ./nix/package-dev.nix {

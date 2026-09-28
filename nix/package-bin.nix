@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchzip,
-  jdk17,
+  jdk,
   unzip,
   bash,
 }: let
@@ -25,7 +25,7 @@ in
       cp -R * $out/sharry-${version}/
       cat > $out/bin/sharry <<-EOF
       #!${bash}/bin/bash
-      $out/sharry-${version}/bin/sharry-restserver -java-home ${jdk17} "\$@"
+      $out/sharry-${version}/bin/sharry-restserver -java-home ${jdk} "\$@"
       EOF
       chmod 755 $out/bin/sharry
     '';
