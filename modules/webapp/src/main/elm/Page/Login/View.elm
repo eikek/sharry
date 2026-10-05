@@ -8,7 +8,7 @@ import Data.UiTheme exposing (UiTheme)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Markdown
+import Util.SafeMarkdown as SafeMarkdown
 import Messages.LoginPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Login.Data exposing (..)
@@ -141,7 +141,7 @@ renderWelcome flags =
         msg ->
             div [ class "flex flex-col px-2 sm:px-4 md:px-6 lg:px-8 py-4 max-w-md" ]
                 [ div [ class "self-center" ]
-                    [ Markdown.toHtml [] msg
+                    [ SafeMarkdown.toHtml [] msg
                     ]
                 ]
 

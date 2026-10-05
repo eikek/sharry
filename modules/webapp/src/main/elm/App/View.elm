@@ -9,7 +9,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Language
-import Markdown
+import Util.SafeMarkdown as SafeMarkdown
 import Messages exposing (Messages)
 import Page exposing (Page(..))
 import Page.Account.View
@@ -421,7 +421,7 @@ footer model =
 
         customFooter =
             div [ class styleFooter ]
-                [ Markdown.toHtml [] model.flags.config.footerText
+                [ SafeMarkdown.toHtml [] model.flags.config.footerText
                 ]
     in
     if model.flags.config.footerVisible then
