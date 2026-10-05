@@ -15,7 +15,7 @@ in
 
     src = fetchzip {
       url = "https://github.com/eikek/sharry/releases/download/v${version}/sharry-restserver-${version}.zip";
-      sha256 = "sha256-gXPveNkatfQe9wlFP1D04ijt+AeiRVjdaINOqhVM5to=";
+      sha256 = "sha256-JK6Cu8K3yMlfCHtneLM8SMeixZMsXikbU6HsMg+LUi8=";
     };
 
     buildPhase = "true";
