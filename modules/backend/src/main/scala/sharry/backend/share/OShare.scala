@@ -441,9 +441,8 @@ object OShare {
           val chunkSize = cfg.chunkSize.bytes.toInt
           fsio.readOutputStream[F](chunkSize) { os =>
             val zos = new java.util.zip.ZipOutputStream(os)
-            selectedFiles.toList
-              .traverse_ { file =>
-                val entryName = file.name.getOrElse(file.id.id)
+            uniqueEntryNames(selectedFiles.toList)(f => f.name.getOrElse(f.id.id))
+              .traverse_ { case (file, entryName) =>
                 Async[F].delay(zos.putNextEntry(new java.util.zip.ZipEntry(entryName))) *>
                   store.fileStore
                     .findBinary(file.metaId, binny.ByteRange.All)
@@ -561,6 +560,28 @@ object OShare {
     })
 
 // --- utilities
+
+  /** Pairs each item with a zip entry name that is unique within the list. The first
+    * occurrence keeps its name, later ones get a ` (n)` suffix before the extension.
+    */
+  private[share] def uniqueEntryNames[A](
+      items: List[A]
+  )(name: A => String): List[(A, String)] = {
+    val (_, result) = items.foldLeft((Set.empty[String], List.empty[(A, String)])) {
+      case ((used, acc), item) =>
+        val orig = name(item)
+        val dot = orig.lastIndexOf('.')
+        val (base, ext) = if (dot > 0) orig.splitAt(dot) else (orig, "")
+        val unique = LazyList
+          .from(2)
+          .map(n => s"$base ($n)$ext")
+          .prepended(orig)
+          .find(n => !used.contains(n))
+          .get
+        (used + unique, (item, unique) :: acc)
+    }
+    result.reverse
+  }
 
   private def checkPassword(
       shareId: ShareId,

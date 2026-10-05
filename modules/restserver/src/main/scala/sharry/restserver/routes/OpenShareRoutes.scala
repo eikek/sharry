@@ -53,7 +53,7 @@ object OpenShareRoutes {
                     `Content-Type`(MediaType.application.zip),
                     `Content-Disposition`(
                       "attachment",
-                      Map(CIString("filename") -> s"$id.zip")
+                      Map(CIString("filename") -> s"${id.id}.zip")
                     )
                   )
                 ),
