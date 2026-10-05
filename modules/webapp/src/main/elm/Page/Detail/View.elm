@@ -20,7 +20,7 @@ import Data.ValidityOptions
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Markdown
+import Util.SafeMarkdown as SafeMarkdown
 import Messages.DetailPage exposing (Texts)
 import Page exposing (Page(..))
 import Page.Detail.Data
@@ -55,7 +55,7 @@ view texts flags model =
         ]
         ([ Comp.Zoom.view (Api.fileSecUrl flags model.share.id) model SetZoom QuitZoom
          , deleteLoader texts model
-         , Markdown.toHtml [ class "markdown-preview" ] head
+         , SafeMarkdown.toHtml [ class "markdown-preview" ] head
          , topMenu texts model
          ]
             ++ shareProps texts flags model
@@ -105,7 +105,7 @@ descriptionView texts model desc =
                 ]
 
         Nothing ->
-            Markdown.toHtml [ class "markdown-preview mt-4" ] desc
+            SafeMarkdown.toHtml [ class "markdown-preview mt-4" ] desc
 
 
 fileList : Texts -> Flags -> Model -> Html Msg

@@ -9,7 +9,7 @@ import Data.Flags exposing (Flags)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onSubmit)
-import Markdown
+import Util.SafeMarkdown as SafeMarkdown
 import Messages.DetailPage exposing (Texts)
 import Page.OpenDetail.Data exposing (Model, Msg(..))
 import Styles as S
@@ -98,8 +98,8 @@ descriptionView texts model =
             Util.Share.splitDescription model.share texts.yourShare
     in
     div [ class "markdown-preview" ]
-        [ Markdown.toHtml [] title
-        , Markdown.toHtml [] desc
+        [ SafeMarkdown.toHtml [] title
+        , SafeMarkdown.toHtml [] desc
         ]
 
 
