@@ -116,7 +116,9 @@ If the administrator has enabled `require-share-password` in the
 server configuration, setting a password is mandatory. The password
 field is marked as required and the share cannot be created without
 one. An existing password cannot be removed while this setting is
-active. See [configure](configure.md) for details.
+active. Shares uploaded through an alias page are created without a
+password; you need to set one before you can publish them. See
+[configure](configure.md) for details.
 
 
 ### Maximum Views
