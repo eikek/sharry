@@ -52,6 +52,7 @@ type alias Model =
     , mailForm : Maybe Comp.MailSend.Model
     , shareUrlMode : InitialView
     , passwordValidationError : Bool
+    , publishPasswordError : Bool
     }
 
 
@@ -114,6 +115,7 @@ emptyModel =
     , mailForm = Nothing
     , shareUrlMode = Data.InitialView.default
     , passwordValidationError = False
+    , publishPasswordError = False
     }
 
 
