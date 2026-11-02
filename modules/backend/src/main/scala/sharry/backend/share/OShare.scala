@@ -162,7 +162,9 @@ object OShare {
           )
           valid = UploadResult(share)
             .checkValidity(cfg.maxValidity)(_.validity)
-            .checkPasswordRequired(cfg.requireSharePassword)(_.password)
+            .checkPasswordRequired(cfg.requireSharePassword && accId.alias.isEmpty)(
+              _.password
+            )
           _ <- valid.mapF(r => store.transact(RShare.insert(r)))
           _ <- logger.debug(s"Result creating share for '${accId.id.id}': $valid")
         } yield valid.map(_.id)
@@ -377,8 +379,20 @@ object OShare {
             Async[F].raiseError(ex)
         }
 
+        val checkPassword: F[Unit] =
+          if (!cfg.requireSharePassword) ().pure[F]
+          else
+            store.transact(RShare.getPassword(share)).flatMap {
+              case Some(_) => ().pure[F]
+              case None    =>
+                Async[F].raiseError(
+                  new Exception("A password is required to publish this share.")
+                )
+            }
+
         for {
           _ <- OptionT(store.transact(Queries.checkShare(share, accId)))
+          _ <- OptionT.liftF(checkPassword)
           _ <- OptionT.liftF(add)
         } yield ()
       }

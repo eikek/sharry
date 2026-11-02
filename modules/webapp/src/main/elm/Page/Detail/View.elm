@@ -282,6 +282,9 @@ messageDiv texts model =
     if model.passwordValidationError then
         Util.Html.resultMsgMaybe (Just (BasicResult False texts.passwordCannotBeRemoved))
 
+    else if model.publishPasswordError then
+        Util.Html.resultMsgMaybe (Just (BasicResult False texts.passwordRequiredToPublish))
+
     else
         Util.Html.resultMsgMaybe model.message
 
