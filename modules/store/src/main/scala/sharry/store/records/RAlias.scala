@@ -112,6 +112,14 @@ object RAlias {
   def existsById(aliasId: Ident): ConnectionIO[Boolean] =
     Sql.selectCount(id, table, id.is(aliasId)).query[Int].map(_ > 0).unique
 
+  /** Whether the alias exists and is owned by the given account (members don't count). */
+  def existsByOwner(aliasId: Ident, accId: Ident): ConnectionIO[Boolean] =
+    Sql
+      .selectCount(id, table, Sql.and(id.is(aliasId), account.is(accId)))
+      .query[Int]
+      .map(_ > 0)
+      .unique
+
   def delete(aliasId: Ident, accId: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, Sql.and(account.is(accId), id.is(aliasId))).update.run
 
