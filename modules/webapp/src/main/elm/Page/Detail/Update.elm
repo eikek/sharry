@@ -89,16 +89,20 @@ update flags msg model =
             )
 
         PublishShare flag ->
-            let
-                cmd =
-                    case isPublished model.share of
-                        Unpublished ->
-                            Api.publishShare flags model.share.id (PublishData flag) BasicResp
+            case isPublished model.share of
+                Unpublished ->
+                    if flags.config.sharePasswordRequired && not model.share.password then
+                        ( { model | publishPasswordError = True }, Cmd.none )
 
-                        _ ->
-                            Api.unpublishShare flags model.share.id BasicResp
-            in
-            ( model, cmd )
+                    else
+                        ( { model | publishPasswordError = False }
+                        , Api.publishShare flags model.share.id (PublishData flag) BasicResp
+                        )
+
+                _ ->
+                    ( { model | publishPasswordError = False }
+                    , Api.unpublishShare flags model.share.id BasicResp
+                    )
 
         BasicResp (Ok res) ->
             if res.success then
@@ -333,7 +337,7 @@ update flags msg model =
                         )
 
                     else
-                        ( { nm | passwordValidationError = False }, Api.setPassword flags model.share.id pw BasicResp )
+                        ( { nm | passwordValidationError = False, publishPasswordError = False }, Api.setPassword flags model.share.id pw BasicResp )
 
                 Nothing ->
                     ( nm, Cmd.none )

@@ -231,8 +231,11 @@ When enabled:
   (`POST /api/v2/sec/upload` and `POST /api/v2/sec/upload/new`), so it
   cannot be bypassed by calling the API directly.
 
-This setting does not affect alias uploads, which use a separate
-authentication flow.
+Alias uploads are exempt from this check: a person uploading through
+an alias page cannot set a password. Instead, a share must have a
+password before it can be published. The owner sets the password on
+the share's detail page; `POST /api/v2/sec/share/{id}/publish` returns
+an error while the share has no password.
 
 ### Files
 

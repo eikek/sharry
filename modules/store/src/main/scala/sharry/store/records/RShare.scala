@@ -65,6 +65,12 @@ object RShare {
   def getDuration(share: Ident): ConnectionIO[Duration] =
     Sql.selectSimple(Seq(validity), table, id.is(share)).query[Duration].unique
 
+  def getPassword(share: Ident): ConnectionIO[Option[Password]] =
+    Sql
+      .selectSimple(Seq(password), table, id.is(share))
+      .query[Option[Password]]
+      .unique
+
   def delete(sid: Ident): ConnectionIO[Int] =
     Sql.deleteFrom(table, id.is(sid)).update.run
 
