@@ -62,13 +62,23 @@ object OAlias {
           accId: Ident,
           detail: AliasInput
       ): F[AddResult] = {
+        // Members must only be touched if the alias is owned by `accId`. The
+        // members are removed before the update, because the alias id may change
+        // and the foreign key has no `on update cascade`.
         val doUpdate = for {
-          _ <- RAliasMember.deleteForAlias(aliasId)
-          n <- RAlias.update(aliasId, accId, detail.alias)
-          k <-
-            if (n > 0) RAliasMember.insertForAlias(detail.alias.id, detail.members)
-            else RAliasMember.insertForAlias(aliasId, detail.members)
-        } yield n + k
+          owned <- RAlias.existsByOwner(aliasId, accId)
+          n <-
+            if (owned)
+              for {
+                _ <- RAliasMember.deleteForAlias(aliasId)
+                u <- RAlias.update(aliasId, accId, detail.alias)
+                k <-
+                  if (u > 0)
+                    RAliasMember.insertForAlias(detail.alias.id, detail.members)
+                  else 0.pure[ConnectionIO]
+              } yield u + k
+            else 0.pure[ConnectionIO]
+        } yield n
 
         for {
           _ <- logger.debug(s"Modify alias '${aliasId.id}' to ${detail.alias}")
